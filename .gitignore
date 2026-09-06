@@ -42,3 +42,8 @@ next-env.d.ts
 
 # keep the example env committed
 !.env.example
+
+# Product import working files (source images live on Cloudinary after import)
+/import/images/
+/import/_done/
+/import/products.json

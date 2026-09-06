@@ -1,0 +1,47 @@
+[
+  {
+    "name": { "en": "For an Amazing Mom", "fr": "Pour une Maman Extraordinaire" },
+    "tagline": { "en": "A little peace and a lot of gratitude.", "fr": "Un peu de sérénité et beaucoup de gratitude." },
+    "description": {
+      "en": "An elegant basket for mom in navy and cream, with a bouquet, Godiva chocolates, a lavender candle and thoughtful self-care.",
+      "fr": "Un panier élégant pour maman, marine et crème : bouquet, chocolats Godiva, bougie lavande et soins attentionnés."
+    },
+    "contents": [
+      { "en": "White rose & eucalyptus bouquet", "fr": "Bouquet de roses blanches et eucalyptus" },
+      { "en": "Godiva assorted chocolates", "fr": "Chocolats assortis Godiva" },
+      { "en": "Peace in a Jar candle", "fr": "Bougie Peace in a Jar" },
+      { "en": "L'Occitane hand cream", "fr": "Crème pour les mains L'Occitane" }
+    ],
+    "price": 139.0,
+    "compareAt": 159.0,
+    "sku": "VLV-MOM-01",
+    "status": "ACTIVE",
+    "featured": true,
+    "bestseller": true,
+    "badges": ["bestseller"],
+    "occasions": ["birthday", "thank-you", "anniversary"],
+    "recipients": ["for-her"],
+    "categories": ["spa-wellness", "chocolate"],
+    "images": ["for-mom-1.jpg", "for-mom-2.jpg"],
+    "seoTitle": { "en": "For an Amazing Mom Gift Basket | Velvea" },
+    "seoDescription": { "en": "An elegant self-care gift basket for mom, delivered across Canada." }
+  },
+  {
+    "name": "The Gentleman's Retreat",
+    "tagline": "Considered comfort in navy and gold.",
+    "description": "A refined basket for him, pairing a woven throw and single-origin coffee with an amber candle and modern grooming.",
+    "contents": [
+      "Cloudweave navy luxe throw",
+      "Single-origin Ethiopian coffee",
+      "Oak & Amber soy candle",
+      "Elemis Men moisturiser"
+    ],
+    "price": 159.0,
+    "status": "ACTIVE",
+    "featured": true,
+    "occasions": ["birthday", "thank-you"],
+    "recipients": ["for-him", "clients"],
+    "categories": ["coffee-tea", "chocolate"],
+    "images": ["gentlemans-retreat.jpg"]
+  }
+]
