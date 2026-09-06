@@ -26,7 +26,8 @@ export async function adminLoginAction(
   let user;
   try {
     user = await prisma.user.findUnique({ where: { email } });
-  } catch {
+  } catch (err) {
+    console.error("[auth] admin login database error:", err);
     return { error: "Database unavailable. Check the connection and try again." };
   }
   if (!user || !user.passwordHash || !isAdminRole(user.role)) {
@@ -63,7 +64,8 @@ export async function customerRegisterAction(
       data: { name, email, passwordHash: await hashPassword(password), role: "CUSTOMER" },
     });
     await createSession(user);
-  } catch {
+  } catch (err) {
+    console.error("[auth] customer register error:", err);
     return { error: "Could not create the account. Please try again." };
   }
   redirect("/account");
@@ -83,7 +85,8 @@ export async function customerLoginAction(
     const ok = await verifyPassword(password, user.passwordHash);
     if (!ok) return { error: "Invalid credentials." };
     await createSession(user);
-  } catch {
+  } catch (err) {
+    console.error("[auth] customer login error:", err);
     return { error: "Sign-in failed. Please try again." };
   }
   redirect("/account");
