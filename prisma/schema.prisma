@@ -1,0 +1,437 @@
+// Velvea — data model
+// Translatable text is stored as JSON { en: string, fr: string }.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// Users & auth
+// ============================================================
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String?
+  name         String?
+  phone        String?
+  role         Role      @default(CUSTOMER)
+  emailVerified DateTime?
+  addresses    Address[]
+  orders       Order[]
+  reviews      Review[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([role])
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String?
+  fullName   String
+  line1      String
+  line2      String?
+  city       String
+  province   String
+  postalCode String
+  country    String  @default("CA")
+  phone      String?
+  isDefault  Boolean @default(false)
+
+  @@index([userId])
+}
+
+// ============================================================
+// Catalog
+// ============================================================
+enum CollectionType {
+  OCCASION
+  RECIPIENT
+  CATEGORY
+  THEME
+}
+
+model Collection {
+  id          String         @id @default(cuid())
+  type        CollectionType
+  slug        String         @unique
+  name        Json // { en, fr }
+  description Json? // { en, fr }
+  imageUrl    String?
+  imagePublicId String?
+  featured    Boolean        @default(false)
+  position    Int            @default(0)
+  seoTitle    Json?
+  seoDescription Json?
+  products    ProductCollection[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([type, position])
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Product {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             Json // { en, fr }
+  tagline          Json? // short one-liner { en, fr }
+  description      Json? // long, rich { en, fr }
+  contents         Json? // list of what's inside: [{ en, fr }]
+  care             Json? // notes { en, fr }
+  priceCents       Int
+  compareAtCents   Int?
+  currency         String   @default("CAD")
+  sku              String?  @unique
+  status           ProductStatus @default(DRAFT)
+  featured         Boolean  @default(false)
+  bestseller       Boolean  @default(false)
+  badges           String[] @default([]) // e.g. "new", "limited"
+  leadTimeDays     Int      @default(1)
+  weightGrams      Int?
+  inventory        Int?     // null = unlimited
+  avgRating        Float    @default(0)
+  reviewCount      Int      @default(0)
+  images           ProductImage[]
+  variants         ProductVariant[]
+  collections      ProductCollection[]
+  reviews          Review[]
+  seoTitle         Json?
+  seoDescription   Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status, featured])
+  @@index([status, bestseller])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  publicId  String?
+  alt       String?
+  width     Int?
+  height    Int?
+  position  Int     @default(0)
+
+  @@index([productId, position])
+}
+
+model ProductVariant {
+  id             String  @id @default(cuid())
+  productId      String
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label          Json // { en, fr } e.g. "Grande"
+  priceCents     Int
+  compareAtCents Int?
+  sku            String?
+  inStock        Boolean @default(true)
+  position       Int     @default(0)
+
+  @@index([productId, position])
+}
+
+model ProductCollection {
+  productId    String
+  collectionId String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  position     Int        @default(0)
+
+  @@id([productId, collectionId])
+  @@index([collectionId])
+}
+
+// ============================================================
+// Custom basket builder
+// ============================================================
+model BuilderContainer {
+  id         String  @id @default(cuid())
+  name       Json
+  description Json?
+  priceCents Int
+  imageUrl   String?
+  imagePublicId String?
+  capacity   Int     @default(8) // max add-ons it fits
+  position   Int     @default(0)
+  active     Boolean @default(true)
+}
+
+model BuilderItemCategory {
+  id       String        @id @default(cuid())
+  name     Json
+  position Int           @default(0)
+  items    BuilderItem[]
+}
+
+model BuilderItem {
+  id         String  @id @default(cuid())
+  categoryId String
+  category   BuilderItemCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name       Json
+  priceCents Int
+  imageUrl   String?
+  imagePublicId String?
+  position   Int     @default(0)
+  active     Boolean @default(true)
+
+  @@index([categoryId, position])
+}
+
+// ============================================================
+// Reviews
+// ============================================================
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  productId    String
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  authorName   String
+  authorLocation String?
+  rating       Int
+  title        String?
+  body         String
+  status       ReviewStatus @default(PENDING)
+  verified     Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+
+  @@index([productId, status])
+  @@index([status])
+}
+
+// ============================================================
+// Orders
+// ============================================================
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  FULFILLED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum DeliveryMethod {
+  SHIPPING
+  LOCAL_SAMEDAY
+  LOCAL_STANDARD
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email           String
+  phone           String?
+  status          OrderStatus @default(PENDING)
+  deliveryMethod  DeliveryMethod @default(SHIPPING)
+
+  items           OrderItem[]
+
+  subtotalCents   Int
+  shippingCents   Int         @default(0)
+  taxCents        Int         @default(0)
+  discountCents   Int         @default(0)
+  totalCents      Int
+  currency        String      @default("CAD")
+
+  discountCode    String?
+  giftMessage     String?
+  deliveryDate    DateTime?
+  deliveryNotes   String?
+
+  shipping        Json // { fullName, line1, line2, city, province, postalCode, country, phone }
+  billing         Json?
+
+  stripeSessionId       String? @unique
+  stripePaymentIntentId String?
+  paidAt          DateTime?
+
+  timeline        OrderEvent[]
+  adminNotes      String?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  slug          String?
+  name          String
+  variantLabel  String?
+  imageUrl      String?
+  unitPriceCents Int
+  quantity      Int
+  isCustom      Boolean @default(false)
+  customConfig  Json?
+
+  @@index([orderId])
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  label     String
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// ============================================================
+// Discounts & gift cards
+// ============================================================
+enum DiscountType {
+  PERCENT
+  FIXED
+  FREE_SHIPPING
+}
+
+model DiscountCode {
+  code            String       @id
+  type            DiscountType
+  value           Int          @default(0) // percent (0-100) or cents
+  minSubtotalCents Int         @default(0)
+  usageLimit      Int?
+  usedCount       Int          @default(0)
+  perCustomerLimit Int?
+  startsAt        DateTime?
+  endsAt          DateTime?
+  active          Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+}
+
+model GiftCard {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  initialCents  Int
+  balanceCents  Int
+  active        Boolean  @default(true)
+  purchaserEmail String?
+  recipientEmail String?
+  message       String?
+  expiresAt     DateTime?
+  createdAt     DateTime @default(now())
+}
+
+// ============================================================
+// Corporate inquiries
+// ============================================================
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+}
+
+model CorporateInquiry {
+  id          String        @id @default(cuid())
+  company     String
+  contactName String
+  email       String
+  phone       String?
+  budget      String?
+  quantity    String?
+  occasion    String?
+  message     String?
+  status      InquiryStatus @default(NEW)
+  createdAt   DateTime      @default(now())
+
+  @@index([status])
+}
+
+// ============================================================
+// Content: gift guides / blog
+// ============================================================
+enum ArticleCategory {
+  CORPORATE
+  SYMPATHY
+  OCCASIONS
+  RECIPIENTS
+  SEASONAL
+  ETIQUETTE
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Article {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  category    ArticleCategory
+  title       Json
+  excerpt     Json?
+  body        Json // { en, fr } markdown/html
+  coverImage  String?
+  coverPublicId String?
+  author      String?
+  readMinutes Int             @default(4)
+  status      ArticleStatus   @default(DRAFT)
+  featured    Boolean         @default(false)
+  publishedAt DateTime?
+  seoTitle    Json?
+  seoDescription Json?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([status, category])
+}
+
+// ============================================================
+// Marketing & settings
+// ============================================================
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  locale    String   @default("en")
+  createdAt DateTime @default(now())
+}
+
+// Key/value site settings edited in admin (contact info, cutoff time, shipping rates, tax, hero copy...)
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,227 @@
+{
+  "brand": {
+    "name": "Velvea",
+    "tagline": "The art of the considered gift."
+  },
+  "announcement": {
+    "one": "Woman-owned · Founded in Mississauga",
+    "two": "Same-day delivery in the GTA",
+    "three": "Order by 4 PM"
+  },
+  "nav": {
+    "giftFinder": "Gift Finder",
+    "catalog": "Catalog",
+    "dealOfDay": "Deal of the Day",
+    "occasions": "Occasions",
+    "holidays": "Holidays",
+    "recipients": "Recipients",
+    "category": "Shop by Category",
+    "corporate": "Corporate Gifts",
+    "wine": "Wine & Spirits",
+    "customBasket": "Custom Basket",
+    "giftCards": "Gift Cards",
+    "corporateQuote": "Corporate Quote",
+    "account": "Account",
+    "cart": "Cart",
+    "search": "Search gift baskets, occasions…",
+    "guides": "Gift Guides",
+    "allBaskets": "All Gift Baskets"
+  },
+  "common": {
+    "shopGiftBaskets": "Shop Gift Baskets",
+    "buildCustom": "Build a Custom Basket",
+    "viewAll": "View all",
+    "viewAllOccasions": "View all occasions",
+    "browseRecipients": "Browse all recipients",
+    "browseGuides": "Browse all gift guides",
+    "learnMore": "Learn more",
+    "readMore": "Read more",
+    "readAllReviews": "Read all reviews",
+    "addToCart": "Add to cart",
+    "addToBag": "Add to bag",
+    "adding": "Adding…",
+    "added": "Added",
+    "from": "From",
+    "each": "each",
+    "baskets": "baskets",
+    "continueShopping": "Continue shopping",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "loading": "Loading…",
+    "sending": "Sending…",
+    "backToShop": "Back to shop",
+    "verifiedBuyer": "Verified buyer",
+    "reviewed": "Reviewed",
+    "outOf5": "out of 5",
+    "seeDetails": "See details"
+  },
+  "hero": {
+    "eyebrow": "Gift baskets · Delivered across Canada",
+    "title": "Beautiful Gift Baskets, Thoughtfully Delivered",
+    "lede": "Curated gift baskets, hand-composed in our Mississauga atelier and delivered across Canada. Gourmet, wine, chocolate and bespoke, for the moments that deserve more than a card.",
+    "badge": "Hand-packed with care",
+    "badgeSub": "On every basket",
+    "chipCanada": "Canada-wide delivery",
+    "chipSameDay": "Same-day available"
+  },
+  "trust": {
+    "title": "Trusted for gifting by leading teams"
+  },
+  "occasions": {
+    "eyebrow": "The Occasions",
+    "title": "For every occasion",
+    "lede": "A basket for each moment, from birthdays and thanks to sympathy, new arrivals and celebrations."
+  },
+  "recipients": {
+    "eyebrow": "The Recipients",
+    "title": "For everyone you gift",
+    "lede": "The right gift for the person, not just the occasion."
+  },
+  "giftFinder": {
+    "eyebrow": "Guided Selection",
+    "title": "Not sure where to begin?",
+    "lede": "Three quiet questions, and we will point you to a collection matched to the person, the occasion and the budget.",
+    "step": "Step {current} of {total}",
+    "q1": "Who are you shopping for?",
+    "q2": "What's the occasion?",
+    "q3": "What's your budget?",
+    "start": "Start over",
+    "back": "Back",
+    "seeMatches": "See matches",
+    "anyone": "Anyone / not sure"
+  },
+  "corporate": {
+    "eyebrow": "For Business",
+    "title": "Corporate Gift Baskets for Clients, Teams & Employees",
+    "lede": "Plan corporate gifting with support for bulk orders, branded notes, custom messaging and multi-address delivery across Canada.",
+    "f1": "Client gifts & employee appreciation",
+    "f2": "Bulk baskets & volume pricing",
+    "f3": "Branded gifts & custom messaging",
+    "f4": "Multi-address delivery across Canada",
+    "f5": "Holiday programmes & seasonal gifting",
+    "requestQuote": "Request a Corporate Quote",
+    "shopCorporate": "Shop Corporate Baskets",
+    "cardTitle": "Bulk & Branded",
+    "cardSub": "Corporate gifting across Canada"
+  },
+  "delivery": {
+    "eyebrow": "Gift Basket Delivery",
+    "title": "Delivered Across Canada, Same-Day in Mississauga & the GTA",
+    "lede": "Send thoughtful baskets nationwide with reliable options for every occasion. Canada-wide shipping reaches every province and territory, and same-day delivery is available in Mississauga and the GTA on eligible orders placed before 4 PM.",
+    "tileCanada": "Canada",
+    "tileCanadaSub": "Every province & territory",
+    "tileSameDay": "Same-Day",
+    "tileSameDaySub": "GTA by 4 PM",
+    "tileReliable": "Reliable",
+    "tileReliableSub": "Careful delivery, tracked",
+    "step1": "Choose the perfect basket",
+    "step1Sub": "Browse by occasion or recipient, or let the Gift Finder match one in 30 seconds.",
+    "step2": "Hand-packed with care",
+    "step2Sub": "Every basket is packed to order and arrives exactly as it appeared online.",
+    "step3": "Delivered with tracking",
+    "step3Sub": "Follow your gift to the door with delivery updates.",
+    "coverage": "Canada-wide coverage",
+    "selectProvince": "Select a province",
+    "provinceHint": "Select your province above for delivery details.",
+    "allProvinces": "All provinces & territories",
+    "allProvincesSub": "Canada-wide shipping, with next-day express options at checkout.",
+    "majorCities": "Major cities coast to coast",
+    "gtaLocal": "Mississauga & the GTA",
+    "gtaLocalSub": "Order by 4 PM for same-day delivery on eligible orders."
+  },
+  "howWeWork": {
+    "eyebrow": "The Making",
+    "title": "Composed by hand, made to order",
+    "s1": "You choose the basket",
+    "s1Sub": "Hundreds of designs for every occasion and recipient, or build a fully custom basket.",
+    "s2": "We hand-pack it to order",
+    "s2Sub": "Your basket is assembled after you order, hand-packed and finished with care.",
+    "s3": "Presented to arrive beautifully",
+    "s3Sub": "Beautifully arranged with sustainable materials, so it arrives exactly as it appeared online.",
+    "s4": "Delivered with tracking",
+    "s4Sub": "Follow your gift to the door with delivery updates, across Canada."
+  },
+  "guides": {
+    "eyebrow": "The Journal",
+    "title": "Guides & gifting notes",
+    "lede": "Explore guides for corporate gifting, sympathy gifts, seasonal ideas, recipient-based inspiration and occasion advice."
+  },
+  "story": {
+    "statSince": "Gifting since",
+    "statBaskets": "Premium designs",
+    "statReviews": "Customer reviews",
+    "title": "A house of considered gifting",
+    "body1": "The right gift never depends on price — it depends on the moment. A birthday calls for something a little indulgent, while a sympathy gift needs to feel gentle and considered. Thank-you gifts, baby gifts, anniversary and corporate gifts each ask for their own tone, and getting that tone right is what makes a gift memorable.",
+    "body2": "Velvea organises everything by occasion, recipient and gifting style, so you can browse classic gourmet baskets, chocolate gifts, wine pairings, wellness picks and fully custom baskets. Every basket is backed by one promise: only genuinely good products make it in, and each one arrives exactly as it appeared online.",
+    "corpTitle": "Corporate Gifting & Fully Custom Baskets",
+    "corpBody": "Corporate gifting works best when it feels professional and thoughtful without becoming a project. Velvea supports client appreciation, employee recognition, workplace milestones and year-end programmes — every corporate hamper curated to reflect the standard your business holds itself to."
+  },
+  "reviews": {
+    "eyebrow": "Testimonials",
+    "title": "In their words",
+    "summary": "{rating} / 5 from {count}+ verified reviews"
+  },
+  "faq": {
+    "title": "Frequently asked",
+    "lede": "Everything you need to know about ordering and delivery.",
+    "items": [
+      {
+        "q": "Do you deliver gift baskets across Canada?",
+        "a": "Yes. Velvea offers gift basket delivery across Canada, with same-day delivery available in Mississauga and the GTA on eligible orders. Delivery availability and timing may vary by product and destination."
+      },
+      {
+        "q": "Is same-day delivery available in Mississauga and the GTA?",
+        "a": "Yes — order by 4 PM for same-day delivery on eligible orders within Mississauga and the Greater Toronto Area."
+      },
+      {
+        "q": "Do you offer corporate gift baskets?",
+        "a": "Absolutely. We support bulk orders, branded notes, custom messaging and multi-address delivery. Request a corporate quote and our team will build a programme around your needs."
+      },
+      {
+        "q": "Can I customize a gift basket?",
+        "a": "Yes. Use our Custom Basket builder to choose a container and hand-pick what goes inside, or contact us for a fully bespoke order."
+      },
+      {
+        "q": "Are your gift baskets pre-made or packed to order?",
+        "a": "Every basket is packed to order after you purchase, hand-finished and arranged to arrive exactly as it appeared online."
+      },
+      {
+        "q": "Which Canadian cities do you deliver to?",
+        "a": "We ship to every province and territory, including Vancouver, Calgary, Edmonton, Winnipeg, Toronto, Ottawa, Montréal and Halifax, with local same-day service across the GTA."
+      }
+    ]
+  },
+  "newsletter": {
+    "title": "Notes, on occasion",
+    "lede": "Seasonal ideas and first sight of new collections. Nothing more.",
+    "placeholder": "Your email address",
+    "cta": "Subscribe",
+    "success": "You're on the list. Welcome to Velvea.",
+    "error": "Something went wrong. Please try again.",
+    "consent": "By subscribing you agree to receive occasional emails from Velvea."
+  },
+  "footer": {
+    "blurb": "Premium gift baskets, hand-packed in Mississauga and delivered across Canada. Woman-owned, founded 2026.",
+    "shop": "Shop",
+    "occasions": "Occasions",
+    "company": "Company",
+    "support": "Support",
+    "about": "Our Story",
+    "corporate": "Corporate Gifting",
+    "guidesLink": "Gift Guides",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "shipping": "Shipping & Delivery",
+    "returns": "Returns",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "custom": "Custom Baskets",
+    "giftCards": "Gift Cards",
+    "newBaby": "New Baby",
+    "sympathy": "Sympathy",
+    "birthday": "Birthday",
+    "rights": "All rights reserved.",
+    "madeIn": "Designed & hand-packed in Mississauga, Ontario.",
+    "currency": "Canada (CAD $)"
+  }
+}

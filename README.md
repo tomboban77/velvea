@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Velvea — Premium Gift Baskets
 
-## Getting Started
+A bilingual (English/French) gift-basket e-commerce store with a dedicated admin backend.
+Built with Next.js 15 (App Router), TypeScript, Tailwind CSS v4, Prisma, and PostgreSQL (Neon).
 
-First, run the development server:
+Founded 2026 · Mississauga, Ontario · Woman-owned.
+
+---
+
+## What's included
+
+**Storefront**
+- Elegant, animated homepage (hero, occasions, gift finder, corporate, delivery map, guides, reviews, FAQ).
+- Catalog: all baskets, by occasion, by recipient, by category, with sort and price filters.
+- Product pages with gallery, variants, contents, reviews, and quick add-to-cart.
+- **Custom Basket builder** — pick a vessel, add items, live pricing.
+- Cart drawer + full checkout with **Stripe Checkout** (falls back to an offline order until Stripe keys are set).
+- Canada-wide tax (by province) and shipping, same-day GTA delivery detection, discount codes, gift cards.
+- Corporate quote requests, gift guides/blog, customer accounts and order history.
+- Full **English + French** with a language switcher.
+
+**Admin** (`/admin`)
+- Dashboard with revenue, orders, and quick actions.
+- Products CRUD with drag-to-order **image uploads** (Cloudinary), variants, collections, badges, SEO.
+- Collections, custom-builder, discounts, gift cards, orders (status timeline), review moderation,
+  corporate inquiries, gift guides, newsletter, and editable store settings.
+
+---
+
+## Prerequisites
+
+- Node.js 20+ (tested on 22)
+- A PostgreSQL database (a free [Neon](https://neon.tech) project works and is already configured)
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env      # then fill in the values (see below)
+npx prisma migrate deploy # or: npm run db:migrate   (creates the tables)
+npm run db:seed           # sample products, collections, admin user, etc.
+npm run dev               # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The database connection is already set in `.env` (Neon). The seed prints the admin login.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin access
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- URL: `http://localhost:3000/admin`
+- Email: `admin@velvea.ca`
+- Password: `Velvea!2026`  ← **change this in production** (see below)
 
-## Learn More
+Change the seed admin by setting `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before seeding,
+or create/reset a user from the database.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Variable | Required | Purpose |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Postgres (pooled) connection for the app |
+| `DIRECT_URL` | ✅ | Postgres (direct) connection for migrations |
+| `AUTH_SECRET` | ✅ | Signs session JWTs (generate: `openssl rand -base64 32`) |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Public base URL (emails, Stripe redirects) |
+| `STRIPE_SECRET_KEY` | – | Enables card payments (test key `sk_test_…`) |
+| `STRIPE_WEBHOOK_SECRET` | – | Verifies Stripe webhooks (`whsec_…`) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | – | Client publishable key |
+| `CLOUDINARY_CLOUD_NAME` / `_API_KEY` / `_API_SECRET` | – | Enables admin image uploads |
+| `RESEND_API_KEY` | – | Sends order/quote emails (logs to console otherwise) |
+| `EMAIL_FROM`, `ORDER_NOTIFY_EMAIL` | – | Email sender + internal notifications |
 
-## Deploy on Vercel
+**Everything runs without the optional keys.** Until they're added:
+- Checkout creates a real order and shows the confirmation page (payment collected offline).
+- Admin image upload returns a friendly "not configured" message.
+- Emails are printed to the server console instead of sent.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Turning on Stripe (test mode)
+1. Create a [Stripe](https://dashboard.stripe.com) account, copy the **test** secret + publishable keys into `.env`.
+2. For local webhooks: `stripe listen --forward-to localhost:3000/api/stripe/webhook` and paste the printed `whsec_…` into `STRIPE_WEBHOOK_SECRET`.
+   (The order-confirmation page also verifies the session directly, so payments settle even without the webhook.)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Turning on Cloudinary (image uploads)
+Create a free [Cloudinary](https://cloudinary.com) account and copy the cloud name, API key, and secret into `.env`.
+
+### Turning on email (Resend)
+Create a [Resend](https://resend.com) account, verify your domain, and set `RESEND_API_KEY` and `EMAIL_FROM`.
+
+---
+
+## Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm run build` / `npm start` | Production build / serve |
+| `npm run db:migrate` | Create/apply a migration (dev) |
+| `npm run db:seed` | Seed sample data + admin user |
+| `npm run db:studio` | Open Prisma Studio (browse the DB) |
+| `npm run db:reset` | Drop, re-migrate, and re-seed |
+
+---
+
+## Deploying to Vercel + Neon
+
+1. Push this repo to GitHub and import it into [Vercel](https://vercel.com).
+2. Add all `.env` variables in the Vercel project settings (use the Neon **pooled** URL for `DATABASE_URL`
+   and the **direct** URL for `DIRECT_URL`). Set `NEXT_PUBLIC_SITE_URL` to your production domain.
+3. Run the migration against production once: `npx prisma migrate deploy` (or add it to the build command).
+4. In Stripe, add a webhook endpoint `https://your-domain/api/stripe/webhook` and copy its signing secret
+   into `STRIPE_WEBHOOK_SECRET`.
+
+---
+
+## Project structure
+
+```
+src/
+  app/
+    [locale]/          storefront (en default at /, fr at /fr)
+    admin/             admin panel (login + (panel) route group)
+    api/               newsletter, reviews, corporate, upload, stripe webhook
+  components/          brand, layout, home, shop, cart, checkout, custom, corporate, account, admin
+  lib/                 prisma, auth, settings, pricing, stripe, cloudinary, email, queries, actions/*
+  i18n/                next-intl routing + request config
+messages/              en.json, fr.json (UI copy)
+prisma/                schema.prisma, migrations, seed.ts
+```
+
+Translatable catalog/content text is stored as JSON `{ en, fr }`, so adding a language later is straightforward.
