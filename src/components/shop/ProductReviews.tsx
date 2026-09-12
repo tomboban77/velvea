@@ -63,7 +63,7 @@ export function ProductReviews({
             </h2>
             {count > 0 && (
               <div className="mt-2 flex items-center gap-2">
-                <div className="flex text-gold">
+                <div className="flex text-violet">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className={cn("h-4 w-4", i < Math.round(rating) ? "fill-current" : "opacity-30")} />
                   ))}
@@ -127,7 +127,7 @@ export function ProductReviews({
             {reviews.map((r) => (
               <figure key={r.id} className="flex flex-col rounded-2xl border border-line bg-shell p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex text-gold">
+                  <div className="flex text-violet">
                     {Array.from({ length: r.rating }).map((_, i) => (
                       <Star key={i} className="h-3.5 w-3.5 fill-current" />
                     ))}
@@ -144,7 +144,7 @@ export function ProductReviews({
                     {r.location && <p className="text-xs text-muted">{r.location}</p>}
                   </div>
                   {r.verified && (
-                    <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-teal-deep">
+                    <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-violet-deep">
                       <ShieldCheck className="h-3.5 w-3.5" /> {fr ? "Vérifié" : "Verified"}
                     </span>
                   )}

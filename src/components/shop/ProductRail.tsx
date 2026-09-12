@@ -25,15 +25,9 @@ export async function ProductRail({
   const views = products.map((p) => toProductView(p, locale));
 
   return (
-    <section className="container-x py-16">
-      <SectionHeading
-        eyebrow={eyebrow}
-        title={title}
-        lede={lede}
-        link={link}
-        linkLabel={linkLabel}
-      />
-      <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+    <section className="container-x section">
+      <SectionHeading eyebrow={eyebrow} title={title} lede={lede} link={link} linkLabel={linkLabel} />
+      <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-6 lg:grid-cols-4">
         {views.map((v, i) => (
           <Reveal key={v.id} delay={i * 60}>
             <ProductCard product={v} />

@@ -1,17 +1,18 @@
-import { setRequestLocale, getLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { CustomBuilder } from "@/components/custom/CustomBuilder";
 import { getBuilderData } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { Link } from "@/i18n/routing";
+import { ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Build a Custom Basket" };
 
-export default async function CustomPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export async function generateMetadata() {
+  const t = await getTranslations("custom");
+  return { title: t("title") };
+}
+
+export default async function CustomPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
@@ -41,33 +42,33 @@ export default async function CustomPage({
 
   return (
     <div>
-      <div className="relative overflow-hidden border-b border-line bg-[radial-gradient(120%_120%_at_80%_0%,#f5efe3,#fbf8f2)]">
+      <div className="relative overflow-hidden border-b border-line bg-cream/60">
         <div
           aria-hidden
-          className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full opacity-15 blur-3xl"
+          className="pointer-events-none absolute -left-24 -top-32 h-80 w-80 rounded-full opacity-[0.12] blur-3xl"
           style={{ background: "var(--grad-iris)" }}
         />
-        <div className="container-x relative py-14 text-center">
-          <p className="eyebrow mb-3">{t("nav.customBasket")}</p>
-          <h1 className="mx-auto max-w-2xl font-display text-4xl leading-tight balance sm:text-5xl">
-            {locale === "fr" ? "Composez un panier qui vous ressemble" : "Build a basket, exactly your way"}
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-ink-soft">
-            {locale === "fr"
-              ? "Choisissez un contenant, ajoutez vos favoris, et nous l'emballons à la main avec soin."
-              : "Choose a vessel, add your favourites, and we'll hand-pack it with care."}
-          </p>
+        <div className="container-x relative py-14 text-center lg:py-18">
+          <p className="eyebrow centered mb-4">{t("custom.eyebrow")}</p>
+          <h1 className="h-section mx-auto max-w-2xl font-display balance">{t("custom.title")}</h1>
+          <p className="mx-auto mt-4 max-w-xl text-[1.02rem] text-ink-soft pretty">{t("custom.lede")}</p>
+          <ul className="mx-auto mt-7 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[0.68rem] uppercase tracking-[0.24em] text-muted">
+            <li>{t("build.s1")}</li>
+            <li className="text-lilac-deep">·</li>
+            <li>{t("build.s2")}</li>
+            <li className="text-lilac-deep">·</li>
+            <li>{t("build.s3")}</li>
+          </ul>
         </div>
       </div>
 
       {empty ? (
-        <div className="container-x py-20 text-center">
-          <p className="font-display text-2xl">The builder is being set up</p>
-          <p className="mt-2 text-muted">
-            In the meantime, explore our ready-made baskets.
-          </p>
-          <Link href="/baskets" className="btn btn-primary mt-6">
-            {t("nav.allBaskets")}
+        <div className="container-x py-24 text-center">
+          <span className="font-display text-5xl text-line-strong">V</span>
+          <p className="mt-4 font-display text-2xl">{t("custom.emptyTitle")}</p>
+          <p className="mt-2 text-muted">{t("custom.emptyLede")}</p>
+          <Link href="/baskets" className="btn btn-primary mt-7">
+            {t("nav.allBaskets")} <ArrowRight />
           </Link>
         </div>
       ) : (

@@ -120,7 +120,7 @@ export function CustomBuilder({
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas">2</span>
               <h2 className="font-display text-2xl">{fr ? "Ajoutez vos favoris" : "Add your favourites"}</h2>
             </div>
-            <span className={cn("text-sm font-medium", itemCount >= capacity ? "text-gold" : "text-muted")}>
+            <span className={cn("text-sm font-medium", itemCount >= capacity ? "text-violet" : "text-muted")}>
               {itemCount}/{capacity}
             </span>
           </div>
@@ -128,7 +128,7 @@ export function CustomBuilder({
           <div className="space-y-8">
             {data.categories.map((cat) => (
               <div key={cat.id}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gold">{cat.name}</h3>
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-violet">{cat.name}</h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {cat.items.map((item) => {
                     const qty = selected[item.id] ?? 0;

@@ -4,9 +4,11 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { Header } from "@/components/layout/Header";
+import { Header, type HeaderFeatured } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { getFeaturedProducts, getBestsellers } from "@/lib/queries";
+import { t as tc } from "@/lib/i18n-content";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -23,11 +25,23 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  // One product for the mega-menu "Featured now" tile.
+  const [featured] = await getFeaturedProducts(1);
+  const pick = featured ?? (await getBestsellers(1))[0];
+  const headerFeatured: HeaderFeatured = pick
+    ? {
+        slug: pick.slug,
+        name: tc(pick.name, locale),
+        image: pick.images[0]?.url ?? null,
+        priceCents: pick.priceCents,
+      }
+    : null;
+
   return (
     <NextIntlClientProvider>
       <CartProvider>
         <div className="flex min-h-screen flex-col">
-          <Header />
+          <Header featured={headerFeatured} />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

@@ -1,35 +1,42 @@
 {
   "brand": {
-    "name": "Velvea",
+    "name": "Velvéa",
     "tagline": "L'art du cadeau réfléchi."
   },
   "announcement": {
-    "one": "Entreprise détenue par une femme · Fondée à Mississauga",
-    "two": "Livraison le jour même dans le Grand Toronto",
-    "three": "Commandez avant 16 h"
+    "one": "Une carte manuscrite avec chaque cadeau",
+    "two": "Jour même dans le Grand Toronto · Commandez avant 16 h",
+    "three": "Livré partout au Canada"
   },
   "nav": {
-    "giftFinder": "Trouver un cadeau",
-    "catalog": "Catalogue",
-    "dealOfDay": "Offre du jour",
+    "shop": "Boutique",
     "occasions": "Occasions",
-    "holidays": "Fêtes",
+    "holidays": "Saisonnier",
     "recipients": "Destinataires",
     "category": "Par catégorie",
-    "corporate": "Cadeaux d'entreprise",
-    "wine": "Vins & spiritueux",
-    "customBasket": "Panier personnalisé",
+    "build": "Composer un panier",
+    "corporate": "Entreprises",
+    "story": "Notre histoire",
+    "journal": "Journal",
     "giftCards": "Cartes-cadeaux",
     "corporateQuote": "Devis entreprise",
     "account": "Compte",
     "cart": "Panier",
-    "search": "Rechercher des paniers, des occasions…",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher des paniers, occasions, destinataires…",
+    "popular": "Populaires",
+    "close": "Fermer",
+    "menu": "Menu",
     "guides": "Guides cadeaux",
-    "allBaskets": "Tous les paniers"
+    "allBaskets": "Tous les paniers",
+    "featuredNow": "En vedette",
+    "viewAll": "Tout voir",
+    "customBasket": "Composer un panier",
+    "seasonal": "Saisonnier"
   },
   "common": {
     "shopGiftBaskets": "Voir les paniers",
-    "buildCustom": "Créer un panier",
+    "buildCustom": "Composer un panier",
     "viewAll": "Tout voir",
     "viewAllOccasions": "Toutes les occasions",
     "browseRecipients": "Tous les destinataires",
@@ -38,7 +45,8 @@
     "readMore": "Lire la suite",
     "readAllReviews": "Tous les avis",
     "addToCart": "Ajouter au panier",
-    "addToBag": "Ajouter",
+    "addToBag": "Ajouter au panier",
+    "quickAdd": "Ajout rapide",
     "adding": "Ajout…",
     "added": "Ajouté",
     "from": "À partir de",
@@ -53,158 +61,192 @@
     "verifiedBuyer": "Acheteur vérifié",
     "reviewed": "Avis sur",
     "outOf5": "sur 5",
-    "seeDetails": "Voir les détails"
+    "seeDetails": "Voir les détails",
+    "new": "Nouveau",
+    "bestseller": "Favori",
+    "limited": "Édition limitée",
+    "sale": "Offre"
   },
   "hero": {
-    "eyebrow": "Paniers-cadeaux · Livrés partout au Canada",
-    "title": "De magnifiques paniers-cadeaux, livrés avec soin",
-    "lede": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga et livrés partout au Canada. Gourmet, vin, chocolat et sur mesure, pour les moments qui méritent plus qu'une carte.",
-    "badge": "Emballé à la main avec soin",
-    "badgeSub": "Sur chaque panier",
-    "chipCanada": "Livraison partout au Canada",
-    "chipSameDay": "Jour même disponible"
+    "eyebrow": "Fondée en 2026 · Mississauga · Partout au Canada",
+    "titleA": "L'art du cadeau",
+    "titleB": "réfléchi",
+    "titleC": ".",
+    "lede": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga et livrés partout au Canada. Pour les moments qui méritent plus qu'une carte.",
+    "ctaPrimary": "Découvrir la collection",
+    "ctaSecondary": "Composer un panier",
+    "pictured": "En photo",
+    "view": "Voir le panier"
   },
-  "trust": {
-    "title": "La confiance des meilleures équipes pour offrir"
+  "promise": {
+    "p1": "Composé à la main, à la commande",
+    "p1Sub": "Dans notre atelier de Mississauga",
+    "p2": "Jour même dans le Grand Toronto",
+    "p2Sub": "Commandez avant 16 h · Expédition partout au Canada",
+    "p3": "Carte manuscrite incluse",
+    "p3Sub": "Aucun prix sur le bordereau"
+  },
+  "finder": {
+    "eyebrow": "Trouver le bon cadeau",
+    "title": "Pour qui, et pour quel moment ?",
+    "who": "Pour",
+    "whoAny": "Peu importe",
+    "occasion": "Occasion",
+    "occasionAny": "Toute occasion",
+    "budget": "Budget",
+    "budgetAny": "Tout budget",
+    "under": "Moins de {amount}",
+    "over": "{amount} et plus",
+    "cta": "Trouver le cadeau"
   },
   "occasions": {
-    "eyebrow": "Les Occasions",
-    "title": "Pour chaque occasion",
-    "lede": "Un panier pour chaque moment : anniversaires, remerciements, sympathie, naissances et célébrations."
+    "eyebrow": "Par occasion",
+    "title": "Un panier pour chaque moment",
+    "lede": "Des anniversaires et remerciements à la sympathie, aux naissances et aux célébrations.",
+    "viewAll": "Toutes les occasions"
   },
   "recipients": {
-    "eyebrow": "Les Destinataires",
+    "eyebrow": "Par destinataire",
     "title": "Pour chacun de vos proches",
     "lede": "Le bon cadeau pour la personne, pas seulement pour l'occasion."
   },
-  "giftFinder": {
-    "eyebrow": "Sélection guidée",
-    "title": "Vous ne savez pas par où commencer ?",
-    "lede": "Trois questions, et nous vous orientons vers une collection choisie selon la personne, l'occasion et le budget.",
-    "step": "Étape {current} sur {total}",
-    "q1": "Pour qui magasinez-vous ?",
-    "q2": "Quelle est l'occasion ?",
-    "q3": "Quel est votre budget ?",
-    "start": "Recommencer",
-    "back": "Retour",
-    "seeMatches": "Voir les suggestions",
-    "anyone": "Peu importe / je ne sais pas"
+  "collection": {
+    "eyebrow": "La collection",
+    "title": "Composés pour offrir",
+    "lede": "Chaque panier est construit autour d'une idée et fini à la main.",
+    "viewAll": "Voir tous les paniers",
+    "signature": "Panier signature",
+    "inside": "À l'intérieur",
+    "moreInside": "+{count} autres",
+    "view": "Voir le panier",
+    "explore": "Découvrir la collection",
+    "newArrival": "Nouveauté"
+  },
+  "build": {
+    "eyebrow": "Composer un panier",
+    "title": "Composez un panier qui leur ressemble",
+    "lede": "Choisissez le contenant, sélectionnez chaque article, ajoutez un mot manuscrit. Nous l'arrangeons et le finissons à la main.",
+    "s1": "Choisissez le contenant",
+    "s1Sub": "Paniers tressés, coffrets et plateaux",
+    "s2": "Sélectionnez chaque article",
+    "s2Sub": "Gourmet, vin, chocolat, bien-être et plus",
+    "s3": "Ajoutez vos mots",
+    "s3Sub": "Une carte manuscrite, glissée à l'intérieur",
+    "cta": "Commencer à composer",
+    "previewTitle": "Votre panier",
+    "previewVessel": "Coffret souvenir",
+    "previewNote": "Emballé à la main à la commande",
+    "previewItems": "Chocolat noir · Rosé pétillant · Bougie · Biscuits artisanaux"
+  },
+  "way": {
+    "eyebrow": "La façon Velvéa",
+    "title": "De nos mains à leur porte",
+    "s1": "Choisissez ou composez",
+    "s1Sub": "Parcourez par occasion et destinataire, ou créez un panier de A à Z.",
+    "s2": "Emballé à la main, à la commande",
+    "s2Sub": "Assemblé après votre commande et fini avec papier de soie, ruban et votre carte.",
+    "s3": "Livré avec soin",
+    "s3Sub": "Jour même dans le Grand Toronto avant 16 h. Expédition suivie dans chaque province.",
+    "factsTitle": "La livraison en bref",
+    "f1": "Mississauga & Grand Toronto",
+    "f1Sub": "Jour même · Commandez avant 16 h",
+    "f2": "Partout au Canada",
+    "f2Sub": "Expédition suivie dans chaque province et territoire",
+    "f3": "Livraison gratuite",
+    "f3Sub": "Pour les commandes de plus de {amount}",
+    "link": "Détails de livraison"
   },
   "corporate": {
     "eyebrow": "Pour les entreprises",
-    "title": "Paniers d'entreprise pour clients, équipes et employés",
-    "lede": "Planifiez vos cadeaux d'entreprise avec commandes en gros, notes personnalisées, messages sur mesure et livraison multi-adresses partout au Canada.",
-    "f1": "Cadeaux clients & reconnaissance des employés",
-    "f2": "Paniers en gros & prix de volume",
-    "f3": "Cadeaux personnalisés & messages sur mesure",
-    "f4": "Livraison multi-adresses au Canada",
-    "f5": "Programmes des fêtes & cadeaux saisonniers",
+    "title": "Des cadeaux à la hauteur de votre standard",
+    "lede": "Reconnaissance des clients, jalons des employés et programmes de fin d'année, pris en charge de bout en bout. Un seul interlocuteur, des prix de volume et la livraison à chaque adresse de votre liste.",
+    "f1": "Prix de volume dès 10 paniers",
+    "f2": "Cartes à votre image & messages personnalisés",
+    "f3": "Livraison multi-adresses partout au Canada",
+    "f4": "Programmes des fêtes & saisonniers",
+    "f5": "Un interlocuteur dédié",
     "requestQuote": "Demander un devis",
     "shopCorporate": "Voir les paniers d'entreprise",
-    "cardTitle": "En gros & personnalisé",
-    "cardSub": "Cadeaux d'entreprise au Canada"
+    "note": "Nous répondons à chaque demande de devis en un jour ouvrable.",
+    "howTitle": "Comment fonctionne un programme",
+    "h1": "Partagez votre brief",
+    "h1Sub": "Nombre de personnes, budget, occasion et image de marque.",
+    "h2": "Nous proposons une sélection",
+    "h2Sub": "Des options choisies avec prix, en un jour ouvrable.",
+    "h3": "Nous emballons et livrons",
+    "h3Sub": "À chaque adresse, avec suivi, votre carte à l'intérieur.",
+    "pageTitle": "Paniers-cadeaux d'entreprise pour clients, équipes et partenaires"
   },
-  "delivery": {
-    "eyebrow": "Livraison de paniers",
-    "title": "Livré partout au Canada, le jour même à Mississauga et dans le Grand Toronto",
-    "lede": "Envoyez des paniers attentionnés partout au pays avec des options fiables pour chaque occasion. L'expédition rejoint chaque province et territoire, et la livraison le jour même est offerte à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant 16 h.",
-    "tileCanada": "Canada",
-    "tileCanadaSub": "Chaque province & territoire",
-    "tileSameDay": "Jour même",
-    "tileSameDaySub": "Grand Toronto avant 16 h",
-    "tileReliable": "Fiable",
-    "tileReliableSub": "Livraison soignée & suivie",
-    "step1": "Choisissez le panier parfait",
-    "step1Sub": "Parcourez par occasion ou destinataire, ou laissez le Trouveur de cadeaux vous guider en 30 secondes.",
-    "step2": "Emballé à la main avec soin",
-    "step2Sub": "Chaque panier est préparé à la commande et arrive exactement comme en ligne.",
-    "step3": "Livré avec suivi",
-    "step3Sub": "Suivez votre cadeau jusqu'à la porte avec des mises à jour.",
-    "coverage": "Couverture pancanadienne",
-    "selectProvince": "Choisir une province",
-    "provinceHint": "Sélectionnez votre province ci-dessus pour les détails.",
-    "allProvinces": "Toutes les provinces & territoires",
-    "allProvincesSub": "Expédition partout au Canada, avec options express à la caisse.",
-    "majorCities": "Grandes villes d'un océan à l'autre",
-    "gtaLocal": "Mississauga & le Grand Toronto",
-    "gtaLocalSub": "Commandez avant 16 h pour la livraison le jour même sur les commandes admissibles."
-  },
-  "howWeWork": {
-    "eyebrow": "La Fabrication",
-    "title": "Composé à la main, préparé à la commande",
-    "s1": "Vous choisissez le panier",
-    "s1Sub": "Des centaines de designs pour chaque occasion et destinataire, ou créez un panier entièrement personnalisé.",
-    "s2": "Nous l'emballons à la commande",
-    "s2Sub": "Votre panier est assemblé après votre commande, emballé à la main avec soin.",
-    "s3": "Présenté pour une belle arrivée",
-    "s3Sub": "Magnifiquement arrangé avec des matériaux durables, tel qu'il apparaissait en ligne.",
-    "s4": "Livré avec suivi",
-    "s4Sub": "Suivez votre cadeau jusqu'à la porte, partout au Canada."
-  },
-  "guides": {
-    "eyebrow": "Le Journal",
-    "title": "Guides et notes cadeaux",
-    "lede": "Explorez nos guides pour les cadeaux d'entreprise, la sympathie, les idées saisonnières, l'inspiration par destinataire et les conseils par occasion."
-  },
-  "story": {
-    "statSince": "Cadeaux depuis",
-    "statBaskets": "Designs premium",
-    "statReviews": "Avis clients",
-    "title": "Une maison du cadeau réfléchi",
-    "body1": "Le bon cadeau ne dépend jamais du prix — il dépend du moment. Un anniversaire appelle un peu d'indulgence, tandis qu'un cadeau de sympathie doit être doux et réfléchi. Chaque geste — remerciement, naissance, anniversaire, entreprise — demande son propre ton, et c'est ce ton juste qui rend un cadeau mémorable.",
-    "body2": "Velvea organise tout par occasion, destinataire et style, pour parcourir les paniers gourmets classiques, les chocolats, les accords de vin, les sélections bien-être et les paniers entièrement personnalisés. Chaque panier repose sur une promesse : seuls de très bons produits y entrent, et chacun arrive exactement comme en ligne.",
-    "corpTitle": "Cadeaux d'entreprise & paniers sur mesure",
-    "corpBody": "Les cadeaux d'entreprise fonctionnent mieux lorsqu'ils sont professionnels et attentionnés sans devenir un projet. Velvea soutient la reconnaissance des clients et des employés, les jalons professionnels et les programmes de fin d'année — chaque panier reflète le standard de votre entreprise."
+  "atelier": {
+    "eyebrow": "Notre histoire",
+    "title": "Un petit atelier à Mississauga, fondé sur une conviction",
+    "body1": "Le bon cadeau ne dépend jamais du prix. Il dépend du moment, et de quelqu'un qui prend le temps de trouver le ton juste.",
+    "body2": "Velvéa a été fondée en 2026 pour faire exactement cela : composer des paniers à la main, uniquement avec des produits que nous offririons nous-mêmes, et les livrer pour qu'ils arrivent exactement comme en ligne.",
+    "sign": "Fondatrice, Velvéa",
+    "cta": "Lire notre histoire",
+    "badge": "Entreprise détenue par une femme · Mississauga, Ontario"
   },
   "reviews": {
-    "eyebrow": "Témoignages",
-    "title": "En leurs mots",
-    "summary": "{rating} / 5 sur plus de {count} avis vérifiés"
+    "eyebrow": "En leurs mots",
+    "title": "Aimés, et offerts de nouveau",
+    "summary": "{rating} / 5 sur {count} avis",
+    "readAll": "Tous les avis"
+  },
+  "journal": {
+    "eyebrow": "Le journal",
+    "title": "Notes sur l'art d'offrir",
+    "readAll": "Tous les guides",
+    "read": "Lire"
+  },
+  "guides": {
+    "eyebrow": "Le journal",
+    "title": "Guides et notes cadeaux",
+    "lede": "Des conseils sur les cadeaux d'entreprise, la sympathie, les idées saisonnières et le ton juste pour chaque destinataire."
   },
   "faq": {
+    "eyebrow": "Bon à savoir",
     "title": "Questions fréquentes",
-    "lede": "Tout ce qu'il faut savoir sur les commandes et la livraison.",
+    "lede": "Les détails pratiques, en clair.",
+    "more": "Lire la FAQ complète",
     "items": [
       {
-        "q": "Livrez-vous des paniers partout au Canada ?",
-        "a": "Oui. Velvea offre la livraison de paniers partout au Canada, avec livraison le jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles. La disponibilité et les délais peuvent varier selon le produit et la destination."
+        "q": "Livrez-vous partout au Canada ?",
+        "a": "Oui. Nous expédions avec suivi dans chaque province et territoire, et offrons la livraison le jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant 16 h."
       },
       {
-        "q": "La livraison le jour même est-elle offerte à Mississauga et dans le Grand Toronto ?",
-        "a": "Oui — commandez avant 16 h pour la livraison le jour même sur les commandes admissibles à Mississauga et dans le Grand Toronto."
+        "q": "Un message cadeau est-il inclus ?",
+        "a": "Toujours. Ajoutez votre message à la caisse et nous l'écrivons à la main sur une carte Velvéa, glissée dans le panier. Les prix ne sont jamais inclus."
       },
       {
-        "q": "Offrez-vous des paniers d'entreprise ?",
-        "a": "Absolument. Nous prenons en charge les commandes en gros, les notes personnalisées, les messages sur mesure et la livraison multi-adresses. Demandez un devis et notre équipe bâtira un programme adapté."
+        "q": "Les paniers sont-ils préfabriqués ou préparés à la commande ?",
+        "a": "Chaque panier est assemblé après votre commande, fini à la main et arrangé pour arriver exactement comme en ligne."
       },
       {
-        "q": "Puis-je personnaliser un panier ?",
-        "a": "Oui. Utilisez notre créateur de panier pour choisir un contenant et sélectionner ce qu'il contient, ou contactez-nous pour une commande entièrement sur mesure."
+        "q": "Puis-je composer mon propre panier ?",
+        "a": "Oui. Choisissez un contenant et sélectionnez chaque article dans notre outil, ou contactez-nous pour une commande entièrement sur mesure."
       },
       {
-        "q": "Vos paniers sont-ils préfabriqués ou préparés à la commande ?",
-        "a": "Chaque panier est préparé à la commande après l'achat, fini à la main et arrangé pour arriver exactement comme en ligne."
-      },
-      {
-        "q": "Quelles villes canadiennes desservez-vous ?",
-        "a": "Nous expédions dans chaque province et territoire, dont Vancouver, Calgary, Edmonton, Winnipeg, Toronto, Ottawa, Montréal et Halifax, avec un service local le jour même dans le Grand Toronto."
+        "q": "Travaillez-vous avec les entreprises ?",
+        "a": "Oui. Demandez un devis pour des prix de volume, des cartes à votre image et la livraison multi-adresses. Nous répondons en un jour ouvrable."
       }
     ]
   },
   "newsletter": {
     "title": "Quelques notes, à l'occasion",
-    "lede": "Des idées saisonnières et l'avant-première des nouveautés. Rien de plus.",
+    "lede": "Des idées saisonnières et l'avant-première des nouveaux paniers. Quelques courriels par année, rien de plus.",
     "placeholder": "Votre adresse courriel",
     "cta": "S'abonner",
-    "success": "Vous êtes inscrit. Bienvenue chez Velvea.",
+    "success": "Vous êtes inscrit. Bienvenue chez Velvéa.",
     "error": "Une erreur est survenue. Veuillez réessayer.",
-    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvea."
+    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvéa."
   },
   "footer": {
-    "blurb": "Des paniers-cadeaux premium, emballés à la main à Mississauga et livrés partout au Canada. Détenue par une femme, fondée en 2026.",
+    "blurb": "Des paniers-cadeaux composés à la main à Mississauga et livrés partout au Canada. Entreprise détenue par une femme, fondée en 2026.",
+    "concierge": "Conciergerie cadeaux",
+    "conciergeSub": "Une question sur une commande, une occasion ou un programme d'entreprise ? Nous répondons en un jour ouvrable.",
     "shop": "Boutique",
     "occasions": "Occasions",
-    "company": "Entreprise",
+    "company": "Velvéa",
     "support": "Aide",
     "about": "Notre histoire",
     "corporate": "Cadeaux d'entreprise",
@@ -214,14 +256,74 @@
     "shipping": "Expédition & livraison",
     "returns": "Retours",
     "privacy": "Confidentialité",
-    "terms": "Conditions d'utilisation",
-    "custom": "Paniers personnalisés",
+    "terms": "Conditions",
+    "custom": "Composer un panier",
     "giftCards": "Cartes-cadeaux",
-    "newBaby": "Naissance",
-    "sympathy": "Sympathie",
-    "birthday": "Anniversaire",
+    "reviews": "Avis",
     "rights": "Tous droits réservés.",
-    "madeIn": "Conçu et emballé à la main à Mississauga, Ontario.",
-    "currency": "Canada (CAD $)"
+    "madeIn": "Composé à la main à Mississauga, Ontario.",
+    "currency": "Canada · CAD"
+  },
+  "pdp": {
+    "home": "Accueil",
+    "baskets": "Paniers-cadeaux",
+    "about": "À propos de ce panier",
+    "inside": "À l'intérieur",
+    "care": "Entretien & notes",
+    "shipping": "Livraison & retours",
+    "size": "Format",
+    "quantity": "Quantité",
+    "addToBag": "Ajouter au panier",
+    "added": "Ajouté au panier",
+    "viewBag": "Voir le panier",
+    "reviews": "{count} avis",
+    "review": "{count} avis",
+    "newArrival": "Nouveauté",
+    "sameDayLeft": "Commandez d'ici <b>{time}</b> pour la livraison le jour même dans le Grand Toronto",
+    "sameDayNext": "Commandez maintenant pour une livraison le lendemain dans le Grand Toronto",
+    "canadaWide": "Expédition suivie partout au Canada",
+    "leadTime": "Expédié en {days, plural, one {# jour ouvrable} other {# jours ouvrables}}",
+    "card": "Carte manuscrite incluse",
+    "noPrices": "Aucun prix sur le bordereau",
+    "packed": "Préparé à la commande",
+    "shippingFree": "Livraison gratuite pour les commandes de plus de {amount}",
+    "shippingLocal": "Jour même à Mississauga et dans le Grand Toronto pour les commandes passées avant 16 h.",
+    "shippingCanada": "Expédition suivie dans chaque province et territoire, généralement de 2 à 5 jours ouvrables.",
+    "returns": "Quelque chose ne va pas ? Écrivez-nous dans les 48 heures suivant la livraison et nous y remédierons.",
+    "arrives": "Comment il arrive",
+    "arrivesLede": "La présentation fait partie du cadeau. Chaque panier quitte l'atelier fini et protégé.",
+    "a1": "Arrangé et fini à la main",
+    "a1Sub": "Papier de soie, ruban et boîte extérieure protectrice.",
+    "a2": "Votre carte, écrite à la main",
+    "a2Sub": "Ajoutez votre message à la caisse. Les prix ne sont jamais inclus.",
+    "a3": "Suivi jusqu'à la porte",
+    "a3Sub": "Jour même dans le Grand Toronto avant 16 h. Expédition suivie partout au Canada.",
+    "related": "Vous aimerez aussi",
+    "shopAll": "Tous les paniers"
+  },
+  "listing": {
+    "price": "Prix",
+    "priceAll": "Tous les prix",
+    "under": "Moins de {amount}",
+    "clear": "Effacer",
+    "results": "{count} paniers",
+    "result": "{count} panier",
+    "sort": "Trier",
+    "featured": "En vedette",
+    "priceAsc": "Prix croissant",
+    "priceDesc": "Prix décroissant",
+    "rating": "Les mieux notés",
+    "browse": "Parcourir",
+    "allTitle": "Tous les paniers-cadeaux",
+    "allLede": "Notre gamme complète de paniers composés à la main, livrés partout au Canada.",
+    "emptyTitle": "Rien ici pour l'instant",
+    "emptyLede": "Nous composons cette collection. Explorez la gamme complète ou créez quelque chose sur mesure."
+  },
+  "custom": {
+    "eyebrow": "Composer un panier",
+    "title": "Composez un panier, exactement à votre façon",
+    "lede": "Choisissez un contenant, ajoutez vos favoris et nous l'emballons à la main avec soin.",
+    "emptyTitle": "L'outil de composition se prépare",
+    "emptyLede": "En attendant, découvrez nos paniers prêts à offrir."
   }
 }

@@ -51,10 +51,10 @@ export default async function GuidesPage({
           {articles.map((a, i) => (
             <Reveal key={a.id} delay={(i % 6) * 60}>
               <Link href={`/guides/${a.slug}`} className="group flex h-full flex-col rounded-2xl border border-line bg-shell p-6 card-hover">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-gold">{a.category.toLowerCase()}</p>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet">{a.category.toLowerCase()}</p>
                 <h2 className="mt-4 font-display text-2xl leading-snug text-ink">{tc(a.title, locale)}</h2>
                 <p className="mt-3 flex-1 text-sm text-ink-soft">{tc(a.excerpt, locale)}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-gold">
+                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-violet">
                   Read guide <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>

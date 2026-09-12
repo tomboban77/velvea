@@ -8,7 +8,7 @@ export default async function NotFound() {
   const fr = locale === "fr";
   return (
     <div className="container-x flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
-      <Logo showWordmark={false} markClassName="h-14 w-14" idSuffix="404" />
+      <Logo height={40} />
       <p className="mt-6 font-display text-7xl text-line-strong">404</p>
       <h1 className="mt-2 font-display text-3xl">
         {fr ? "Page introuvable" : "We couldn't find that page"}

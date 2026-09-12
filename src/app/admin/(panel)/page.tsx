@@ -103,7 +103,7 @@ export default async function AdminDashboard() {
             <h2 className="font-display text-xl">Recent orders</h2>
             <Link
               href="/admin/orders"
-              className="flex items-center gap-1 text-sm font-medium text-gold hover:gap-2"
+              className="flex items-center gap-1 text-sm font-medium text-violet hover:gap-2"
             >
               View all <ArrowRight className="h-4 w-4" />
             </Link>
@@ -125,7 +125,7 @@ export default async function AdminDashboard() {
                   {data.recentOrders.map((o) => (
                     <tr key={o.id}>
                       <td className="py-3">
-                        <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:text-gold">
+                        <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:text-violet">
                           {o.orderNumber}
                         </Link>
                         <div className="text-xs text-muted">{formatDate(o.createdAt)}</div>
@@ -181,7 +181,7 @@ function QuickLink({
       href={href}
       className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 text-sm font-medium text-ink transition-colors hover:border-ink hover:bg-cream/50"
     >
-      <Icon className="h-4 w-4 text-gold" />
+      <Icon className="h-4 w-4 text-violet" />
       {label}
     </Link>
   );

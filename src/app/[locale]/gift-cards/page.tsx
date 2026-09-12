@@ -32,7 +32,7 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
         <ul className="mt-6 space-y-3">
           {points.map((p) => (
             <li key={p} className="flex items-center gap-3 text-ink-soft">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-iris-soft"><Check className="h-3 w-3 text-teal-deep" /></span>{p}
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-iris-soft"><Check className="h-3 w-3 text-violet-deep" /></span>{p}
             </li>
           ))}
         </ul>

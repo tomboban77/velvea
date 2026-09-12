@@ -5,7 +5,8 @@ import { getAllProducts } from "@/lib/queries";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
-  return { title: "All Gift Baskets" };
+  const t = await getTranslations("listing");
+  return { title: t("allTitle") };
 }
 
 export default async function BasketsPage({
@@ -21,24 +22,20 @@ export default async function BasketsPage({
   const t = await getTranslations();
 
   const { products, total } = await getAllProducts({ sort, take: 48 });
-  const filtered = max
-    ? products.filter((p) => p.priceCents <= parseInt(max))
-    : products;
+  const cap = max ? parseInt(max) : NaN;
+  const filtered = !isNaN(cap) && cap < 999999 ? products.filter((p) => p.priceCents <= cap) : products;
 
   return (
     <Listing
-      eyebrow={t("occasions.eyebrow")}
-      title={t("nav.allBaskets")}
-      description={
-        locale === "fr"
-          ? "Parcourez tous nos paniers-cadeaux, préparés à la main et livrés partout au Canada."
-          : "Browse our full range of hand-packed gift baskets, delivered across Canada."
-      }
+      eyebrow={t("collection.eyebrow")}
+      title={t("listing.allTitle")}
+      description={t("listing.allLede")}
       products={filtered}
-      total={max ? filtered.length : total}
+      total={filtered.length === products.length ? total : filtered.length}
+      showOccasions
       breadcrumb={[
-        { label: t("brand.name"), href: "/" },
-        { label: t("nav.allBaskets"), href: "/baskets" },
+        { label: t("pdp.home"), href: "/" },
+        { label: t("listing.allTitle"), href: "/baskets" },
       ]}
     />
   );

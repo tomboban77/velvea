@@ -32,7 +32,7 @@ export function CorporateQuoteForm() {
     return (
       <div className="rounded-[1.75rem] border border-line bg-shell p-10 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-iris-soft">
-          <Check className="h-7 w-7 text-teal-deep" />
+          <Check className="h-7 w-7 text-violet-deep" />
         </div>
         <h2 className="mt-5 font-display text-2xl">
           {fr ? "Merci ! Nous vous répondrons sous peu." : "Thank you — we'll be in touch shortly."}

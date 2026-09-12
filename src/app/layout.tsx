@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "Velvea — Premium Gift Baskets Delivered Across Canada",
     description:
       "Beautiful, hand-packed gift baskets for every occasion, delivered across Canada.",
-    images: ["/brand/velvea-logo.jpg"],
+    images: ["/brand/velvea-logo.png?v=3"],
   },
   icons: { icon: "/favicon.ico" },
 };

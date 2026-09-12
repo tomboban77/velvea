@@ -55,7 +55,7 @@ export function StatCard({
 
 const badgeStyles: Record<string, string> = {
   green: "bg-success/12 text-success",
-  amber: "bg-gold/15 text-gold",
+  amber: "bg-gold/15 text-violet",
   gray: "bg-sand text-ink-soft",
   red: "bg-danger/12 text-danger",
   iris: "bg-iris-soft text-plum",

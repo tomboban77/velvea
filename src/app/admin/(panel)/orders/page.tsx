@@ -61,7 +61,7 @@ export default async function OrdersPage({
               {orders.map((o) => (
                 <tr key={o.id} className="hover:bg-cream/30">
                   <td className="px-5 py-3">
-                    <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:text-gold">
+                    <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:text-violet">
                       {o.orderNumber}
                     </Link>
                     <div className="text-xs text-muted">{formatDate(o.createdAt)}</div>

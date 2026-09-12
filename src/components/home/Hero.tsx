@@ -1,129 +1,110 @@
-import { getTranslations, getLocale } from "next-intl/server";
-import { Link } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
+import { SameDayNotice } from "@/components/ui/SameDayNotice";
+import { Ornament } from "@/components/brand/Ornament";
+import { formatMoney } from "@/lib/utils";
 
-export async function Hero({ featuredImage }: { featuredImage?: string | null }) {
+export type HeroProduct = {
+  slug: string;
+  name: string;
+  image: string | null;
+  priceCents: number;
+} | null;
+
+/**
+ * Hero — engraved-stationery composition. Copy in columns 1–5 with a
+ * chapter label and ornament; the basket photograph arched and ringed in
+ * hairline gold in columns 7–12, caption on a rule beneath.
+ */
+export async function Hero({ product }: { product: HeroProduct }) {
   const t = await getTranslations("hero");
-  const locale = await getLocale();
 
   return (
-    <section className="relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0 top-0 h-[38rem] w-[38rem] -translate-y-1/3 translate-x-1/4 rounded-full opacity-[0.10] blur-[90px]"
-        style={{ background: "var(--grad-iris)" }}
-      />
+    <section className="relative">
+      <div className="container-x">
+        <div className="grid items-center gap-14 pb-16 pt-12 lg:grid-cols-12 lg:gap-x-10 lg:pb-24 lg:pt-16">
+          {/* copy — columns 1–5 */}
+          <div className="lg:col-span-5">
+            <p className="chapter anim-rise" style={{ animationDelay: "60ms" }}>
+              {t("eyebrow")}
+            </p>
+            <Ornament className="anim-rise mt-4" />
 
-      <div className="container-x grid items-center gap-14 pb-16 pt-14 lg:grid-cols-[1.02fr_0.98fr] lg:pb-24 lg:pt-20">
-        {/* copy */}
-        <div className="relative max-w-xl">
-          <p className="eyebrow mb-7">{t("eyebrow")}</p>
+            <h1 className="h-display anim-rise mt-7" style={{ animationDelay: "140ms" }}>
+              {t("titleA")}
+              <br />
+              <span className="italic text-violet-deep">{t("titleB")}</span> {t("titleC")}
+            </h1>
 
-          <h1 className="font-display text-[3rem] font-normal leading-[1.02] tracking-[-0.01em] balance sm:text-[4rem] lg:text-[4.6rem]">
-            {locale === "fr" ? (
-              <>
-                L&apos;art du cadeau
-                <br />
-                <span className="italic">réfléchi</span>.
-              </>
-            ) : (
-              <>
-                The art of the
-                <br />
-                <span className="italic">considered</span> gift.
-              </>
-            )}
-          </h1>
+            <p className="anim-rise mt-8 max-w-[27rem] text-[1.08rem] leading-relaxed text-ink-soft" style={{ animationDelay: "220ms" }}>
+              {t("lede")}
+            </p>
 
-          <p className="mt-7 max-w-md text-[1.02rem] leading-relaxed text-ink-soft">
-            {t("lede")}
-          </p>
+            <div className="anim-rise mt-10 flex flex-wrap items-center gap-3" style={{ animationDelay: "300ms" }}>
+              <Link href="/baskets" className="btn btn-primary">
+                {t("ctaPrimary")}
+                <ArrowRight />
+              </Link>
+              <Link href="/custom" className="btn btn-outline">
+                {t("ctaSecondary")}
+              </Link>
+            </div>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link href="/baskets" className="btn btn-gold btn-lg">
-              {locale === "fr" ? "Découvrir la collection" : "Explore the collection"}
-              <ArrowRight />
-            </Link>
-            <Link href="/custom" className="btn btn-outline btn-lg">
-              {locale === "fr" ? "Composer un panier" : "Compose a basket"}
-            </Link>
+            <div className="anim-rise mt-9 border-t border-line pt-6" style={{ animationDelay: "380ms" }}>
+              <SameDayNotice />
+            </div>
           </div>
 
-        </div>
+          {/* photograph — columns 7–12 */}
+          <div className="anim-fade lg:col-span-6 lg:col-start-7" style={{ animationDelay: "200ms" }}>
+            <figure className="px-3 pt-3">
+              <div className="arch ring-gold relative aspect-[4/5] overflow-hidden bg-cream">
+                {product?.image ? (
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    priority
+                    sizes="(max-width:1024px) 100vw, 45vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <HeroComposition />
+                )}
+              </div>
 
-        {/* visual — framed gallery panel */}
-        <div className="relative">
-          <div className="relative mx-auto max-w-[30rem]">
-            {/* gold hairline frame */}
-            <div className="absolute -inset-3 rounded-[1.35rem] border border-gold-soft/40" />
-            <figure
-              className="relative aspect-[4/5] overflow-hidden rounded-[1.1rem] bg-cream"
-              style={{ animation: "velvea-float 9s ease-in-out infinite" }}
-            >
-              {featuredImage ? (
-                <Image
-                  src={featuredImage}
-                  alt="The Velvéa signature basket"
-                  fill
-                  priority
-                  sizes="(max-width:1024px) 90vw, 40vw"
-                  className="object-cover"
-                />
-              ) : (
-                <HeroComposition />
+              {product && (
+                <figcaption className="mt-8 flex items-end justify-between gap-4 border-t border-line pt-4">
+                  <div className="min-w-0">
+                    <p className="chapter">{t("pictured")}</p>
+                    <p className="mt-1 truncate font-display text-[1.35rem] leading-tight text-ink">{product.name}</p>
+                  </div>
+                  <Link href={`/products/${product.slug}`} className="link-draw shrink-0 text-ink">
+                    {formatMoney(product.priceCents)} · {t("view")}
+                    <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.6} />
+                  </Link>
+                </figcaption>
               )}
             </figure>
-
-            {/* caption plaque */}
-            <figcaption className="absolute -bottom-4 left-8 flex items-center gap-3 bg-canvas px-5 py-3">
-              <span className="font-display text-sm italic text-ink">
-                {locale === "fr" ? "La collection signature" : "The Signature Collection"}
-              </span>
-            </figcaption>
           </div>
         </div>
-      </div>
-
-      <div className="container-x pb-4">
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[0.68rem] uppercase tracking-[0.22em] text-muted">
-          <span>{locale === "fr" ? "Fondée en 2026" : "Established 2026"}</span>
-          <span className="h-1 w-1 rounded-full bg-gold-soft" />
-          <span>Mississauga, Ontario</span>
-          <span className="h-1 w-1 rounded-full bg-gold-soft" />
-          <span>{locale === "fr" ? "Livré partout au Canada" : "Delivered across Canada"}</span>
-        </div>
-        <div className="thread" />
       </div>
     </section>
   );
 }
 
-/** Editorial composition shown until a featured product image is set. */
+/** Typographic composition shown until a product image exists. */
 function HeroComposition() {
   return (
-    <div className="flex h-full flex-col justify-between bg-[radial-gradient(130%_110%_at_50%_-10%,#ffffff,#ece2d6)] p-8">
-      <div className="flex items-start justify-between">
-        <span className="text-[0.62rem] uppercase tracking-[0.3em] text-muted">
-          No. 01
-        </span>
-        <span
-          className="h-9 w-9 rounded-full"
-          style={{ background: "var(--grad-iris)", opacity: 0.9 }}
-        />
-      </div>
-
+    <div className="flex h-full flex-col justify-between bg-[radial-gradient(130%_110%_at_50%_-10%,#fffdf8,#ece3d2)] p-8 pt-24">
       <div className="text-center">
-        <p className="font-display text-6xl leading-none tracking-[0.06em] text-ink/90">
-          VELVÉA
-        </p>
-        <div className="mx-auto mt-4 h-px w-16" style={{ background: "var(--grad-gold)" }} />
-        <p className="mt-4 text-[0.7rem] uppercase tracking-[0.28em] text-muted">
-          Gourmet · Wine · Chocolate
-        </p>
+        <p className="font-caps text-5xl tracking-[0.18em] text-violet-deep">VELVEA</p>
+        <Ornament className="mx-auto mt-5" />
+        <p className="caps mt-5 text-[0.62rem] text-muted">Gourmet · Wine · Chocolate</p>
       </div>
-
-      <div className="flex items-end justify-between text-[0.62rem] uppercase tracking-[0.22em] text-muted">
+      <div className="flex items-end justify-between text-[0.6rem] uppercase tracking-[0.22em] text-muted">
         <span>Hand-packed</span>
         <span>Made to order</span>
       </div>

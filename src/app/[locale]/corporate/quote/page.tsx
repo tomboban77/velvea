@@ -27,7 +27,7 @@ export default async function CorporateQuotePage({ params }: { params: Promise<{
           {points.map((p) => (
             <li key={p} className="flex items-center gap-3 text-ink-soft">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-iris-soft">
-                <Check className="h-3 w-3 text-teal-deep" />
+                <Check className="h-3 w-3 text-violet-deep" />
               </span>{p}
             </li>
           ))}

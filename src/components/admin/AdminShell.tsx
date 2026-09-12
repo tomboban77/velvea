@@ -54,7 +54,7 @@ export function AdminShell({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-5">
         <Link href="/admin" className="flex items-center">
-          <Logo markClassName="h-8 w-8" wordmarkClassName="text-[1.3rem]" />
+          <Logo height={26} />
         </Link>
         <button className="lg:hidden" onClick={() => setOpen(false)} aria-label="Close">
           <X className="h-5 w-5 text-canvas/70" />

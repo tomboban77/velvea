@@ -2,54 +2,52 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Minus } from "lucide-react";
+import { Link } from "@/i18n/routing";
+import { Plus, Minus, ArrowRight } from "lucide-react";
+import { Ornament } from "@/components/brand/Ornament";
 import { cn } from "@/lib/utils";
 
-export function Faq() {
+export function Faq({ standalone = false }: { standalone?: boolean }) {
   const t = useTranslations("faq");
   const items = t.raw("items") as { q: string; a: string }[];
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="container-x py-20">
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="font-display text-4xl sm:text-5xl">{t("title")}</h2>
-        <p className="mt-3 text-ink-soft">{t("lede")}</p>
-      </div>
+    <section className={cn(standalone ? "pb-24 pt-12 lg:pb-32 lg:pt-16" : "section bg-cream")}>
+      <div className="container-x grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <p className="chapter">{standalone ? t("eyebrow") : `Chapter VII · ${t("eyebrow")}`}</p>
+          <Ornament className="mt-4" />
+          {standalone ? <h1 className="h-section mt-7">{t("title")}</h1> : <h2 className="h-section mt-7">{t("title")}</h2>}
+          <p className="mt-5 text-ink-soft">{t("lede")}</p>
+          {!standalone && (
+            <Link href="/faq" className="link-draw mt-7 text-ink">
+              {t("more")} <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.6} />
+            </Link>
+          )}
+        </div>
 
-      <div className="mx-auto mt-12 max-w-3xl divide-y divide-line rounded-[1.75rem] border border-line bg-shell px-2">
-        {items.map((item, i) => {
-          const isOpen = open === i;
-          return (
-            <div key={i} className="px-4 sm:px-6">
-              <button
-                onClick={() => setOpen(isOpen ? -1 : i)}
-                className="flex w-full items-center justify-between gap-6 py-5 text-left"
-                aria-expanded={isOpen}
-              >
-                <span className="font-semibold text-ink">{item.q}</span>
-                <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors",
-                    isOpen ? "border-gold bg-gold/10 text-gold" : "border-line-strong text-ink-soft"
-                  )}
-                >
-                  {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                </span>
-              </button>
-              <div
-                className={cn(
-                  "grid transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                  isOpen ? "grid-rows-[1fr] pb-5 opacity-100" : "grid-rows-[0fr] opacity-0"
-                )}
-              >
-                <p className="overflow-hidden pr-14 text-sm leading-relaxed text-ink-soft">
-                  {item.a}
-                </p>
+        <div className="divide-y divide-line-strong border-y border-line-strong lg:col-span-7 lg:col-start-6">
+          {items.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i}>
+                <button onClick={() => setOpen(isOpen ? -1 : i)} className="flex w-full items-center justify-between gap-6 py-5 text-left" aria-expanded={isOpen}>
+                  <span className="flex items-baseline gap-5">
+                    <span className="font-caps w-7 shrink-0 text-[0.65rem] tracking-[0.2em] text-violet">{["I", "II", "III", "IV", "V", "VI"][i]}</span>
+                    <span className="font-display text-[1.35rem] leading-tight text-ink">{item.q}</span>
+                  </span>
+                  <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center border transition-colors", isOpen ? "border-violet text-violet" : "border-line-strong text-ink-soft")}>
+                    {isOpen ? <Minus className="h-3.5 w-3.5" strokeWidth={1.8} /> : <Plus className="h-3.5 w-3.5" strokeWidth={1.8} />}
+                  </span>
+                </button>
+                <div className={cn("grid transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]", isOpen ? "grid-rows-[1fr] pb-6 opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                  <p className="overflow-hidden pl-12 pr-14 text-[0.98rem] leading-relaxed text-ink-soft pretty">{item.a}</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </section>
   );

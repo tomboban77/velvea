@@ -31,7 +31,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
         <h1 className="font-display text-4xl sm:text-5xl">{fr ? "Adoré partout au Canada" : "Loved across Canada"}</h1>
         {stats._count > 0 && (
           <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="flex text-gold">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</div>
+            <div className="flex text-violet">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</div>
             <span className="text-sm text-ink-soft">{(stats._avg.rating ?? 0).toFixed(1)} / 5 · {stats._count} {fr ? "avis" : "reviews"}</span>
           </div>
         )}
@@ -43,14 +43,14 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
           {reviews.map((r) => (
             <figure key={r.id} className="mb-5 break-inside-avoid rounded-2xl border border-line bg-shell p-6">
               <div className="flex items-center justify-between">
-                <div className="flex text-gold">{Array.from({ length: r.rating }).map((_: unknown, i: number) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}</div>
+                <div className="flex text-violet">{Array.from({ length: r.rating }).map((_: unknown, i: number) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}</div>
                 <span className="text-xs text-muted">{formatDate(r.createdAt, fr ? "fr-CA" : "en-CA")}</span>
               </div>
               {r.title && <figcaption className="mt-3 font-display text-lg">{r.title}</figcaption>}
               <blockquote className="mt-2 text-sm leading-relaxed text-ink-soft">&ldquo;{r.body}&rdquo;</blockquote>
               <div className="mt-4 flex items-center justify-between">
                 <div><p className="text-sm font-semibold text-ink">{r.authorName}</p>{r.authorLocation && <p className="text-xs text-muted">{r.authorLocation}</p>}</div>
-                {r.verified && <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-teal-deep"><ShieldCheck className="h-3.5 w-3.5" /> {fr ? "Vérifié" : "Verified"}</span>}
+                {r.verified && <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-violet-deep"><ShieldCheck className="h-3.5 w-3.5" /> {fr ? "Vérifié" : "Verified"}</span>}
               </div>
               {r.product && <p className="mt-3 border-t border-line pt-3 text-xs text-muted">{fr ? "Sur" : "On"} {tc(r.product.name, locale)}</p>}
             </figure>

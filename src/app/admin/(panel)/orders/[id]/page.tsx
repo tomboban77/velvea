@@ -50,7 +50,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                     <p className="font-medium text-ink">{i.name}</p>
                     {i.variantLabel && <p className="text-xs text-muted">{i.variantLabel}</p>}
                     {i.isCustom && i.customConfig ? (
-                      <p className="text-xs text-gold">
+                      <p className="text-xs text-violet">
                         Custom: {((i.customConfig as { items?: string[] }).items ?? []).join(", ")}
                       </p>
                     ) : null}

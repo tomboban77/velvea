@@ -29,13 +29,13 @@ export default async function InquiriesPage() {
             <Card key={q.id} className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3">
-                  <Building2 className="h-4 w-4 text-gold" />
+                  <Building2 className="h-4 w-4 text-violet" />
                   <span className="font-semibold text-ink">{q.company}</span>
                   <Badge tone={tone[q.status]}>{q.status}</Badge>
                 </div>
                 <p className="mt-1 text-sm text-ink-soft">{q.contactName}</p>
                 <div className="mt-2 flex flex-wrap gap-4 text-xs text-muted">
-                  <a href={`mailto:${q.email}`} className="flex items-center gap-1 hover:text-gold"><Mail className="h-3.5 w-3.5" /> {q.email}</a>
+                  <a href={`mailto:${q.email}`} className="flex items-center gap-1 hover:text-violet"><Mail className="h-3.5 w-3.5" /> {q.email}</a>
                   {q.phone && <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {q.phone}</span>}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">

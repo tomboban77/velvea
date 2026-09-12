@@ -9,10 +9,17 @@ Founded 2026 · Mississauga, Ontario · Woman-owned.
 
 ## What's included
 
-**Storefront**
-- Elegant, animated homepage (hero, occasions, gift finder, corporate, delivery map, guides, reviews, FAQ).
+**Storefront** (design v2, Sept 2026)
+- Editorial homepage: hero with live same-day countdown, promise bar, compact gift finder, occasion rail,
+  adaptive collection block (editorial when the catalogue is small, grid when it grows), build-your-own,
+  process + delivery facts, corporate, atelier note, FAQ. Reviews and Journal sections render only when
+  real approved reviews / published articles exist (no placeholder content).
+- Single-row header with centred logo, "Shop" mega-menu (occasions · recipients · categories · seasonal +
+  featured basket), full-width search overlay, slim announcement bar.
 - Catalog: all baskets, by occasion, by recipient, by category, with sort and price filters.
-- Product pages with gallery, variants, contents, reviews, and quick add-to-cart.
+- Product pages with gallery, variants, always-visible "What's inside", same-day countdown, gifting
+  reassurance (handwritten card · no prices on slip · packed to order), "How it arrives", Product JSON-LD,
+  reviews, and a sticky mobile add-to-bag bar.
 - **Custom Basket builder** — pick a vessel, add items, live pricing.
 - Cart drawer + full checkout with **Stripe Checkout** (falls back to an offline order until Stripe keys are set).
 - Canada-wide tax (by province) and shipping, same-day GTA delivery detection, discount codes, gift cards.

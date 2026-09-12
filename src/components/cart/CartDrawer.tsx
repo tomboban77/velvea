@@ -40,7 +40,7 @@ export function CartDrawer() {
       />
       <aside
         className={cn(
-          "absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-canvas shadow-2xl transition-transform duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-canvas shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -90,7 +90,7 @@ export function CartDrawer() {
               <ul className="divide-y divide-line">
                 {items.map((item) => (
                   <li key={item.id} className="flex gap-4 py-4">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-cream">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-sand">
                       {item.image && (
                         <Image
                           src={item.image}
@@ -103,7 +103,7 @@ export function CartDrawer() {
                     </div>
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between gap-2">
-                        <p className="text-sm font-semibold leading-snug text-ink">
+                        <p className="font-display text-[0.98rem] leading-snug text-ink">
                           {item.name}
                         </p>
                         <button
@@ -118,7 +118,7 @@ export function CartDrawer() {
                         <p className="text-xs text-muted">{item.variantLabel}</p>
                       )}
                       {item.isCustom && (
-                        <p className="text-xs text-gold">Custom basket</p>
+                        <p className="text-xs text-violet">Custom basket</p>
                       )}
                       <div className="mt-auto flex items-center justify-between pt-2">
                         <div className="inline-flex items-center rounded-full border border-line-strong">
@@ -156,7 +156,7 @@ export function CartDrawer() {
                 <span className="font-display text-2xl">{formatMoney(subtotalCents)}</span>
               </div>
               <p className="mt-1 text-xs text-muted">
-                Shipping &amp; taxes calculated at checkout.
+                Shipping &amp; taxes calculated at checkout. Handwritten card included · no prices on the slip.
               </p>
               <Link
                 href="/checkout"

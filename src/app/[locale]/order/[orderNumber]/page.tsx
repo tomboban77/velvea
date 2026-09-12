@@ -44,9 +44,9 @@ export default async function OrderPage({
       <div className="text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-iris-soft">
           {paid ? (
-            <CheckCircle2 className="h-8 w-8 text-teal-deep" />
+            <CheckCircle2 className="h-8 w-8 text-violet-deep" />
           ) : (
-            <Clock className="h-8 w-8 text-gold" />
+            <Clock className="h-8 w-8 text-violet" />
           )}
         </div>
         <h1 className="mt-5 font-display text-4xl">
@@ -115,7 +115,7 @@ export default async function OrderPage({
           { icon: Home, label: fr ? "Livrée" : "Delivered", done: order.status === "DELIVERED" },
         ].map((s, i) => (
           <div key={i} className="flex flex-1 flex-col items-center gap-1.5 text-center">
-            <s.icon className={s.done ? "h-5 w-5 text-teal-deep" : "h-5 w-5 text-line-strong"} />
+            <s.icon className={s.done ? "h-5 w-5 text-violet-deep" : "h-5 w-5 text-line-strong"} />
             <span className={s.done ? "text-xs font-medium text-ink" : "text-xs text-muted"}>{s.label}</span>
           </div>
         ))}

@@ -52,9 +52,9 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
 
         <p className="mt-5 text-center text-sm text-muted">
           {mode === "login" ? (
-            <>{fr ? "Pas de compte ?" : "No account?"} <Link href="/account/register" className="font-semibold text-ink hover:text-gold">{fr ? "S'inscrire" : "Create one"}</Link></>
+            <>{fr ? "Pas de compte ?" : "No account?"} <Link href="/account/register" className="font-semibold text-ink hover:text-violet">{fr ? "S'inscrire" : "Create one"}</Link></>
           ) : (
-            <>{fr ? "Déjà un compte ?" : "Already have an account?"} <Link href="/account/login" className="font-semibold text-ink hover:text-gold">{fr ? "Se connecter" : "Sign in"}</Link></>
+            <>{fr ? "Déjà un compte ?" : "Already have an account?"} <Link href="/account/login" className="font-semibold text-ink hover:text-violet">{fr ? "Se connecter" : "Sign in"}</Link></>
           )}
         </p>
       </div>

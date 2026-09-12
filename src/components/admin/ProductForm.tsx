@@ -203,7 +203,7 @@ export function ProductForm({
               <button
                 type="button"
                 onClick={() => set("contents", [...d.contents, emptyL()])}
-                className="flex items-center gap-1 text-sm font-medium text-gold hover:gap-2"
+                className="flex items-center gap-1 text-sm font-medium text-violet hover:gap-2"
               >
                 <Plus className="h-4 w-4" /> Add item
               </button>
@@ -257,7 +257,7 @@ export function ProductForm({
                     { label: emptyL(), priceCents: d.priceCents, compareAtCents: null, sku: "" },
                   ])
                 }
-                className="flex items-center gap-1 text-sm font-medium text-gold hover:gap-2"
+                className="flex items-center gap-1 text-sm font-medium text-violet hover:gap-2"
               >
                 <Plus className="h-4 w-4" /> Add variant
               </button>
@@ -434,7 +434,7 @@ export function ProductForm({
                   className={cn(
                     "rounded-full border px-3 py-1 text-xs font-medium capitalize transition-colors",
                     d.badges.includes(b)
-                      ? "border-gold bg-gold/15 text-gold"
+                      ? "border-violet bg-gold/15 text-violet"
                       : "border-line-strong text-ink-soft hover:border-ink"
                   )}
                 >

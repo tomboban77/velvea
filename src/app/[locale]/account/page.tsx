@@ -52,7 +52,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
             <tbody className="divide-y divide-line">
               {orders.map((o) => (
                 <tr key={o.id} className="hover:bg-cream/30">
-                  <td className="px-5 py-4"><Link href={`/order/${o.orderNumber}`} className="font-medium text-ink hover:text-gold">{o.orderNumber}</Link><div className="text-xs text-muted">{formatDate(o.createdAt, fr ? "fr-CA" : "en-CA")}</div></td>
+                  <td className="px-5 py-4"><Link href={`/order/${o.orderNumber}`} className="font-medium text-ink hover:text-violet">{o.orderNumber}</Link><div className="text-xs text-muted">{formatDate(o.createdAt, fr ? "fr-CA" : "en-CA")}</div></td>
                   <td className="px-3 py-4 text-muted">{o._count.items} {fr ? "articles" : "items"}</td>
                   <td className="px-3 py-4 text-ink-soft">{o.status}</td>
                   <td className="px-5 py-4 text-right font-semibold">{formatMoney(o.totalCents)}</td>

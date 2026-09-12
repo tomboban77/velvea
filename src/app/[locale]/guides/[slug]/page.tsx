@@ -24,12 +24,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <article className="container-x max-w-3xl py-12">
       <nav className="mb-6 flex items-center gap-1.5 text-xs text-muted">
-        <Link href="/" className="hover:text-gold">Velvea</Link>
+        <Link href="/" className="hover:text-violet">Velvea</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link href="/guides" className="hover:text-gold">Gift Guides</Link>
+        <Link href="/guides" className="hover:text-violet">Gift Guides</Link>
       </nav>
 
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">{a.category.toLowerCase()}</p>
+      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet">{a.category.toLowerCase()}</p>
       <h1 className="mt-3 font-display text-4xl leading-tight balance sm:text-5xl">{tc(a.title, locale)}</h1>
       <p className="mt-3 text-sm text-muted">
         {a.author ?? "Velvea"} · {a.readMinutes} min read
