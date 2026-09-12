@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 /**
  * Velvea lockup — the supplied artwork at /brand/velvea-logo.png.
  * Source is 2153×452 with the artwork filling the canvas (≈24px padding),
- * so the image is rendered at its natural ratio with no cropping.
+ * so the image is rendered at its natural ratio with no cropping. Served
+ * unoptimized (small asset) so the ?v cache-buster needs no localPatterns config.
  */
 const SRC_W = 2153;
 const SRC_H = 452;
@@ -31,6 +32,7 @@ export function Logo({ className, height = 34, priority = false }: Props) {
       width={width}
       height={height}
       priority={priority}
+      unoptimized
       className={cn("block", className)}
       style={{ width, height }}
     />

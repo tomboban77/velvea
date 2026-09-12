@@ -111,6 +111,11 @@ Create a [Resend](https://resend.com) account, verify your domain, and set `RESE
 ## Deploying to Vercel + Neon
 
 1. Push this repo to GitHub and import it into [Vercel](https://vercel.com).
+   - Production domain is **https://www.velvea.ca** (apex `velvea.ca` 308-redirects to `www`).
+   - In Vercel → Settings → Environment Variables (Production) set `NEXT_PUBLIC_SITE_URL=https://www.velvea.ca`.
+     `robots.txt`, `sitemap.xml`, canonical/Open Graph URLs, Stripe return URLs and email links all read it.
+   - After the domain shows "Valid Configuration", update the Stripe webhook endpoint to
+     `https://www.velvea.ca/api/stripe/webhook` and Resend's verified sending domain to `velvea.ca`.
 2. Add all `.env` variables in the Vercel project settings (use the Neon **pooled** URL for `DATABASE_URL`
    and the **direct** URL for `DIRECT_URL`). Set `NEXT_PUBLIC_SITE_URL` to your production domain.
 3. Run the migration against production once: `npx prisma migrate deploy` (or add it to the build command).
