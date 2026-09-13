@@ -4,14 +4,8 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
-import { Select, type SelectOption } from "@/components/ui/Select";
-import { Ornament } from "@/components/brand/Ornament";
 
-/**
- * Sentence-style gift finder:
- * "I'm looking for a gift for [her], for [a birthday], [under $125]."
- * Each blank is a custom listbox in italic display type.
- */
+/** Native selects keep the gift finder easy to use on touch devices. */
 const WHO: Record<string, { en: string; fr: string }> = {
   "": { en: "someone special", fr: "quelqu'un de spécial" },
   "for-her": { en: "her", fr: "elle" },
@@ -55,13 +49,14 @@ export function GiftFinderBar() {
   const [occ, setOcc] = useState("");
   const [max, setMax] = useState("");
 
-  const opts = (m: Record<string, { en: string; fr: string }>): SelectOption[] =>
+  const opts = (m: Record<string, { en: string; fr: string }>): { value: string; label: string }[] =>
     Object.entries(m).map(([value, l]) => ({ value, label: fr ? l.fr : l.en }));
 
   function go(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
     if (max && max !== "999999") params.set("max", max);
+    if (max === "999999") params.set("min", "20000");
     let base = "/baskets";
     if (occ) {
       base = `/occasions/${occ}`;
@@ -74,26 +69,14 @@ export function GiftFinderBar() {
   }
 
   return (
-    <section className="container-x section-sm">
-      <div className="frame relative mx-auto max-w-5xl bg-shell px-6 py-10 sm:px-12 sm:py-12">
-        <div className="flex flex-col items-center text-center">
-          <p className="chapter">{t("eyebrow")}</p>
-          <Ornament className="mt-3" />
-        </div>
-
-        <form onSubmit={go} className="mt-8 flex flex-col items-center gap-8">
-          <div className="max-w-4xl text-center font-display text-[1.7rem] leading-[1.7] text-ink sm:text-[2.1rem] lg:text-[2.4rem]">
-            {fr ? "Je cherche un cadeau pour" : "I’m looking for a gift for"}{" "}
-            <Select value={who} onChange={setWho} options={opts(WHO)} ariaLabel={t("who")} variant="phrase" className="mx-1 align-baseline" />
-            {fr ? ", pour" : ", for"}{" "}
-            <Select value={occ} onChange={setOcc} options={opts(OCC)} ariaLabel={t("occasion")} variant="phrase" className="mx-1 align-baseline" />
-            {", "}
-            <Select value={max} onChange={setMax} options={opts(BUDGET)} ariaLabel={t("budget")} variant="phrase" className="mx-1 align-baseline" />
-            .
-          </div>
-          <button type="submit" className="btn btn-gold">
-            {t("cta")} <ArrowRight />
-          </button>
+    <section className="container-x gift-finder" aria-label={t("eyebrow")}>
+      <div className="finder-panel">
+        <div><p className="eyebrow no-tick">{t("eyebrow")}</p><p className="mt-2 font-display text-2xl leading-tight">{fr ? "Une attention bien trouvée." : "Something just for them."}</p></div>
+        <form onSubmit={go} className="finder-form">
+          <label><span>{t("who")}</span><select value={who} onChange={(e) => setWho(e.target.value)}>{opts(WHO).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+          <label><span>{t("occasion")}</span><select value={occ} onChange={(e) => setOcc(e.target.value)}>{opts(OCC).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+          <label><span>{t("budget")}</span><select value={max} onChange={(e) => setMax(e.target.value)}>{opts(BUDGET).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+          <button type="submit" className="btn btn-primary">{t("cta")}<ArrowRight /></button>
         </form>
       </div>
     </section>

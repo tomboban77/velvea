@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
@@ -31,6 +31,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -85,8 +86,8 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
   return (
     <>
       {/* Announcement — one slim line */}
-      <div className="caps relative z-50 bg-violet-deep text-[0.58rem] text-white">
-        <div className="container-x flex h-8 items-center justify-center gap-3 sm:justify-between">
+      <div className="announcement relative z-50 bg-violet-deep text-[0.58rem] text-white">
+        <div className="container-x flex h-9 items-center justify-center gap-3 sm:justify-between">
           <p className="flex items-center gap-3 truncate">
             <span className="hidden md:inline">{t("announcement.one")}</span>
             <span className="hidden md:inline text-white/40">·</span>
@@ -107,10 +108,10 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
 
       <header
         className={cn(
-          "sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-500",
+          "store-header sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-500",
           scrolled || shopOpen || searchOpen
             ? "border-line bg-canvas/95 shadow-[0_10px_30px_-22px_rgba(34,24,34,0.35)] backdrop-blur-xl"
-            : "border-transparent bg-canvas/80 backdrop-blur-md"
+            : "border-transparent bg-canvas/95 backdrop-blur-md"
         )}
         onMouseLeave={scheduleClose}
       >
@@ -133,7 +134,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
             {/* centre: logo (mobile) / nav (desktop) */}
             <div className="flex items-center justify-center">
               <Link href="/" className="lg:hidden" aria-label="Velvea home">
-                <Logo height={28} priority />
+                <Logo height={25} priority />
               </Link>
               <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
                 <div onMouseEnter={openShop} onMouseLeave={scheduleClose}>
@@ -236,7 +237,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
             onMouseLeave={scheduleClose}
             style={{ animation: "velvea-rise 0.35s var(--ease-out-soft)" }}
           >
-            <div className="container-x grid grid-cols-[repeat(4,minmax(0,1fr))_18rem] gap-x-10 py-10">
+            <div className="container-x grid grid-cols-[repeat(4,minmax(0,1fr))_minmax(10rem,15rem)] gap-x-5 py-10">
               {columns.map((col) => (
                 <div key={col.key}>
                   <Link
@@ -305,7 +306,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
         )}
       </header>
 
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileMenu open={mobileOpen} onClose={closeMobile} />
     </>
   );
 }

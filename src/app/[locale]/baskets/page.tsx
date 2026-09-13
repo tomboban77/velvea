@@ -14,24 +14,24 @@ export default async function BasketsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ sort?: string; max?: string }>;
+  searchParams: Promise<{ sort?: string; min?: string; max?: string }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { sort, max } = await searchParams;
+  const { sort, min, max } = await searchParams;
   const t = await getTranslations();
+  const floor = min && Number.isFinite(Number(min)) && Number(min) >= 0 ? Number(min) : undefined;
+  const cap = max && Number.isFinite(Number(max)) && Number(max) >= 0 ? Number(max) : undefined;
 
-  const { products, total } = await getAllProducts({ sort, take: 48 });
-  const cap = max ? parseInt(max) : NaN;
-  const filtered = !isNaN(cap) && cap < 999999 ? products.filter((p) => p.priceCents <= cap) : products;
+  const { products, total } = await getAllProducts({ sort, take: 48, min: floor, max: cap });
 
   return (
     <Listing
       eyebrow={t("collection.eyebrow")}
       title={t("listing.allTitle")}
       description={t("listing.allLede")}
-      products={filtered}
-      total={filtered.length === products.length ? total : filtered.length}
+      products={products}
+      total={total}
       showOccasions
       breadcrumb={[
         { label: t("pdp.home"), href: "/" },

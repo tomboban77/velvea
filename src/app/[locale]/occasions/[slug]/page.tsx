@@ -18,21 +18,21 @@ export default async function OccasionPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; locale: string }>;
-  searchParams: Promise<{ sort?: string; max?: string; recipient?: string }>;
+  searchParams: Promise<{ sort?: string; min?: string; max?: string; recipient?: string }>;
 }) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
-  const { sort, max } = await searchParams;
+  const { sort, min, max, recipient } = await searchParams;
   const t = await getTranslations();
+  const floor = min && Number.isFinite(Number(min)) && Number(min) >= 0 ? Number(min) : undefined;
+  const cap = max && Number.isFinite(Number(max)) && Number(max) >= 0 ? Number(max) : undefined;
 
-  const { collection, products, total } = await getProductsByCollection("OCCASION", slug, { sort, take: 48 });
+  const { collection, products, total } = await getProductsByCollection("OCCASION", slug, { sort, take: 48, min: floor, max: cap, recipient });
 
   const fallback = [...OCCASIONS, ...HOLIDAYS].find((o) => o.slug === slug);
   if (!collection && !fallback) notFound();
 
   const title = collection ? tc(collection.name, locale) : fallback ? labelFor(fallback, locale) : slug;
-  const cap = max ? parseInt(max) : NaN;
-  const filtered = !isNaN(cap) && cap < 999999 ? products.filter((p) => p.priceCents <= cap) : products;
 
   return (
     <Listing
@@ -45,8 +45,8 @@ export default async function OccasionPage({
           ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout au Canada.`
           : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Canada.`
       }
-      products={filtered}
-      total={filtered.length === products.length ? total : filtered.length}
+      products={products}
+      total={total}
       showOccasions
       activeSlug={slug}
       breadcrumb={[

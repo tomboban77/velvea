@@ -70,7 +70,7 @@ export async function getProductBySlug(slug: string) {
 export async function getProductsByCollection(
   type: "OCCASION" | "RECIPIENT" | "CATEGORY" | "THEME",
   slug: string,
-  opts?: { sort?: string; skip?: number; take?: number }
+  opts?: { sort?: string; skip?: number; take?: number; min?: number; max?: number; recipient?: string }
 ) {
   try {
     const collection = await prisma.collection.findUnique({ where: { slug } });
@@ -89,6 +89,8 @@ export async function getProductsByCollection(
     const where: Prisma.ProductWhereInput = {
       status: "ACTIVE",
       collections: { some: { collectionId: collection.id } },
+      priceCents: { gte: opts?.min, lte: opts?.max },
+      ...(opts?.recipient ? { AND: [{ collections: { some: { collection: { slug: opts.recipient, type: "RECIPIENT" } } } }] } : {}),
     };
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -111,6 +113,8 @@ export async function getAllProducts(opts?: {
   skip?: number;
   take?: number;
   q?: string;
+  min?: number;
+  max?: number;
 }) {
   try {
     const orderBy: Prisma.ProductOrderByWithRelationInput =
@@ -122,7 +126,7 @@ export async function getAllProducts(opts?: {
         ? { avgRating: "desc" }
         : { featured: "desc" };
 
-    const where: Prisma.ProductWhereInput = { status: "ACTIVE" };
+    const where: Prisma.ProductWhereInput = { status: "ACTIVE", priceCents: { gte: opts?.min, lte: opts?.max } };
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,

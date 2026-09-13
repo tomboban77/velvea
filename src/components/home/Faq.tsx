@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Plus, Minus, ArrowRight } from "lucide-react";
-import { Ornament } from "@/components/brand/Ornament";
 import { cn } from "@/lib/utils";
 
 export function Faq({ standalone = false }: { standalone?: boolean }) {
@@ -16,8 +15,7 @@ export function Faq({ standalone = false }: { standalone?: boolean }) {
     <section className={cn(standalone ? "pb-24 pt-12 lg:pb-32 lg:pt-16" : "section bg-cream")}>
       <div className="container-x grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <p className="chapter">{standalone ? t("eyebrow") : `Chapter VII · ${t("eyebrow")}`}</p>
-          <Ornament className="mt-4" />
+          <p className="chapter">{t("eyebrow")}</p>
           {standalone ? <h1 className="h-section mt-7">{t("title")}</h1> : <h2 className="h-section mt-7">{t("title")}</h2>}
           <p className="mt-5 text-ink-soft">{t("lede")}</p>
           {!standalone && (
@@ -34,10 +32,10 @@ export function Faq({ standalone = false }: { standalone?: boolean }) {
               <div key={i}>
                 <button onClick={() => setOpen(isOpen ? -1 : i)} className="flex w-full items-center justify-between gap-6 py-5 text-left" aria-expanded={isOpen}>
                   <span className="flex items-baseline gap-5">
-                    <span className="font-caps w-7 shrink-0 text-[0.65rem] tracking-[0.2em] text-violet">{["I", "II", "III", "IV", "V", "VI"][i]}</span>
+                    <span className="font-sans w-7 shrink-0 text-xs text-violet">{String(i + 1).padStart(2, "0")}</span>
                     <span className="font-display text-[1.35rem] leading-tight text-ink">{item.q}</span>
                   </span>
-                  <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center border transition-colors", isOpen ? "border-violet text-violet" : "border-line-strong text-ink-soft")}>
+                  <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors", isOpen ? "border-violet text-violet" : "border-line-strong text-ink-soft")}>
                     {isOpen ? <Minus className="h-3.5 w-3.5" strokeWidth={1.8} /> : <Plus className="h-3.5 w-3.5" strokeWidth={1.8} />}
                   </span>
                 </button>

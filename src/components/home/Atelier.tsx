@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
-import { Ornament } from "@/components/brand/Ornament";
 
 /** Honest brand note, set like a letterpress card. */
 export async function Atelier() {
@@ -13,8 +12,7 @@ export async function Atelier() {
         <Reveal>
           <div className="mx-auto max-w-4xl p-3">
             <div className="frame bg-shell px-8 py-14 text-center sm:px-16 sm:py-20">
-              <p className="chapter">Chapter VI · {t("eyebrow")}</p>
-              <Ornament className="mx-auto mt-4" />
+              <p className="chapter">{t("eyebrow")}</p>
               <blockquote className="mx-auto mt-9 max-w-3xl font-display text-[1.9rem] font-light leading-[1.3] text-ink balance sm:text-[2.5rem]">
                 “{t("body1")}”
               </blockquote>

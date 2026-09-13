@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
-import { Ornament } from "@/components/brand/Ornament";
 
 export async function Corporate() {
   const t = await getTranslations("corporate");
@@ -17,8 +16,7 @@ export async function Corporate() {
     <section className="bg-ink-grad text-canvas">
       <div className="container-x section grid gap-14 lg:grid-cols-12 lg:items-center">
         <Reveal className="lg:col-span-6">
-          <p className="chapter text-lilac-deep">Chapter V · {t("eyebrow")}</p>
-          <Ornament className="mt-4" tone="light" />
+          <p className="chapter text-lilac-deep">{t("eyebrow")}</p>
           <h2 className="h-section mt-7 text-canvas balance">{t("title")}</h2>
           <p className="mt-6 max-w-lg text-[1.05rem] leading-relaxed text-canvas/70 pretty">{t("lede")}</p>
           <ul className="mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2">
@@ -32,7 +30,7 @@ export async function Corporate() {
             ))}
           </ul>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link href="/corporate/quote" className="btn btn-gold">
+            <Link href="/corporate/quote" className="btn btn-light">
               {t("requestQuote")} <ArrowRight />
             </Link>
             <Link href="/corporate" className="btn btn-outline-light">

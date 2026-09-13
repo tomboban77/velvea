@@ -22,22 +22,25 @@ export default async function RecipientPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; locale: string }>;
-  searchParams: Promise<{ sort?: string; max?: string }>;
+  searchParams: Promise<{ sort?: string; min?: string; max?: string }>;
 }) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
-  const { sort, max } = await searchParams;
+  const { sort, min, max } = await searchParams;
   const t = await getTranslations();
+  const floor = min && Number.isFinite(Number(min)) && Number(min) >= 0 ? Number(min) : undefined;
+  const cap = max && Number.isFinite(Number(max)) && Number(max) >= 0 ? Number(max) : undefined;
 
   const { collection, products, total } = await getProductsByCollection("RECIPIENT", slug, {
     sort,
     take: 48,
+    min: floor,
+    max: cap,
   });
   const fallback = RECIPIENTS.find((o) => o.slug === slug);
   if (!collection && !fallback) notFound();
 
   const title = collection ? tc(collection.name, locale) : fallback ? labelFor(fallback, locale) : slug;
-  const filtered = max ? products.filter((p) => p.priceCents <= parseInt(max)) : products;
 
   return (
     <Listing
@@ -50,8 +53,8 @@ export default async function RecipientPage({
           ? `Le bon cadeau ${title.toLowerCase()}, livré partout au Canada.`
           : `The right gift ${title.toLowerCase()}, delivered across Canada.`
       }
-      products={filtered}
-      total={max ? filtered.length : total}
+      products={products}
+      total={total}
       breadcrumb={[
         { label: t("brand.name"), href: "/" },
         { label: t("nav.recipients"), href: "/recipients" },

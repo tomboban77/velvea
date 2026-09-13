@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { X, ChevronDown, ArrowRight } from "lucide-react";
@@ -10,6 +10,8 @@ import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } f
 import { cn } from "@/lib/utils";
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   const t = useTranslations();
   const locale = useLocale();
   const [section, setSection] = useState<string | null>("occasions");
@@ -20,6 +22,23 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button, select, input, [tabindex="0"]') ?? []).filter((el) => !el.closest('[inert]'));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); previous?.focus(); };
+  }, [open, onClose]);
 
   const groups: { key: string; label: string; base: string; items: NavLink[] }[] = [
     { key: "occasions", label: t("nav.occasions"), base: "/occasions", items: OCCASIONS },
@@ -32,6 +51,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
     <div
       className={cn("fixed inset-0 z-[60] lg:hidden", open ? "pointer-events-auto" : "pointer-events-none")}
       aria-hidden={!open}
+      inert={!open}
     >
       <div
         className={cn(
@@ -41,12 +61,17 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
         onClick={onClose}
       />
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className={cn(
           "absolute left-0 top-0 flex h-full w-[88%] max-w-sm flex-col bg-canvas shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
+          <span id={titleId} className="sr-only">{t("nav.menu")}</span>
           <Logo height={26} />
           <button onClick={onClose} className="icon-btn -mr-2" aria-label={t("nav.close")}>
             <X className="h-5 w-5" strokeWidth={1.6} />
@@ -73,6 +98,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                   />
                 </button>
                 <div
+                  inert={section !== g.key}
                   className={cn(
                     "grid transition-all duration-400",
                     section === g.key ? "grid-rows-[1fr] pb-3 opacity-100" : "grid-rows-[0fr] opacity-0"

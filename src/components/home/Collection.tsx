@@ -17,17 +17,17 @@ import type { ProductCard as ProductRow } from "@/lib/queries";
  * like a menu, price on a rule.
  */
 export async function Collection({ products }: { products: ProductRow[] }) {
-  if (!products.length) return null;
+  if (!products.length) return <div id="collection" />;
   const t = await getTranslations("collection");
   const locale = await getLocale();
 
   if (products.length >= 4) {
     const views = products.slice(0, 8).map((p) => toProductView(p, locale));
     return (
-      <section className="section bg-cream">
+      <section id="collection" className="section bg-cream">
         <div className="container-x">
-          <SectionHeading chapter="Chapter II" eyebrow={t("eyebrow")} title={t("title")} lede={t("lede")} link="/baskets" linkLabel={t("viewAll")} />
-          <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-8 lg:grid-cols-4">
+          <SectionHeading align="left" eyebrow={t("eyebrow")} title={t("title")} lede={t("lede")} link="/baskets" linkLabel={t("viewAll")} />
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
             {views.map((v, i) => (
               <Reveal key={v.id} delay={(i % 4) * 70}>
                 <ProductCard product={v} />
@@ -47,9 +47,9 @@ export async function Collection({ products }: { products: ProductRow[] }) {
   const isNew = leadView.badges.includes("new");
 
   return (
-    <section className="section bg-cream">
+    <section id="collection" className="section bg-cream">
       <div className="container-x">
-        <SectionHeading chapter="Chapter II" eyebrow={t("eyebrow")} title={t("title")} lede={t("lede")} />
+        <SectionHeading align="left" eyebrow={t("eyebrow")} title={t("title")} lede={t("lede")} />
 
         <div className="mt-16 grid gap-12 lg:grid-cols-12 lg:items-center">
           <Reveal className="lg:col-span-6">

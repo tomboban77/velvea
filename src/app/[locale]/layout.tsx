@@ -41,8 +41,9 @@ export default async function LocaleLayout({
     <NextIntlClientProvider>
       <CartProvider>
         <div className="flex min-h-screen flex-col">
+          <a href="#main-content" className="skip-link">{locale === "fr" ? "Aller au contenu" : "Skip to content"}</a>
           <Header featured={headerFeatured} />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
           <Footer />
         </div>
         <CartDrawer />

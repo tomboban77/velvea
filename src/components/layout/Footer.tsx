@@ -13,7 +13,7 @@ export async function Footer() {
   const s = await getSettings();
 
   return (
-    <footer className="mt-24 border-t border-line-strong bg-cream">
+    <footer className="store-footer border-t border-line-strong bg-cream">
       {/* Newsletter + concierge */}
       <div className="border-b border-line">
         <div className="container-x grid gap-12 py-16 lg:grid-cols-2 lg:gap-20">
@@ -61,8 +61,8 @@ export async function Footer() {
       </div>
 
       {/* Link columns */}
-      <div className="container-x grid gap-12 py-16 md:grid-cols-12">
-        <div className="md:col-span-4">
+      <div className="container-x grid grid-cols-2 gap-9 py-12 md:grid-cols-12">
+        <div className="col-span-2 md:col-span-4">
           <Logo height={30} />
           <p className="mt-6 max-w-xs text-sm leading-relaxed text-ink-soft">{t("footer.blurb")}</p>
           <div className="mt-6 flex gap-2.5">
