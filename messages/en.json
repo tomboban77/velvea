@@ -236,9 +236,13 @@
     "lede": "Seasonal ideas and first sight of new baskets. A few emails a year, nothing more.",
     "placeholder": "Your email address",
     "cta": "Subscribe",
-    "success": "You're on the list. Welcome to Velvéa.",
+    "success": "Almost there — check your inbox and confirm your subscription.",
     "error": "Something went wrong. Please try again.",
-    "consent": "By subscribing you agree to receive occasional emails from Velvéa."
+    "consent": "By subscribing you agree to receive occasional emails from Velvéa. You can unsubscribe at any time.",
+    "alreadySubscribed": "You're already on the list.",
+    "confirmed": "You're on the list. Welcome to Velvéa.",
+    "unsubscribed": "You've been unsubscribed. Sorry to see you go.",
+    "invalidLink": "That link is no longer valid."
   },
   "footer": {
     "blurb": "Curated gift baskets, composed by hand in Mississauga and delivered across Canada. Woman-owned, founded 2026.",
@@ -299,7 +303,18 @@
     "a3": "Tracked to the door",
     "a3Sub": "Same-day in the GTA before 4 PM. Tracked shipping across Canada.",
     "related": "You may also like",
-    "shopAll": "All gift baskets"
+    "shopAll": "All gift baskets",
+    "save": "Save {amount}",
+    "details": "The details",
+    "viewLarger": "View larger",
+    "closeImage": "Close",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "itemsInside": "{count, plural, one {# item inside} other {# items inside}}",
+    "giftCardTitle": "Add a handwritten card",
+    "giftCardHint": "Optional — written by hand and tucked inside",
+    "giftCardPlaceholder": "Happy birthday, Dad. Enjoy every bite. — Love, Tom",
+    "giftCardNote": "Written on a Velvéa card. Prices are never included."
   },
   "listing": {
     "price": "Price",

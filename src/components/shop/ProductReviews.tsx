@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLocale } from "next-intl";
 import { Star, ShieldCheck, PenLine, Check } from "lucide-react";
 import { formatDate, cn } from "@/lib/utils";
+import { Honeypot } from "@/components/ui/Honeypot";
 
 type Review = {
   id: string;
@@ -30,7 +31,17 @@ export function ProductReviews({
   const locale = useLocale();
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", location: "", rating: 5, title: "", body: "" });
+  const [form, setForm] = useState({
+    name: "",
+    location: "",
+    rating: 5,
+    title: "",
+    body: "",
+    email: "",
+    // Honeypot: a real visitor never fills this in.
+    company: "",
+  });
+  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const fr = locale === "fr";
@@ -38,6 +49,7 @@ export function ProductReviews({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    setError(null);
     try {
       const res = await fetch("/api/reviews", {
         method: "POST",
@@ -47,7 +59,15 @@ export function ProductReviews({
       if (res.ok) {
         setSubmitted(true);
         setShowForm(false);
+        return;
       }
+      const payload = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(
+        payload?.error ??
+          (fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted.")
+      );
+    } catch {
+      setError(fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted.");
     } finally {
       setBusy(false);
     }
@@ -93,7 +113,11 @@ export function ProductReviews({
         )}
 
         {showForm && (
-          <form onSubmit={submit} className="mt-6 rounded-2xl border border-line bg-shell p-6">
+          <form onSubmit={submit} className="relative mt-6 rounded-2xl border border-line bg-shell p-6">
+            <Honeypot value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
+            {error && (
+              <p className="mb-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
+            )}
             <div className="mb-4 flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button

@@ -45,11 +45,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     badges: product.badges,
     leadTimeDays: product.leadTimeDays,
     images: product.images.map((img) => ({ url: img.url, alt: img.alt ?? "" })),
+    inventory: product.inventory,
     variants: product.variants.map((v) => ({
       id: v.id,
       label: tc(v.label, locale),
       priceCents: v.priceCents,
       compareAtCents: v.compareAtCents,
+      inStock: v.inStock,
     })),
   };
 

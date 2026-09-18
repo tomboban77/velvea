@@ -1,15 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { customerLoginAction, customerRegisterAction, type AuthState } from "@/lib/actions/auth";
+import { Honeypot } from "@/components/ui/Honeypot";
 
 export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
   const fr = useLocale() === "fr";
   const action = mode === "login" ? customerLoginAction : customerRegisterAction;
   const [state, formAction, pending] = useActionState<AuthState, FormData>(action, null);
+  const [company, setCompany] = useState("");
 
   return (
     <div className="container-x flex justify-center py-16">
@@ -25,7 +27,8 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
           </p>
         </div>
 
-        <form action={formAction} className="rounded-[1.5rem] border border-line bg-shell p-6 sm:p-8">
+        <form action={formAction} className="relative rounded-[1.5rem] border border-line bg-shell p-6 sm:p-8">
+          <Honeypot value={company} onChange={setCompany} />
           {mode === "register" && (
             <div className="mb-4">
               <label className="label">{fr ? "Nom" : "Name"}</label>
@@ -40,6 +43,13 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
             <label className="label">{fr ? "Mot de passe" : "Password"}</label>
             <input name="password" type="password" required minLength={mode === "register" ? 8 : undefined} className="field" autoComplete={mode === "login" ? "current-password" : "new-password"} />
             {mode === "register" && <p className="mt-1 text-xs text-muted">{fr ? "Au moins 8 caractères." : "At least 8 characters."}</p>}
+            {mode === "login" && (
+              <p className="mt-2 text-right text-xs">
+                <Link href="/account/forgot" className="text-muted hover:text-violet">
+                  {fr ? "Mot de passe oublié ?" : "Forgot your password?"}
+                </Link>
+              </p>
+            )}
           </div>
 
           {state?.error && <p className="mt-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{state.error}</p>}

@@ -2,6 +2,7 @@
 
 import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { adminLoginAction } from "@/lib/actions/auth";
 import { Logo } from "@/components/brand/Logo";
 import { Lock, ArrowRight } from "lucide-react";
@@ -84,6 +85,11 @@ function LoginInner() {
               {!pending && <ArrowRight className="h-4 w-4" />}
             </button>
           </form>
+          <p className="mt-5 text-center text-sm">
+            <Link href="/admin/forgot" className="text-canvas/50 hover:text-canvas/80">
+              Forgot your password?
+            </Link>
+          </p>
         </div>
         <p className="mt-6 text-center text-xs text-canvas/40">
           Velvea · Mississauga, Ontario

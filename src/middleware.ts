@@ -6,13 +6,29 @@ import { routing } from "./i18n/routing";
 const intlMiddleware = createMiddleware(routing);
 
 const ADMIN_COOKIE = "velvea_admin";
+const MIN_SECRET_LENGTH = 32;
+
+/**
+ * Middleware runs on the edge and cannot import "server-only" modules, so the
+ * AUTH_SECRET check is repeated here. It fails closed: with no usable secret
+ * nobody reaches /admin, rather than everybody minting their own token against
+ * a hard-coded fallback.
+ */
+function edgeSecret(): Uint8Array | null {
+  const raw = process.env.AUTH_SECRET;
+  if (!raw || raw.trim().length < MIN_SECRET_LENGTH) return null;
+  if (raw.includes("change-me") || raw.includes("dev-insecure")) return null;
+  return new TextEncoder().encode(raw);
+}
 
 async function isValidAdmin(token: string | undefined): Promise<boolean> {
   if (!token) return false;
+  const secret = edgeSecret();
+  if (!secret) {
+    console.error("[middleware] AUTH_SECRET missing or too weak — denying admin access.");
+    return false;
+  }
   try {
-    const secret = new TextEncoder().encode(
-      process.env.AUTH_SECRET || "dev-insecure-secret-change-me"
-    );
     const { payload } = await jwtVerify(token, secret);
     return payload.role === "ADMIN" || payload.role === "STAFF";
   } catch {
@@ -25,7 +41,10 @@ export default async function middleware(req: NextRequest) {
 
   // Admin area — own auth guard, not localized.
   if (pathname.startsWith("/admin")) {
-    if (pathname === "/admin/login") return NextResponse.next();
+    // Sign-in and password recovery are the only unauthenticated admin routes.
+    if (["/admin/login", "/admin/forgot", "/admin/reset"].includes(pathname)) {
+      return NextResponse.next();
+    }
     const ok = await isValidAdmin(req.cookies.get(ADMIN_COOKIE)?.value);
     if (!ok) {
       const url = req.nextUrl.clone();

@@ -1,5 +1,7 @@
-import { setRequestLocale, getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
 import { GiftCardPicker } from "@/components/shop/GiftCardPicker";
+import { GIFT_CARDS_ENABLED, GIFT_CARD_SLUG } from "@/lib/features";
 import { getProductBySlug } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { Check } from "lucide-react";
@@ -10,8 +12,13 @@ export const metadata = { title: "Gift Cards" };
 export default async function GiftCardsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  // Gift cards are paused: nothing issues, emails or redeems a code, so the
+  // page stays off the site rather than taking money for something unusable.
+  if (!GIFT_CARDS_ENABLED) notFound();
+
   const fr = locale === "fr";
-  const product = await getProductBySlug("velvea-gift-card");
+  const product = await getProductBySlug(GIFT_CARD_SLUG);
 
   const points = fr
     ? ["Échangeable sur tous les paniers", "Livrée par courriel avec un code", "Sans frais, jamais d'expiration"]

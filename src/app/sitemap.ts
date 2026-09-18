@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllProducts, getPublishedArticles } from "@/lib/queries";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS } from "@/lib/nav";
+import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -26,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/custom", { priority: 0.8 }),
     entry("/corporate", { priority: 0.8 }),
     entry("/corporate/quote", { priority: 0.6 }),
-    entry("/gift-cards", { priority: 0.6 }),
+    ...(GIFT_CARDS_ENABLED ? [entry("/gift-cards", { priority: 0.6 })] : []),
     entry("/occasions", { priority: 0.7 }),
     entry("/recipients", { priority: 0.7 }),
     entry("/category", { priority: 0.7 }),

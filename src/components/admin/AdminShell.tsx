@@ -14,6 +14,8 @@ import {
   Building2,
   Newspaper,
   Settings,
+  ShieldCheck,
+  Users,
   Blocks,
   Mail,
   LogOut,
@@ -24,31 +26,49 @@ import {
 import { Logo } from "@/components/brand/Logo";
 import { adminLogoutAction } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
+import { GIFT_CARDS_ENABLED } from "@/lib/features";
+import { can, type Permission } from "@/lib/permissions";
+import type { Role } from "@prisma/client";
 
-const NAV = [
+/** Each entry names the permission needed to see it, so STAFF gets a smaller menu. */
+const NAV: {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  permission?: Permission;
+}[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/collections", label: "Collections", icon: FolderTree },
   { href: "/admin/builder", label: "Custom Builder", icon: Blocks },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
-  { href: "/admin/discounts", label: "Discounts", icon: Ticket },
-  { href: "/admin/gift-cards", label: "Gift Cards", icon: Gift },
+  { href: "/admin/discounts", label: "Discounts", icon: Ticket, permission: "discounts:write" },
+  // Hidden while gift cards are paused — see src/lib/features.ts.
+  ...(GIFT_CARDS_ENABLED
+    ? [{ href: "/admin/gift-cards", label: "Gift Cards", icon: Gift }]
+    : []),
+  { href: "/admin/customers", label: "Customers", icon: Users, permission: "customers:read" },
   { href: "/admin/inquiries", label: "Corporate", icon: Building2 },
   { href: "/admin/articles", label: "Gift Guides", icon: Newspaper },
   { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/settings", label: "Settings", icon: Settings, permission: "settings:write" },
+  { href: "/admin/staff", label: "Staff & roles", icon: ShieldCheck, permission: "staff:manage" },
 ];
 
 export function AdminShell({
   children,
   email,
+  role,
 }: {
   children: React.ReactNode;
   email: string;
+  role: Role;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const nav = NAV.filter((item) => !item.permission || can(role, item.permission));
 
   const Sidebar = (
     <div className="flex h-full flex-col">
@@ -64,7 +84,7 @@ export function AdminShell({
         Management
       </span>
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
-        {NAV.map((item) => {
+        {nav.map((item) => {
           const active = item.exact
             ? pathname === item.href
             : pathname.startsWith(item.href);
@@ -88,6 +108,7 @@ export function AdminShell({
       </nav>
       <div className="border-t border-white/10 p-4">
         <p className="truncate px-2 text-xs text-canvas/50">{email}</p>
+        <p className="px-2 text-[0.65rem] uppercase tracking-wider text-canvas/30">{role}</p>
         <div className="mt-2 flex items-center gap-2">
           <a
             href="/"

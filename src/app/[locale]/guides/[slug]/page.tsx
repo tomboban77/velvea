@@ -5,6 +5,7 @@ import { ChevronRight, ArrowRight } from "lucide-react";
 import { getArticleBySlug } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { formatDate } from "@/lib/utils";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -36,9 +37,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {a.publishedAt ? ` · ${formatDate(a.publishedAt, locale === "fr" ? "fr-CA" : "en-CA")}` : ""}
       </p>
 
+      {/* Bodies are sanitised on save, and again here so articles written
+          before that check can't render script either. */}
       <div
         className="prose prose-velvea mt-8 max-w-none prose-headings:font-display"
-        dangerouslySetInnerHTML={{ __html: tc(a.body, locale) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(tc(a.body, locale)) }}
       />
 
       <div className="mt-12 rounded-2xl border border-line bg-cream/50 p-8 text-center">

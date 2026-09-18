@@ -236,9 +236,13 @@
     "lede": "Des idées saisonnières et l'avant-première des nouveaux paniers. Quelques courriels par année, rien de plus.",
     "placeholder": "Votre adresse courriel",
     "cta": "S'abonner",
-    "success": "Vous êtes inscrit. Bienvenue chez Velvéa.",
+    "success": "Presque terminé — vérifiez votre boîte de réception et confirmez votre abonnement.",
     "error": "Une erreur est survenue. Veuillez réessayer.",
-    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvéa."
+    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvéa. Vous pouvez vous désabonner à tout moment.",
+    "alreadySubscribed": "Vous êtes déjà inscrit.",
+    "confirmed": "Vous êtes inscrit. Bienvenue chez Velvéa.",
+    "unsubscribed": "Vous êtes désabonné. Au plaisir de vous revoir.",
+    "invalidLink": "Ce lien n'est plus valide."
   },
   "footer": {
     "blurb": "Des paniers-cadeaux composés à la main à Mississauga et livrés partout au Canada. Entreprise détenue par une femme, fondée en 2026.",
@@ -299,7 +303,18 @@
     "a3": "Suivi jusqu'à la porte",
     "a3Sub": "Jour même dans le Grand Toronto avant 16 h. Expédition suivie partout au Canada.",
     "related": "Vous aimerez aussi",
-    "shopAll": "Tous les paniers"
+    "shopAll": "Tous les paniers",
+    "save": "Économisez {amount}",
+    "details": "Les détails",
+    "viewLarger": "Agrandir",
+    "closeImage": "Fermer",
+    "prevImage": "Image précédente",
+    "nextImage": "Image suivante",
+    "itemsInside": "{count, plural, one {# article inclus} other {# articles inclus}}",
+    "giftCardTitle": "Ajouter une carte manuscrite",
+    "giftCardHint": "Facultatif — écrite à la main et glissée à l'intérieur",
+    "giftCardPlaceholder": "Joyeux anniversaire, papa. Savoure chaque bouchée. — Tom",
+    "giftCardNote": "Écrite sur une carte Velvéa. Les prix ne sont jamais inclus."
   },
   "listing": {
     "price": "Prix",

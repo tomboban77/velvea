@@ -5,52 +5,95 @@ import { getSettings } from "@/lib/settings";
 import { getSession } from "@/lib/auth";
 import { computeTotals, computeDiscount, isGtaCity } from "@/lib/pricing";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import { sendOrderConfirmation, sendAdminOrderNotice } from "@/lib/email";
+import { sendOrderAwaitingPayment, sendAdminOrderNotice, type OrderEmailItem } from "@/lib/email";
 import { generateOrderNumber } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
-import type { DeliveryMethod } from "@prisma/client";
+import { offlineOrdersAllowed, siteUrl } from "@/lib/env";
+import { rateLimitBoth, rateLimitByIp, rateLimitMessage } from "@/lib/rate-limit";
+import { HIDDEN_PRODUCT_SLUGS } from "@/lib/features";
+import { reserveDiscount, releaseDiscount, customerRedemptions } from "@/lib/discounts";
+import { signOrderToken } from "@/lib/tokens";
+import { parseStoreDate, storeYmd, storeMinutesOfDay, cutoffMinutes, addStoreDays } from "@/lib/dates";
+import type { DeliveryMethod, DiscountCode } from "@prisma/client";
 import { z } from "zod";
 
 const addressSchema = z.object({
-  fullName: z.string().min(1),
-  line1: z.string().min(1),
-  line2: z.string().optional().default(""),
-  city: z.string().min(1),
-  province: z.string().min(2),
-  postalCode: z.string().min(3),
-  country: z.string().default("CA"),
-  phone: z.string().optional().default(""),
+  fullName: z.string().min(1).max(120),
+  line1: z.string().min(1).max(160),
+  line2: z.string().max(160).optional().default(""),
+  city: z.string().min(1).max(80),
+  province: z.string().min(2).max(2),
+  postalCode: z.string().min(3).max(12),
+  country: z.string().max(2).default("CA"),
+  phone: z.string().max(40).optional().default(""),
+});
+
+/**
+ * The custom-basket payload used to be `z.any()`, which meant the shape the
+ * pricing code assumed was never actually checked.
+ */
+const customConfigSchema = z.object({
+  containerId: z.string().min(1),
+  // One entry per unit — the builder pushes the same id once per quantity.
+  itemIds: z.array(z.string().min(1)).max(60).default([]),
+  note: z.string().max(300).optional().default(""),
 });
 
 const itemSchema = z.object({
   productId: z.string().optional(),
   variantId: z.string().optional(),
   slug: z.string().optional(),
-  name: z.string(),
+  name: z.string().max(200),
   unitPriceCents: z.number().int().nonnegative(),
   quantity: z.number().int().min(1).max(99),
   isCustom: z.boolean().optional(),
-  customConfig: z.any().optional(),
-  image: z.string().optional(),
+  customConfig: z.unknown().optional(),
+  image: z.string().max(500).optional(),
+  /** Per-basket handwritten card. Falls back to the order-level message. */
+  giftMessage: z.string().max(300).optional(),
 });
 
 const checkoutSchema = z.object({
-  email: z.string().email(),
-  phone: z.string().optional().default(""),
+  email: z.string().email().max(200),
+  phone: z.string().max(40).optional().default(""),
   deliveryMethod: z.enum(["SHIPPING", "LOCAL_SAMEDAY", "LOCAL_STANDARD"]),
   shipping: addressSchema,
   giftMessage: z.string().max(500).optional().default(""),
-  deliveryDate: z.string().optional().default(""),
+  deliveryDate: z.string().max(10).optional().default(""),
   deliveryNotes: z.string().max(500).optional().default(""),
-  discountCode: z.string().optional().default(""),
-  locale: z.string().optional().default("en"),
-  items: z.array(itemSchema).min(1),
+  discountCode: z.string().max(40).optional().default(""),
+  locale: z.enum(["en", "fr"]).optional().default("en"),
+  items: z.array(itemSchema).min(1).max(40),
+  /** Honeypot — a real browser leaves it empty; bots fill every field. */
+  company: z.string().max(200).optional().default(""),
 });
 
 export type CheckoutInput = z.input<typeof checkoutSchema>;
 
+/**
+ * Something the customer saw that no longer holds. These are surfaced
+ * individually rather than silently corrected, so the total on screen is never
+ * quietly different from the total charged.
+ */
+export type CartChange = {
+  kind:
+    | "unavailable"
+    | "variant-gone"
+    | "price-changed"
+    | "out-of-stock"
+    | "delivery-area"
+    | "delivery-date"
+    | "builder-unavailable"
+    | "builder-capacity"
+    | "discount";
+  /** What it concerns — a product name, or the delivery method. */
+  subject: string;
+  message: string;
+};
+
 type LineItem = {
   productId: string | null;
+  variantId: string | null;
   slug: string | null;
   name: string;
   variantLabel: string | null;
@@ -59,83 +102,365 @@ type LineItem = {
   quantity: number;
   isCustom: boolean;
   customConfig: unknown;
+  /** Localized add-on names, for emails and the admin order view. */
+  customItems: string[];
+  giftMessage: string | null;
+  leadTimeDays: number;
 };
 
-/** Rebuild authoritative prices from the DB. Never trust client-sent prices. */
+type ResolveOutcome =
+  | { ok: true; lines: LineItem[] }
+  | { ok: false; changes: CartChange[] };
+
+const fr = (locale: string) => locale === "fr";
+const say = (locale: string, en: string, frText: string) => (fr(locale) ? frText : en);
+
+// ---------------------------------------------------------------------------
+// Line resolution
+// ---------------------------------------------------------------------------
+
+async function resolveCustomLine(
+  item: z.infer<typeof itemSchema>,
+  locale: string,
+  changes: CartChange[]
+): Promise<LineItem | null> {
+  const parsed = customConfigSchema.safeParse(item.customConfig);
+  if (!parsed.success) {
+    changes.push({
+      kind: "builder-unavailable",
+      subject: say(locale, "Custom Basket", "Panier personnalisé"),
+      message: say(
+        locale,
+        "Your custom basket could not be read. Please build it again.",
+        "Votre panier personnalisé n'a pas pu être lu. Veuillez le reconstruire."
+      ),
+    });
+    return null;
+  }
+  const cfg = parsed.data;
+
+  // Count occurrences: `findMany({ id: { in } })` de-duplicates, so picking the
+  // same add-on three times used to be charged once.
+  const counts = new Map<string, number>();
+  for (const id of cfg.itemIds) counts.set(id, (counts.get(id) ?? 0) + 1);
+  const uniqueIds = [...counts.keys()];
+
+  const [container, addons] = await Promise.all([
+    prisma.builderContainer.findUnique({ where: { id: cfg.containerId } }),
+    uniqueIds.length
+      ? prisma.builderItem.findMany({ where: { id: { in: uniqueIds } } })
+      : Promise.resolve([]),
+  ]);
+
+  const label = say(locale, "Custom Basket", "Panier personnalisé");
+
+  if (!container || !container.active) {
+    changes.push({
+      kind: "builder-unavailable",
+      subject: label,
+      message: say(
+        locale,
+        "The basket style you chose is no longer available.",
+        "Le contenant choisi n'est plus disponible."
+      ),
+    });
+    return null;
+  }
+
+  const missing = uniqueIds.filter((id) => !addons.some((a) => a.id === id && a.active));
+  if (missing.length) {
+    changes.push({
+      kind: "builder-unavailable",
+      subject: label,
+      message: say(
+        locale,
+        `${missing.length} add-on${missing.length > 1 ? "s are" : " is"} no longer available. Please review your basket.`,
+        `${missing.length} article${missing.length > 1 ? "s ne sont" : " n'est"} plus disponible. Veuillez revoir votre panier.`
+      ),
+    });
+    return null;
+  }
+
+  const totalAddons = [...counts.values()].reduce((s, n) => s + n, 0);
+  if (totalAddons > container.capacity) {
+    changes.push({
+      kind: "builder-capacity",
+      subject: label,
+      message: say(
+        locale,
+        `That basket holds ${container.capacity} items; yours has ${totalAddons}.`,
+        `Ce panier contient ${container.capacity} articles; le vôtre en a ${totalAddons}.`
+      ),
+    });
+    return null;
+  }
+
+  const snapshotItems = addons.map((a) => ({
+    itemId: a.id,
+    name: t(a.name, locale),
+    qty: counts.get(a.id) ?? 0,
+    unitPriceCents: a.priceCents,
+  }));
+
+  const unitPriceCents =
+    container.priceCents +
+    snapshotItems.reduce((s, i) => s + i.unitPriceCents * i.qty, 0);
+
+  if (unitPriceCents <= 0) {
+    changes.push({
+      kind: "builder-unavailable",
+      subject: label,
+      message: say(locale, "Your custom basket is empty.", "Votre panier personnalisé est vide."),
+    });
+    return null;
+  }
+
+  const customItems = snapshotItems.map((i) => (i.qty > 1 ? `${i.name} × ${i.qty}` : i.name));
+
+  return {
+    productId: null,
+    variantId: null,
+    slug: null,
+    name: label,
+    variantLabel: t(container.name, locale),
+    imageUrl: item.image ?? null,
+    unitPriceCents,
+    quantity: item.quantity,
+    isCustom: true,
+    customConfig: {
+      containerId: container.id,
+      containerName: t(container.name, locale),
+      containerPriceCents: container.priceCents,
+      items: snapshotItems,
+      note: cfg.note,
+    },
+    customItems,
+    giftMessage: item.giftMessage?.trim() || null,
+    leadTimeDays: 2,
+  };
+}
+
 async function resolveLineItems(
   items: z.infer<typeof itemSchema>[],
   locale: string
-): Promise<LineItem[]> {
+): Promise<ResolveOutcome> {
   const lines: LineItem[] = [];
+  const changes: CartChange[] = [];
 
   for (const item of items) {
-    if (item.isCustom && item.customConfig) {
-      const cfg = item.customConfig as { containerId?: string; itemIds?: string[]; note?: string };
-      const [container, addons] = await Promise.all([
-        cfg.containerId
-          ? prisma.builderContainer.findUnique({ where: { id: cfg.containerId } })
-          : null,
-        cfg.itemIds?.length
-          ? prisma.builderItem.findMany({ where: { id: { in: cfg.itemIds } } })
-          : Promise.resolve([]),
-      ]);
-      const price =
-        (container?.priceCents ?? 0) + addons.reduce((s, a) => s + a.priceCents, 0);
-      if (price <= 0) continue;
-      lines.push({
-        productId: null,
-        slug: null,
-        name: locale === "fr" ? "Panier personnalisé" : "Custom Basket",
-        variantLabel: container ? t(container.name, locale) : null,
-        imageUrl: item.image ?? null,
-        unitPriceCents: price,
-        quantity: item.quantity,
-        isCustom: true,
-        customConfig: {
-          containerId: cfg.containerId,
-          itemIds: cfg.itemIds,
-          note: cfg.note ?? "",
-          items: addons.map((a) => t(a.name, locale)),
-        },
+    if (item.isCustom) {
+      const line = await resolveCustomLine(item, locale, changes);
+      if (line) lines.push(line);
+      continue;
+    }
+
+    if (!item.productId) {
+      changes.push({
+        kind: "unavailable",
+        subject: item.name,
+        message: say(locale, "This item is no longer available.", "Cet article n'est plus disponible."),
       });
       continue;
     }
 
-    if (!item.productId) continue;
     const product = await prisma.product.findUnique({
       where: { id: item.productId },
       include: { images: { orderBy: { position: "asc" }, take: 1 }, variants: true },
     });
-    if (!product || product.status !== "ACTIVE") continue;
 
-    let unitPrice = product.priceCents;
-    let variantLabel: string | null = null;
-    if (item.variantId) {
-      const v = product.variants.find((x) => x.id === item.variantId);
-      if (v) {
-        unitPrice = v.priceCents;
-        variantLabel = t(v.label, locale);
-      }
+    if (!product || product.status !== "ACTIVE" || HIDDEN_PRODUCT_SLUGS.includes(product.slug)) {
+      changes.push({
+        kind: "unavailable",
+        subject: item.name,
+        message: say(locale, "This item is no longer available.", "Cet article n'est plus disponible."),
+      });
+      continue;
     }
+
+    const name = t(product.name, locale);
+
+    let unitPriceCents = product.priceCents;
+    let variantLabel: string | null = null;
+    let variantId: string | null = null;
+
+    if (item.variantId) {
+      const variant = product.variants.find((v) => v.id === item.variantId);
+      if (!variant) {
+        // Saving a product used to delete and recreate every variant, so a cart
+        // holding the old id silently fell back to the base price.
+        changes.push({
+          kind: "variant-gone",
+          subject: name,
+          message: say(
+            locale,
+            "The option you chose has changed. Please pick it again.",
+            "L'option choisie a changé. Veuillez la sélectionner à nouveau."
+          ),
+        });
+        continue;
+      }
+      if (!variant.inStock) {
+        changes.push({
+          kind: "out-of-stock",
+          subject: `${name} — ${t(variant.label, locale)}`,
+          message: say(locale, "This option is sold out.", "Cette option est épuisée."),
+        });
+        continue;
+      }
+      unitPriceCents = variant.priceCents;
+      variantLabel = t(variant.label, locale);
+      variantId = variant.id;
+    }
+
+    if (product.inventory !== null && product.inventory < item.quantity) {
+      changes.push({
+        kind: "out-of-stock",
+        subject: name,
+        message:
+          product.inventory <= 0
+            ? say(locale, "This basket is sold out.", "Ce panier est épuisé.")
+            : say(
+                locale,
+                `Only ${product.inventory} left — please reduce the quantity.`,
+                `Il n'en reste que ${product.inventory} — veuillez réduire la quantité.`
+              ),
+      });
+      continue;
+    }
+
     lines.push({
       productId: product.id,
+      variantId,
       slug: product.slug,
-      name: t(product.name, locale),
+      name,
       variantLabel,
       imageUrl: product.images[0]?.url ?? null,
-      unitPriceCents: unitPrice,
+      unitPriceCents,
       quantity: item.quantity,
       isCustom: false,
       customConfig: null,
+      customItems: [],
+      giftMessage: item.giftMessage?.trim() || null,
+      leadTimeDays: product.leadTimeDays,
     });
   }
-  return lines;
+
+  if (changes.length) return { ok: false, changes };
+  return { ok: true, lines };
 }
+
+// ---------------------------------------------------------------------------
+// Delivery validation
+// ---------------------------------------------------------------------------
+
+function validateDelivery({
+  method,
+  deliveryDate,
+  city,
+  leadTimeDays,
+  cutoff,
+  locale,
+}: {
+  method: DeliveryMethod;
+  deliveryDate: string;
+  city: string;
+  leadTimeDays: number;
+  cutoff: string;
+  locale: string;
+}): CartChange[] {
+  const changes: CartChange[] = [];
+  const isLocal = method === "LOCAL_SAMEDAY" || method === "LOCAL_STANDARD";
+
+  if (isLocal && !isGtaCity(city)) {
+    changes.push({
+      kind: "delivery-area",
+      subject: say(locale, "Delivery method", "Mode de livraison"),
+      message: say(
+        locale,
+        "Local delivery is only available in Mississauga and the GTA. Choose Canada-wide shipping.",
+        "La livraison locale n'est offerte qu'à Mississauga et dans le RGT. Choisissez l'expédition au Canada."
+      ),
+    });
+    return changes;
+  }
+
+  const today = storeYmd();
+  const pastCutoff = storeMinutesOfDay() >= cutoffMinutes(cutoff);
+
+  if (method === "LOCAL_SAMEDAY") {
+    // The cutoff was previously only enforced in the browser.
+    if (pastCutoff) {
+      changes.push({
+        kind: "delivery-date",
+        subject: say(locale, "Same-day delivery", "Livraison le jour même"),
+        message: say(
+          locale,
+          `Same-day orders close at ${cutoff} ET. Please choose another delivery method.`,
+          `Les commandes du jour même ferment à ${cutoff} HE. Veuillez choisir un autre mode de livraison.`
+        ),
+      });
+    }
+    if (deliveryDate && deliveryDate !== today) {
+      changes.push({
+        kind: "delivery-date",
+        subject: say(locale, "Delivery date", "Date de livraison"),
+        message: say(
+          locale,
+          "Same-day delivery must be for today.",
+          "La livraison le jour même doit être pour aujourd'hui."
+        ),
+      });
+    }
+    return changes;
+  }
+
+  if (!deliveryDate) return changes;
+
+  const parsed = parseStoreDate(deliveryDate);
+  if (!parsed) {
+    changes.push({
+      kind: "delivery-date",
+      subject: say(locale, "Delivery date", "Date de livraison"),
+      message: say(locale, "That date isn't valid.", "Cette date n'est pas valide."),
+    });
+    return changes;
+  }
+
+  // Anything ordered after the cutoff starts its lead time tomorrow.
+  const earliest = addStoreDays(today, leadTimeDays + (pastCutoff ? 1 : 0));
+  if (deliveryDate < earliest) {
+    changes.push({
+      kind: "delivery-date",
+      subject: say(locale, "Delivery date", "Date de livraison"),
+      message: say(
+        locale,
+        `The earliest we can deliver this basket is ${earliest}.`,
+        `La date la plus proche pour ce panier est le ${earliest}.`
+      ),
+    });
+  }
+
+  // A year out is well beyond any real gifting window.
+  if (deliveryDate > addStoreDays(today, 365)) {
+    changes.push({
+      kind: "delivery-date",
+      subject: say(locale, "Delivery date", "Date de livraison"),
+      message: say(locale, "That date is too far ahead.", "Cette date est trop éloignée."),
+    });
+  }
+
+  return changes;
+}
+
+// ---------------------------------------------------------------------------
+// createCheckout
+// ---------------------------------------------------------------------------
 
 export type CheckoutResult =
   | { ok: true; mode: "stripe"; url: string }
-  | { ok: true; mode: "offline"; orderNumber: string }
-  | { ok: false; error: string };
+  /** `token` gates the confirmation page, which no longer trusts the order number. */
+  | { ok: true; mode: "offline"; orderNumber: string; token: string }
+  | { ok: false; error: string; changes?: CartChange[] };
 
 export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutResult> {
   let input: z.infer<typeof checkoutSchema>;
@@ -145,98 +470,238 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     return { ok: false, error: "Please complete all required fields." };
   }
 
+  const locale = input.locale;
+
+  // Honeypot: quietly refuse rather than explaining what gave it away.
+  if (input.company.trim()) {
+    return {
+      ok: false,
+      error: say(locale, "We couldn't process that request.", "Nous n'avons pas pu traiter cette demande."),
+    };
+  }
+
+  const limit = await rateLimitBoth("checkout", input.email);
+  if (!limit.ok) return { ok: false, error: rateLimitMessage(limit, fr(locale)) };
+
   const settings = await getSettings();
   const session = await getSession();
 
-  // Validate local delivery is within the GTA.
-  let method: DeliveryMethod = input.deliveryMethod;
-  if (
-    (method === "LOCAL_SAMEDAY" || method === "LOCAL_STANDARD") &&
-    !isGtaCity(input.shipping.city)
-  ) {
-    method = "SHIPPING";
+  const resolved = await resolveLineItems(input.items, locale);
+  if (!resolved.ok) {
+    return {
+      ok: false,
+      error: say(
+        locale,
+        "Some items in your bag have changed. Please review your order.",
+        "Certains articles de votre panier ont changé. Veuillez revoir votre commande."
+      ),
+      changes: resolved.changes,
+    };
+  }
+  const lines = resolved.lines;
+  if (lines.length === 0) {
+    return { ok: false, error: say(locale, "Your cart is empty.", "Votre panier est vide.") };
   }
 
-  const lines = await resolveLineItems(input.items, input.locale);
-  if (lines.length === 0) return { ok: false, error: "Your cart is empty or unavailable." };
+  const method: DeliveryMethod = input.deliveryMethod;
+  const leadTimeDays = lines.reduce((max, l) => Math.max(max, l.leadTimeDays), 0);
+  const deliveryChanges = validateDelivery({
+    method,
+    deliveryDate: input.deliveryDate,
+    city: input.shipping.city,
+    leadTimeDays,
+    cutoff: settings.delivery.sameDayCutoff,
+    locale,
+  });
+  if (deliveryChanges.length) {
+    return {
+      ok: false,
+      error: say(
+        locale,
+        "We can't deliver this order as entered. Please review the delivery details.",
+        "Nous ne pouvons pas livrer cette commande telle quelle. Veuillez revoir les détails de livraison."
+      ),
+      changes: deliveryChanges,
+    };
+  }
 
-  // Discount
-  let discount = null;
+  // --- Discount ---
+  const subtotalCents = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
+  let discount: DiscountCode | null = null;
+  let discountReserved = false;
+
   if (input.discountCode) {
-    discount = await prisma.discountCode.findUnique({
-      where: { code: input.discountCode.toUpperCase() },
-    });
+    const code = input.discountCode.toUpperCase().trim();
+    const found = await prisma.discountCode.findUnique({ where: { code } });
+    const check = computeDiscount(found, subtotalCents);
+    if (!check.valid) {
+      return {
+        ok: false,
+        error: say(locale, "That discount code isn't valid.", "Ce code de rabais n'est pas valide."),
+        changes: [
+          {
+            kind: "discount",
+            subject: code,
+            message: check.reason ?? say(locale, "Not applicable.", "Non applicable."),
+          },
+        ],
+      };
+    }
+    if (found!.perCustomerLimit !== null) {
+      const used = await customerRedemptions(code, input.email, session?.sub);
+      if (used >= found!.perCustomerLimit) {
+        return {
+          ok: false,
+          error: say(
+            locale,
+            "You've already used this discount code.",
+            "Vous avez déjà utilisé ce code de rabais."
+          ),
+          changes: [
+            {
+              kind: "discount",
+              subject: code,
+              message: say(locale, "Limit reached for this customer.", "Limite atteinte pour ce client."),
+            },
+          ],
+        };
+      }
+    }
+    discountReserved = await reserveDiscount(code);
+    if (!discountReserved) {
+      return {
+        ok: false,
+        error: say(
+          locale,
+          "That discount code has just been fully redeemed.",
+          "Ce code de rabais vient d'être entièrement utilisé."
+        ),
+        changes: [
+          {
+            kind: "discount",
+            subject: code,
+            message: say(locale, "No redemptions left.", "Plus aucune utilisation disponible."),
+          },
+        ],
+      };
+    }
+    discount = found;
   }
-  const subtotalForDiscount = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
-  const discCheck = computeDiscount(discount, subtotalForDiscount);
+
+  /** Undo the reservation on any path that doesn't end in a live checkout. */
+  const releaseIfReserved = async () => {
+    if (discountReserved && discount) await releaseDiscount(discount.code);
+  };
 
   const totals = computeTotals({
     settings,
     lines: lines.map((l) => ({ unitPriceCents: l.unitPriceCents, quantity: l.quantity })),
     province: input.shipping.province,
     method,
-    discount: discCheck.valid ? discount : null,
+    discount,
   });
 
   const orderNumber = generateOrderNumber();
+  const stripeReady = isStripeConfigured();
 
-  const order = await prisma.order.create({
-    data: {
-      orderNumber,
-      userId: session?.sub ?? null,
-      email: input.email.toLowerCase(),
-      phone: input.phone || null,
-      status: "PENDING",
-      deliveryMethod: method,
-      subtotalCents: totals.subtotalCents,
-      shippingCents: totals.shippingCents,
-      taxCents: totals.taxCents,
-      discountCents: totals.discountCents,
-      totalCents: totals.totalCents,
-      discountCode: discCheck.valid ? discount?.code : null,
-      giftMessage: input.giftMessage || null,
-      deliveryDate: input.deliveryDate ? new Date(input.deliveryDate) : null,
-      deliveryNotes: input.deliveryNotes || null,
-      shipping: input.shipping,
-      items: {
-        create: lines.map((l) => ({
-          productId: l.productId,
-          slug: l.slug,
-          name: l.name,
-          variantLabel: l.variantLabel,
-          imageUrl: l.imageUrl,
-          unitPriceCents: l.unitPriceCents,
-          quantity: l.quantity,
-          isCustom: l.isCustom,
-          customConfig: l.customConfig as object | undefined,
-        })),
+  if (!stripeReady && !offlineOrdersAllowed()) {
+    await releaseIfReserved();
+    console.error("[checkout] Stripe is not configured and ALLOW_OFFLINE_ORDERS is not set.");
+    return {
+      ok: false,
+      error: say(
+        locale,
+        "Payments are temporarily unavailable. Please try again shortly.",
+        "Les paiements sont temporairement indisponibles. Veuillez réessayer sous peu."
+      ),
+    };
+  }
+
+  let order;
+  try {
+    order = await prisma.order.create({
+      data: {
+        orderNumber,
+        userId: session?.sub ?? null,
+        email: input.email.toLowerCase(),
+        phone: input.phone || null,
+        status: "PENDING",
+        deliveryMethod: method,
+        locale,
+        subtotalCents: totals.subtotalCents,
+        shippingCents: totals.shippingCents,
+        taxCents: totals.taxCents,
+        discountCents: totals.discountCents,
+        totalCents: totals.totalCents,
+        discountCode: discount?.code ?? null,
+        giftMessage: input.giftMessage || null,
+        deliveryDate: input.deliveryDate ? parseStoreDate(input.deliveryDate) : null,
+        deliveryNotes: input.deliveryNotes || null,
+        shipping: input.shipping,
+        items: {
+          create: lines.map((l) => ({
+            productId: l.productId,
+            variantId: l.variantId,
+            slug: l.slug,
+            name: l.name,
+            variantLabel: l.variantLabel,
+            imageUrl: l.imageUrl,
+            unitPriceCents: l.unitPriceCents,
+            quantity: l.quantity,
+            isCustom: l.isCustom,
+            customConfig: l.customConfig as object | undefined,
+            giftMessage: l.giftMessage,
+          })),
+        },
+        timeline: { create: { label: "Order placed", note: "Awaiting payment" } },
       },
-      timeline: { create: { label: "Order placed", note: "Awaiting payment" } },
-    },
-  });
+    });
+  } catch (err) {
+    await releaseIfReserved();
+    console.error("[checkout] Could not record the order:", err);
+    return {
+      ok: false,
+      error: say(
+        locale,
+        "We couldn't record your order. Please try again.",
+        "Nous n'avons pas pu enregistrer votre commande. Veuillez réessayer."
+      ),
+    };
+  }
 
+  const emailItems: OrderEmailItem[] = lines.map((l) => ({
+    name: l.name,
+    variantLabel: l.variantLabel,
+    quantity: l.quantity,
+    unitPriceCents: l.unitPriceCents,
+    isCustom: l.isCustom,
+    customItems: l.customItems,
+    giftMessage: l.giftMessage,
+  }));
   const emailData = {
     orderNumber,
     email: order.email,
-    items: lines.map((l) => ({
-      name: l.name,
-      quantity: l.quantity,
-      unitPriceCents: l.unitPriceCents,
-    })),
+    locale,
+    phone: order.phone,
+    items: emailItems,
     subtotalCents: totals.subtotalCents,
     shippingCents: totals.shippingCents,
     taxCents: totals.taxCents,
     discountCents: totals.discountCents,
     totalCents: totals.totalCents,
+    discountCode: order.discountCode,
+    deliveryMethod: method,
+    deliveryDate: order.deliveryDate,
+    deliveryNotes: order.deliveryNotes,
     shipping: input.shipping,
     giftMessage: input.giftMessage,
   };
 
-  // Stripe path
-  if (isStripeConfigured()) {
+  // --- Stripe ---
+  if (stripeReady) {
     try {
       const stripe = getStripe();
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      const site = siteUrl();
 
       const lineItems = lines.map((l) => ({
         quantity: l.quantity,
@@ -269,27 +734,46 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         });
       }
 
-      const discounts = [];
+      // The coupon is single-use and short-lived, and its id rides along in the
+      // session metadata so the webhook can delete it once the session settles.
+      const discounts: { coupon: string }[] = [];
+      let couponId: string | undefined;
       if (totals.discountCents > 0) {
-        const coupon = await stripe.coupons.create({
-          amount_off: totals.discountCents,
-          currency: "cad",
-          duration: "once",
-          name: discount?.code ?? "Discount",
-        });
+        const coupon = await stripe.coupons.create(
+          {
+            amount_off: totals.discountCents,
+            currency: "cad",
+            duration: "once",
+            max_redemptions: 1,
+            redeem_by: Math.floor(Date.now() / 1000) + 60 * 60 * 25,
+            name: discount?.code ?? "Discount",
+            metadata: { orderId: order.id },
+          },
+          { idempotencyKey: `coupon_${order.id}` }
+        );
+        couponId = coupon.id;
         discounts.push({ coupon: coupon.id });
       }
 
-      const checkout = await stripe.checkout.sessions.create({
-        mode: "payment",
-        line_items: lineItems,
-        discounts,
-        customer_email: order.email,
-        success_url: `${siteUrl}/order/${orderNumber}?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${siteUrl}/checkout?canceled=1`,
-        metadata: { orderId: order.id, orderNumber },
-        payment_intent_data: { metadata: { orderId: order.id, orderNumber } },
-      });
+      const checkout = await stripe.checkout.sessions.create(
+        {
+          mode: "payment",
+          line_items: lineItems,
+          discounts,
+          customer_email: order.email,
+          locale: locale === "fr" ? "fr-CA" : "en",
+          success_url: `${site}/order/${orderNumber}?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${site}/checkout?canceled=1`,
+          metadata: {
+            orderId: order.id,
+            orderNumber,
+            ...(couponId ? { couponId } : {}),
+          },
+          payment_intent_data: { metadata: { orderId: order.id, orderNumber } },
+        },
+        // Retrying the same order must never create a second charge.
+        { idempotencyKey: `checkout_${order.id}` }
+      );
 
       await prisma.order.update({
         where: { id: order.id },
@@ -298,32 +782,81 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
 
       return { ok: true, mode: "stripe", url: checkout.url! };
     } catch (err) {
-      console.error("Stripe checkout failed:", err);
-      // fall through to offline
+      // Previously this fell through to the offline path: the customer was
+      // emailed "order confirmed" and the admin told to pack it, with nobody
+      // having paid. Fail loudly instead.
+      console.error("[checkout] Stripe session creation failed:", err);
+      await releaseIfReserved();
+      await prisma.order
+        .update({
+          where: { id: order.id },
+          data: {
+            status: "CANCELLED",
+            cancelledAt: new Date(),
+            discountCode: null,
+            timeline: { create: { label: "Cancelled", note: "Payment session could not be created" } },
+          },
+        })
+        .catch(() => {});
+      return {
+        ok: false,
+        error: say(
+          locale,
+          "We couldn't reach our payment provider. Nothing has been charged — please try again in a moment.",
+          "Nous n'avons pas pu joindre notre fournisseur de paiement. Rien n'a été facturé — veuillez réessayer dans un instant."
+        ),
+      };
     }
   }
 
-  // Offline path (no Stripe configured): confirm order, notify.
-  await sendOrderConfirmation(emailData);
-  await sendAdminOrderNotice(emailData);
-  return { ok: true, mode: "offline", orderNumber };
+  // --- Offline path (explicitly enabled, no Stripe) ---
+  // The order exists but is unpaid, and both emails say so.
+  await sendOrderAwaitingPayment(emailData);
+  await sendAdminOrderNotice(emailData, { paid: false });
+  return {
+    ok: true,
+    mode: "offline",
+    orderNumber,
+    token: await signOrderToken(orderNumber),
+  };
 }
+
+// ---------------------------------------------------------------------------
+// Discount preview
+// ---------------------------------------------------------------------------
 
 export async function validateDiscountCode(
   code: string,
-  subtotalCents: number
-): Promise<{ valid: boolean; label?: string; discountCents?: number; reason?: string }> {
+  subtotalCents: number,
+  locale: "en" | "fr" = "en"
+): Promise<{ valid: boolean; label?: string; discountCents?: number; freeShipping?: boolean; reason?: string }> {
   if (!code) return { valid: false };
-  const discount = await prisma.discountCode.findUnique({
-    where: { code: code.toUpperCase() },
-  });
-  const res = computeDiscount(discount, subtotalCents);
+
+  const limit = await rateLimitByIp("discountCheck");
+  if (!limit.ok) return { valid: false, reason: rateLimitMessage(limit, fr(locale)) };
+
+  const safeSubtotal = Number.isFinite(subtotalCents)
+    ? Math.max(0, Math.min(Math.trunc(subtotalCents), 100_000_00))
+    : 0;
+
+  const discount = await prisma.discountCode
+    .findUnique({ where: { code: code.toUpperCase().trim() } })
+    .catch(() => null);
+
+  const res = computeDiscount(discount, safeSubtotal);
   if (!res.valid) return { valid: false, reason: res.reason };
+
   const label =
     discount!.type === "PERCENT"
-      ? `${discount!.value}% off`
+      ? say(locale, `${discount!.value}% off`, `${discount!.value} % de rabais`)
       : discount!.type === "FREE_SHIPPING"
-      ? "Free shipping"
-      : "Discount applied";
-  return { valid: true, label, discountCents: res.discountCents };
+      ? say(locale, "Free shipping", "Livraison gratuite")
+      : say(locale, "Discount applied", "Rabais appliqué");
+
+  return {
+    valid: true,
+    label,
+    discountCents: res.discountCents,
+    freeShipping: res.freeShipping,
+  };
 }

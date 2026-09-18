@@ -11,6 +11,11 @@ export const OCCASIONS: NavLink[] = [
   { slug: "congratulations", en: "Congratulations", fr: "Félicitations" },
   { slug: "housewarming", en: "Housewarming", fr: "Pendaison de crémaillère" },
   { slug: "wedding", en: "Wedding", fr: "Mariage" },
+  { slug: "graduation", en: "Graduation", fr: "Remise des diplômes" },
+  { slug: "new-job", en: "New Job", fr: "Nouvel emploi" },
+  { slug: "retirement", en: "Retirement", fr: "Retraite" },
+  { slug: "thinking-of-you", en: "Thinking of You", fr: "Je pense à toi" },
+  { slug: "just-because", en: "Just Because", fr: "Juste comme ça" },
   { slug: "holiday", en: "Holiday", fr: "Fêtes" },
 ];
 

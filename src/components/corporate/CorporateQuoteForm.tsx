@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocale } from "next-intl";
 import { Check, Loader2, ArrowRight } from "lucide-react";
+import { Honeypot } from "@/components/ui/Honeypot";
 
 export function CorporateQuoteForm() {
   const fr = useLocale() === "fr";
@@ -10,6 +11,8 @@ export function CorporateQuoteForm() {
   const [f, setF] = useState({
     company: "", contactName: "", email: "", phone: "",
     budget: "", quantity: "", occasion: "", message: "",
+    // Honeypot: a real visitor never fills this in.
+    website: "",
   });
   const set = (k: keyof typeof f, v: string) => setF((p) => ({ ...p, [k]: v }));
 
@@ -20,7 +23,7 @@ export function CorporateQuoteForm() {
       const res = await fetch("/api/corporate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
+        body: JSON.stringify({ ...f, locale: fr ? "fr" : "en" }),
       });
       setState(res.ok ? "done" : "error");
     } catch {
@@ -47,7 +50,8 @@ export function CorporateQuoteForm() {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-[1.75rem] border border-line bg-shell p-6 sm:p-8">
+    <form onSubmit={submit} className="relative rounded-[1.75rem] border border-line bg-shell p-6 sm:p-8">
+      <Honeypot name="website" value={f.website} onChange={(v) => set("website", v)} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label">{fr ? "Entreprise" : "Company"} *</label>

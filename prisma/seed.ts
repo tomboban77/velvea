@@ -1,17 +1,41 @@
 import { PrismaClient, type Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { OCCASIONS, RECIPIENTS, CATEGORIES } from "../src/lib/nav";
+import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS } from "../src/lib/nav";
 
 const prisma = new PrismaClient();
 
 const L = (en: string, fr?: string) => ({ en, fr: fr || en });
 
+/**
+ * Demo products, their reviews and the placeholder gift guides are opt-in.
+ * They are invented sample data with no images, so seeding them into a real
+ * store just means deleting twelve baskets by hand later. Structure the store
+ * genuinely needs — collections, the custom builder, settings, the admin user —
+ * is always seeded.
+ *
+ *   SEED_DEMO_CONTENT=true npm run db:seed
+ */
+const SEED_DEMO_CONTENT = process.env.SEED_DEMO_CONTENT === "true";
+
 async function main() {
-  console.log("Seeding Velvea...");
+  console.log(`Seeding Velvea${SEED_DEMO_CONTENT ? " (with demo content)" : ""}...`);
 
   // --- Admin user ---
-  const adminEmail = (process.env.ADMIN_EMAIL || "admin@velvea.ca").toLowerCase();
-  const adminPassword = process.env.ADMIN_PASSWORD || "Velvea!2026";
+  // No fallback credentials: a seed that invents a known email/password and
+  // prints it to the console is a published set of admin keys.
+  const adminEmail = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+  const adminPassword = process.env.ADMIN_PASSWORD || "";
+  if (!adminEmail || !adminPassword) {
+    console.error(
+      "ADMIN_EMAIL and ADMIN_PASSWORD must be set before seeding.\n" +
+        "  e.g. ADMIN_EMAIL=you@velvea.ca ADMIN_PASSWORD='<strong password>' npm run db:seed"
+    );
+    process.exit(1);
+  }
+  if (adminPassword.length < 12) {
+    console.error("ADMIN_PASSWORD must be at least 12 characters.");
+    process.exit(1);
+  }
   await prisma.user.upsert({
     where: { email: adminEmail },
     update: { role: "ADMIN" },
@@ -20,25 +44,39 @@ async function main() {
       name: "Velvea Admin",
       role: "ADMIN",
       passwordHash: await bcrypt.hash(adminPassword, 11),
+      emailVerified: new Date(),
     },
   });
-  console.log(`  - Admin: ${adminEmail} / ${adminPassword}`);
+  console.log(`  - Admin: ${adminEmail} (password taken from ADMIN_PASSWORD)`);
 
   // --- Collections ---
   const mkCollections = async (
     type: "OCCASION" | "RECIPIENT" | "CATEGORY",
-    list: { slug: string; en: string; fr: string }[]
+    list: { slug: string; en: string; fr: string }[],
+    offset = 0
   ) => {
     for (let i = 0; i < list.length; i++) {
       const c = list[i];
+      const position = offset + i;
       await prisma.collection.upsert({
         where: { slug: c.slug },
-        update: { name: L(c.en, c.fr), type, position: i },
-        create: { slug: c.slug, type, name: L(c.en, c.fr), position: i, featured: i < 6 },
+        update: { name: L(c.en, c.fr), type, position },
+        create: {
+          slug: c.slug,
+          type,
+          name: L(c.en, c.fr),
+          position,
+          featured: offset === 0 && i < 6,
+        },
       });
     }
   };
   await mkCollections("OCCASION", OCCASIONS);
+  // The seasonal nav (Christmas, Valentine's, Mother's/Father's Day,
+  // Thanksgiving) linked to collections that were never seeded, so every one of
+  // those pages was empty. They are seeded here, after the everyday occasions so
+  // their positions follow on.
+  await mkCollections("OCCASION", HOLIDAYS, OCCASIONS.length);
   await mkCollections("RECIPIENT", RECIPIENTS);
   await mkCollections("CATEGORY", CATEGORIES);
   const collections = await prisma.collection.findMany();
@@ -208,7 +246,7 @@ async function main() {
     },
   ];
 
-  for (const p of products) {
+  for (const p of SEED_DEMO_CONTENT ? products : []) {
     const collectionIds = [
       ...p.occasions.map(cid),
       ...p.recipients.map(cid),
@@ -232,20 +270,30 @@ async function main() {
         featured: p.featured ?? false,
         bestseller: p.bestseller ?? false,
         badges: p.badges ?? [],
-        avgRating: 4.6 + Math.random() * 0.4,
-        reviewCount: Math.floor(20 + Math.random() * 180),
+        // Left at zero: avgRating/reviewCount are recomputed from approved
+        // reviews, so seeding random values only made them collapse the first
+        // time a review was moderated.
+        avgRating: 0,
+        reviewCount: 0,
         collections: {
           create: collectionIds.map((id, i) => ({ collectionId: id, position: i })),
         },
       },
     });
   }
-  console.log(`  - ${products.length} products`);
+  console.log(
+    SEED_DEMO_CONTENT
+      ? `  - ${products.length} demo products`
+      : "  - products skipped (set SEED_DEMO_CONTENT=true for sample baskets)"
+  );
 
-  // --- Gift card product (purchasable, denomination variants) ---
+  // --- Gift card product ---
+  // Seeded as a DRAFT: gift cards are paused (see src/lib/features.ts) because
+  // nothing issues, emails or redeems a code yet. Kept so the denominations and
+  // copy survive until redemption ships.
   await prisma.product.upsert({
     where: { slug: "velvea-gift-card" },
-    update: {},
+    update: { status: "DRAFT" },
     create: {
       slug: "velvea-gift-card",
       name: L("Velvea Gift Card", "Carte-cadeau Velvea"),
@@ -255,7 +303,7 @@ async function main() {
         "Une carte-cadeau numérique Velvea, envoyée par courriel avec un code unique, échangeable sur n'importe quel panier."
       ),
       priceCents: 5000,
-      status: "ACTIVE",
+      status: "DRAFT",
       featured: false,
       badges: [],
       leadTimeDays: 0,
@@ -269,7 +317,7 @@ async function main() {
       },
     },
   });
-  console.log(`  - gift card product`);
+  console.log(`  - gift card product (draft — gift cards are paused)`);
 
   // --- Reviews ---
   const reviewSeeds = [
@@ -279,7 +327,7 @@ async function main() {
     { slug: "executive-corporate", author: "Daniel R.", loc: "Calgary, AB", rating: 5, title: "Impeccable for clients", body: "Ordered fifteen for year-end client gifts. Every one arrived on time and looked premium." },
     { slug: "sweet-celebration-birthday", author: "Mei L.", loc: "Vancouver, BC", rating: 4, title: "Lovely birthday surprise", body: "Beautifully arranged and delivered same day in the GTA. Would order again." },
   ];
-  for (const r of reviewSeeds) {
+  for (const r of SEED_DEMO_CONTENT ? reviewSeeds : []) {
     const product = await prisma.product.findUnique({ where: { slug: r.slug } });
     if (!product) continue;
     const exists = await prisma.review.findFirst({
@@ -299,7 +347,21 @@ async function main() {
       },
     });
   }
-  console.log(`  - reviews`);
+  // Ratings are derived, never seeded: recompute from the approved reviews so
+  // the storefront shows the same numbers moderation will produce later.
+  const rated = await prisma.review.groupBy({
+    by: ["productId"],
+    where: { status: "APPROVED" },
+    _avg: { rating: true },
+    _count: true,
+  });
+  for (const r of rated) {
+    await prisma.product.update({
+      where: { id: r.productId },
+      data: { avgRating: r._avg.rating ?? 0, reviewCount: r._count },
+    });
+  }
+  console.log(SEED_DEMO_CONTENT ? "  - demo reviews" : "  - reviews skipped");
 
   // --- Custom builder ---
   const containers = [
@@ -346,7 +408,7 @@ async function main() {
     { slug: "sympathy-gift-etiquette", cat: "SYMPATHY", title: "Sympathy Gift Etiquette: What to Send and Say", excerpt: "Thoughtful guidance for choosing a gift that offers genuine comfort." },
     { slug: "gifts-by-occasion", cat: "OCCASIONS", title: "Gift Ideas by Occasion: A Year of Thoughtful Gifting", excerpt: "From birthdays to housewarmings, matched to the moment." },
   ];
-  for (const a of articles) {
+  for (const a of SEED_DEMO_CONTENT ? articles : []) {
     await prisma.article.upsert({
       where: { slug: a.slug },
       update: {},
@@ -366,7 +428,7 @@ async function main() {
       },
     });
   }
-  console.log(`  - articles`);
+  console.log(SEED_DEMO_CONTENT ? "  - demo articles" : "  - articles skipped");
 
   // --- Discount ---
   await prisma.discountCode.upsert({

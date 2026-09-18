@@ -122,6 +122,9 @@ model Product {
 
   @@index([status, featured])
   @@index([status, bestseller])
+  @@index([status, createdAt])
+  @@index([status, priceCents])
+  @@index([status, avgRating])
 }
 
 model ProductImage {
@@ -225,6 +228,8 @@ model Review {
 
   @@index([productId, status])
   @@index([status])
+  @@index([status, createdAt])
+  @@index([productId, userId])
 }
 
 // ============================================================
@@ -270,6 +275,15 @@ model Order {
   giftMessage     String?
   deliveryDate    DateTime?
   deliveryNotes   String?
+  locale          String      @default("en")
+
+  carrier         String?
+  trackingNumber  String?
+  trackingUrl     String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  refundedCents   Int         @default(0)
 
   shipping        Json // { fullName, line1, line2, city, province, postalCode, country, phone }
   billing         Json?
@@ -287,6 +301,8 @@ model Order {
   @@index([status])
   @@index([email])
   @@index([createdAt])
+  @@index([userId])
+  @@index([status, createdAt])
 }
 
 model OrderItem {
@@ -294,6 +310,7 @@ model OrderItem {
   orderId       String
   order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId     String?
+  variantId     String?
   slug          String?
   name          String
   variantLabel  String?
@@ -302,8 +319,12 @@ model OrderItem {
   quantity      Int
   isCustom      Boolean @default(false)
   customConfig  Json?
+  // Per-basket card message. Falls back to Order.giftMessage when unset, so a
+  // single-recipient order still works exactly as before.
+  giftMessage   String?
 
   @@index([orderId])
+  @@index([productId])
 }
 
 model OrderEvent {
@@ -420,13 +441,40 @@ model Article {
 }
 
 // ============================================================
+// Verification & password-reset tokens
+// ============================================================
+enum TokenPurpose {
+  PASSWORD_RESET
+  EMAIL_VERIFY
+}
+
+model VerificationToken {
+  id        String       @id @default(cuid())
+  tokenHash String       @unique
+  purpose   TokenPurpose
+  email     String
+  userId    String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+}
+
+// ============================================================
 // Marketing & settings
 // ============================================================
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  locale    String   @default("en")
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  email          String    @unique
+  locale         String    @default("en")
+  token          String    @unique
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([confirmedAt])
 }
 
 // Key/value site settings edited in admin (contact info, cutoff time, shipping rates, tax, hero copy...)

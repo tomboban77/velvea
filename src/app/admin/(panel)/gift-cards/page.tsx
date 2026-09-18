@@ -1,10 +1,15 @@
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState, Card, Badge } from "@/components/admin/ui";
 import { formatMoney, formatDate } from "@/lib/utils";
+import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
 export const dynamic = "force-dynamic";
 
 export default async function GiftCardsPage() {
+  // Paused alongside the storefront gift-card page — see src/lib/features.ts.
+  if (!GIFT_CARDS_ENABLED) notFound();
+
   let cards;
   try {
     cards = await prisma.giftCard.findMany({ orderBy: { createdAt: "desc" }, take: 200 });

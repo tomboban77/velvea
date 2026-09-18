@@ -4,29 +4,39 @@ import { useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
-import { Lock, Truck, Clock, MapPin, Tag, Check, Loader2, ShoppingBag, Gift } from "lucide-react";
+import { Lock, Truck, Clock, MapPin, Tag, Check, Loader2, ShoppingBag, Gift, AlertTriangle } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { createCheckout, validateDiscountCode } from "@/lib/actions/checkout";
+import { createCheckout, validateDiscountCode, type CartChange } from "@/lib/actions/checkout";
 import {
-  CLIENT_SETTINGS,
   previewTaxRate,
   isGtaClient,
   PROVINCES,
+  type ClientSettings,
 } from "@/lib/settings-client";
+import { Honeypot } from "@/components/ui/Honeypot";
 import { formatMoney, cn } from "@/lib/utils";
 
 type Method = "SHIPPING" | "LOCAL_SAMEDAY" | "LOCAL_STANDARD";
 
-export function CheckoutForm() {
+export function CheckoutForm({
+  settings,
+  defaultEmail = "",
+}: {
+  /** The store's real delivery and tax settings, read on the server. */
+  settings: ClientSettings;
+  defaultEmail?: string;
+}) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [changes, setChanges] = useState<CartChange[]>([]);
+  const [company, setCompany] = useState("");
 
   const [f, setF] = useState({
-    email: "",
+    email: defaultEmail,
     phone: "",
     fullName: "",
     line1: "",
@@ -49,25 +59,29 @@ export function CheckoutForm() {
   const totals = useMemo(() => {
     const discountCents = discount?.cents ?? 0;
     let shippingCents = 0;
-    if (method === "LOCAL_SAMEDAY") shippingCents = CLIENT_SETTINGS.localSameDayFeeCents;
-    else if (method === "LOCAL_STANDARD") shippingCents = CLIENT_SETTINGS.localStandardFeeCents;
+    if (method === "LOCAL_SAMEDAY") shippingCents = settings.localSameDayFeeCents;
+    else if (method === "LOCAL_STANDARD") shippingCents = settings.localStandardFeeCents;
     else {
-      const free = discount?.freeShip || subtotalCents >= CLIENT_SETTINGS.freeShippingThresholdCents;
-      shippingCents = free ? 0 : CLIENT_SETTINGS.standardShippingCents;
+      const free = discount?.freeShip || subtotalCents >= settings.freeShippingThresholdCents;
+      shippingCents = free ? 0 : settings.standardShippingCents;
     }
-    const rate = previewTaxRate(f.province);
+    const rate = previewTaxRate(f.province, settings);
     const taxable = Math.max(0, subtotalCents - discountCents) + shippingCents;
     const taxCents = Math.round((taxable * rate) / 100);
     const totalCents = Math.max(0, subtotalCents - discountCents) + shippingCents + taxCents;
     return { discountCents, shippingCents, taxCents, totalCents, rate };
-  }, [method, subtotalCents, discount, f.province]);
+  }, [method, subtotalCents, discount, f.province, settings]);
 
   async function applyCode() {
     setCodeMsg(null);
     if (!code) return;
-    const res = await validateDiscountCode(code, subtotalCents);
+    const res = await validateDiscountCode(code, subtotalCents, locale === "fr" ? "fr" : "en");
     if (res.valid) {
-      setDiscount({ label: res.label!, cents: res.discountCents ?? 0, freeShip: (res.discountCents ?? 0) === 0 && res.label === "Free shipping" });
+      setDiscount({
+        label: res.label!,
+        cents: res.discountCents ?? 0,
+        freeShip: Boolean(res.freeShipping),
+      });
       setCodeMsg(res.label!);
     } else {
       setDiscount(null);
@@ -78,6 +92,7 @@ export function CheckoutForm() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setChanges([]);
     startTransition(async () => {
       const res = await createCheckout({
         email: f.email,
@@ -97,8 +112,10 @@ export function CheckoutForm() {
         deliveryDate: f.deliveryDate,
         deliveryNotes: f.deliveryNotes,
         discountCode: discount ? code : "",
-        locale,
+        locale: locale === "fr" ? "fr" : "en",
+        company,
         items: items.map((i) => ({
+          giftMessage: i.giftMessage,
           productId: i.productId,
           variantId: i.variantId,
           slug: i.slug,
@@ -113,13 +130,17 @@ export function CheckoutForm() {
 
       if (!res.ok) {
         setError(res.error);
+        // Anything that changed under the customer is listed rather than
+        // quietly applied, so the total on screen is the total charged.
+        setChanges(res.changes ?? []);
         return;
       }
       if (res.mode === "stripe") {
         window.location.href = res.url;
       } else {
         clear();
-        router.push(`/order/${res.orderNumber}`);
+        // The confirmation page is gated, so carry the signed token across.
+        router.push(`/order/${res.orderNumber}?t=${encodeURIComponent(res.token)}`);
       }
     });
   }
@@ -139,7 +160,8 @@ export function CheckoutForm() {
   }
 
   return (
-    <form onSubmit={submit} className="container-x grid gap-10 py-12 lg:grid-cols-[1.3fr_1fr]">
+    <form onSubmit={submit} className="container-x relative grid gap-10 py-12 lg:grid-cols-[1.3fr_1fr]">
+      <Honeypot value={company} onChange={setCompany} />
       {/* left: form */}
       <div className="space-y-8">
         <div>
@@ -188,8 +210,8 @@ export function CheckoutForm() {
                 onClick={() => setMethod("LOCAL_SAMEDAY")}
                 icon={Clock}
                 title="Same-day (GTA)"
-                sub={`Order by ${CLIENT_SETTINGS.sameDayCutoff} · eligible orders`}
-                price={CLIENT_SETTINGS.localSameDayFeeCents}
+                sub={`Order by ${settings.sameDayCutoff} ET · eligible orders`}
+                price={settings.localSameDayFeeCents}
               />
             )}
             {gta && (
@@ -199,7 +221,7 @@ export function CheckoutForm() {
                 icon={MapPin}
                 title="Local delivery (GTA)"
                 sub="Next available day"
-                price={CLIENT_SETTINGS.localStandardFeeCents}
+                price={settings.localStandardFeeCents}
               />
             )}
             <MethodOption
@@ -208,14 +230,14 @@ export function CheckoutForm() {
               icon={Truck}
               title="Canada-wide shipping"
               sub={
-                subtotalCents >= CLIENT_SETTINGS.freeShippingThresholdCents
+                subtotalCents >= settings.freeShippingThresholdCents
                   ? "Free shipping unlocked"
-                  : `Free over ${formatMoney(CLIENT_SETTINGS.freeShippingThresholdCents)}`
+                  : `Free over ${formatMoney(settings.freeShippingThresholdCents)}`
               }
               price={
-                subtotalCents >= CLIENT_SETTINGS.freeShippingThresholdCents
+                subtotalCents >= settings.freeShippingThresholdCents
                   ? 0
-                  : CLIENT_SETTINGS.standardShippingCents
+                  : settings.standardShippingCents
               }
             />
           </div>
@@ -227,6 +249,11 @@ export function CheckoutForm() {
         </Section>
 
         <Section title="Gift options">
+          {items.some((i) => i.giftMessage) && (
+            <p className="mb-2 text-xs text-muted">
+              Baskets with their own card message keep it. This one covers anything without.
+            </p>
+          )}
           <textarea rows={3} placeholder="Add a gift message (printed on a card)…" className="field resize-y"
             value={f.giftMessage} onChange={(e) => set("giftMessage", e.target.value)} />
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -266,6 +293,11 @@ export function CheckoutForm() {
                 <div className="flex flex-1 flex-col">
                   <p className="text-sm font-medium leading-snug text-ink">{i.name}</p>
                   {i.variantLabel && <p className="text-xs text-muted">{i.variantLabel}</p>}
+                  {i.giftMessage && (
+                    <p className="mt-1 line-clamp-2 text-[0.7rem] italic text-muted">
+                      &ldquo;{i.giftMessage}&rdquo;
+                    </p>
+                  )}
                   <span className="mt-auto text-sm font-semibold">
                     {formatMoney(i.unitPriceCents * i.quantity)}
                   </span>
@@ -304,7 +336,23 @@ export function CheckoutForm() {
             <span className="font-display text-2xl">{formatMoney(totals.totalCents)}</span>
           </div>
 
-          {error && <p className="mt-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
+          {error && (
+            <div className="mt-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+              <p className="flex items-start gap-2">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </p>
+              {changes.length > 0 && (
+                <ul className="mt-2 space-y-1 border-t border-danger/20 pt-2 text-xs">
+                  {changes.map((c, i) => (
+                    <li key={i}>
+                      <span className="font-semibold">{c.subject}</span> &mdash; {c.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           <button type="submit" disabled={pending} className="btn btn-gold btn-lg mt-5 w-full">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}

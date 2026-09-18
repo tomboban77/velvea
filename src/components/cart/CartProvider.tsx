@@ -23,7 +23,26 @@ export type CartItem = {
   isCustom?: boolean;
   customConfig?: unknown;
   maxQty?: number;
+  /**
+   * The handwritten card that goes with *this* basket. Two of the same basket
+   * with different messages are two lines, not one — see `giftLineId`.
+   */
+  giftMessage?: string;
 };
+
+/**
+ * Line id for a product, made distinct by its card message so the same basket
+ * bought for two people stays two separate lines with two separate cards.
+ */
+export function giftLineId(base: string, giftMessage?: string): string {
+  const message = giftMessage?.trim();
+  if (!message) return base;
+  let hash = 0;
+  for (let i = 0; i < message.length; i++) {
+    hash = (hash * 31 + message.charCodeAt(i)) | 0;
+  }
+  return `${base}:g${(hash >>> 0).toString(36)}`;
+}
 
 type CartContextValue = {
   items: CartItem[];
@@ -34,6 +53,7 @@ type CartContextValue = {
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   removeItem: (id: string) => void;
   updateQty: (id: string, quantity: number) => void;
+  updateGiftMessage: (id: string, giftMessage: string) => void;
   clear: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -105,6 +125,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  /** Editing a card message re-keys the line so it stays unique. */
+  const updateGiftMessage = useCallback((id: string, giftMessage: string) => {
+    setItems((prev) => {
+      const idx = prev.findIndex((p) => p.id === id);
+      if (idx === -1) return prev;
+      const line = prev[idx];
+      const base = line.id.split(":g")[0];
+      const nextId = line.isCustom ? line.id : giftLineId(base, giftMessage);
+      const next = [...prev];
+      next[idx] = { ...line, id: nextId, giftMessage: giftMessage.trim() || undefined };
+      // If an identical line already exists, fold them together.
+      const twin = next.findIndex((p, i) => i !== idx && p.id === nextId);
+      if (twin > -1) {
+        next[twin] = {
+          ...next[twin],
+          quantity: Math.min(next[twin].quantity + next[idx].quantity, next[twin].maxQty ?? 99),
+        };
+        next.splice(idx, 1);
+      }
+      return next;
+    });
+  }, []);
+
   const clear = useCallback(() => setItems([]), []);
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
@@ -129,6 +172,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addItem,
     removeItem,
     updateQty,
+    updateGiftMessage,
     clear,
     openCart,
     closeCart,

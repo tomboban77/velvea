@@ -17,7 +17,7 @@ export function InquiryStatusControl({ id, current }: { id: string; current: Inq
         onChange={(e) => {
           const next = e.target.value as InquiryStatus;
           setStatus(next);
-          start(() => updateInquiryStatus(id, next));
+          start(() => updateInquiryStatus({ id, status: next }));
         }}
         className="field w-40"
         disabled={pending}

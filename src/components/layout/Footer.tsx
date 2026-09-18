@@ -6,6 +6,7 @@ import { Newsletter } from "./Newsletter";
 import { getSettings } from "@/lib/settings";
 import { OCCASIONS, labelFor } from "@/lib/nav";
 import { InstagramIcon, FacebookIcon } from "@/components/brand/SocialIcons";
+import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
 export async function Footer() {
   const t = await getTranslations();
@@ -79,7 +80,9 @@ export async function Footer() {
           <FooterLink href="/baskets">{t("nav.allBaskets")}</FooterLink>
           <FooterLink href="/custom">{t("footer.custom")}</FooterLink>
           <FooterLink href="/corporate">{t("footer.corporate")}</FooterLink>
-          <FooterLink href="/gift-cards">{t("footer.giftCards")}</FooterLink>
+          {GIFT_CARDS_ENABLED && (
+            <FooterLink href="/gift-cards">{t("footer.giftCards")}</FooterLink>
+          )}
           <FooterLink href="/recipients">{t("nav.recipients")}</FooterLink>
         </FooterCol>
 

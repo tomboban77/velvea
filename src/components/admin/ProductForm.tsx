@@ -42,7 +42,9 @@ export type ProductFormData = {
   inventory: number | null;
   collectionIds: string[];
   images: UploadedImage[];
-  variants: { label: L; priceCents: number; compareAtCents: number | null; sku: string }[];
+  // `id` is kept so saving updates existing variants instead of recreating
+  // them — carts and order lines reference these ids.
+  variants: { id?: string; label: L; priceCents: number; compareAtCents: number | null; sku: string }[];
   seoTitle: L;
   seoDescription: L;
 };
@@ -266,7 +268,7 @@ export function ProductForm({
               <p className="text-sm text-muted">Optional. Leave empty for a single-size product.</p>
             )}
             {d.variants.map((v, i) => (
-              <div key={i} className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-2">
+              <div key={v.id ?? `new-${i}`} className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-2">
                 <TextInput
                   value={v.label.en}
                   onChange={(val) =>

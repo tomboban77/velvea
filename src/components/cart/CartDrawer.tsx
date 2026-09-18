@@ -120,6 +120,11 @@ export function CartDrawer() {
                       {item.isCustom && (
                         <p className="text-xs text-violet">Custom basket</p>
                       )}
+                      {item.giftMessage && (
+                        <p className="mt-1 line-clamp-2 rounded-lg bg-cream px-2 py-1 text-[0.7rem] italic text-ink-soft">
+                          &ldquo;{item.giftMessage}&rdquo;
+                        </p>
+                      )}
                       <div className="mt-auto flex items-center justify-between pt-2">
                         <div className="inline-flex items-center rounded-full border border-line-strong">
                           <button

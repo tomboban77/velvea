@@ -67,6 +67,7 @@ export default async function EditProductPage({
       height: img.height,
     })),
     variants: product.variants.map((v) => ({
+      id: v.id,
       label: asL(v.label),
       priceCents: v.priceCents,
       compareAtCents: v.compareAtCents,

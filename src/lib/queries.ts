@@ -1,10 +1,19 @@
 import { prisma } from "./prisma";
+import { HIDDEN_PRODUCT_SLUGS } from "./features";
 import type { Prisma } from "@prisma/client";
 
 /**
  * All reads are wrapped so pages still render when the database is empty or
  * unreachable (e.g. before the first migration). They return safe fallbacks.
  */
+
+/**
+ * Products that exist in the database but must not be sold yet — currently the
+ * gift card, whose codes are never issued or redeemed. Excluded here so every
+ * listing, search, collection, sitemap entry and PDP hides it in one place.
+ */
+const notHidden: Prisma.ProductWhereInput =
+  HIDDEN_PRODUCT_SLUGS.length ? { slug: { notIn: HIDDEN_PRODUCT_SLUGS } } : {};
 
 const productInclude = {
   images: { orderBy: { position: "asc" } },
@@ -18,7 +27,7 @@ export type ProductCard = Prisma.ProductGetPayload<{
 export async function getFeaturedProducts(limit = 8): Promise<ProductCard[]> {
   try {
     return await prisma.product.findMany({
-      where: { status: "ACTIVE", featured: true },
+      where: { status: "ACTIVE", featured: true, ...notHidden },
       include: productInclude,
       orderBy: { updatedAt: "desc" },
       take: limit,
@@ -31,14 +40,14 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductCard[]> {
 export async function getBestsellers(limit = 8): Promise<ProductCard[]> {
   try {
     const rows = await prisma.product.findMany({
-      where: { status: "ACTIVE", bestseller: true },
+      where: { status: "ACTIVE", bestseller: true, ...notHidden },
       include: productInclude,
       orderBy: { reviewCount: "desc" },
       take: limit,
     });
     if (rows.length) return rows;
     return await prisma.product.findMany({
-      where: { status: "ACTIVE" },
+      where: { status: "ACTIVE", ...notHidden },
       include: productInclude,
       orderBy: { createdAt: "desc" },
       take: limit,
@@ -50,6 +59,7 @@ export async function getBestsellers(limit = 8): Promise<ProductCard[]> {
 
 export async function getProductBySlug(slug: string) {
   try {
+    if (HIDDEN_PRODUCT_SLUGS.includes(slug)) return null;
     return await prisma.product.findFirst({
       where: { slug, status: { not: "ARCHIVED" } },
       include: {
@@ -88,6 +98,7 @@ export async function getProductsByCollection(
 
     const where: Prisma.ProductWhereInput = {
       status: "ACTIVE",
+      ...notHidden,
       collections: { some: { collectionId: collection.id } },
       priceCents: { gte: opts?.min, lte: opts?.max },
       ...(opts?.recipient ? { AND: [{ collections: { some: { collection: { slug: opts.recipient, type: "RECIPIENT" } } } }] } : {}),
@@ -126,7 +137,11 @@ export async function getAllProducts(opts?: {
         ? { avgRating: "desc" }
         : { featured: "desc" };
 
-    const where: Prisma.ProductWhereInput = { status: "ACTIVE", priceCents: { gte: opts?.min, lte: opts?.max } };
+    const where: Prisma.ProductWhereInput = {
+      status: "ACTIVE",
+      ...notHidden,
+      priceCents: { gte: opts?.min, lte: opts?.max },
+    };
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,

@@ -11,6 +11,7 @@ import { MobileMenu } from "./MobileMenu";
 import { useCart } from "@/components/cart/CartProvider";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor } from "@/lib/nav";
 import { formatMoney, cn } from "@/lib/utils";
+import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
 export type HeaderFeatured = {
   slug: string;
@@ -96,9 +97,11 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
             <span className="hidden lg:inline">{t("announcement.three")}</span>
           </p>
           <div className="hidden items-center gap-5 sm:flex">
-            <Link href="/gift-cards" className="transition-colors hover:text-white">
-              {t("nav.giftCards")}
-            </Link>
+            {GIFT_CARDS_ENABLED && (
+              <Link href="/gift-cards" className="transition-colors hover:text-white">
+                {t("nav.giftCards")}
+              </Link>
+            )}
             <Link href="/corporate/quote" className="transition-colors hover:text-white">
               {t("nav.corporateQuote")}
             </Link>
