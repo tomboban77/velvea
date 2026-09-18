@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { Search, User, ShoppingBag, ChevronDown, Menu, ArrowRight, X } from "lucide-react";
+import { Search, User, ShoppingBag, ChevronDown, Menu, ArrowRight, Truck, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { MobileMenu } from "./MobileMenu";
 import { useCart } from "@/components/cart/CartProvider";
-import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor } from "@/lib/nav";
+import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
 import { formatMoney, cn } from "@/lib/utils";
 import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
@@ -20,174 +20,157 @@ export type HeaderFeatured = {
   priceCents: number;
 } | null;
 
+type Group = { key: string; label: string; base: string; items: NavLink[]; blurb: string };
+
+/**
+ * Three-tier retail header:
+ *   1. slim announcement bar
+ *   2. brand bar — utility links · centred logo · search + account + bag
+ *   3. dark category bar with mega-menus (sticky on desktop)
+ * On mobile the brand bar collapses to menu · logo · search · bag and stays sticky.
+ */
 export function Header({ featured }: { featured?: HeaderFeatured }) {
   const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
   const { count, openCart, hydrated } = useCart();
+  const fr = locale === "fr";
 
-  const [scrolled, setScrolled] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileSearch, setMobileSearch] = useState(false);
+  const [compact, setCompact] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const brandBarRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
+  // Once the brand bar scrolls away, the sticky category bar shows the wordmark and bag.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => {
+      const bottom = brandBarRef.current?.getBoundingClientRect().bottom ?? 0;
+      setCompact(bottom < 0);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // close everything on navigation
   useEffect(() => {
-    setShopOpen(false);
+    setOpen(null);
     setMobileOpen(false);
-    setSearchOpen(false);
+    setMobileSearch(false);
   }, [pathname]);
 
   useEffect(() => {
-    if (searchOpen) setTimeout(() => searchRef.current?.focus(), 50);
+    if (mobileSearch) setTimeout(() => mobileSearchRef.current?.focus(), 50);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSearchOpen(false);
-        setShopOpen(false);
+        setOpen(null);
+        setMobileSearch(false);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [searchOpen]);
+  }, [mobileSearch]);
 
-  function openShop() {
+  function show(key: string) {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    setShopOpen(true);
+    setOpen(key);
   }
   function scheduleClose() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setShopOpen(false), 160);
+    closeTimer.current = setTimeout(() => setOpen(null), 140);
   }
 
   const searchAction = `/${locale === "en" ? "" : locale + "/"}search`;
 
-  const columns = [
-    { key: "occasions", label: t("nav.occasions"), base: "/occasions", items: OCCASIONS },
-    { key: "recipients", label: t("nav.recipients"), base: "/recipients", items: RECIPIENTS },
-    { key: "category", label: t("nav.category"), base: "/category", items: CATEGORIES },
-    { key: "holidays", label: t("nav.holidays"), base: "/occasions", items: HOLIDAYS },
+  const groups: Group[] = [
+    { key: "occasions", label: t("nav.occasions"), base: "/occasions", items: OCCASIONS, blurb: t("occasions.lede") },
+    { key: "recipients", label: t("nav.recipients"), base: "/recipients", items: RECIPIENTS, blurb: t("recipients.lede") },
+    { key: "category", label: t("nav.category"), base: "/category", items: CATEGORIES, blurb: fr ? "Gourmet, chocolat, café, bien-être et plus." : "Gourmet, chocolate, coffee, wellness and more." },
+    { key: "holidays", label: t("nav.holidays"), base: "/occasions", items: HOLIDAYS, blurb: fr ? "Les moments de l’année qui méritent un panier." : "The moments of the year that call for a basket." },
   ];
+  const active = groups.find((g) => g.key === open) ?? null;
 
-  const primary: { href: string; label: string }[] = [
+  const plain: { href: string; label: string }[] = [
+    { href: "/baskets", label: t("nav.allBaskets") },
     { href: "/custom", label: t("nav.build") },
     { href: "/corporate", label: t("nav.corporate") },
-    { href: "/about", label: t("nav.story") },
   ];
 
   return (
     <>
-      {/* Announcement — one slim line */}
-      <div className="announcement relative z-50 bg-violet-deep text-[0.58rem] text-white">
-        <div className="container-x flex h-9 items-center justify-center gap-3 sm:justify-between">
-          <p className="flex items-center gap-3 truncate">
-            <span className="hidden md:inline">{t("announcement.one")}</span>
-            <span className="hidden md:inline text-white/40">·</span>
+      {/* 1 · Announcement */}
+      <div className="announcement relative z-50">
+        <div className="container-x flex h-9 items-center justify-center gap-3 lg:justify-between">
+          <p className="flex min-w-0 items-center gap-3 truncate">
             <span className="truncate">{t("announcement.two")}</span>
-            <span className="hidden lg:inline text-white/40">·</span>
-            <span className="hidden lg:inline">{t("announcement.three")}</span>
+            <span className="hidden text-white/40 md:inline">·</span>
+            <span className="hidden md:inline">{t("announcement.one")}</span>
+            <span className="hidden text-white/40 xl:inline">·</span>
+            <span className="hidden xl:inline">{t("announcement.three")}</span>
           </p>
-          <div className="hidden items-center gap-5 sm:flex">
-            {GIFT_CARDS_ENABLED && (
-              <Link href="/gift-cards" className="transition-colors hover:text-white">
-                {t("nav.giftCards")}
-              </Link>
-            )}
-            <Link href="/corporate/quote" className="transition-colors hover:text-white">
-              {t("nav.corporateQuote")}
-            </Link>
+          <div className="hidden items-center gap-5 lg:flex">
+            <Link href="/shipping">{t("nav.delivery")}</Link>
+            {GIFT_CARDS_ENABLED && <Link href="/gift-cards">{t("nav.giftCards")}</Link>}
+            <Link href="/corporate/quote">{t("nav.corporateQuote")}</Link>
+            <LocaleSwitcher tone="dark" />
           </div>
         </div>
       </div>
 
-      <header
-        className={cn(
-          "store-header sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-500",
-          scrolled || shopOpen || searchOpen
-            ? "border-line bg-canvas/95 shadow-[0_10px_30px_-22px_rgba(34,24,34,0.35)] backdrop-blur-xl"
-            : "border-transparent bg-canvas/95 backdrop-blur-md"
-        )}
-        onMouseLeave={scheduleClose}
-      >
+      {/* 2 · Brand bar — sticky on mobile only */}
+      <div ref={brandBarRef} className="store-header sticky top-0 z-40 border-b border-line lg:static">
         <div className="container-x">
-          <div className="grid h-[68px] grid-cols-[1fr_auto_1fr] items-center lg:h-[80px] lg:grid-cols-[auto_1fr_auto]">
-            {/* left: mobile menu (mobile) / logo (desktop) */}
-            <div className="flex items-center">
-              <button
-                className="icon-btn -ml-2 lg:hidden"
-                onClick={() => setMobileOpen(true)}
-                aria-label={t("nav.menu")}
-              >
-                <Menu className="h-5 w-5" strokeWidth={1.6} />
+          <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-[88px]">
+            {/* left */}
+            <div className="flex items-center gap-1">
+              <button className="icon-btn -ml-2 lg:hidden" onClick={() => setMobileOpen(true)} aria-label={t("nav.menu")}>
+                <Menu className="h-6 w-6" strokeWidth={1.6} />
               </button>
-              <Link href="/" className="hidden lg:block" aria-label="Velvea home">
-                <Logo height={38} priority />
-              </Link>
-            </div>
-
-            {/* centre: logo (mobile) / nav (desktop) */}
-            <div className="flex items-center justify-center">
-              <Link href="/" className="lg:hidden" aria-label="Velvea home">
-                <Logo height={25} priority />
-              </Link>
-              <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-                <div onMouseEnter={openShop} onMouseLeave={scheduleClose}>
-                  <button
-                    className={cn(
-                      "caps flex items-center gap-1.5 whitespace-nowrap px-3 py-2 text-[0.62rem] transition-colors xl:px-4 xl:text-[0.68rem]",
-                      shopOpen ? "text-violet" : "text-ink hover:text-violet"
-                    )}
-                    onClick={() => setShopOpen((s) => !s)}
-                    aria-expanded={shopOpen}
-                    aria-haspopup="true"
-                  >
-                    {t("nav.shop")}
-                    <ChevronDown
-                      className={cn("h-3.5 w-3.5 transition-transform duration-300", shopOpen && "rotate-180")}
-                      strokeWidth={1.8}
-                    />
-                  </button>
-                </div>
-                {primary.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="caps whitespace-nowrap px-3 py-2 text-[0.62rem] text-ink transition-colors hover:text-violet xl:px-4 xl:text-[0.68rem]"
-                    onMouseEnter={scheduleClose}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+              <nav className="hidden items-center gap-7 lg:flex" aria-label="Utility">
+                <Link href="/corporate" className="util-link">{t("footer.corporate")}</Link>
+                <Link href="/custom" className="util-link">{t("nav.build")}</Link>
+                <Link href="/guides" className="util-link">{t("nav.guides")}</Link>
               </nav>
             </div>
 
-            {/* right: utilities */}
-            <div className="flex items-center justify-end gap-0.5 sm:gap-1">
-              <LocaleSwitcher className="mr-2 hidden lg:inline-flex" />
-              <button
-                className={cn("icon-btn", searchOpen && "bg-cream text-violet")}
-                onClick={() => setSearchOpen((s) => !s)}
-                aria-label={t("nav.search")}
-                aria-expanded={searchOpen}
-              >
-                {searchOpen ? <X className="h-5 w-5" strokeWidth={1.6} /> : <Search className="h-5 w-5" strokeWidth={1.6} />}
-              </button>
-              <Link href="/account" className="icon-btn hidden sm:inline-flex" aria-label={t("nav.account")}>
-                <User className="h-5 w-5" strokeWidth={1.6} />
+            {/* centre: logo */}
+            <div className="flex items-center justify-center">
+              <Link href="/" aria-label="Velvea home" className="block">
+                <Logo height={30} priority className="lg:hidden" />
+                <Logo height={42} priority className="hidden lg:block" />
               </Link>
-              <button onClick={openCart} className="icon-btn relative" aria-label={t("nav.cart")}>
-                <ShoppingBag className="h-5 w-5" strokeWidth={1.6} />
+            </div>
+
+            {/* right */}
+            <div className="flex items-center justify-end gap-1 lg:gap-6">
+              <form action={searchAction} className="search-form hidden w-[clamp(16rem,22vw,26rem)] lg:flex" role="search">
+                <input name="q" placeholder={t("nav.searchPlaceholder")} aria-label={t("nav.search")} autoComplete="off" />
+                <button type="submit" aria-label={t("nav.search")}>
+                  <Search className="h-5 w-5" strokeWidth={1.8} />
+                </button>
+              </form>
+              <Link href="/shipping" className="util-link hidden xl:inline-flex">
+                <Truck strokeWidth={1.6} /> {t("nav.delivery")}
+              </Link>
+              <Link href="/account" className="util-link hidden lg:inline-flex" aria-label={t("nav.account")}>
+                <User strokeWidth={1.6} /> {t("nav.signIn")}
+              </Link>
+              <button
+                className={cn("icon-btn lg:hidden", mobileSearch && "bg-lilac text-violet-deep")}
+                onClick={() => setMobileSearch((s) => !s)}
+                aria-label={t("nav.search")}
+                aria-expanded={mobileSearch}
+              >
+                {mobileSearch ? <X className="h-5 w-5" strokeWidth={1.6} /> : <Search className="h-5 w-5" strokeWidth={1.6} />}
+              </button>
+              <button onClick={openCart} className="util-link relative -mr-2 inline-flex h-11 w-11 items-center justify-center lg:mr-0 lg:h-auto lg:w-auto" aria-label={t("nav.cart")}>
+                <ShoppingBag strokeWidth={1.6} />
+                <span className="hidden lg:inline">{t("nav.cart")}</span>
                 {hydrated && count > 0 && (
-                  <span className="absolute right-0.5 top-0.5 flex h-[17px] min-w-[17px] items-center justify-center bg-violet-deep px-1 text-[0.6rem] font-semibold text-canvas">
+                  <span className="absolute -right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-violet-deep px-1 text-[0.62rem] font-bold text-white lg:static lg:ml-1">
                     {count}
                   </span>
                 )}
@@ -196,113 +179,128 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
           </div>
         </div>
 
-        {/* Search panel */}
-        <div
-          className={cn(
-            "absolute inset-x-0 top-full origin-top overflow-hidden border-b border-line bg-canvas shadow-[0_30px_60px_-40px_rgba(34,24,34,0.4)] transition-all duration-500",
-            searchOpen ? "visible max-h-[70vh] opacity-100" : "invisible max-h-0 opacity-0"
-          )}
-        >
-          <div className="container-x py-8 lg:py-10">
-            <form action={searchAction} className="relative mx-auto max-w-3xl">
-              <Search className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-violet" strokeWidth={1.6} />
-              <input
-                ref={searchRef}
-                name="q"
-                placeholder={t("nav.searchPlaceholder")}
-                aria-label={t("nav.search")}
-                className="w-full border-0 border-b border-line-strong bg-transparent py-3 pl-9 pr-24 font-display text-3xl italic text-ink placeholder:text-muted/70 focus:border-violet focus:outline-none sm:text-4xl"
-                autoComplete="off"
-              />
-              <button type="submit" className="btn btn-primary btn-sm absolute right-0 top-1/2 -translate-y-1/2">
-                {t("nav.search")}
+        {/* mobile search row */}
+        <div className={cn("overflow-hidden border-t border-line transition-all duration-300 lg:hidden", mobileSearch ? "max-h-24 opacity-100" : "max-h-0 border-t-0 opacity-0")}>
+          <form action={searchAction} className="container-x py-3" role="search">
+            <div className="search-form">
+              <input ref={mobileSearchRef} name="q" placeholder={t("nav.searchPlaceholder")} aria-label={t("nav.search")} autoComplete="off" />
+              <button type="submit" aria-label={t("nav.search")}>
+                <Search className="h-5 w-5" strokeWidth={1.8} />
               </button>
-            </form>
-            <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center gap-2">
-              <span className="caps mr-2 text-[0.58rem] text-muted">{t("nav.popular")}</span>
-              {OCCASIONS.slice(0, 6).map((o) => (
-                <Link key={o.slug} href={`/occasions/${o.slug}`} className="chip">
-                  {labelFor(o, locale)}
-                </Link>
-              ))}
-              <Link href="/custom" className="chip">
-                {t("nav.build")}
-              </Link>
             </div>
+          </form>
+        </div>
+      </div>
+
+      {/* 3 · Category bar — desktop, sticky */}
+      <header className="nav-bar sticky top-0 z-40 hidden lg:block" onMouseLeave={scheduleClose}>
+        <div className="container-x relative flex h-[52px] items-center">
+          {/* compact brand, revealed when scrolled */}
+          <div
+            className={cn(
+              "absolute left-[var(--gutter)] flex items-center transition-all duration-300",
+              compact ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-3 opacity-0"
+            )}
+          >
+            <Link href="/" className="font-display text-[1.35rem] tracking-[0.12em] text-white" aria-label="Velvea home">
+              VELVÉA
+            </Link>
+          </div>
+
+          <nav className={cn("mx-auto flex items-center transition-transform duration-300", compact && "translate-x-0")} aria-label="Primary">
+            {groups.map((g) => (
+              <div key={g.key} onMouseEnter={() => show(g.key)}>
+                <button
+                  className={cn("nav-item", open === g.key && "is-open")}
+                  onClick={() => setOpen(open === g.key ? null : g.key)}
+                  aria-expanded={open === g.key}
+                  aria-haspopup="true"
+                >
+                  {g.label}
+                  <ChevronDown strokeWidth={2.2} />
+                </button>
+              </div>
+            ))}
+            {plain.map((l) => (
+              <Link key={l.href} href={l.href} className="nav-item" onMouseEnter={scheduleClose}>
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div
+            className={cn(
+              "absolute right-[var(--gutter)] flex items-center gap-1 transition-all duration-300",
+              compact ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-3 opacity-0"
+            )}
+          >
+            <Link href={searchAction} className="nav-icon" aria-label={t("nav.search")}>
+              <Search className="h-5 w-5" strokeWidth={1.7} />
+            </Link>
+            <Link href="/account" className="nav-icon" aria-label={t("nav.account")}>
+              <User className="h-5 w-5" strokeWidth={1.7} />
+            </Link>
+            <button onClick={openCart} className="nav-icon relative" aria-label={t("nav.cart")}>
+              <ShoppingBag className="h-5 w-5" strokeWidth={1.7} />
+              {hydrated && count > 0 && (
+                <span className="absolute -right-0.5 top-0 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-gold-soft px-1 text-[0.6rem] font-bold text-violet-ink">
+                  {count}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Shop mega panel */}
-        {shopOpen && (
-          <div
-            className="absolute inset-x-0 top-full hidden border-b border-line bg-canvas shadow-[0_40px_80px_-40px_rgba(34,24,34,0.35)] lg:block"
-            onMouseEnter={openShop}
-            onMouseLeave={scheduleClose}
-            style={{ animation: "velvea-rise 0.35s var(--ease-out-soft)" }}
-          >
-            <div className="container-x grid grid-cols-[repeat(4,minmax(0,1fr))_minmax(10rem,15rem)] gap-x-5 py-10">
-              {columns.map((col) => (
-                <div key={col.key}>
-                  <Link
-                    href={col.base}
-                    className="caps mb-4 flex items-center gap-2 text-[0.58rem] text-violet hover:text-ink"
-                  >
-                    {col.label}
+        {/* Mega panel */}
+        {active && (
+          <div className="mega" onMouseEnter={() => show(active.key)} onMouseLeave={scheduleClose}>
+            <div className="container-x grid grid-cols-[minmax(0,3fr)_minmax(15rem,1fr)] gap-x-12 py-9">
+              <div>
+                <div className="flex items-end justify-between gap-6 border-b border-line pb-4">
+                  <div>
+                    <p className="mega-heading mb-1">{active.label}</p>
+                    <p className="text-sm text-ink-soft">{active.blurb}</p>
+                  </div>
+                  <Link href={active.base} className="link-draw shrink-0">
+                    {t("nav.viewAll")} <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                  <ul className="space-y-1.5">
-                    {col.items.map((item) => (
-                      <li key={item.slug}>
-                        <Link
-                          href={`${col.base}/${item.slug}`}
-                          className="group inline-flex items-center gap-2 text-[0.95rem] text-ink-soft transition-colors hover:text-ink"
-                        >
-                          {labelFor(item, locale)}
-                          <ArrowRight className="h-3 w-3 -translate-x-1 text-violet opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              ))}
+                <ul className="mt-5 grid grid-cols-4 gap-x-8 gap-y-0.5 xl:grid-cols-5">
+                  {active.items.map((item) => (
+                    <li key={item.slug}>
+                      <Link href={`${active.base}/${item.slug}`} className="mega-link">
+                        {labelFor(item, locale)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               {/* featured tile */}
-              <div className="border-l border-line pl-8">
-                <p className="caps mb-4 text-[0.58rem] text-violet">
-                  {t("nav.featuredNow")}
-                </p>
+              <div className="border-l border-line pl-10">
+                <p className="mega-heading">{t("nav.featuredNow")}</p>
                 {featured ? (
                   <Link href={`/products/${featured.slug}`} className="group block">
-                    <div className="arch relative aspect-[4/5] overflow-hidden bg-cream">
+                    <div className="relative aspect-square overflow-hidden rounded-lg bg-cream">
                       {featured.image ? (
-                        <Image
-                          src={featured.image}
-                          alt={featured.name}
-                          fill
-                          sizes="288px"
-                          className="zoom-img object-cover"
-                        />
+                        <Image src={featured.image} alt={featured.name} fill sizes="280px" className="zoom-img object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center">
                           <span className="font-display text-2xl text-line-strong">Velvéa</span>
                         </div>
                       )}
                     </div>
-                    <p className="mt-3 font-display text-lg leading-snug text-ink group-hover:text-violet">
-                      {featured.name}
-                    </p>
-                    <p className="mt-0.5 text-sm text-muted">{formatMoney(featured.priceCents)}</p>
+                    <p className="product-name mt-3 group-hover:text-violet-deep">{featured.name}</p>
+                    <p className="price mt-1 text-sm text-ink">{formatMoney(featured.priceCents)}</p>
                   </Link>
                 ) : (
                   <Link href="/baskets" className="group block">
-                    <div className="arch flex aspect-[4/5] items-center justify-center bg-cream">
+                    <div className="flex aspect-square items-center justify-center rounded-lg bg-cream">
                       <span className="font-display text-2xl text-line-strong">Velvéa</span>
                     </div>
-                    <p className="mt-3 font-display text-lg text-ink group-hover:text-violet">{t("nav.allBaskets")}</p>
+                    <p className="product-name mt-3">{t("nav.allBaskets")}</p>
                   </Link>
                 )}
-                <Link href="/baskets" className="link-draw mt-4 text-ink">
-                  {t("nav.allBaskets")} <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
               </div>
             </div>
           </div>

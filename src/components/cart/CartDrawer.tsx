@@ -80,7 +80,7 @@ export function CartDrawer() {
               )}
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
                 <div
-                  className="h-full rounded-full bg-iris transition-all duration-500"
+                  className="h-full rounded-full bg-violet-deep transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>

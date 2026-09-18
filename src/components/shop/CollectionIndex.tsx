@@ -2,21 +2,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "@/components/ui/Reveal";
 import { getCollections } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { labelFor, type NavLink } from "@/lib/nav";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
-const TINTS = [
-  "linear-gradient(160deg,#efe3ea,#e6d6e2)",
-  "linear-gradient(160deg,#ecdfc9,#e3d2b4)",
-  "linear-gradient(160deg,#e6dff0,#d9cfe8)",
-  "linear-gradient(160deg,#e9e6ee,#dcd7e4)",
-  "linear-gradient(160deg,#f3e6e6,#ead6d6)",
-  "linear-gradient(160deg,#e4e2f1,#d5d1e8)",
-  "linear-gradient(160deg,#ecdcc0,#e1cca7)",
-  "linear-gradient(160deg,#eae2dc,#ddd2c9)",
-];
+const TINTS = ["#f8f2fb", "#f6f1eb", "#f1e8f7", "#f1ebe4", "#f6eefb", "#f7f2ec", "#ece1f4", "#f3ede7"];
 
 export async function CollectionIndex({
   type,
@@ -34,7 +25,7 @@ export async function CollectionIndex({
   description: string;
 }) {
   const locale = await getLocale();
-  const tCommon = await getTranslations("common");
+  const t = await getTranslations();
   const db = await getCollections(type);
   const bySlug = new Map(db.map((c) => [c.slug, c]));
 
@@ -49,49 +40,55 @@ export async function CollectionIndex({
   });
 
   return (
-    <div className="container-x pb-16 pt-8 lg:pt-10">
-      <header className="max-w-2xl">
-        <p className="chapter mb-4">{eyebrow}</p>
-        <h1 className="h-section font-display balance">{title}</h1>
-        <p className="mt-4 text-[1.02rem] text-ink-soft pretty">{description}</p>
-      </header>
+    <div>
+      <div className="band-cream border-b border-line">
+        <div className="container-x pb-8 pt-5 lg:pb-10">
+          <Breadcrumb items={[{ label: t("pdp.home"), href: "/" }, { label: title, href: base }]} />
+          <header className="mt-6 max-w-3xl">
+            <p className="caps mb-3">{eyebrow}</p>
+            <h1 className="h-display balance">{title}</h1>
+            <p className="mt-4 max-w-2xl text-[1.05rem] leading-relaxed text-ink-soft pretty">{description}</p>
+          </header>
+        </div>
+      </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-        {items.map((item, i) => (
-          <Reveal key={item.slug} delay={(i % 8) * 50}>
-            <Link href={`${base}/${item.slug}`} className="group arch relative block aspect-[4/5] overflow-hidden">
+      <div className="container-x pb-16 pt-10">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 xl:gap-5">
+          {items.map((item, i) => (
+            <Link key={item.slug} href={`${base}/${item.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-lg border border-line transition-shadow hover:shadow-md">
               {item.image ? (
-                <Image src={item.image} alt={item.label} fill sizes="(max-width:768px) 50vw, 25vw" className="zoom-img object-cover" />
+                <>
+                  <Image src={item.image} alt={item.label} fill sizes="(max-width:768px) 50vw, 25vw" className="zoom-img object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
+                </>
               ) : (
                 <div className="zoom-img h-full w-full" style={{ background: TINTS[i % TINTS.length] }}>
-                  <span className="absolute -bottom-6 -right-3 select-none font-display text-[9rem] leading-none text-ink/[0.045]">
+                  <span className="absolute -bottom-8 -right-2 select-none font-display text-[9rem] leading-none text-violet-deep/[0.06]">
                     {item.label.charAt(0)}
                   </span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent opacity-80" />
-              <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-2">
+              <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-3">
                 <div>
-                  <p className={item.image ? "font-display text-xl text-canvas" : "font-display text-xl text-ink"}>{item.label}</p>
-                  {item.count >= 3 && (
-                    <p className={item.image ? "text-xs text-canvas/75" : "text-xs text-ink-soft"}>
-                      {item.count} {tCommon("baskets")}
+                  <p className={cn2("font-display text-[1.35rem] font-medium leading-tight", item.image ? "text-white" : "text-ink")}>{item.label}</p>
+                  {item.count > 0 && (
+                    <p className={cn2("mt-0.5 text-sm", item.image ? "text-white/80" : "text-ink-soft")}>
+                      {item.count} {item.count === 1 ? (locale === "fr" ? "panier" : "basket") : t("common.baskets")}
                     </p>
                   )}
                 </div>
-                <span
-                  className={
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-transform group-hover:translate-x-0.5 " +
-                    (item.image ? "bg-canvas/90 text-ink" : "bg-ink text-canvas")
-                  }
-                >
-                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.7} />
+                <span className={cn2("circle-arrow h-10 w-10", item.image && "border-white/40 bg-white/15 text-white")}>
+                  <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
                 </span>
               </div>
             </Link>
-          </Reveal>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
+}
+
+function cn2(...parts: (string | false | null | undefined)[]) {
+  return parts.filter(Boolean).join(" ");
 }

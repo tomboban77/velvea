@@ -273,7 +273,7 @@ export function CheckoutForm({
 
       {/* right: summary */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-[1.75rem] border border-line bg-shell p-6">
+        <div className="rounded-lg border border-line bg-white p-6">
           <h2 className="font-display text-xl">Order summary</h2>
           <ul className="mt-4 divide-y divide-line">
             {items.map((i) => (
@@ -405,7 +405,7 @@ function MethodOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+        "flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
         active ? "border-ink bg-cream/60" : "border-line hover:border-line-strong"
       )}
     >

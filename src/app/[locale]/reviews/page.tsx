@@ -1,4 +1,4 @@
-import { setRequestLocale, getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { Star, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { t as tc } from "@/lib/i18n-content";
@@ -25,25 +25,26 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
       .catch(() => ({ _avg: { rating: 0 }, _count: 0 })),
   ]);
   return (
-    <div className="container-x py-14">
-      <header className="mb-10 text-center">
-        <p className="eyebrow mb-3">{fr ? "Avis clients" : "Customer Reviews"}</p>
-        <h1 className="font-display text-4xl sm:text-5xl">{fr ? "Adoré partout au Canada" : "Loved across Canada"}</h1>
+    <div>
+      <header className="band-cream border-b border-line px-[var(--gutter)] py-12 text-center lg:py-16">
+        <p className="caps">{fr ? "Avis clients" : "Customer reviews"}</p>
+        <h1 className="h-display mt-3">{fr ? "Adoré partout au Canada" : "Loved across Canada"}</h1>
         {stats._count > 0 && (
           <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="flex text-violet">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</div>
+            <span className="stars">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</span>
             <span className="text-sm text-ink-soft">{(stats._avg.rating ?? 0).toFixed(1)} / 5 · {stats._count} {fr ? "avis" : "reviews"}</span>
           </div>
         )}
       </header>
+      <div className="container-x py-12">
       {reviews.length === 0 ? (
         <p className="text-center text-muted">{fr ? "Aucun avis pour l'instant." : "No reviews yet."}</p>
       ) : (
         <div className="columns-1 gap-5 sm:columns-2 lg:columns-3">
           {reviews.map((r) => (
-            <figure key={r.id} className="mb-5 break-inside-avoid rounded-2xl border border-line bg-shell p-6">
+            <figure key={r.id} className="mb-5 break-inside-avoid rounded-lg border border-line bg-white p-6">
               <div className="flex items-center justify-between">
-                <div className="flex text-violet">{Array.from({ length: r.rating }).map((_: unknown, i: number) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}</div>
+                <span className="stars">{Array.from({ length: r.rating }).map((_: unknown, i: number) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}</span>
                 <span className="text-xs text-muted">{formatDate(r.createdAt, fr ? "fr-CA" : "en-CA")}</span>
               </div>
               {r.title && <figcaption className="mt-3 font-display text-lg">{r.title}</figcaption>}
@@ -57,6 +58,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

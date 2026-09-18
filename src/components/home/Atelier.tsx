@@ -1,31 +1,40 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "@/components/ui/Reveal";
 
-/** Honest brand note, set like a letterpress card. */
+/** Brand note: photograph beside the founder's belief, set plainly. */
 export async function Atelier() {
   const t = await getTranslations("atelier");
+  const locale = await getLocale();
   return (
     <section className="section">
-      <div className="container-x">
-        <Reveal>
-          <div className="mx-auto max-w-4xl p-3">
-            <div className="frame bg-shell px-8 py-14 text-center sm:px-16 sm:py-20">
-              <p className="chapter">{t("eyebrow")}</p>
-              <blockquote className="mx-auto mt-9 max-w-3xl font-display text-[1.9rem] font-light leading-[1.3] text-ink balance sm:text-[2.5rem]">
-                “{t("body1")}”
-              </blockquote>
-              <p className="mx-auto mt-9 max-w-2xl text-[1.02rem] leading-relaxed text-ink-soft pretty">{t("body2")}</p>
-              <div className="mx-auto mt-10 h-px w-16 bg-gold-soft" />
-              <p className="caps mt-5 text-[0.6rem] text-violet">{t("sign")}</p>
-              <p className="mt-1.5 text-[0.7rem] uppercase tracking-[0.22em] text-muted">{t("badge")}</p>
-              <Link href="/about" className="link-draw mt-10 text-ink">
-                {t("cta")} <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.6} />
-              </Link>
-            </div>
+      <div className="container-x grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-cream lg:aspect-[5/6]">
+            <Image
+              src="/images/gifting-editorial.webp"
+              alt={locale === "fr" ? "Coffrets ivoire et rubans prune sur une table en travertin" : "Ivory gift boxes with plum ribbon on a travertine table"}
+              fill
+              sizes="(max-width:1023px) 100vw, 40vw"
+              className="object-cover"
+            />
           </div>
-        </Reveal>
+        </div>
+        <div className="lg:col-span-6 lg:col-start-7">
+          <p className="caps">{t("eyebrow")}</p>
+          <h2 className="h-section mt-4 balance">{t("title")}</h2>
+          <blockquote className="mt-7 border-l-2 border-violet-deep pl-6 font-display text-[1.35rem] italic leading-[1.4] text-ink sm:text-[1.6rem]">
+            “{t("body1")}”
+          </blockquote>
+          <p className="mt-6 max-w-xl text-[1.02rem] leading-relaxed text-ink-soft pretty">{t("body2")}</p>
+          <p className="mt-6 text-sm font-semibold text-ink">
+            {t("sign")} <span className="font-normal text-muted">· {t("badge")}</span>
+          </p>
+          <Link href="/about" className="link-draw mt-8">
+            {t("cta")} <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );

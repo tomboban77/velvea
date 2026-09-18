@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "@/i18n/routing";
 import { useTransition } from "react";
 import { cn } from "@/lib/utils";
 
-export function LocaleSwitcher({ className }: { className?: string }) {
+export function LocaleSwitcher({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname(); // resolved path, locale-agnostic
@@ -18,28 +18,35 @@ export function LocaleSwitcher({ className }: { className?: string }) {
     });
   }
 
+  const dark = tone === "dark";
+
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border border-line-strong bg-shell/70 p-[3px] text-[0.7rem] font-medium tracking-wide",
+        "inline-flex items-center gap-0.5 text-[0.72rem] font-bold uppercase tracking-[0.08em]",
         isPending && "opacity-60",
         className
       )}
+      aria-label="Language"
     >
-      {(["en", "fr"] as const).map((l) => (
-        <button
-          key={l}
-          type="button"
-          onClick={() => switchTo(l)}
-          className={cn(
-            "rounded-full px-2.5 py-1 uppercase transition-colors",
-            locale === l ? "bg-ink text-canvas" : "text-muted hover:text-ink"
-          )}
-          aria-label={l === "en" ? "English" : "Français"}
-          aria-pressed={locale === l}
-        >
-          {l}
-        </button>
+      {(["en", "fr"] as const).map((l, i) => (
+        <span key={l} className="inline-flex items-center">
+          {i > 0 && <span className={cn("mx-1.5", dark ? "text-white/40" : "text-line-strong")}>/</span>}
+          <button
+            type="button"
+            onClick={() => switchTo(l)}
+            className={cn(
+              "transition-colors",
+              dark
+                ? locale === l ? "text-white underline underline-offset-4" : "text-white/60 hover:text-white"
+                : locale === l ? "text-ink underline underline-offset-4" : "text-muted hover:text-ink"
+            )}
+            aria-label={l === "en" ? "English" : "Français"}
+            aria-pressed={locale === l}
+          >
+            {l}
+          </button>
+        </span>
       ))}
     </div>
   );

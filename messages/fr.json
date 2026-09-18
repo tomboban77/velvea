@@ -32,7 +32,16 @@
     "featuredNow": "En vedette",
     "viewAll": "Tout voir",
     "customBasket": "Composer un panier",
-    "seasonal": "Saisonnier"
+    "seasonal": "Saisonnier",
+    "delivery": "Livraison",
+    "signIn": "Connexion",
+    "help": "Aide",
+    "shopByOccasion": "Par occasion",
+    "shopByRecipient": "Par destinataire",
+    "byCategory": "Par catégorie",
+    "shopAll": "Tous les paniers",
+    "searchShort": "Rechercher",
+    "browseAll": "Tout parcourir"
   },
   "common": {
     "shopGiftBaskets": "Voir les paniers",
@@ -65,7 +74,13 @@
     "new": "Nouveau",
     "bestseller": "Favori",
     "limited": "Édition limitée",
-    "sale": "Offre"
+    "sale": "Offre",
+    "shopNow": "Magasiner",
+    "soldOut": "Épuisé",
+    "addToBagShort": "Ajouter",
+    "viewDetails": "Voir les détails",
+    "noReviewsYet": "Aucun avis pour l’instant",
+    "reviewsCount": "{count, plural, one {# avis} other {# avis}}"
   },
   "hero": {
     "eyebrow": "Fondée en 2026 · Mississauga · Partout au Canada",
@@ -76,7 +91,12 @@
     "ctaPrimary": "Découvrir la collection",
     "ctaSecondary": "Composer un panier",
     "pictured": "En photo",
-    "view": "Voir le panier"
+    "view": "Voir le panier",
+    "headline": "L’art du cadeau bien pensé.",
+    "badge": "Emballé à la main à Mississauga",
+    "shopNow": "Voir les paniers",
+    "fromPrice": "À partir de {price}",
+    "slideLabel": "Diapositive {n}"
   },
   "promise": {
     "p1": "Composé à la main, à la commande",
@@ -120,7 +140,14 @@
     "moreInside": "+{count} autres",
     "view": "Voir le panier",
     "explore": "Découvrir la collection",
-    "newArrival": "Nouveauté"
+    "newArrival": "Nouveauté",
+    "tabAll": "Tous les paniers",
+    "tabBest": "Meilleures ventes",
+    "tabNew": "Nouveautés",
+    "tabUnder": "Moins de {amount}",
+    "tabFeatured": "En vedette",
+    "seeAll": "Voir tout : {label}",
+    "lede2": "Chaque panier est composé après votre commande, fini à la main et livré avec une carte manuscrite."
   },
   "build": {
     "eyebrow": "Composer un panier",
@@ -136,7 +163,8 @@
     "previewTitle": "Votre panier",
     "previewVessel": "Coffret souvenir",
     "previewNote": "Emballé à la main à la commande",
-    "previewItems": "Chocolat noir · Rosé pétillant · Bougie · Biscuits artisanaux"
+    "previewItems": "Chocolat noir · Rosé pétillant · Bougie · Biscuits artisanaux",
+    "startNote": "À partir de {price}"
   },
   "way": {
     "eyebrow": "La façon Velvéa",
@@ -154,7 +182,8 @@
     "f2Sub": "Expédition suivie dans chaque province et territoire",
     "f3": "Livraison gratuite",
     "f3Sub": "Pour les commandes de plus de {amount}",
-    "link": "Détails de livraison"
+    "link": "Détails de livraison",
+    "stepsEyebrow": "Comment ça marche"
   },
   "corporate": {
     "eyebrow": "Pour les entreprises",
@@ -266,7 +295,10 @@
     "reviews": "Avis",
     "rights": "Tous droits réservés.",
     "madeIn": "Composé à la main à Mississauga, Ontario.",
-    "currency": "Canada · CAD"
+    "currency": "Canada · CAD",
+    "secure": "Paiement sécurisé",
+    "newsletterEyebrow": "Restons en contact",
+    "bottomTagline": "Paniers-cadeaux haut de gamme, emballés à la main à Mississauga et livrés partout au Canada."
   },
   "pdp": {
     "home": "Accueil",
@@ -314,7 +346,17 @@
     "giftCardTitle": "Ajouter une carte manuscrite",
     "giftCardHint": "Facultatif — écrite à la main et glissée à l'intérieur",
     "giftCardPlaceholder": "Joyeux anniversaire, papa. Savoure chaque bouchée. — Tom",
-    "giftCardNote": "Écrite sur une carte Velvéa. Les prix ne sont jamais inclus."
+    "giftCardNote": "Écrite sur une carte Velvéa. Les prix ne sont jamais inclus.",
+    "deliveryTitle": "Livraison",
+    "giftingTitle": "Détails du cadeau",
+    "description": "À propos de ce panier",
+    "tabInside": "Contenu",
+    "tabDetails": "Détails",
+    "tabShipping": "Livraison et retours",
+    "selectSize": "Choisir une taille",
+    "qtyLabel": "Quantité",
+    "youSave": "Vous économisez {amount}",
+    "sku": "Article"
   },
   "listing": {
     "price": "Prix",
@@ -332,7 +374,10 @@
     "allTitle": "Tous les paniers-cadeaux",
     "allLede": "Notre gamme complète de paniers composés à la main, livrés partout au Canada.",
     "emptyTitle": "Rien ici pour l'instant",
-    "emptyLede": "Nous composons cette collection. Explorez la gamme complète ou créez quelque chose sur mesure."
+    "emptyLede": "Nous composons cette collection. Explorez la gamme complète ou créez quelque chose sur mesure.",
+    "filters": "Filtres",
+    "showing": "{count} sur {total}",
+    "all": "Tous"
   },
   "custom": {
     "eyebrow": "Composer un panier",

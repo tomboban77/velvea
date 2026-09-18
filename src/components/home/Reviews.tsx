@@ -15,10 +15,10 @@ export async function Reviews() {
   if (!rows.length) return null;
 
   return (
-    <section className="section bg-cream/60">
+    <section className="section band-cream border-t border-line">
       <div className="container-x">
         <SectionHeading
-          chapter="Chapter VIII"
+          
           eyebrow={t("eyebrow")}
           title={t("title")}
           lede={stats.count > 0 ? t("summary", { rating: stats.avg.toFixed(1), count: stats.count }) : undefined}
@@ -28,9 +28,9 @@ export async function Reviews() {
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {rows.map((r, i) => (
             <Reveal key={r.id} delay={i * 90}>
-              <figure className="flex h-full flex-col rounded-2xl border border-line bg-shell p-6">
+              <figure className="flex h-full flex-col rounded-lg border border-line bg-white p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex text-violet">
+                  <div className="stars">
                     {Array.from({ length: r.rating }).map((_, s) => (
                       <Star key={s} className="h-3.5 w-3.5 fill-current" />
                     ))}

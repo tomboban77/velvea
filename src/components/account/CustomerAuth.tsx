@@ -27,7 +27,7 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
           </p>
         </div>
 
-        <form action={formAction} className="relative rounded-[1.5rem] border border-line bg-shell p-6 sm:p-8">
+        <form action={formAction} className="relative rounded-lg border border-line bg-white p-6 sm:p-8">
           <Honeypot value={company} onChange={setCompany} />
           {mode === "register" && (
             <div className="mb-4">

@@ -65,7 +65,7 @@ export function ForgotPasswordForm() {
     >
       <form
         action={formAction}
-        className="relative rounded-[1.5rem] border border-line bg-shell p-6 sm:p-8"
+        className="relative rounded-lg border border-line bg-white p-6 sm:p-8"
       >
         <Honeypot value={company} onChange={setCompany} />
         <input type="hidden" name="locale" value={locale} />
@@ -76,7 +76,7 @@ export function ForgotPasswordForm() {
           <p className="mt-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{state.error}</p>
         )}
         {state?.notice && (
-          <p className="mt-4 flex items-start gap-2 rounded-lg bg-iris-soft px-3 py-2 text-sm text-ink">
+          <p className="mt-4 flex items-start gap-2 rounded-lg bg-lilac px-3 py-2 text-sm text-ink">
             <MailCheck className="mt-0.5 h-4 w-4 shrink-0 text-violet-deep" />
             {state.notice}
           </p>
@@ -125,7 +125,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         fr ? "Au moins 8 caractères." : "At least 8 characters."
       }
     >
-      <form action={formAction} className="rounded-[1.5rem] border border-line bg-shell p-6 sm:p-8">
+      <form action={formAction} className="rounded-lg border border-line bg-white p-6 sm:p-8">
         <input type="hidden" name="token" value={token} />
         <div className="mb-4">
           <label className="label">{fr ? "Mot de passe" : "New password"}</label>

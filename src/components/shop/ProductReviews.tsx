@@ -62,10 +62,7 @@ export function ProductReviews({
         return;
       }
       const payload = (await res.json().catch(() => null)) as { error?: string } | null;
-      setError(
-        payload?.error ??
-          (fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted.")
-      );
+      setError(payload?.error ?? (fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted."));
     } catch {
       setError(fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted.");
     } finally {
@@ -74,101 +71,88 @@ export function ProductReviews({
   }
 
   return (
-    <section className="border-t border-line bg-cream/40">
-      <div className="container-x py-16">
+    <section className="border-t border-line">
+      <div className="container-x section-sm">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-3xl sm:text-4xl">
-              {fr ? "Avis clients" : "Customer Reviews"}
-            </h2>
-            {count > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex text-violet">
+            <p className="caps">{fr ? "Avis" : "Reviews"}</p>
+            <h2 className="h-section mt-3">{fr ? "Avis clients" : "Customer reviews"}</h2>
+            {count > 0 ? (
+              <div className="mt-3 flex items-center gap-2">
+                <span className="stars">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={cn("h-4 w-4", i < Math.round(rating) ? "fill-current" : "opacity-30")} />
+                    <Star key={i} className={cn(i < Math.round(rating) ? "fill-current" : "opacity-25")} />
                   ))}
-                </div>
+                </span>
                 <span className="text-sm text-ink-soft">
-                  {rating.toFixed(1)} · {count} {fr ? "avis" : "reviews"}
+                  {rating.toFixed(1)} / 5 · {count} {fr ? "avis" : "reviews"}
                 </span>
               </div>
+            ) : (
+              !submitted && <p className="mt-3 text-ink-soft">{fr ? "Soyez le premier à donner votre avis." : "Be the first to review this basket."}</p>
             )}
           </div>
           {!submitted && (
-            <button onClick={() => setShowForm((s) => !s)} className="btn btn-outline btn-sm">
-              <PenLine className="h-4 w-4" /> {fr ? "Écrire un avis" : "Write a review"}
+            <button onClick={() => setShowForm((s) => !s)} className="btn btn-outline">
+              <PenLine /> {fr ? "Écrire un avis" : "Write a review"}
             </button>
           )}
         </div>
 
         {submitted && (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-line bg-shell px-5 py-4 text-sm">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-iris text-white">
+          <div className="mt-6 flex items-center gap-3 rounded-lg border border-line bg-white px-5 py-4 text-sm">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-violet-deep text-white">
               <Check className="h-4 w-4" />
             </span>
-            {fr
-              ? "Merci ! Votre avis sera publié après vérification."
-              : "Thank you! Your review will appear once approved."}
+            {fr ? "Merci ! Votre avis sera publié après vérification." : "Thank you! Your review will appear once approved."}
           </div>
         )}
 
         {showForm && (
-          <form onSubmit={submit} className="relative mt-6 rounded-2xl border border-line bg-shell p-6">
+          <form onSubmit={submit} className="relative mt-6 max-w-3xl rounded-lg border border-line bg-white p-6 sm:p-8">
             <Honeypot value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
-            {error && (
-              <p className="mb-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
-            )}
-            <div className="mb-4 flex items-center gap-1">
+            {error && <p className="mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
+            <p className="label">{fr ? "Votre note" : "Your rating"}</p>
+            <div className="mb-5 flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setForm({ ...form, rating: n })}
-                  aria-label={`${n} stars`}
-                >
-                  <Star className={cn("h-6 w-6", n <= form.rating ? "fill-gold text-gold" : "text-line-strong")} />
+                <button key={n} type="button" onClick={() => setForm({ ...form, rating: n })} aria-label={`${n} stars`}>
+                  <Star className={cn("h-7 w-7", n <= form.rating ? "fill-star text-star" : "text-line-strong")} />
                 </button>
               ))}
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <input required placeholder={fr ? "Votre nom" : "Your name"} className="field"
-                value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-              <input placeholder={fr ? "Ville, province" : "City, province"} className="field"
-                value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+              <input required placeholder={fr ? "Votre nom" : "Your name"} className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input placeholder={fr ? "Ville, province" : "City, province"} className="field" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
             </div>
-            <input placeholder={fr ? "Titre" : "Title"} className="field mt-3"
-              value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-            <textarea required rows={4} placeholder={fr ? "Votre avis…" : "Your review…"} className="field mt-3 resize-y"
-              value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
-            <button disabled={busy} className="btn btn-primary btn-sm mt-4">
+            <input placeholder={fr ? "Titre" : "Title"} className="field mt-3" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            <textarea required rows={4} placeholder={fr ? "Votre avis…" : "Your review…"} className="field mt-3 resize-y" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
+            <button disabled={busy} className="btn btn-primary mt-5">
               {busy ? "…" : fr ? "Soumettre" : "Submit review"}
             </button>
           </form>
         )}
 
-        {reviews.length > 0 ? (
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {reviews.length > 0 && (
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {reviews.map((r) => (
-              <figure key={r.id} className="flex flex-col rounded-2xl border border-line bg-shell p-6">
+              <figure key={r.id} className="flex flex-col rounded-lg border border-line bg-white p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex text-violet">
+                  <span className="stars">
                     {Array.from({ length: r.rating }).map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                      <Star key={i} className="fill-current" />
                     ))}
-                  </div>
+                  </span>
                   <span className="text-xs text-muted">{formatDate(r.date, fr ? "fr-CA" : "en-CA")}</span>
                 </div>
-                {r.title && <figcaption className="mt-3 font-display text-lg">{r.title}</figcaption>}
-                <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
-                  &ldquo;{r.body}&rdquo;
-                </blockquote>
-                <div className="mt-4 flex items-center justify-between">
+                {r.title && <figcaption className="mt-3 text-[1.05rem] font-semibold text-ink">{r.title}</figcaption>}
+                <blockquote className="mt-2 flex-1 text-[0.95rem] leading-relaxed text-ink-soft">&ldquo;{r.body}&rdquo;</blockquote>
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
                   <div>
                     <p className="text-sm font-semibold text-ink">{r.author}</p>
                     {r.location && <p className="text-xs text-muted">{r.location}</p>}
                   </div>
                   {r.verified && (
-                    <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-violet-deep">
+                    <span className="flex items-center gap-1 text-[0.68rem] font-bold uppercase tracking-wider text-violet-deep">
                       <ShieldCheck className="h-3.5 w-3.5" /> {fr ? "Vérifié" : "Verified"}
                     </span>
                   )}
@@ -176,12 +160,6 @@ export function ProductReviews({
               </figure>
             ))}
           </div>
-        ) : (
-          !submitted && (
-            <p className="mt-8 text-sm text-muted">
-              {fr ? "Soyez le premier à donner votre avis." : "Be the first to review this basket."}
-            </p>
-          )
         )}
       </div>
     </section>

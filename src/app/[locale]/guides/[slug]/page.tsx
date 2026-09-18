@@ -1,4 +1,4 @@
-import { setRequestLocale, getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { ChevronRight, ArrowRight } from "lucide-react";
@@ -23,15 +23,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   if (!a) notFound();
 
   return (
-    <article className="container-x max-w-3xl py-12">
-      <nav className="mb-6 flex items-center gap-1.5 text-xs text-muted">
-        <Link href="/" className="hover:text-violet">Velvea</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link href="/guides" className="hover:text-violet">Gift Guides</Link>
+    <article className="container-narrow py-10 lg:py-14">
+      <nav className="mb-8 flex items-center gap-1.5 text-[0.82rem] text-muted">
+        <Link href="/" className="hover:text-violet-deep">Velvéa</Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <Link href="/guides" className="hover:text-violet-deep">{locale === "fr" ? "Guides" : "Gift guides"}</Link>
       </nav>
 
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet">{a.category.toLowerCase()}</p>
-      <h1 className="mt-3 font-display text-4xl leading-tight balance sm:text-5xl">{tc(a.title, locale)}</h1>
+      <p className="caps">{a.category.toLowerCase()}</p>
+      <h1 className="h-display mt-3 balance">{tc(a.title, locale)}</h1>
       <p className="mt-3 text-sm text-muted">
         {a.author ?? "Velvea"} · {a.readMinutes} min read
         {a.publishedAt ? ` · ${formatDate(a.publishedAt, locale === "fr" ? "fr-CA" : "en-CA")}` : ""}
@@ -44,8 +44,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(tc(a.body, locale)) }}
       />
 
-      <div className="mt-12 rounded-2xl border border-line bg-cream/50 p-8 text-center">
-        <h2 className="font-display text-2xl">Find the perfect gift</h2>
+      <div className="band-lilac mt-14 rounded-lg p-8 text-center sm:p-10">
+        <h2 className="h-sub">Find the perfect gift</h2>
         <p className="mt-2 text-ink-soft">Browse hand-packed baskets for every occasion.</p>
         <Link href="/baskets" className="btn btn-primary mt-5">
           Shop Gift Baskets <ArrowRight className="h-4 w-4" />

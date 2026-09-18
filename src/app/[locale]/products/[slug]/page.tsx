@@ -1,10 +1,9 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Link } from "@/i18n/routing";
-import { ChevronRight } from "lucide-react";
 import { ProductDetail, type ProductDetailView } from "@/components/shop/ProductDetail";
 import { ProductReviews } from "@/components/shop/ProductReviews";
 import { ProductRail } from "@/components/shop/ProductRail";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
 
@@ -55,7 +54,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     })),
   };
 
-  const related = (await getBestsellers(5)).filter((p) => p.id !== product.id).slice(0, 4);
+  const related = (await getBestsellers(6)).filter((p) => p.id !== product.id).slice(0, 5);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -79,17 +78,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <nav className="container-x flex items-center gap-1.5 pt-6 text-xs text-muted" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-violet">
-          {t("home")}
-        </Link>
-        <ChevronRight className="h-3 w-3" strokeWidth={1.6} />
-        <Link href="/baskets" className="hover:text-violet">
-          {t("baskets")}
-        </Link>
-        <ChevronRight className="h-3 w-3" strokeWidth={1.6} />
-        <span className="truncate text-ink-soft">{view.name}</span>
-      </nav>
+      <div className="container-x pt-5">
+        <Breadcrumb
+          items={[
+            { label: t("home"), href: "/" },
+            { label: t("baskets"), href: "/baskets" },
+            { label: view.name, href: `/products/${view.slug}` },
+          ]}
+        />
+      </div>
 
       <ProductDetail product={view} />
 
@@ -111,7 +108,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         />
       </div>
 
-      <ProductRail products={related} title={t("related")} link="/baskets" linkLabel={t("shopAll")} />
+      <ProductRail products={related} title={t("related")} link="/baskets" linkLabel={t("shopAll")} tone="cream" />
     </>
   );
 }

@@ -9,13 +9,22 @@ Founded 2026 · Mississauga, Ontario · Woman-owned.
 
 ## What's included
 
-**Storefront** (design v2, Sept 2026)
-- Editorial homepage: hero with live same-day countdown, promise bar, compact gift finder, occasion rail,
-  adaptive collection block (editorial when the catalogue is small, grid when it grows), build-your-own,
-  process + delivery facts, corporate, atelier note, FAQ. Reviews and Journal sections render only when
-  real approved reviews / published articles exist (no placeholder content).
-- Single-row header with centred logo, "Shop" mega-menu (occasions · recipients · categories · seasonal +
-  featured basket), full-width search overlay, slim announcement bar.
+**Storefront** (design v3, Sept 2026 — retail layout)
+- Full-width, three-tier header: slim announcement bar · brand bar (utility links, centred logo, always-visible
+  search, delivery / sign-in / bag) · dark category bar with mega-menus (occasions · recipients · categories ·
+  seasonal + featured basket). The category bar is sticky and collapses to a compact wordmark + icons on scroll;
+  on mobile the brand bar is sticky with a drawer menu and an inline search row.
+- Fluid layout: the page gutter and product grid scale with the viewport (2 → 6 columns up to 2240px), so wide
+  monitors are filled instead of a centred 1344px column.
+- Homepage: lilac hero with the lead basket, four-promise strip, shop-by-occasion tiles, gift finder, tabbed
+  collection (all · new · under $100 · bestsellers, computed from the catalogue), build-your-own split band,
+  how-it-works + delivery facts, corporate band, founder note, FAQ. Reviews and Journal render only when real
+  content exists.
+- Product cards carry a square ivory photo tile, badge, name, rating (when reviews exist), price and a
+  full-width "Add to bag" button; quick-add also lives on the photo.
+- Design system lives in `src/app/globals.css`: Fraunces (display) + Hanken Grotesk (UI), plum as the single
+  brand colour, 4px radii on controls, component classes in `@layer components` so Tailwind utilities can
+  override them.
 - Catalog: all baskets, by occasion, by recipient, by category, with sort and price filters.
 - Product pages with gallery, variants, always-visible "What's inside", same-day countdown, gifting
   reassurance (handwritten card · no prices on slip · packed to order), "How it arrives", Product JSON-LD,

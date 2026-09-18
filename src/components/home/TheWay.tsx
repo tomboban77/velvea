@@ -1,12 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin, Truck, BadgePercent } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Reveal } from "@/components/ui/Reveal";
 import { getSettings } from "@/lib/settings";
 import { formatMoney } from "@/lib/utils";
 
-/** Process and delivery facts in one calm, engraved section. */
+/** How it works (three numbered steps) plus delivery facts, in one calm section. */
 export async function TheWay() {
   const t = await getTranslations("way");
   const locale = await getLocale();
@@ -14,50 +13,50 @@ export async function TheWay() {
   const free = formatMoney(s.delivery.freeShippingThresholdCents, locale === "fr" ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
 
   const steps = [
-    { n: "I", title: t("s1"), sub: t("s1Sub") },
-    { n: "II", title: t("s2"), sub: t("s2Sub") },
-    { n: "III", title: t("s3"), sub: t("s3Sub") },
+    { title: t("s1"), sub: t("s1Sub") },
+    { title: t("s2"), sub: t("s2Sub") },
+    { title: t("s3"), sub: t("s3Sub") },
   ];
   const facts = [
-    { title: t("f1"), sub: t("f1Sub") },
-    { title: t("f2"), sub: t("f2Sub") },
-    { title: t("f3"), sub: t("f3Sub", { amount: free }) },
+    { icon: MapPin, title: t("f1"), sub: t("f1Sub") },
+    { icon: Truck, title: t("f2"), sub: t("f2Sub") },
+    { icon: BadgePercent, title: t("f3"), sub: t("f3Sub", { amount: free }) },
   ];
 
   return (
-    <section className="section bg-cream">
+    <section className="section band-cream">
       <div className="container-x">
-        <SectionHeading chapter="Chapter IV" eyebrow={t("eyebrow")} title={t("title")} />
+        <SectionHeading eyebrow={t("stepsEyebrow")} title={t("title")} link="/shipping" linkLabel={t("link")} />
 
-        <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-10">
+        <ol className="mt-10 grid gap-6 md:grid-cols-3 md:gap-8">
           {steps.map((st, i) => (
-            <Reveal key={st.n} delay={i * 100}>
-              <div className="text-center">
-                <p className="numeral text-[5rem]">{st.n}</p>
-                <p className="mt-5 font-display text-[1.5rem] leading-tight text-ink">{st.title}</p>
-                <p className="mx-auto mt-3 max-w-xs text-[0.95rem] leading-relaxed text-ink-soft pretty">{st.sub}</p>
+            <li key={st.title} className="rounded-lg border border-line bg-white p-7">
+              <span className="step-num text-violet-deep">{i + 1}</span>
+              <p className="mt-5 font-display text-[1.45rem] leading-tight text-ink">{st.title}</p>
+              <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft pretty">{st.sub}</p>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-6 grid divide-y divide-line rounded-lg border border-line bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          {facts.map(({ icon: Icon, title, sub }) => (
+            <div key={title} className="flex items-center gap-4 px-6 py-5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lilac text-violet-deep">
+                <Icon className="h-5 w-5" strokeWidth={1.6} />
+              </span>
+              <div>
+                <p className="text-[0.95rem] font-semibold text-ink">{title}</p>
+                <p className="text-sm text-ink-soft">{sub}</p>
               </div>
-            </Reveal>
+            </div>
           ))}
         </div>
 
-        <Reveal delay={200}>
-          <div className="double-rule mt-16" />
-          <div className="grid gap-8 py-8 sm:grid-cols-3 sm:divide-x sm:divide-line">
-            {facts.map((f) => (
-              <div key={f.title} className="text-center sm:px-6">
-                <p className="caps text-[0.62rem] text-violet">{f.title}</p>
-                <p className="mt-2 font-display text-[1.2rem] text-ink">{f.sub}</p>
-              </div>
-            ))}
-          </div>
-          <div className="double-rule" />
-          <div className="mt-8 text-center">
-            <Link href="/shipping" className="link-draw text-ink">
-              {t("link")} <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.6} />
-            </Link>
-          </div>
-        </Reveal>
+        <p className="mt-6 text-sm text-muted">
+          <Link href="/shipping" className="link-draw">
+            {t("link")} <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </p>
       </div>
     </section>
   );

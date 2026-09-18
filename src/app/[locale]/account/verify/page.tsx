@@ -22,7 +22,7 @@ export default async function Page({
 
   return (
     <div className="container-x max-w-xl py-24 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-iris-soft">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lilac">
         {ok ? (
           <CheckCircle2 className="h-8 w-8 text-violet-deep" />
         ) : (

@@ -33,8 +33,8 @@ export function CorporateQuoteForm() {
 
   if (state === "done") {
     return (
-      <div className="rounded-[1.75rem] border border-line bg-shell p-10 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-iris-soft">
+      <div className="rounded-lg border border-line bg-white p-10 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lilac">
           <Check className="h-7 w-7 text-violet-deep" />
         </div>
         <h2 className="mt-5 font-display text-2xl">
@@ -50,7 +50,7 @@ export function CorporateQuoteForm() {
   }
 
   return (
-    <form onSubmit={submit} className="relative rounded-[1.75rem] border border-line bg-shell p-6 sm:p-8">
+    <form onSubmit={submit} className="relative rounded-lg border border-line bg-white p-6 sm:p-8">
       <Honeypot name="website" value={f.website} onChange={(v) => set("website", v)} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

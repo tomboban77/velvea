@@ -51,7 +51,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
       </div>
 
       {!verified && (
-        <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-cream/50 px-5 py-4">
+        <div className="mt-8 flex flex-wrap items-center gap-4 rounded-lg border border-line bg-cream/50 px-5 py-4">
           <MailWarning className="h-5 w-5 shrink-0 text-violet" />
           <p className="flex-1 text-sm text-ink-soft">
             {fr
@@ -68,7 +68,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
 
       <h2 className="mt-10 mb-4 font-display text-2xl">{fr ? "Vos commandes" : "Your orders"}</h2>
       {orders.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line-strong bg-cream/40 px-6 py-16 text-center">
+        <div className="rounded-lg border border-dashed border-line-strong bg-cream/40 px-6 py-16 text-center">
           <Package className="mx-auto h-7 w-7 text-muted" />
           <p className="mt-3 font-display text-xl">{fr ? "Aucune commande" : "No orders yet"}</p>
           <Link href="/baskets" className="btn btn-primary btn-sm mt-4">
@@ -76,7 +76,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-line bg-shell">
+        <div className="overflow-hidden rounded-lg border border-line bg-white">
           <table className="w-full text-sm">
             <tbody className="divide-y divide-line">
               {orders.map((o) => (

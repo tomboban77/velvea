@@ -14,9 +14,9 @@ export async function Journal() {
   if (!articles.length) return null;
 
   return (
-    <section className="section">
+    <section className="section border-t border-line">
       <div className="container-x">
-        <SectionHeading chapter="Chapter IX" eyebrow={t("eyebrow")} title={t("title")} link="/guides" linkLabel={t("readAll")} />
+        <SectionHeading eyebrow={t("eyebrow")} title={t("title")} link="/guides" linkLabel={t("readAll")} />
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {articles.map((a, i) => (
             <Reveal key={a.id} delay={i * 90}>

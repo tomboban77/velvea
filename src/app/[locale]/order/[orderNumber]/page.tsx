@@ -105,7 +105,7 @@ export default async function OrderPage({
   return (
     <div className="container-x max-w-3xl py-16">
       <div className="text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-iris-soft">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lilac">
           {paid ? (
             <CheckCircle2 className="h-8 w-8 text-violet-deep" />
           ) : (
@@ -136,7 +136,7 @@ export default async function OrderPage({
         </p>
       </div>
 
-      <div className="mt-10 rounded-[1.75rem] border border-line bg-shell p-6 sm:p-8">
+      <div className="mt-10 rounded-lg border border-line bg-white p-6 sm:p-8">
         <ul className="divide-y divide-line">
           {order!.items.map((i) => {
             const cfg = i.customConfig as { items?: { name: string; qty: number }[] } | null;
@@ -224,7 +224,7 @@ export default async function OrderPage({
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">
                 {fr ? "Message cadeau" : "Gift message"}
               </p>
-              <p className="mt-1 rounded-xl bg-cream px-3 py-2 text-sm italic text-ink-soft">
+              <p className="mt-1 rounded-lg bg-cream px-3 py-2 text-sm italic text-ink-soft">
                 &ldquo;{order!.giftMessage}&rdquo;
               </p>
             </div>
@@ -254,7 +254,7 @@ export default async function OrderPage({
       </div>
 
       {/* timeline */}
-      <div className="mt-8 flex items-center justify-between rounded-2xl border border-line bg-cream/50 px-6 py-5">
+      <div className="mt-8 flex items-center justify-between rounded-lg border border-line bg-cream/50 px-6 py-5">
         {[
           { icon: CheckCircle2, label: fr ? "Confirmée" : "Confirmed", done: paid },
           {

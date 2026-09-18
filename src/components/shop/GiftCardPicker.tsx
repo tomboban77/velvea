@@ -33,7 +33,7 @@ export function GiftCardPicker({ productId, variants }: { productId: string; var
   return (
     <div>
       {/* preview */}
-      <div className="relative mb-6 overflow-hidden rounded-[1.5rem] p-8 text-white shadow-lg" style={{ background: "var(--grad-iris)" }}>
+      <div className="relative mb-6 overflow-hidden rounded-lg p-8 text-white shadow-lg" style={{ background: "var(--grad-iris)" }}>
         <div className="flex items-start justify-between">
           <span className="font-display text-2xl tracking-wide">VELVÉA</span>
           <Gift className="h-6 w-6" />
@@ -49,7 +49,7 @@ export function GiftCardPicker({ productId, variants }: { productId: string; var
             key={variant.id}
             onClick={() => setSelected(variant.id)}
             className={cn(
-              "rounded-xl border-2 py-3 text-sm font-semibold transition-colors",
+              "rounded-lg border-2 py-3 text-sm font-semibold transition-colors",
               selected === variant.id ? "border-ink bg-cream/50" : "border-line text-ink-soft hover:border-line-strong"
             )}
           >

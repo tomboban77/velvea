@@ -2,15 +2,20 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Star, Check, Plus } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatMoney, cn } from "@/lib/utils";
 import type { ProductView } from "@/lib/view";
 
+/**
+ * Catalogue card: square photo tile, badge, name, rating, price and a full-width
+ * add-to-bag button. The whole card links to the product; the buttons don't.
+ */
 export function ProductCard({ product, priority = false }: { product: ProductView; priority?: boolean }) {
   const t = useTranslations("common");
+  const locale = useLocale();
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
@@ -29,10 +34,12 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
     setTimeout(() => setAdded(false), 1500);
   }
 
+  const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA");
   const onSale = !!product.compareAtCents && product.compareAtCents > product.priceCents;
   const badge = onSale ? "sale" : product.badges[0];
   const badgeLabel =
     badge === "new" ? t("new") : badge === "bestseller" ? t("bestseller") : badge === "limited" ? t("limited") : badge === "sale" ? t("sale") : null;
+  const badgeTone = badge === "bestseller" ? "badge-plum" : badge === "sale" ? "badge-ink" : "badge-gold";
 
   return (
     <article className="product-card group">
@@ -45,46 +52,65 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
                 alt={product.name}
                 fill
                 priority={priority}
-                sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw"
+                sizes="(max-width:767px) 50vw, (max-width:1279px) 33vw, (max-width:1791px) 25vw, 20vw"
                 className={cn("zoom-img object-cover transition-opacity duration-700", product.secondImage && "group-hover:opacity-0")}
               />
               {product.secondImage && (
-                <Image src={product.secondImage} alt="" fill sizes="(max-width:640px) 50vw, 25vw" className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+                <Image src={product.secondImage} alt="" fill sizes="(max-width:767px) 50vw, 25vw" className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
               )}
             </>
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="font-caps text-xl tracking-[0.2em] text-line-strong">VELVEA</span>
+              <span className="font-display text-2xl tracking-[0.1em] text-line-strong">Velvéa</span>
             </div>
           )}
         </Link>
-          {badgeLabel && <span className="product-badge">{badgeLabel}</span>}
-
-          <button
-            onClick={quickAdd}
-            aria-label={`${t("quickAdd")}: ${product.name}`}
-            title={added ? t("added") : t("quickAdd")}
-            className={cn("product-quick-add", added && "is-added")}
-          >
-            {added ? <Check className="h-3.5 w-3.5" strokeWidth={2} /> : <Plus className="h-3.5 w-3.5" strokeWidth={2} />}
-            <span className="sr-only" role="status">{added ? t("added") : t("quickAdd")}</span>
-          </button>
+        {badgeLabel && <span className={cn("badge product-badge", badgeTone)}>{badgeLabel}</span>}
+        <button
+          onClick={quickAdd}
+          aria-label={`${t("quickAdd")}: ${product.name}`}
+          title={added ? t("added") : t("quickAdd")}
+          className={cn("product-quick-add", added && "is-added")}
+        >
+          {added ? <Check className="h-4 w-4" strokeWidth={2} /> : <Plus className="h-4 w-4" strokeWidth={2} />}
+        </button>
       </div>
 
-      <div className="pt-4">
-        <h3 className="font-display text-[1.3rem] leading-tight text-ink transition-colors group-hover:text-violet-deep"><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
-        {product.tagline && <p className="mt-1 truncate text-xs text-muted">{product.tagline}</p>}
-        <p className="mt-2 flex items-baseline gap-2">
-          <span className="font-sans text-sm font-medium text-ink">{formatMoney(product.priceCents)}</span>
-          {onSale && <span className="text-xs text-muted line-through">{formatMoney(product.compareAtCents!)}</span>}
-        </p>
+      <div className="flex flex-1 flex-col pt-4">
+        <h3 className="product-name">
+          <Link href={`/products/${product.slug}`} className="transition-colors hover:text-violet-deep">
+            {product.name}
+          </Link>
+        </h3>
+        {product.tagline && <p className="mt-1 line-clamp-1 text-[0.85rem] text-muted">{product.tagline}</p>}
+
         {product.reviewCount > 0 && (
-          <p className="mt-1.5 flex items-center gap-1 text-xs text-muted">
-            <Star className="h-3 w-3 fill-gold text-gold" />
-            <span className="font-medium text-ink-soft">{product.rating.toFixed(1)}</span>
-            <span>({product.reviewCount})</span>
-          </p>
+          <div className="mt-2 flex items-center gap-2 text-[0.8rem] text-muted">
+              <span className="stars" aria-hidden>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={cn(i < Math.round(product.rating) ? "fill-current" : "opacity-25")} />
+                ))}
+              </span>
+              <Link href={`/products/${product.slug}#reviews`} className="underline underline-offset-2 hover:text-ink">
+                {t("reviewsCount", { count: product.reviewCount })}
+              </Link>
+          </div>
         )}
+
+        <p className="mt-2 flex items-baseline gap-2">
+          <span className="price text-[1.15rem] text-ink">{money(product.priceCents)}</span>
+          {onSale && <span className="text-sm text-muted line-through">{money(product.compareAtCents!)}</span>}
+        </p>
+
+        <button onClick={quickAdd} className={cn("btn btn-outline btn-sm mt-4 w-full", added && "!border-success !bg-success !text-white")}>
+          {added ? (
+            <>
+              <Check /> {t("added")}
+            </>
+          ) : (
+            t("addToBag")
+          )}
+        </button>
       </div>
     </article>
   );

@@ -39,12 +39,12 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
         <ul className="mt-6 space-y-3">
           {points.map((p) => (
             <li key={p} className="flex items-center gap-3 text-ink-soft">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-iris-soft"><Check className="h-3 w-3 text-violet-deep" /></span>{p}
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lilac"><Check className="h-3 w-3 text-violet-deep" /></span>{p}
             </li>
           ))}
         </ul>
       </div>
-      <div className="rounded-[1.75rem] border border-line bg-shell p-6 sm:p-8">
+      <div className="rounded-lg border border-line bg-white p-6 sm:p-8">
         {product && product.variants.length > 0 ? (
           <GiftCardPicker productId={product.id} variants={product.variants.map((v) => ({ id: v.id, label: tc(v.label, locale), priceCents: v.priceCents }))} />
         ) : (

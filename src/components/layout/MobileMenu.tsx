@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useId } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { X, ChevronDown, ArrowRight } from "lucide-react";
+import { X, ChevronDown, ArrowRight, User, Truck } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
@@ -55,10 +55,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
       inert={!open}
     >
       <div
-        className={cn(
-          "absolute inset-0 bg-ink/40 backdrop-blur-sm transition-opacity duration-400",
-          open ? "opacity-100" : "opacity-0"
-        )}
+        className={cn("absolute inset-0 bg-charcoal/50 transition-opacity duration-300", open ? "opacity-100" : "opacity-0")}
         onClick={onClose}
       />
       <div
@@ -67,11 +64,11 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          "absolute left-0 top-0 flex h-full w-[88%] max-w-sm flex-col bg-canvas shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute left-0 top-0 flex h-full w-[88%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="flex h-16 items-center justify-between border-b border-line px-5">
           <span id={titleId} className="sr-only">{t("nav.menu")}</span>
           <Logo height={26} />
           <button onClick={onClose} className="icon-btn -mr-2" aria-label={t("nav.close")}>
@@ -79,72 +76,61 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-5">
-          <Link href="/baskets" className="flex items-center justify-between py-3 font-display text-2xl text-ink">
-            {t("nav.allBaskets")} <ArrowRight className="h-4 w-4 text-violet" />
+        <div className="flex-1 overflow-y-auto">
+          <Link href="/baskets" className="flex items-center justify-between border-b border-line px-5 py-4 text-[0.95rem] font-bold uppercase tracking-[0.08em] text-violet-deep">
+            {t("nav.allBaskets")} <ArrowRight className="h-4 w-4" />
           </Link>
 
-          <div className="mt-2 border-t border-line">
-            {groups.map((g) => (
-              <div key={g.key} className="border-b border-line">
-                <button
-                  className="caps flex w-full items-center justify-between py-3.5 text-[0.62rem] text-ink"
-                  onClick={() => setSection(section === g.key ? null : g.key)}
-                  aria-expanded={section === g.key}
-                >
-                  {g.label}
-                  <ChevronDown
-                    className={cn("h-4 w-4 text-muted transition-transform", section === g.key && "rotate-180")}
-                    strokeWidth={1.8}
-                  />
-                </button>
-                <div
-                  inert={section !== g.key}
-                  className={cn(
-                    "grid transition-all duration-400",
-                    section === g.key ? "grid-rows-[1fr] pb-3 opacity-100" : "grid-rows-[0fr] opacity-0"
-                  )}
-                >
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 overflow-hidden">
-                    {g.items.map((item) => (
-                      <Link
-                        key={item.slug}
-                        href={`${g.base}/${item.slug}`}
-                        className="py-1.5 text-[0.95rem] text-ink-soft hover:text-violet"
-                      >
-                        {labelFor(item, locale)}
-                      </Link>
-                    ))}
-                    <Link href={g.base} className="py-1.5 text-[0.9rem] font-medium text-violet">
-                      {t("nav.viewAll")}
+          {groups.map((g) => (
+            <div key={g.key} className="border-b border-line">
+              <button
+                className="flex w-full items-center justify-between px-5 py-4 text-[0.82rem] font-bold uppercase tracking-[0.08em] text-ink"
+                onClick={() => setSection(section === g.key ? null : g.key)}
+                aria-expanded={section === g.key}
+              >
+                {g.label}
+                <ChevronDown className={cn("h-4 w-4 text-muted transition-transform", section === g.key && "rotate-180")} strokeWidth={2} />
+              </button>
+              <div
+                inert={section !== g.key}
+                className={cn("grid transition-all duration-300", section === g.key ? "grid-rows-[1fr] pb-3 opacity-100" : "grid-rows-[0fr] opacity-0")}
+              >
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 overflow-hidden px-5">
+                  {g.items.map((item) => (
+                    <Link key={item.slug} href={`${g.base}/${item.slug}`} className="py-1.5 text-[0.95rem] text-ink-soft hover:text-violet-deep">
+                      {labelFor(item, locale)}
                     </Link>
-                  </div>
+                  ))}
+                  <Link href={g.base} className="py-1.5 text-[0.9rem] font-semibold text-violet-deep">
+                    {t("nav.viewAll")}
+                  </Link>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
 
-          <div className="mt-5 space-y-0.5">
+          <div className="px-5 py-3">
             {[
               { href: "/custom", label: t("nav.build") },
               { href: "/corporate", label: t("nav.corporate") },
-              ...(GIFT_CARDS_ENABLED
-                ? [{ href: "/gift-cards", label: t("nav.giftCards") }]
-                : []),
+              ...(GIFT_CARDS_ENABLED ? [{ href: "/gift-cards", label: t("nav.giftCards") }] : []),
+              { href: "/guides", label: t("nav.guides") },
               { href: "/about", label: t("nav.story") },
-              { href: "/guides", label: t("nav.journal") },
-              { href: "/account", label: t("nav.account") },
+              { href: "/contact", label: t("footer.contact") },
             ].map((l) => (
-              <Link key={l.href} href={l.href} className="block py-2.5 font-display text-xl text-ink">
+              <Link key={l.href} href={l.href} className="block py-2.5 text-[1rem] font-medium text-ink">
                 {l.label}
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-line px-5 py-4">
-          <LocaleSwitcher />
-          <span className="text-[0.65rem] uppercase tracking-[0.2em] text-muted">Mississauga · Canada</span>
+        <div className="border-t border-line px-5 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/account" className="util-link"><User strokeWidth={1.6} /> {t("nav.signIn")}</Link>
+            <Link href="/shipping" className="util-link"><Truck strokeWidth={1.6} /> {t("nav.delivery")}</Link>
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </div>

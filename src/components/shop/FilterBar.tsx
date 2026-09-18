@@ -31,9 +31,9 @@ export function FilterBar({ total }: { total: number }) {
   const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
 
   return (
-    <div className="flex flex-col gap-4 border-y border-line-strong py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-b border-line py-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-        <span className="caps mr-1 shrink-0 text-[0.58rem] text-muted">{t("price")}</span>
+        <span className="mr-1 shrink-0 text-[0.78rem] font-semibold text-ink-soft">{t("price")}</span>
         <button onClick={() => update({ max: null })} className={cn("chip", !currentMax && "is-active")}>
           {t("priceAll")}
         </button>
@@ -46,8 +46,8 @@ export function FilterBar({ total }: { total: number }) {
 
       <div className="flex items-center justify-between gap-5 sm:justify-end">
         <span className="text-sm text-muted">{total === 1 ? t("result", { count: total }) : t("results", { count: total })}</span>
-        <div className="flex items-center gap-3">
-          <span className="caps text-[0.58rem] text-muted">{t("sort")}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[0.78rem] font-semibold text-ink-soft">{t("sort")}</span>
           <Select
             value={currentSort}
             onChange={(v) => update({ sort: v })}

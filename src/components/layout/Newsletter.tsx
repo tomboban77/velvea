@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Check } from "lucide-react";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { cn } from "@/lib/utils";
 
-export function Newsletter() {
+export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
   const t = useTranslations("newsletter");
   const locale = useLocale();
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ export function Newsletter() {
   const [company, setCompany] = useState("");
   /** Set when the confirm/unsubscribe links bounce the visitor back here. */
   const [outcome, setOutcome] = useState<string | null>(null);
+  const dark = tone === "dark";
 
   // Read from the URL rather than useSearchParams: this block lives in the
   // root layout, and useSearchParams would opt every page out of static
@@ -63,8 +65,8 @@ export function Newsletter() {
   return (
     <div>
       {banner ? (
-        <div className="flex items-center gap-3 rounded-2xl bg-iris-soft px-5 py-4 text-sm font-medium text-ink">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-iris text-white">
+        <div className={cn("flex items-center gap-3 rounded-md px-5 py-4 text-sm font-medium", dark ? "bg-white/10 text-white" : "bg-lilac text-ink")}>
+          <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full", dark ? "bg-white text-violet-deep" : "bg-violet-deep text-white")}>
             <Check className="h-3.5 w-3.5" />
           </span>
           {banner}
@@ -78,25 +80,21 @@ export function Newsletter() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("placeholder")}
-            className="field !rounded-full flex-1"
+            className={cn("field min-h-[52px] flex-1", dark && "border-white/25 bg-white/10 text-white placeholder:text-white/60 focus:border-white focus:shadow-none")}
             aria-label={t("placeholder")}
           />
           <button
             type="submit"
             disabled={state === "loading"}
-            className="btn btn-primary shrink-0 disabled:opacity-60"
+            className={cn("btn min-h-[52px] shrink-0", dark ? "btn-light" : "btn-primary")}
           >
             {state === "loading" ? "…" : t("cta")}
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight />
           </button>
         </form>
       )}
-      <p className="mt-3 text-xs text-muted">
-        {state === "error" ? (
-          <span className="text-danger">{t("error")}</span>
-        ) : (
-          t("consent")
-        )}
+      <p className={cn("mt-3 text-xs", dark ? "text-white/55" : "text-muted")}>
+        {state === "error" ? <span className={dark ? "text-gold-pale" : "text-danger"}>{t("error")}</span> : t("consent")}
       </p>
     </div>
   );

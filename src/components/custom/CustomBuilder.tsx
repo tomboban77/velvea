@@ -84,7 +84,7 @@ export function CustomBuilder({
                 key={c.id}
                 onClick={() => setContainerId(c.id)}
                 className={cn(
-                  "group overflow-hidden rounded-2xl border-2 text-left transition-all",
+                  "group overflow-hidden rounded-lg border-2 text-left transition-all",
                   containerId === c.id ? "border-ink" : "border-line hover:border-line-strong"
                 )}
               >
@@ -136,7 +136,7 @@ export function CustomBuilder({
                       <div
                         key={item.id}
                         className={cn(
-                          "flex items-center gap-3 rounded-xl border p-3 transition-colors",
+                          "flex items-center gap-3 rounded-lg border p-3 transition-colors",
                           qty > 0 ? "border-ink bg-cream/40" : "border-line"
                         )}
                       >
@@ -180,7 +180,7 @@ export function CustomBuilder({
 
       {/* summary */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-[1.75rem] border border-line bg-shell p-6">
+        <div className="rounded-lg border border-line bg-white p-6">
           <div className="flex items-center gap-3">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas">3</span>
             <h2 className="font-display text-2xl">{fr ? "Votre panier" : "Your basket"}</h2>

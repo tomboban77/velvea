@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { CustomBuilder } from "@/components/custom/CustomBuilder";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { getBuilderData } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { Link } from "@/i18n/routing";
@@ -39,35 +40,31 @@ export default async function CustomPage({ params }: { params: Promise<{ locale:
   };
 
   const empty = view.containers.length === 0;
+  const steps = [t("build.s1"), t("build.s2"), t("build.s3")];
 
   return (
     <div>
-      <div className="relative overflow-hidden border-b border-line bg-cream/60">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-24 -top-32 h-80 w-80 rounded-full opacity-[0.12] blur-3xl"
-          style={{ background: "var(--grad-iris)" }}
-        />
-        <div className="container-x relative py-14 text-center lg:py-18">
-          <p className="eyebrow centered mb-4">{t("custom.eyebrow")}</p>
-          <h1 className="h-section mx-auto max-w-2xl font-display balance">{t("custom.title")}</h1>
-          <p className="mx-auto mt-4 max-w-xl text-[1.02rem] text-ink-soft pretty">{t("custom.lede")}</p>
-          <ul className="mx-auto mt-7 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[0.68rem] uppercase tracking-[0.24em] text-muted">
-            <li>{t("build.s1")}</li>
-            <li className="text-lilac-deep">·</li>
-            <li>{t("build.s2")}</li>
-            <li className="text-lilac-deep">·</li>
-            <li>{t("build.s3")}</li>
-          </ul>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={t("custom.eyebrow")}
+        title={t("custom.title")}
+        lede={t("custom.lede")}
+        breadcrumb={[{ label: t("pdp.home"), href: "/" }, { label: t("nav.build"), href: "/custom" }]}
+      >
+        <ol className="mt-7 flex flex-wrap gap-x-8 gap-y-3">
+          {steps.map((s, i) => (
+            <li key={s} className="flex items-center gap-3 text-[0.95rem] font-medium text-ink">
+              <span className="step-num h-9 w-9 text-[0.95rem] text-violet-deep">{i + 1}</span>
+              {s}
+            </li>
+          ))}
+        </ol>
+      </PageHeader>
 
       {empty ? (
         <div className="container-x py-24 text-center">
-          <span className="font-display text-5xl text-line-strong">V</span>
-          <p className="mt-4 font-display text-2xl">{t("custom.emptyTitle")}</p>
-          <p className="mt-2 text-muted">{t("custom.emptyLede")}</p>
-          <Link href="/baskets" className="btn btn-primary mt-7">
+          <p className="font-display text-3xl">{t("custom.emptyTitle")}</p>
+          <p className="mt-3 text-ink-soft">{t("custom.emptyLede")}</p>
+          <Link href="/baskets" className="btn btn-primary mt-8">
             {t("nav.allBaskets")} <ArrowRight />
           </Link>
         </div>

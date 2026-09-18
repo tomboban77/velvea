@@ -1,8 +1,30 @@
-﻿import { getTranslations } from "next-intl/server";
-import { Gift, Truck, PenLine } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Gift, Clock, PenLine, Truck } from "lucide-react";
 
+/** Four store promises in one hairline strip under the hero. */
 export async function PromiseBar() {
-  const t = await getTranslations("promise");
-  const items = [{ icon: Gift, title: t("p1"), sub: t("p1Sub") }, { icon: Truck, title: t("p2"), sub: t("p2Sub") }, { icon: PenLine, title: t("p3"), sub: t("p3Sub") }];
-  return <div className="promise-strip"><div className="container-x grid gap-5 py-7 md:grid-cols-3 md:gap-8">{items.map(({ icon: Icon, title, sub }) => <div className="promise-item" key={title}><Icon size={23} strokeWidth={1.35} /><div><p className="text-sm font-medium">{title}</p><p className="mt-1 text-xs text-ink-soft">{sub}</p></div></div>)}</div></div>;
+  const t = await getTranslations();
+  const items = [
+    { icon: Gift, title: t("promise.p1"), sub: t("promise.p1Sub") },
+    { icon: Clock, title: t("promise.p2"), sub: t("promise.p2Sub") },
+    { icon: PenLine, title: t("promise.p3"), sub: t("promise.p3Sub") },
+    { icon: Truck, title: t("way.f2"), sub: t("way.f2Sub") },
+  ];
+  return (
+    <div className="promise-strip">
+      <div className="container-x">
+        <div className="promise-grid">
+          {items.map(({ icon: Icon, title, sub }) => (
+            <div className="promise-item" key={title}>
+              <Icon strokeWidth={1.4} />
+              <div>
+                <p>{title}</p>
+                <p>{sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }

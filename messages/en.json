@@ -32,7 +32,16 @@
     "featuredNow": "Featured now",
     "viewAll": "View all",
     "customBasket": "Build your own",
-    "seasonal": "Seasonal"
+    "seasonal": "Seasonal",
+    "delivery": "Delivery",
+    "signIn": "Sign in",
+    "help": "Help",
+    "shopByOccasion": "Shop by occasion",
+    "shopByRecipient": "Shop by recipient",
+    "byCategory": "By category",
+    "shopAll": "Shop all baskets",
+    "searchShort": "Search",
+    "browseAll": "Browse all"
   },
   "common": {
     "shopGiftBaskets": "Shop gift baskets",
@@ -65,7 +74,13 @@
     "new": "New",
     "bestseller": "Bestseller",
     "limited": "Limited",
-    "sale": "Offer"
+    "sale": "Offer",
+    "shopNow": "Shop now",
+    "soldOut": "Sold out",
+    "addToBagShort": "Add to bag",
+    "viewDetails": "View details",
+    "noReviewsYet": "No reviews yet",
+    "reviewsCount": "{count, plural, one {# review} other {# reviews}}"
   },
   "hero": {
     "eyebrow": "Est. 2026 · Mississauga · Canada-wide",
@@ -76,7 +91,12 @@
     "ctaPrimary": "Explore the collection",
     "ctaSecondary": "Build your own",
     "pictured": "Pictured",
-    "view": "View basket"
+    "view": "View basket",
+    "headline": "The art of the considered gift.",
+    "badge": "Hand-packed in Mississauga",
+    "shopNow": "Shop gift baskets",
+    "fromPrice": "From {price}",
+    "slideLabel": "Slide {n}"
   },
   "promise": {
     "p1": "Composed by hand, to order",
@@ -120,7 +140,14 @@
     "moreInside": "+{count} more",
     "view": "View the basket",
     "explore": "Explore the collection",
-    "newArrival": "New arrival"
+    "newArrival": "New arrival",
+    "tabAll": "All baskets",
+    "tabBest": "Bestsellers",
+    "tabNew": "New arrivals",
+    "tabUnder": "Under {amount}",
+    "tabFeatured": "Featured",
+    "seeAll": "See all {label}",
+    "lede2": "Every basket is composed after you order, finished by hand and delivered with a handwritten card."
   },
   "build": {
     "eyebrow": "Build your own",
@@ -136,7 +163,8 @@
     "previewTitle": "Your basket",
     "previewVessel": "Keepsake box",
     "previewNote": "Hand-packed to order",
-    "previewItems": "Dark chocolate · Sparkling rosé · Candle · Artisan biscuits"
+    "previewItems": "Dark chocolate · Sparkling rosé · Candle · Artisan biscuits",
+    "startNote": "From {price}"
   },
   "way": {
     "eyebrow": "The Velvéa way",
@@ -154,7 +182,8 @@
     "f2Sub": "Tracked shipping to every province and territory",
     "f3": "Free shipping",
     "f3Sub": "On orders over {amount}",
-    "link": "Shipping details"
+    "link": "Shipping details",
+    "stepsEyebrow": "How it works"
   },
   "corporate": {
     "eyebrow": "For business",
@@ -266,7 +295,10 @@
     "reviews": "Reviews",
     "rights": "All rights reserved.",
     "madeIn": "Composed by hand in Mississauga, Ontario.",
-    "currency": "Canada · CAD"
+    "currency": "Canada · CAD",
+    "secure": "Secure checkout",
+    "newsletterEyebrow": "Stay in touch",
+    "bottomTagline": "Premium gift baskets, hand-packed in Mississauga and delivered across Canada."
   },
   "pdp": {
     "home": "Home",
@@ -314,7 +346,17 @@
     "giftCardTitle": "Add a handwritten card",
     "giftCardHint": "Optional — written by hand and tucked inside",
     "giftCardPlaceholder": "Happy birthday, Dad. Enjoy every bite. — Love, Tom",
-    "giftCardNote": "Written on a Velvéa card. Prices are never included."
+    "giftCardNote": "Written on a Velvéa card. Prices are never included.",
+    "deliveryTitle": "Delivery",
+    "giftingTitle": "Gifting details",
+    "description": "About this basket",
+    "tabInside": "What is inside",
+    "tabDetails": "Details",
+    "tabShipping": "Delivery & returns",
+    "selectSize": "Choose a size",
+    "qtyLabel": "Quantity",
+    "youSave": "You save {amount}",
+    "sku": "Item"
   },
   "listing": {
     "price": "Price",
@@ -332,7 +374,10 @@
     "allTitle": "All gift baskets",
     "allLede": "Our full range of hand-composed gift baskets, delivered across Canada.",
     "emptyTitle": "Nothing here just yet",
-    "emptyLede": "We are composing this collection. Explore the full range or build something bespoke."
+    "emptyLede": "We are composing this collection. Explore the full range or build something bespoke.",
+    "filters": "Filters",
+    "showing": "Showing {count} of {total}",
+    "all": "All"
   },
   "custom": {
     "eyebrow": "Build your own",

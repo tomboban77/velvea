@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { getLocale } from "next-intl/server";
 import { fontVars } from "@/lib/fonts";
 import "./globals.css";
@@ -26,9 +26,12 @@ export const metadata: Metadata = {
     title: "Velvea — Premium Gift Baskets Delivered Across Canada",
     description:
       "Beautiful, hand-packed gift baskets for every occasion, delivered across Canada.",
-    images: ["/brand/velvea-logo.png?v=3"],
+    images: ["/brand/velvea-logo.png?v=5"],
   },
-  icons: { icon: "/favicon.ico" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6d288f",
 };
 
 export default async function RootLayout({

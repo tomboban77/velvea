@@ -80,7 +80,7 @@ export function Select({
           "group inline-flex items-center gap-2 text-left transition-colors",
           variant === "phrase"
             ? "border-b border-lilac-deep pb-0.5 font-display text-[1.45em] italic leading-none text-violet-deep hover:text-violet"
-            : "border border-line-strong bg-shell px-3 py-2 text-sm font-medium text-ink hover:border-ink"
+            : "border border-line-strong bg-white px-3 py-2 text-sm font-medium text-ink hover:border-ink"
         )}
       >
         <span className="whitespace-nowrap">{current?.label}</span>
@@ -100,7 +100,7 @@ export function Select({
           role="listbox"
           aria-label={ariaLabel}
           className={cn(
-            "absolute z-40 mt-3 max-h-80 min-w-[14rem] overflow-y-auto border border-line-strong bg-shell py-2 shadow-[0_24px_50px_-24px_rgba(36,27,54,0.35)]",
+            "absolute z-40 mt-3 max-h-80 min-w-[14rem] overflow-y-auto border border-line-strong bg-white py-2 shadow-[0_24px_50px_-24px_rgba(36,27,54,0.35)]",
             align === "right" ? "right-0" : "left-0"
           )}
           style={{ animation: "velvea-rise 0.25s var(--ease-out-soft)" }}

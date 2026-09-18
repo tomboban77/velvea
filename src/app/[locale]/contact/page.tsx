@@ -1,7 +1,8 @@
-import { setRequestLocale, getLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getSettings } from "@/lib/settings";
-import { Mail, Phone, MapPin, Clock, Building2 } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Building2, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Contact" };
@@ -10,39 +11,56 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const fr = locale === "fr";
+  const t = await getTranslations("pdp");
   const s = await getSettings();
+
+  const cards = [
+    { icon: Mail, label: fr ? "Courriel" : "Email", value: s.contact.email, href: `mailto:${s.contact.email}` },
+    { icon: Phone, label: fr ? "Téléphone" : "Phone", value: s.contact.phone, href: `tel:${s.contact.phone}` },
+    { icon: MapPin, label: fr ? "Atelier" : "Studio", value: `${s.contact.addressLine}, ${s.contact.city}, ${s.contact.province}` },
+    { icon: Clock, label: fr ? "Heures" : "Hours", value: s.contact.hours },
+  ];
+
   return (
-    <div className="container-x max-w-4xl py-14">
-      <p className="eyebrow mb-3">{fr ? "Contact" : "Contact"}</p>
-      <h1 className="font-display text-4xl leading-tight balance sm:text-5xl">{fr ? "Parlons cadeaux" : "Let's talk gifts"}</h1>
-      <p className="mt-4 max-w-xl text-ink-soft">
-        {fr ? "Une question sur une commande, une occasion ou un projet d'entreprise ? Nous sommes là pour aider." : "A question about an order, an occasion, or a corporate project? We're here to help."}
-      </p>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <a href={`mailto:${s.contact.email}`} className="flex items-center gap-4 rounded-2xl border border-line bg-shell p-5 card-hover">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-iris-soft"><Mail className="h-5 w-5 text-violet-deep" /></span>
-          <div><p className="text-sm text-muted">{fr ? "Courriel" : "Email"}</p><p className="font-semibold text-ink">{s.contact.email}</p></div>
-        </a>
-        <a href={`tel:${s.contact.phone}`} className="flex items-center gap-4 rounded-2xl border border-line bg-shell p-5 card-hover">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-iris-soft"><Phone className="h-5 w-5 text-violet-deep" /></span>
-          <div><p className="text-sm text-muted">{fr ? "Téléphone" : "Phone"}</p><p className="font-semibold text-ink">{s.contact.phone}</p></div>
-        </a>
-        <div className="flex items-center gap-4 rounded-2xl border border-line bg-shell p-5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-iris-soft"><MapPin className="h-5 w-5 text-violet-deep" /></span>
-          <div><p className="text-sm text-muted">{fr ? "Adresse" : "Studio"}</p><p className="font-semibold text-ink">{s.contact.addressLine}, {s.contact.city}, {s.contact.province}</p></div>
+    <div>
+      <PageHeader
+        eyebrow="Contact"
+        title={fr ? "Parlons cadeaux" : "Let's talk gifts"}
+        lede={fr ? "Une question sur une commande, une occasion ou un projet d'entreprise ? Nous répondons sous un jour ouvrable." : "A question about an order, an occasion or a corporate project? We reply within one business day."}
+        breadcrumb={[{ label: t("home"), href: "/" }, { label: "Contact", href: "/contact" }]}
+      />
+      <div className="container-x section-sm">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {cards.map(({ icon: Icon, label, value, href }) => {
+            const inner = (
+              <>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lilac text-violet-deep">
+                  <Icon className="h-5 w-5" strokeWidth={1.6} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm text-muted">{label}</p>
+                  <p className="break-words font-semibold text-ink">{value}</p>
+                </div>
+              </>
+            );
+            return href ? (
+              <a key={label} href={href} className="flex items-center gap-4 rounded-lg border border-line bg-white p-5 card-hover">{inner}</a>
+            ) : (
+              <div key={label} className="flex items-center gap-4 rounded-lg border border-line bg-white p-5">{inner}</div>
+            );
+          })}
         </div>
-        <div className="flex items-center gap-4 rounded-2xl border border-line bg-shell p-5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-iris-soft"><Clock className="h-5 w-5 text-violet-deep" /></span>
-          <div><p className="text-sm text-muted">{fr ? "Heures" : "Hours"}</p><p className="font-semibold text-ink">{s.contact.hours}</p></div>
+
+        <div className="band-ink mt-8 flex flex-col gap-5 rounded-lg p-7 sm:flex-row sm:items-center sm:p-9">
+          <Building2 className="h-9 w-9 shrink-0 text-gold-pale" strokeWidth={1.4} />
+          <div className="flex-1">
+            <p className="font-display text-[1.4rem] font-medium">{fr ? "Cadeaux d'entreprise ?" : "Corporate gifting?"}</p>
+            <p className="mt-1 text-white/70">{fr ? "Demandez un devis pour les commandes en volume, les cartes personnalisées et la livraison multi-adresses." : "Request a quote for volume orders, branded cards and multi-address delivery."}</p>
+          </div>
+          <Link href="/corporate/quote" className="btn btn-light">
+            {fr ? "Demander un devis" : "Request a quote"} <ArrowRight />
+          </Link>
         </div>
-      </div>
-      <div className="mt-6 flex items-center gap-4 rounded-2xl border border-line bg-charcoal p-6 text-canvas">
-        <Building2 className="h-8 w-8 text-lilac-deep" />
-        <div className="flex-1">
-          <p className="font-display text-xl">{fr ? "Cadeaux d'entreprise ?" : "Corporate gifting?"}</p>
-          <p className="text-sm text-canvas/70">{fr ? "Demandez un devis pour les commandes en gros." : "Request a quote for bulk orders."}</p>
-        </div>
-        <Link href="/corporate/quote" className="btn btn-gold btn-sm">{fr ? "Devis" : "Get a quote"}</Link>
       </div>
     </div>
   );
