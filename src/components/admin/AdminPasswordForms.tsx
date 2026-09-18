@@ -11,6 +11,7 @@ import {
   type AuthState,
 } from "@/lib/actions/auth";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 const inputClass =
   "w-full rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-canvas placeholder:text-canvas/30 focus:border-lilac-deep focus:outline-none";
@@ -33,7 +34,7 @@ function Frame({
       />
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex justify-center">
-          <Logo height={34} />
+          <Logo height={28} />
         </div>
         <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur">
           <div className="mb-6 text-center">
@@ -134,26 +135,26 @@ function AdminResetInner() {
         <input type="hidden" name="admin" value="1" />
         <div>
           <label className="mb-1.5 block text-sm font-medium text-canvas/70">New password</label>
-          <input
+          <PasswordInput
             name="password"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"
             className={inputClass}
             placeholder="••••••••"
+            tone="dark"
           />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-canvas/70">Confirm password</label>
-          <input
+          <PasswordInput
             name="confirm"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"
             className={inputClass}
             placeholder="••••••••"
+            tone="dark"
           />
         </div>
 

@@ -70,7 +70,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
       >
         <div className="flex h-16 items-center justify-between border-b border-line px-5">
           <span id={titleId} className="sr-only">{t("nav.menu")}</span>
-          <Logo height={26} />
+          <Logo height={20} />
           <button onClick={onClose} className="icon-btn -mr-2" aria-label={t("nav.close")}>
             <X className="h-5 w-5" strokeWidth={1.6} />
           </button>

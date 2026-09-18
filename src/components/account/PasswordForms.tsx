@@ -10,6 +10,7 @@ import {
   type AuthState,
 } from "@/lib/actions/auth";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 function Shell({
   title,
@@ -129,24 +130,26 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <input type="hidden" name="token" value={token} />
         <div className="mb-4">
           <label className="label">{fr ? "Mot de passe" : "New password"}</label>
-          <input
+          <PasswordInput
             name="password"
-            type="password"
             required
             minLength={8}
             className="field"
             autoComplete="new-password"
+            showLabel={fr ? "Afficher le mot de passe" : "Show password"}
+            hideLabel={fr ? "Masquer le mot de passe" : "Hide password"}
           />
         </div>
         <div>
           <label className="label">{fr ? "Confirmer" : "Confirm password"}</label>
-          <input
+          <PasswordInput
             name="confirm"
-            type="password"
             required
             minLength={8}
             className="field"
             autoComplete="new-password"
+            showLabel={fr ? "Afficher le mot de passe" : "Show password"}
+            hideLabel={fr ? "Masquer le mot de passe" : "Hide password"}
           />
         </div>
 

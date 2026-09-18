@@ -29,6 +29,7 @@
   --color-violet-deep: #4c1169;
   --color-violet-ink: #2e0740;
   --color-violet-soft: #9947c2;
+  --color-violet-band: #31113e;
   --color-gold: #a1774f;
   --color-gold-soft: #b8906e;
   --color-gold-pale: #ead9c5;
@@ -81,6 +82,7 @@
   --grad-iris-soft: linear-gradient(110deg, #f8f2fb, #f6f1eb);
   --grad-gold: linear-gradient(180deg, #d9bfb0 0%, #b8906e 55%, #a1774f 100%);
   --grad-ink: linear-gradient(115deg, #2e0740, #4c1169);
+  --grad-band: linear-gradient(150deg, #38154a 0%, #2d1039 58%, #260c31 100%);
   color-scheme: light;
   /* page gutter: scales with the viewport so wide screens are used */
   --gutter: clamp(1.25rem, 3.6vw, 5.5rem);
@@ -921,8 +923,16 @@ select.field {
 }
 .occasion-tile p { font-size: 0.9rem; font-weight: 600; line-height: 1.25; }
 
-.band-plum { background: var(--color-violet-deep); color: #fff; }
-.band-ink { background: var(--color-violet-ink); color: #fff; }
+/* Full-bleed feature bands. A deep aubergine-violet: the logo hue held at a
+   low lightness and eased off full saturation, which reads as considered
+   rather than electric across a large area. The slight gradient keeps a
+   section-sized field of colour from going flat. */
+.band-plum,
+.band-ink {
+  background: var(--grad-band);
+  background-color: var(--color-violet-band);
+  color: #fff;
+}
 .band-cream { background: var(--color-cream); }
 .band-lilac { background: var(--color-lilac); }
 

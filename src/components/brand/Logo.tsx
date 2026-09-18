@@ -2,18 +2,23 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * Velvea lockup — the supplied artwork at /brand/velvea-logo.png.
- * Source is 2172×724 (the current official artwork),
- * so the image is rendered at its natural ratio with no cropping. Served
- * unoptimized (small asset) so the ?v cache-buster needs no localPatterns config.
+ * Velvea lockup.
+ *
+ * The supplied artwork (/brand/velvea-logo.png) carries ~39% transparent
+ * padding in its height, so a `height` of 42 only drew 25px of actual mark.
+ * /brand/velvea-lockup.png is that artwork trimmed to its ink, which means
+ * `height` here is the height the logo genuinely occupies on screen and can
+ * be reasoned about against neighbouring controls.
+ *
+ * The original padded file is kept for Open Graph, where the margin helps.
  */
-const SRC_W = 2172;
-const SRC_H = 724;
-const RATIO = SRC_W / SRC_H; // = 3.0
+const SRC_W = 760;
+const SRC_H = 177;
+const RATIO = SRC_W / SRC_H; // ≈ 4.29
 
 type Props = {
   className?: string;
-  /** rendered height in px (width follows the ratio) */
+  /** rendered height in px of the visible mark (width follows the ratio) */
   height?: number;
   priority?: boolean;
   // legacy props accepted so older call-sites keep compiling
@@ -23,17 +28,16 @@ type Props = {
   idSuffix?: string;
 };
 
-export function Logo({ className, height = 34, priority = false }: Props) {
+export function Logo({ className, height = 28, priority = false }: Props) {
   const width = Math.round(height * RATIO);
   return (
     <Image
-      src="/brand/velvea-logo.png?v=5"
+      src="/brand/velvea-lockup.png"
       alt="Velvea"
       width={width}
       height={height}
       priority={priority}
-      unoptimized
-      className={cn("block", className)}
+      className={cn("block h-auto w-auto", className)}
       style={{ width, height }}
     />
   );

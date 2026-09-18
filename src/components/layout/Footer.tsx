@@ -34,7 +34,7 @@ export async function Footer() {
       {/* Columns */}
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 py-14 md:grid-cols-4 xl:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))] xl:gap-x-10">
         <div className="col-span-2 md:col-span-4 xl:col-span-1">
-          <Logo height={34} />
+          <Logo height={28} />
           <p className="mt-5 max-w-sm text-[0.95rem] leading-relaxed text-ink-soft">{t("footer.blurb")}</p>
           <ul className="mt-6 space-y-2.5 text-[0.93rem]">
             <li className="flex items-center gap-3 text-ink-soft">

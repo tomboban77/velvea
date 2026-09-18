@@ -123,7 +123,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
       {/* 2 · Brand bar — sticky on mobile only */}
       <div ref={brandBarRef} className="store-header sticky top-0 z-40 border-b border-line lg:static">
         <div className="container-x">
-          <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-[88px]">
+          <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-x-6 lg:h-[88px] xl:gap-x-8">
             {/* left */}
             <div className="flex items-center gap-1">
               <button className="icon-btn -ml-2 lg:hidden" onClick={() => setMobileOpen(true)} aria-label={t("nav.menu")}>
@@ -139,14 +139,15 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
             {/* centre: logo */}
             <div className="flex items-center justify-center">
               <Link href="/" aria-label="Velvea home" className="block">
-                <Logo height={30} priority className="lg:hidden" />
-                <Logo height={42} priority className="hidden lg:block" />
+                <Logo height={22} priority className="lg:hidden" />
+                <Logo height={30} priority className="hidden lg:block xl:hidden" />
+                <Logo height={36} priority className="hidden xl:block" />
               </Link>
             </div>
 
             {/* right */}
             <div className="flex items-center justify-end gap-1 lg:gap-6">
-              <form action={searchAction} className="search-form hidden w-[clamp(16rem,22vw,26rem)] lg:flex" role="search">
+              <form action={searchAction} className="search-form hidden w-[clamp(15rem,21vw,25rem)] lg:flex" role="search">
                 <input name="q" placeholder={t("nav.searchPlaceholder")} aria-label={t("nav.search")} autoComplete="off" />
                 <button type="submit" aria-label={t("nav.search")}>
                   <Search className="h-5 w-5" strokeWidth={1.8} />

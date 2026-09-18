@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { customerLoginAction, customerRegisterAction, type AuthState } from "@/lib/actions/auth";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
   const fr = useLocale() === "fr";
@@ -41,7 +42,15 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
           </div>
           <div>
             <label className="label">{fr ? "Mot de passe" : "Password"}</label>
-            <input name="password" type="password" required minLength={mode === "register" ? 8 : undefined} className="field" autoComplete={mode === "login" ? "current-password" : "new-password"} />
+            <PasswordInput
+              name="password"
+              required
+              minLength={mode === "register" ? 8 : undefined}
+              className="field"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              showLabel={fr ? "Afficher le mot de passe" : "Show password"}
+              hideLabel={fr ? "Masquer le mot de passe" : "Hide password"}
+            />
             {mode === "register" && <p className="mt-1 text-xs text-muted">{fr ? "Au moins 8 caractères." : "At least 8 characters."}</p>}
             {mode === "login" && (
               <p className="mt-2 text-right text-xs">

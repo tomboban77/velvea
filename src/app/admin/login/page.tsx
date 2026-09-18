@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { adminLoginAction } from "@/lib/actions/auth";
 import { Logo } from "@/components/brand/Logo";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Lock, ArrowRight } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -28,7 +29,7 @@ function LoginInner() {
       />
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex justify-center">
-          <Logo height={34} />
+          <Logo height={28} />
         </div>
         <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur">
           <div className="mb-6 text-center">
@@ -60,13 +61,13 @@ function LoginInner() {
               <label className="mb-1.5 block text-sm font-medium text-canvas/70">
                 Password
               </label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
                 required
                 autoComplete="current-password"
                 className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-canvas placeholder:text-canvas/30 focus:border-lilac-deep focus:outline-none"
                 placeholder="••••••••"
+                tone="dark"
               />
             </div>
 
