@@ -703,7 +703,14 @@ select.field {
     min-height: max-content;
   }
 }
-@media (min-width: 1024px) { .hero-stage { height: calc(100svh - 176px); } }
+/* The shelf sizes itself from the height left under the copy, so a short
+   laptop window (a 13" Mac sits near 790px of viewport) starved the tiles
+   while a taller Windows window did not. The floor keeps the photographs at
+   a usable size; on a short screen the shelf now runs just past the fold
+   instead of shrinking to fit it. */
+@media (min-width: 1024px) {
+  .hero-stage { height: max(calc(100svh - 176px), 45rem); }
+}
 .hero-copy { max-width: 62rem; margin-inline: auto; }
 .hero-title {
   margin-top: 1.5rem;
