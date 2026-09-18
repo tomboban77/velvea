@@ -147,7 +147,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
 
             {/* right */}
             <div className="flex items-center justify-end gap-1 lg:gap-6">
-              <form action={searchAction} className="search-form hidden w-[clamp(15rem,21vw,25rem)] lg:flex" role="search">
+              <form action={searchAction} className="search-form hidden w-[clamp(15rem,21vw,25rem)] lg:flex xl:w-auto xl:min-w-0 xl:max-w-[30rem] xl:flex-1" role="search">
                 <input name="q" placeholder={t("nav.searchPlaceholder")} aria-label={t("nav.search")} autoComplete="off" />
                 <button type="submit" aria-label={t("nav.search")}>
                   <Search className="h-5 w-5" strokeWidth={1.8} />
