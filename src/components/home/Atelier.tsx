@@ -21,7 +21,7 @@ export async function Atelier() {
             />
           </div>
         </div>
-        <div className="lg:col-span-6 lg:col-start-7">
+        <div className="lg:col-span-6 lg:col-start-6">
           <p className="caps">{t("eyebrow")}</p>
           <h2 className="h-section mt-4 balance">{t("title")}</h2>
           <blockquote className="mt-7 border-l-2 border-violet-deep pl-6 font-display text-[1.35rem] italic leading-[1.4] text-ink sm:text-[1.6rem]">

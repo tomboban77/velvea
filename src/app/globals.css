@@ -907,7 +907,7 @@ select.field {
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
-  padding: 1.25rem 0.75rem 1.1rem;
+  padding: 1.5rem 0.8rem 1.25rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: #fff;
@@ -915,18 +915,29 @@ select.field {
   scroll-snap-align: start;
   transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
 }
-.occasion-tile:hover { border-color: var(--color-violet-deep); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.occasion-tile:hover { border-color: rgba(109, 40, 143, 0.34); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+/* The medallion carries the tile. A soft radial lift and a hairline violet rim
+   give the flat lilac disc some depth; when a collection has its own photograph
+   the same disc frames it, so both states read as one set. */
 .occasion-icon {
   position: relative;
   display: flex;
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: var(--color-lilac);
+  border: 1px solid rgba(109, 40, 143, 0.12);
+  background:
+    radial-gradient(circle at 34% 26%, #ffffff 0%, var(--color-lilac) 58%, #ebdff2 100%);
   color: var(--color-violet-deep);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.occasion-tile:hover .occasion-icon {
+  border-color: rgba(109, 40, 143, 0.32);
+  box-shadow: 0 8px 18px -10px rgba(46, 7, 64, 0.45);
+  transform: translateY(-1px);
 }
 .occasion-tile p { font-size: 0.9rem; font-weight: 600; line-height: 1.25; }
 
