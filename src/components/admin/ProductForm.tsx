@@ -15,6 +15,7 @@ import {
 import { ImageUploader, type UploadedImage } from "./ImageUploader";
 import { Card } from "./ui";
 import { createProduct, updateProduct, type ProductInput } from "@/lib/actions/products";
+import { actionErrorMessage, isStaleActionError } from "@/lib/action-error";
 import { cn } from "@/lib/utils";
 
 type L = { en: string; fr: string };
@@ -88,6 +89,7 @@ export function ProductForm({
   const [d, setD] = useState<ProductFormData>(initial);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [stale, setStale] = useState(false);
 
   const set = <K extends keyof ProductFormData>(k: K, v: ProductFormData[K]) =>
     setD((p) => ({ ...p, [k]: v }));
@@ -103,6 +105,7 @@ export function ProductForm({
 
   function submit() {
     setError(null);
+    setStale(false);
     if (!d.name.en.trim()) return setError("Product name (EN) is required.");
     if (!d.priceCents || d.priceCents <= 0) return setError("Set a price above $0.");
 
@@ -132,12 +135,18 @@ export function ProductForm({
 
     startTransition(async () => {
       try {
-        if (d.id) await updateProduct(d.id, payload);
-        else await createProduct(payload);
+        const result = d.id
+          ? await updateProduct(d.id, payload)
+          : await createProduct(payload);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         router.push("/admin/products");
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Something went wrong.");
+        setStale(isStaleActionError(e));
+        setError(actionErrorMessage(e));
       }
     });
   }
@@ -151,7 +160,6 @@ export function ProductForm({
           <ArrowLeft className="h-4 w-4" /> Products
         </Link>
         <div className="flex items-center gap-3">
-          {error && <span className="text-sm text-danger">{error}</span>}
           <button
             onClick={submit}
             disabled={pending}
@@ -162,6 +170,21 @@ export function ProductForm({
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger/30 bg-danger/5 px-4 py-3">
+          <p className="text-sm text-danger">{error}</p>
+          {stale && (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-full border border-danger px-3 py-1.5 text-sm font-semibold text-danger hover:bg-danger hover:text-white"
+            >
+              Reload page
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* main */}

@@ -5,7 +5,13 @@ import { isCloudinaryConfigured, uploadImage } from "@/lib/cloudinary";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const MAX_BYTES = 8 * 1024 * 1024; // 8MB
+/**
+ * Vercel rejects a request body over 4.5MB before the function runs, and the
+ * rejection is not JSON — an 8MB limit here only turned "too large" into an
+ * unexplained "upload failed". The browser downscales anything bigger before
+ * it gets here.
+ */
+const MAX_BYTES = 4 * 1024 * 1024; // 4MB
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -27,7 +33,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
     if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: "File too large (max 8MB)" }, { status: 413 });
+      return NextResponse.json({ error: "File too large (max 4MB)" }, { status: 413 });
     }
     if (!file.type.startsWith("image/")) {
       return NextResponse.json({ error: "Only images are allowed" }, { status: 415 });

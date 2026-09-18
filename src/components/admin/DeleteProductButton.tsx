@@ -4,20 +4,34 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, Loader2 } from "lucide-react";
 import { deleteProduct } from "@/lib/actions/products";
+import { actionErrorMessage } from "@/lib/action-error";
 
 export function DeleteProductButton({ id }: { id: string }) {
   const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const router = useRouter();
 
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-sm text-muted">Delete permanently?</span>
+        <span className="text-sm text-muted">
+          {error ? <span className="text-danger">{error}</span> : "Delete permanently?"}
+        </span>
         <button
           onClick={() =>
             start(async () => {
-              await deleteProduct(id);
+              setError(null);
+              try {
+                const result = await deleteProduct(id);
+                if (!result.ok) {
+                  setError(result.error);
+                  return;
+                }
+              } catch (e) {
+                setError(actionErrorMessage(e));
+                return;
+              }
               router.push("/admin/products");
               router.refresh();
             })

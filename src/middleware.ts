@@ -47,6 +47,14 @@ export default async function middleware(req: NextRequest) {
     }
     const ok = await isValidAdmin(req.cookies.get(ADMIN_COOKIE)?.value);
     if (!ok) {
+      // A Server Action POST must not be redirected. The browser replays the
+      // POST against /admin/login, that route knows nothing about the action
+      // id, and the dashboard reports "Server Action ... was not found on the
+      // server" instead of "your session expired". Let it reach the action,
+      // which re-reads the session from the database and refuses on its own —
+      // no mutation runs without a verified admin either way.
+      if (req.headers.get("next-action")) return NextResponse.next();
+
       const url = req.nextUrl.clone();
       url.pathname = "/admin/login";
       url.searchParams.set("from", pathname);

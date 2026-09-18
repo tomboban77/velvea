@@ -8,10 +8,38 @@ import { can, denialMessage, type Permission } from "@/lib/permissions";
 import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 
+/**
+ * Next strips thrown error messages from Server Action responses in
+ * production, so the dashboard used to show an opaque failure for every
+ * expired session, denied permission or invalid field. These actions return a
+ * result instead, and only unexpected errors are swallowed into a generic
+ * message (and logged).
+ */
+export type ActionResult<T = { id: string }> =
+  | ({ ok: true } & T)
+  | { ok: false; error: string };
+
+/** An error whose message is safe — and useful — to show the admin. */
+class AdminError extends Error {}
+
+const SESSION_EXPIRED =
+  "Your admin session expired. Open the dashboard in a new tab, sign in, then save again.";
+
+function failure(err: unknown, context: string): { ok: false; error: string } {
+  if (err instanceof AdminError) return { ok: false, error: err.message };
+  if (err instanceof z.ZodError) {
+    const issue = err.issues[0];
+    const field = issue?.path.join(".") || "A field";
+    return { ok: false, error: `${field}: ${issue?.message ?? "is invalid"}` };
+  }
+  console.error(`${context} failed:`, err);
+  return { ok: false, error: "Something went wrong saving to the database. Try again." };
+}
+
 async function guard(permission: Permission) {
   const admin = await getVerifiedAdmin();
-  if (!admin) throw new Error("Unauthorized");
-  if (!can(admin.role, permission)) throw new Error(denialMessage(permission));
+  if (!admin) throw new AdminError(SESSION_EXPIRED);
+  if (!can(admin.role, permission)) throw new AdminError(denialMessage(permission));
   return admin;
 }
 
@@ -81,7 +109,15 @@ async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
   }
 }
 
-export async function createProduct(input: ProductInput) {
+export async function createProduct(input: ProductInput): Promise<ActionResult> {
+  try {
+    return await createProductImpl(input);
+  } catch (err) {
+    return failure(err, "createProduct");
+  }
+}
+
+async function createProductImpl(input: ProductInput): Promise<ActionResult> {
   await guard("products:write");
   const data = productSchema.parse(input);
   const slug = await uniqueSlug(data.slug || data.name.en || data.name.fr);
@@ -137,10 +173,24 @@ export async function createProduct(input: ProductInput) {
 
   revalidatePath("/admin/products");
   revalidatePath("/", "layout");
-  return { id: product.id };
+  return { ok: true, id: product.id };
 }
 
-export async function updateProduct(productId: string, input: ProductInput) {
+export async function updateProduct(
+  productId: string,
+  input: ProductInput
+): Promise<ActionResult> {
+  try {
+    return await updateProductImpl(productId, input);
+  } catch (err) {
+    return failure(err, "updateProduct");
+  }
+}
+
+async function updateProductImpl(
+  productId: string,
+  input: ProductInput
+): Promise<ActionResult> {
   await guard("products:write");
   const data = productSchema.parse(input);
   const slug = data.slug ? await uniqueSlug(data.slug, productId) : undefined;
@@ -226,10 +276,18 @@ export async function updateProduct(productId: string, input: ProductInput) {
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${productId}`);
   revalidatePath("/", "layout");
-  return { id: productId };
+  return { ok: true, id: productId };
 }
 
-export async function deleteProduct(productId: string) {
+export async function deleteProduct(productId: string): Promise<ActionResult> {
+  try {
+    return await deleteProductImpl(productId);
+  } catch (err) {
+    return failure(err, "deleteProduct");
+  }
+}
+
+async function deleteProductImpl(productId: string): Promise<ActionResult> {
   await guard("products:delete");
   const images = await prisma.productImage.findMany({
     where: { productId, publicId: { not: null } },
@@ -239,15 +297,21 @@ export async function deleteProduct(productId: string) {
   for (const img of images) if (img.publicId) await deleteImage(img.publicId);
   revalidatePath("/admin/products");
   revalidatePath("/", "layout");
+  return { ok: true, id: productId };
 }
 
 export async function setProductStatus(
   productId: string,
   status: "DRAFT" | "ACTIVE" | "ARCHIVED"
-) {
-  await guard("products:write");
-  const parsed = z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]).parse(status);
-  await prisma.product.update({ where: { id: productId }, data: { status: parsed } });
-  revalidatePath("/admin/products");
-  revalidatePath("/", "layout");
+): Promise<ActionResult> {
+  try {
+    await guard("products:write");
+    const parsed = z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]).parse(status);
+    await prisma.product.update({ where: { id: productId }, data: { status: parsed } });
+    revalidatePath("/admin/products");
+    revalidatePath("/", "layout");
+    return { ok: true, id: productId };
+  } catch (err) {
+    return failure(err, "setProductStatus");
+  }
 }

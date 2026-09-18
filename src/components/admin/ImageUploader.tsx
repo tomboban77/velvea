@@ -13,6 +13,54 @@ export type UploadedImage = {
   height?: number | null;
 };
 
+/** Must stay at or below the limit in /api/admin/upload. */
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+const MAX_EDGE = 2400;
+
+const mb = (bytes: number) => (bytes / 1024 / 1024).toFixed(1);
+
+/**
+ * Phone photos routinely run past the upload limit, which used to surface as
+ * a bare "upload failed". Re-encode them in the browser instead; Cloudinary
+ * serves a transformed copy anyway, so nothing is lost at display size.
+ */
+async function downscale(file: File): Promise<File | null> {
+  if (typeof createImageBitmap !== "function") return null;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+
+    for (const quality of [0.85, 0.7, 0.55]) {
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", quality)
+      );
+      if (blob && blob.size <= MAX_UPLOAD_BYTES) {
+        const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+        return new File([blob], name, { type: "image/jpeg" });
+      }
+    }
+    return null;
+  } catch {
+    // HEIC and other formats the browser can't decode land here.
+    return null;
+  }
+}
+
+function uploadErrorMessage(status: number, serverError?: string): string {
+  if (status === 401) {
+    return "Your admin session expired. Sign in again in another tab, then re-add the image.";
+  }
+  if (status === 413) return `Image too large — the limit is ${mb(MAX_UPLOAD_BYTES)}MB.`;
+  return serverError || `Upload failed (${status}).`;
+}
+
 export function ImageUploader({
   images,
   onChange,
@@ -34,16 +82,36 @@ export function ImageUploader({
     setError(null);
     setUploading(true);
     const next = [...images];
-    for (const file of Array.from(files)) {
+    for (const original of Array.from(files)) {
       if (next.length >= max) break;
+
+      let file = original;
+      if (file.size > MAX_UPLOAD_BYTES) {
+        const smaller = await downscale(file);
+        if (!smaller) {
+          setError(
+            `${original.name} is ${mb(original.size)}MB and couldn't be resized here. ` +
+              `Save it as a JPEG under ${mb(MAX_UPLOAD_BYTES)}MB and try again.`
+          );
+          continue;
+        }
+        file = smaller;
+      }
+
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", folder);
       try {
         const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-        const data = await res.json();
+        // A rejection from the platform (size, auth redirect) is not JSON, so
+        // parsing has to be allowed to fail without losing the status code.
+        const data = await res.json().catch(() => null);
         if (!res.ok) {
-          setError(data.error || "Upload failed");
+          setError(uploadErrorMessage(res.status, data?.error));
+          continue;
+        }
+        if (!data?.url) {
+          setError("The image uploaded but no URL came back. Try again.");
           continue;
         }
         next.push({
@@ -140,7 +208,8 @@ export function ImageUploader({
       />
       {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       <p className="mt-2 text-xs text-muted">
-        First image is the cover. Drag to reorder. Up to {max} images, 8MB each.
+        First image is the cover. Drag to reorder. Up to {max} images. Anything over{" "}
+        {mb(MAX_UPLOAD_BYTES)}MB is resized automatically before it uploads.
       </p>
     </div>
   );
