@@ -687,6 +687,16 @@ select.field {
   /* portrait plate, drawn to frame the copy down both sides; `cover` suits it as
      drawn, and the browser only fetches the plate its media query selects */
   .hero { background-image: url("/images/bg_mobile.webp"); background-size: cover; }
+  /* The portrait plate's sprays reach well into the middle, where the headline
+     and lede sit. A soft wash over the centre calms the ground under the copy so
+     it reads first, while the foliage still frames the edges. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(78% 46% at 50% 32%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58) 48%, transparent 78%);
+    pointer-events: none;
+  }
 }
 .hero-stage {
   position: relative;
