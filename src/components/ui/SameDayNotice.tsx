@@ -3,14 +3,25 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Clock } from "lucide-react";
-import { CLIENT_SETTINGS } from "@/lib/settings-client";
 import { cn } from "@/lib/utils";
 
 /**
- * Live same-day delivery promise for the GTA, computed in Toronto time.
- * Renders nothing until mounted to avoid hydration mismatches.
+ * Live same-day countdown, computed in Toronto time.
+ *
+ * The cutoff is passed in rather than read from a constant: it belongs to a
+ * delivery zone now, and this component is rendered on pages that do not yet
+ * know the recipient's address. Callers pass the home zone's cutoff, which is
+ * the promise we can always keep.
  */
-export function SameDayNotice({ className, compact = false }: { className?: string; compact?: boolean }) {
+export function SameDayNotice({
+  cutoff,
+  className,
+  compact = false,
+}: {
+  cutoff: string;
+  className?: string;
+  compact?: boolean;
+}) {
   const t = useTranslations("pdp");
   const [state, setState] = useState<{ before: boolean; label: string } | null>(null);
 
@@ -24,7 +35,7 @@ export function SameDayNotice({ className, compact = false }: { className?: stri
       }).formatToParts(new Date());
       const h = Number(parts.find((p) => p.type === "hour")?.value ?? 0) % 24;
       const m = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
-      const [ch, cm] = CLIENT_SETTINGS.sameDayCutoff.split(":").map(Number);
+      const [ch, cm] = cutoff.split(":").map(Number);
       const minutesLeft = ch * 60 + cm - (h * 60 + m);
       if (minutesLeft > 0) {
         const hh = Math.floor(minutesLeft / 60);
@@ -38,7 +49,7 @@ export function SameDayNotice({ className, compact = false }: { className?: stri
     compute();
     const id = setInterval(compute, 30_000);
     return () => clearInterval(id);
-  }, []);
+  }, [cutoff]);
 
   if (!state) return <span className={cn("block h-5", className)} aria-hidden />;
 

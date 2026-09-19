@@ -28,7 +28,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
     <div>
       <header className="band-cream border-b border-line px-[var(--gutter)] py-12 text-center lg:py-16">
         <p className="caps">{fr ? "Avis clients" : "Customer reviews"}</p>
-        <h1 className="h-display mt-3">{fr ? "Adoré partout au Canada" : "Loved across Canada"}</h1>
+        <h1 className="h-display mt-3">{fr ? "Adoré partout en Ontario" : "Loved across Ontario"}</h1>
         {stats._count > 0 && (
           <div className="mt-4 flex items-center justify-center gap-2">
             <span className="stars">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</span>

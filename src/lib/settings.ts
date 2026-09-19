@@ -17,12 +17,16 @@ export type SiteSettings = {
     tiktok: string;
   };
   delivery: {
-    sameDayCutoff: string; // "16:00"
-    localSameDayFeeCents: number;
-    localStandardFeeCents: number;
-    standardShippingCents: number;
-    expressShippingCents: number;
-    freeShippingThresholdCents: number;
+    /**
+     * The daily production cutoff, "HH:MM" in store time. Orders placed after
+     * it start their lead time tomorrow.
+     *
+     * Per-zone same-day cutoffs live on the zone itself, because how late we
+     * can still reach somebody depends entirely on how far away they are.
+     * Delivery fees are not here either — they belong to the zone that charges
+     * them. See `prisma/zones.ts` and Admin -> Delivery zones.
+     */
+    orderCutoff: string;
   };
   tax: {
     // Combined sales-tax rate (%) applied by destination province.
@@ -31,15 +35,16 @@ export type SiteSettings = {
   };
 };
 
-// Canada combined sales-tax by province (approx., 2026). Used for estimates.
+// Combined sales tax by province. Only ON applies while we serve one province;
+// the rest are kept so expanding is a zone change, not a code change.
 export const DEFAULT_SETTINGS: SiteSettings = {
   contact: {
-    email: "hello@velvea.ca",
+    email: "giftsvelvea@gmail.com",
     phone: "+1 (905) 555-0142",
-    addressLine: "1 Mississauga Valley Blvd",
+    addressLine: "5105 Hurontario Street",
     city: "Mississauga",
     province: "ON",
-    postalCode: "L5A 3S1",
+    postalCode: "L4Z 0C9",
     hours: "Mon–Fri, 9am–6pm ET",
   },
   social: {
@@ -49,30 +54,25 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     tiktok: "https://tiktok.com/@velvea",
   },
   delivery: {
-    sameDayCutoff: "16:00",
-    localSameDayFeeCents: 1500,
-    localStandardFeeCents: 900,
-    standardShippingCents: 1495,
-    expressShippingCents: 2495,
-    freeShippingThresholdCents: 15000,
+    orderCutoff: "16:00",
   },
+  // Velvea is a small supplier: taxable revenue is under the $30,000 threshold
+  // at which GST/HST registration becomes mandatory, so no tax is charged. It
+  // is not that the rate is unknown — charging tax without a registration
+  // number to remit it against is not permitted.
+  //
+  // When revenue passes $30,000 over four consecutive quarters, registration
+  // is required and the rate goes back. The real combined rates, for when that
+  // day comes: ON 13, QC 14.975, BC 12, AB 5, SK 11, MB 12, NB 15, NS 14,
+  // PE 15, NL 15, YT 5, NT 5, NU 5.
+  //
+  // Note the threshold is crossed by a single sale, not at a quarter end: the
+  // order that takes you past $30,000 is itself taxable.
   tax: {
     rates: {
-      ON: 13,
-      QC: 14.975,
-      BC: 12,
-      AB: 5,
-      SK: 11,
-      MB: 12,
-      NB: 15,
-      NS: 14,
-      PE: 15,
-      NL: 15,
-      YT: 5,
-      NT: 5,
-      NU: 5,
+      ON: 0,
     },
-    default: 13,
+    default: 0,
   },
 };
 

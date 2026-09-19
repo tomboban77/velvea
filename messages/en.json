@@ -5,8 +5,8 @@
   },
   "announcement": {
     "one": "A handwritten card with every gift",
-    "two": "Same-day in the GTA · Order by 4 PM",
-    "three": "Delivered across Canada"
+    "two": "Same-day in the GTA · Order before the cutoff",
+    "three": "Delivered across Ontario"
   },
   "nav": {
     "shop": "Shop",
@@ -83,11 +83,11 @@
     "reviewsCount": "{count, plural, one {# review} other {# reviews}}"
   },
   "hero": {
-    "eyebrow": "Est. 2026 · Mississauga · Canada-wide",
+    "eyebrow": "Est. 2026 · Mississauga · Across Ontario",
     "titleA": "The art of the",
     "titleB": "considered",
     "titleC": "gift.",
-    "lede": "Curated gift baskets, composed by hand in our Mississauga atelier and delivered across Canada. For the moments that deserve more than a card.",
+    "lede": "Curated gift baskets, composed by hand in our Mississauga atelier and delivered across Ontario. For the moments that deserve more than a card.",
     "ctaPrimary": "Explore the collection",
     "ctaSecondary": "Build your own",
     "pictured": "Pictured",
@@ -102,7 +102,7 @@
     "p1": "Composed by hand, to order",
     "p1Sub": "In our Mississauga atelier",
     "p2": "Same-day in the GTA",
-    "p2Sub": "Order by 4 PM · Canada-wide shipping",
+    "p2Sub": "Order before the cutoff · Delivery across Ontario",
     "p3": "Handwritten card included",
     "p3Sub": "No prices on the packing slip"
   },
@@ -156,7 +156,7 @@
     "s1": "Choose the vessel",
     "s1Sub": "Woven baskets, keepsake boxes and trays",
     "s2": "Pick every item",
-    "s2Sub": "Gourmet, wine, chocolate, wellness and more",
+    "s2Sub": "Gourmet, chocolate, coffee, wellness and more",
     "s3": "Add your words",
     "s3Sub": "A handwritten card, tucked inside",
     "cta": "Start composing",
@@ -174,14 +174,14 @@
     "s2": "Packed by hand, to order",
     "s2Sub": "Assembled after you order and finished with tissue, ribbon and your card.",
     "s3": "Delivered with care",
-    "s3Sub": "Same-day across the GTA before 4 PM. Tracked shipping to every province.",
+    "s3Sub": "Same-day across the GTA. Tracked delivery anywhere in Ontario.",
     "factsTitle": "Delivery at a glance",
     "f1": "Mississauga & the GTA",
-    "f1Sub": "Same-day · Order by 4 PM",
-    "f2": "Across Canada",
-    "f2Sub": "Tracked shipping to every province and territory",
-    "f3": "Free shipping",
-    "f3Sub": "On orders over {amount}",
+    "f1Sub": "Same-day · Order before the daily cutoff",
+    "f2": "Across Ontario",
+    "f2Sub": "Tracked delivery to every Ontario address",
+    "f3": "Studio pickup",
+    "f3Sub": "Collect from Mississauga, free",
     "link": "Shipping details",
     "stepsEyebrow": "How it works"
   },
@@ -191,7 +191,7 @@
     "lede": "Client appreciation, employee milestones and year-end programmes, handled end to end. One point of contact, volume pricing and delivery to every address on your list.",
     "f1": "Volume pricing from 10 baskets",
     "f2": "Branded cards & custom messaging",
-    "f3": "Multi-address delivery across Canada",
+    "f3": "Multi-address delivery across Ontario",
     "f4": "Holiday & seasonal programmes",
     "f5": "One dedicated point of contact",
     "requestQuote": "Request a quote",
@@ -239,8 +239,8 @@
     "more": "Read the full FAQ",
     "items": [
       {
-        "q": "Do you deliver across Canada?",
-        "a": "Yes. We ship to every province and territory with tracking, and offer same-day delivery in Mississauga and the GTA on eligible orders placed before 4 PM."
+        "q": "Where do you deliver?",
+        "a": "Across Ontario. We deliver ourselves throughout Mississauga and the GTA, including same-day on eligible orders, and ship with tracking anywhere else in the province. Pickup from our Mississauga studio is free."
       },
       {
         "q": "Is a gift message included?",
@@ -274,7 +274,7 @@
     "invalidLink": "That link is no longer valid."
   },
   "footer": {
-    "blurb": "Curated gift baskets, composed by hand in Mississauga and delivered across Canada. Woman-owned, founded 2026.",
+    "blurb": "Curated gift baskets, composed by hand in Mississauga and delivered across Ontario. Woman-owned, founded 2026.",
     "concierge": "Gifting concierge",
     "conciergeSub": "Questions about an order, an occasion or a corporate programme? We reply within one business day.",
     "shop": "Shop",
@@ -298,7 +298,7 @@
     "currency": "Canada · CAD",
     "secure": "Secure checkout",
     "newsletterEyebrow": "Stay in touch",
-    "bottomTagline": "Premium gift baskets, hand-packed in Mississauga and delivered across Canada."
+    "bottomTagline": "Premium gift baskets, hand-packed in Mississauga and delivered across Ontario."
   },
   "pdp": {
     "home": "Home",
@@ -315,16 +315,19 @@
     "reviews": "{count} reviews",
     "review": "{count} review",
     "newArrival": "New arrival",
-    "sameDayLeft": "Order within <b>{time}</b> for same-day delivery in the GTA",
-    "sameDayNext": "Order now for next-day delivery in the GTA",
-    "canadaWide": "Tracked shipping across Canada",
+    "sameDayLeft": "Order within <b>{time}</b> for same-day local delivery",
+    "sameDayNext": "Order now for next-day local delivery",
+    "ontarioWide": "Tracked delivery across Ontario",
+    "localOnly": "Local delivery and pickup only",
+    "deliveryAtCheckout": "Delivery is priced from your postal code at checkout",
     "leadTime": "Ships in {days, plural, one {# business day} other {# business days}}",
     "card": "Handwritten card included",
     "noPrices": "No prices on the slip",
     "packed": "Packed to order",
-    "shippingFree": "Free shipping on orders over {amount}",
-    "shippingLocal": "Same-day in Mississauga and the GTA on orders placed before 4 PM.",
-    "shippingCanada": "Tracked shipping to every province and territory, typically 2 to 5 business days.",
+    "shippingPickup": "Free pickup from our Mississauga studio.",
+    "shippingLocalOnly": "Too perishable to ship — local delivery or studio pickup only.",
+    "shippingLocal": "Same-day in Mississauga and the GTA on eligible orders placed before the daily cutoff.",
+    "shippingOntario": "Tracked delivery anywhere in Ontario, typically 2 to 5 business days.",
     "returns": "Something not right? Write to us within 48 hours of delivery and we will make it right.",
     "arrives": "How it arrives",
     "arrivesLede": "Presentation is part of the gift. Every basket leaves the atelier finished and protected.",
@@ -333,7 +336,7 @@
     "a2": "Your card, handwritten",
     "a2Sub": "Add your message at checkout. Prices are never included.",
     "a3": "Tracked to the door",
-    "a3Sub": "Same-day in the GTA before 4 PM. Tracked shipping across Canada.",
+    "a3Sub": "Same-day in the GTA before the daily cutoff. Tracked delivery across Ontario.",
     "related": "You may also like",
     "shopAll": "All gift baskets",
     "save": "Save {amount}",
@@ -372,7 +375,7 @@
     "rating": "Top rated",
     "browse": "Browse",
     "allTitle": "All gift baskets",
-    "allLede": "Our full range of hand-composed gift baskets, delivered across Canada.",
+    "allLede": "Our full range of hand-composed gift baskets, delivered across Ontario.",
     "emptyTitle": "Nothing here just yet",
     "emptyLede": "We are composing this collection. Explore the full range or build something bespoke.",
     "filters": "Filters",

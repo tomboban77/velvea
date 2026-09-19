@@ -12,7 +12,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "import:products": "tsx scripts/import-products.ts",
     "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "audit:alcohol": "tsx scripts/audit-alcohol.ts",
+    "check:stripe": "tsx --env-file=.env scripts/check-stripe.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

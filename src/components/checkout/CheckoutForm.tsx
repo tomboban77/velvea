@@ -1,29 +1,37 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
-import { Lock, Truck, Clock, MapPin, Tag, Check, Loader2, ShoppingBag, Gift, AlertTriangle } from "lucide-react";
+import { Lock, Truck, Clock, MapPin, Store, Tag, Check, Loader2, ShoppingBag, Gift, AlertTriangle } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { createCheckout, validateDiscountCode, type CartChange } from "@/lib/actions/checkout";
-import {
-  previewTaxRate,
-  isGtaClient,
-  PROVINCES,
-  type ClientSettings,
-} from "@/lib/settings-client";
+import { quoteDelivery, type DeliveryQuote } from "@/lib/actions/delivery";
 import { Honeypot } from "@/components/ui/Honeypot";
 import { formatMoney, cn } from "@/lib/utils";
+import type { DeliveryMethod } from "@prisma/client";
 
-type Method = "SHIPPING" | "LOCAL_SAMEDAY" | "LOCAL_STANDARD";
+export type StudioAddress = {
+  addressLine: string;
+  city: string;
+  province: string;
+  postalCode: string;
+};
+
+const ICONS: Record<DeliveryMethod, React.ComponentType<{ className?: string }>> = {
+  PICKUP: Store,
+  LOCAL_SAMEDAY: Clock,
+  LOCAL_STANDARD: MapPin,
+  SHIPPING: Truck,
+};
 
 export function CheckoutForm({
-  settings,
+  studio,
   defaultEmail = "",
 }: {
-  /** The store's real delivery and tax settings, read on the server. */
-  settings: ClientSettings;
+  /** Where pickup orders are collected, and the address recorded against them. */
+  studio: StudioAddress;
   defaultEmail?: string;
 }) {
   const t = useTranslations();
@@ -42,35 +50,114 @@ export function CheckoutForm({
     line1: "",
     line2: "",
     city: "",
-    province: "ON",
     postalCode: "",
     giftMessage: "",
     deliveryDate: "",
     deliveryNotes: "",
   });
-  const [method, setMethod] = useState<Method>("SHIPPING");
+  const [method, setMethod] = useState<DeliveryMethod | null>(null);
   const [code, setCode] = useState("");
   const [discount, setDiscount] = useState<{ label: string; cents: number; freeShip: boolean } | null>(null);
   const [codeMsg, setCodeMsg] = useState<string | null>(null);
   const set = (k: keyof typeof f, v: string) => setF((p) => ({ ...p, [k]: v }));
 
-  const gta = isGtaClient(f.city);
+  // --- Delivery quote ------------------------------------------------------
+  // Rates, eligibility and tax all come from the server, computed by the same
+  // code that will charge the card. The browser deliberately holds no copy of
+  // the rules: the previous version previewed from a hardcoded settings block,
+  // so editing a fee in the admin left this page quoting the old number.
+  const [quote, setQuote] = useState<DeliveryQuote | null>(null);
+  const [quoting, setQuoting] = useState(false);
+
+  const itemCount = useMemo(() => items.reduce((n, i) => n + i.quantity, 0), [items]);
+  const productKey = useMemo(
+    () => items.map((i) => i.productId).filter(Boolean).join(","),
+    [items]
+  );
+  // Add-on ids out of any custom baskets, so the quote can warn about a
+  // custom build that cannot be shipped just as it does for a catalogue one.
+  const addonKey = useMemo(
+    () =>
+      [
+        ...new Set(
+          items.flatMap((i) => {
+            const cfg = i.customConfig as { itemIds?: unknown } | undefined;
+            return Array.isArray(cfg?.itemIds)
+              ? (cfg.itemIds as unknown[]).filter((v): v is string => typeof v === "string")
+              : [];
+          })
+        ),
+      ].join(","),
+    [items]
+  );
+
+  // Ignore a slow reply that lands after a newer one.
+  const seq = useRef(0);
+
+  useEffect(() => {
+    // Quoted even with an empty postal code: pickup does not depend on where
+    // the customer lives, so it has to be offered before they have typed an
+    // address. The server returns it alongside the "enter a postal code" note.
+    const postal = f.postalCode.trim();
+    const mine = ++seq.current;
+    setQuoting(true);
+    const id = setTimeout(async () => {
+      try {
+        const res = await quoteDelivery({
+          postalCode: postal,
+          subtotalCents,
+          itemCount,
+          productIds: productKey ? productKey.split(",") : [],
+          builderItemIds: addonKey ? addonKey.split(",") : [],
+          locale: locale === "fr" ? "fr" : "en",
+        });
+        if (mine === seq.current) setQuote(res);
+      } catch {
+        if (mine === seq.current) setQuote(null);
+      } finally {
+        if (mine === seq.current) setQuoting(false);
+      }
+    }, 400);
+    return () => clearTimeout(id);
+  }, [f.postalCode, subtotalCents, itemCount, productKey, addonKey, locale]);
+
+  // Memoized: the `?? []` fallback would otherwise be a new array identity on
+  // every render, re-running the selection effect below in a loop.
+  const EMPTY: DeliveryQuote["options"] = useMemo(() => [], []);
+  const options = quote?.options ?? EMPTY;
+
+  // Keep the selection valid: if the address moves to a zone where the chosen
+  // method no longer exists, fall to the first one that does rather than
+  // submitting something the server will reject.
+  //
+  // Pickup is never auto-selected. It is offered from the first render, before
+  // any address exists, and quietly selecting it would swap the delivery
+  // address fields out from under someone who has not chosen it.
+  useEffect(() => {
+    const deliverable = options.filter((o) => o.method !== "PICKUP");
+    setMethod((current) => {
+      if (current && options.some((o) => o.method === current)) return current;
+      return deliverable[0]?.method ?? null;
+    });
+  }, [options]);
+
+  const selected = options.find((o) => o.method === method) ?? null;
+  const isPickup = method === "PICKUP";
 
   const totals = useMemo(() => {
     const discountCents = discount?.cents ?? 0;
-    let shippingCents = 0;
-    if (method === "LOCAL_SAMEDAY") shippingCents = settings.localSameDayFeeCents;
-    else if (method === "LOCAL_STANDARD") shippingCents = settings.localStandardFeeCents;
-    else {
-      const free = discount?.freeShip || subtotalCents >= settings.freeShippingThresholdCents;
-      shippingCents = free ? 0 : settings.standardShippingCents;
-    }
-    const rate = previewTaxRate(f.province, settings);
+    const baseFee = selected?.feeCents ?? 0;
+    const shippingCents = discount?.freeShip ? 0 : baseFee;
+    const rate = quote?.ok ? quote.taxRate : 0;
     const taxable = Math.max(0, subtotalCents - discountCents) + shippingCents;
     const taxCents = Math.round((taxable * rate) / 100);
     const totalCents = Math.max(0, subtotalCents - discountCents) + shippingCents + taxCents;
     return { discountCents, shippingCents, taxCents, totalCents, rate };
-  }, [method, subtotalCents, discount, f.province, settings]);
+  }, [selected, subtotalCents, discount, quote]);
+
+  const blockedItems = quote?.ok ? quote.unshippable : [];
+  const shippingBlocked = method === "SHIPPING" && blockedItems.length > 0;
+  const canSubmit = Boolean(method) && !shippingBlocked;
 
   async function applyCode() {
     setCodeMsg(null);
@@ -93,6 +180,29 @@ export function CheckoutForm({
     e.preventDefault();
     setError(null);
     setChanges([]);
+    if (!method) {
+      setError("Enter a postal code to see delivery options.");
+      return;
+    }
+    // A pickup order is collected here, so the studio is the address recorded
+    // against it — asking the customer to type a delivery address for
+    // something they are coming to fetch only invites a wrong one.
+    const address = isPickup
+      ? {
+          line1: studio.addressLine,
+          line2: "",
+          city: studio.city,
+          province: studio.province,
+          postalCode: studio.postalCode,
+        }
+      : {
+          line1: f.line1,
+          line2: f.line2,
+          city: f.city,
+          // Derived from the postal code server-side; this is only a hint.
+          province: (quote?.ok && quote.province) || "ON",
+          postalCode: f.postalCode,
+        };
     startTransition(async () => {
       const res = await createCheckout({
         email: f.email,
@@ -100,11 +210,7 @@ export function CheckoutForm({
         deliveryMethod: method,
         shipping: {
           fullName: f.fullName,
-          line1: f.line1,
-          line2: f.line2,
-          city: f.city,
-          province: f.province,
-          postalCode: f.postalCode,
+          ...address,
           country: "CA",
           phone: f.phone,
         },
@@ -180,70 +286,102 @@ export function CheckoutForm({
           </div>
         </Section>
 
-        <Section title="Delivery address">
+        <Section title={isPickup ? "Who is collecting" : "Delivery address"}>
           <div className="space-y-3">
             <input required placeholder="Recipient full name" className="field"
               value={f.fullName} onChange={(e) => set("fullName", e.target.value)} />
-            <input required placeholder="Street address" className="field"
-              value={f.line1} onChange={(e) => set("line1", e.target.value)} />
-            <input placeholder="Apartment, suite (optional)" className="field"
-              value={f.line2} onChange={(e) => set("line2", e.target.value)} />
-            <div className="grid gap-3 sm:grid-cols-3">
-              <input required placeholder="City" className="field"
-                value={f.city} onChange={(e) => set("city", e.target.value)} />
-              <select className="field" value={f.province} onChange={(e) => set("province", e.target.value)}>
-                {PROVINCES.map((p) => (
-                  <option key={p.code} value={p.code}>{p.code}</option>
-                ))}
-              </select>
-              <input required placeholder="Postal code" className="field"
-                value={f.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
-            </div>
+            {isPickup ? (
+              <div className="rounded-lg border border-line bg-cream/50 px-4 py-3 text-sm">
+                <p className="font-medium text-ink">Collect from our studio</p>
+                <p className="mt-0.5 text-muted">
+                  {studio.addressLine}, {studio.city}, {studio.province} {studio.postalCode}
+                </p>
+              </div>
+            ) : (
+              <>
+                <input required placeholder="Street address" className="field"
+                  value={f.line1} onChange={(e) => set("line1", e.target.value)} />
+                <input placeholder="Apartment, suite (optional)" className="field"
+                  value={f.line2} onChange={(e) => set("line2", e.target.value)} />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <input required placeholder="City" className="field"
+                    value={f.city} onChange={(e) => set("city", e.target.value)} />
+                  {/* No province selector: the postal code already determines
+                      it, and a dropdown that can disagree with the address is
+                      how an order to Toronto got taxed at another province's
+                      rate. */}
+                  <input required placeholder="Postal code" className="field uppercase"
+                    value={f.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+                </div>
+              </>
+            )}
           </div>
         </Section>
 
         <Section title="Delivery method">
-          <div className="space-y-2.5">
-            {gta && (
-              <MethodOption
-                active={method === "LOCAL_SAMEDAY"}
-                onClick={() => setMethod("LOCAL_SAMEDAY")}
-                icon={Clock}
-                title="Same-day (GTA)"
-                sub={`Order by ${settings.sameDayCutoff} ET · eligible orders`}
-                price={settings.localSameDayFeeCents}
-              />
-            )}
-            {gta && (
-              <MethodOption
-                active={method === "LOCAL_STANDARD"}
-                onClick={() => setMethod("LOCAL_STANDARD")}
-                icon={MapPin}
-                title="Local delivery (GTA)"
-                sub="Next available day"
-                price={settings.localStandardFeeCents}
-              />
-            )}
-            <MethodOption
-              active={method === "SHIPPING"}
-              onClick={() => setMethod("SHIPPING")}
-              icon={Truck}
-              title="Canada-wide shipping"
-              sub={
-                subtotalCents >= settings.freeShippingThresholdCents
-                  ? "Free shipping unlocked"
-                  : `Free over ${formatMoney(settings.freeShippingThresholdCents)}`
-              }
-              price={
-                subtotalCents >= settings.freeShippingThresholdCents
-                  ? 0
-                  : settings.standardShippingCents
-              }
-            />
-          </div>
-          {!gta && f.city && (
+          {/* Always render the postal-code field above, even for pickup, so the
+              customer can switch back without the options vanishing. */}
+          {isPickup && (
+            <div className="mb-3">
+              <label className="label">Postal code (for delivery options)</label>
+              <input placeholder="Postal code" className="field uppercase"
+                value={f.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+            </div>
+          )}
+
+          {options.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-line px-4 py-6 text-center text-sm text-muted">
+              {quoting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Checking your address…
+                </span>
+              ) : quote && !quote.ok ? (
+                quote.message
+              ) : (
+                "Enter a postal code to see delivery options and pricing."
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {options.map((o) => (
+                <MethodOption
+                  key={o.method}
+                  active={method === o.method}
+                  onClick={() => setMethod(o.method)}
+                  icon={ICONS[o.method]}
+                  title={o.label}
+                  sub={o.sub}
+                  price={o.feeCents}
+                />
+              ))}
+            </div>
+          )}
+
+          {quote?.ok ? (
             <p className="mt-2 text-xs text-muted">
-              Same-day is available in Mississauga and the GTA. We&apos;ll ship your order Canada-wide.
+              Delivering to {quote.zoneName}
+              {quoting && " · updating…"}
+            </p>
+          ) : (
+            quote && (
+              <p className="mt-2 text-xs text-muted">
+                {quoting ? "Checking your address…" : quote.message}
+              </p>
+            )
+          )}
+
+          {blockedItems.length > 0 && (
+            <p
+              className={cn(
+                "mt-2 flex items-start gap-1.5 text-xs",
+                shippingBlocked ? "text-danger" : "text-muted"
+              )}
+            >
+              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <span>
+                {blockedItems.join(", ")} {blockedItems.length > 1 ? "are" : "is"} too
+                perishable to ship. Choose local delivery or pickup.
+              </span>
             </p>
           )}
         </Section>
@@ -328,8 +466,15 @@ export function CheckoutForm({
             {totals.discountCents > 0 && (
               <Row label="Discount" value={`−${formatMoney(totals.discountCents)}`} accent />
             )}
-            <Row label="Shipping" value={totals.shippingCents ? formatMoney(totals.shippingCents) : "Free"} />
-            <Row label={`Tax (${totals.rate}%)`} value={formatMoney(totals.taxCents)} />
+            <Row
+              label={isPickup ? "Pickup" : "Delivery"}
+              value={totals.shippingCents ? formatMoney(totals.shippingCents) : "Free"}
+            />
+            {/* Hidden while the rate is zero. A "Tax $0.00" line on a receipt
+                reads as an error, and we are not registered to charge it. */}
+            {totals.rate > 0 && (
+              <Row label={`Tax (${totals.rate}%)`} value={formatMoney(totals.taxCents)} />
+            )}
           </dl>
           <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
             <span className="font-display text-lg">Total</span>
@@ -354,12 +499,22 @@ export function CheckoutForm({
             </div>
           )}
 
-          <button type="submit" disabled={pending} className="btn btn-gold btn-lg mt-5 w-full">
+          <button
+            type="submit"
+            disabled={pending || !canSubmit}
+            className="btn btn-gold btn-lg mt-5 w-full disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-            {pending ? "Processing…" : `Pay ${formatMoney(totals.totalCents)}`}
+            {pending
+              ? "Processing…"
+              : !method
+              ? "Enter a postal code"
+              : shippingBlocked
+              ? "Choose local delivery or pickup"
+              : `Pay ${formatMoney(totals.totalCents)}`}
           </button>
           <p className="mt-3 text-center text-xs text-muted">
-            Taxes and shipping are finalized on this page. You can review everything before paying.
+            Taxes and delivery are finalized on this page. You can review everything before paying.
           </p>
         </div>
       </div>

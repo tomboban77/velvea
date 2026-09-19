@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s · Velvea",
   },
   description:
-    "Premium gift baskets, hand-packed in Mississauga and delivered across Canada. Same-day delivery in the GTA on eligible orders.",
+    "Premium gift baskets, hand-packed in Mississauga and delivered across Ontario. Same-day delivery in the GTA on eligible orders.",
   keywords: [
     "gift baskets Canada",
     "gift baskets Mississauga",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: "Velvea",
     title: "Velvea — Premium Gift Baskets Delivered Across Canada",
     description:
-      "Beautiful, hand-packed gift baskets for every occasion, delivered across Canada.",
+      "Beautiful, hand-packed gift baskets for every occasion, delivered across Ontario.",
     images: ["/brand/velvea-og.png?v=6"],
   },
 };

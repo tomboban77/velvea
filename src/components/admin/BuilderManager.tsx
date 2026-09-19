@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { Plus, Trash2, Loader2, Save, Package, ImageIcon } from "lucide-react";
+import { Plus, Trash2, Loader2, Save, Package, ImageIcon, Truck, TruckElectric } from "lucide-react";
 import { Card } from "./ui";
 import { TextInput, Toggle } from "./form";
 import { ImageUploader, type UploadedImage } from "./ImageUploader";
@@ -11,10 +11,10 @@ import {
   upsertBuilderCategory, deleteBuilderCategory,
   upsertBuilderItem, deleteBuilderItem,
 } from "@/lib/actions/admin";
-import { formatMoney } from "@/lib/utils";
+import { formatMoney, cn } from "@/lib/utils";
 
 type Container = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; capacity: number; active: boolean };
-type Item = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; active: boolean };
+type Item = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; active: boolean; shippable: boolean };
 type Category = { id: string; name: { en: string; fr: string }; items: Item[] };
 
 export function BuilderManager({ containers, categories }: { containers: Container[]; categories: Category[] }) {
@@ -123,11 +123,12 @@ function ItemRow({ categoryId, item }: { categoryId: string; item: Item | null }
   const [nameEn, setNameEn] = useState(item?.name.en ?? "");
   const [nameFr, setNameFr] = useState(item?.name.fr ?? "");
   const [price, setPrice] = useState(((item?.priceCents ?? 0) / 100).toString());
+  const [shippable, setShippable] = useState(item?.shippable ?? true);
   const [pending, start] = useTransition();
 
   function save() {
-    start(() => upsertBuilderItem({ id: item?.id, categoryId, nameEn, nameFr, priceCents: Math.round(parseFloat(price) * 100) || 0, active: true })
-      .then(() => { if (isNew) { setNameEn(""); setNameFr(""); setPrice("0"); } }));
+    start(() => upsertBuilderItem({ id: item?.id, categoryId, nameEn, nameFr, priceCents: Math.round(parseFloat(price) * 100) || 0, active: true, shippable })
+      .then(() => { if (isNew) { setNameEn(""); setNameFr(""); setPrice("0"); setShippable(true); } }));
   }
 
   return (
@@ -135,6 +136,23 @@ function ItemRow({ categoryId, item }: { categoryId: string; item: Item | null }
       <ImageIcon className="h-4 w-4 shrink-0 text-line-strong" />
       <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="Item (EN)" className="field !py-1.5 text-sm" />
       <input value={price} onChange={(e) => setPrice(e.target.value)} type="number" placeholder="$" className="field w-20 !py-1.5 text-sm" />
+      {/* A custom basket is shippable only if every add-on in it is, so this
+          one switch decides whether a whole build can go to a courier. */}
+      <button
+        type="button"
+        onClick={() => setShippable((v) => !v)}
+        title={shippable ? "Can be shipped" : "Local delivery and pickup only"}
+        aria-label={shippable ? "Can be shipped" : "Local delivery and pickup only"}
+        aria-pressed={!shippable}
+        className={cn(
+          "shrink-0 rounded-full border p-1.5 transition-colors",
+          shippable
+            ? "border-line text-muted hover:text-ink"
+            : "border-amber/50 bg-amber/10 text-amber"
+        )}
+      >
+        {shippable ? <Truck className="h-3.5 w-3.5" /> : <TruckElectric className="h-3.5 w-3.5" />}
+      </button>
       <button onClick={save} disabled={pending || !nameEn} className="shrink-0 rounded-full bg-ink px-2.5 py-1.5 text-xs font-semibold text-canvas disabled:opacity-50">
         {isNew ? <Plus className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
       </button>

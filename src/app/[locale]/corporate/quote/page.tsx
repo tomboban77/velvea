@@ -11,8 +11,8 @@ export default async function CorporateQuotePage({ params }: { params: Promise<{
   const fr = locale === "fr";
   const t = await getTranslations();
   const points = fr
-    ? ["Prix de volume dès 10 paniers", "Cartes et emballage personnalisés", "Livraison multi-adresses partout au Canada", "Programmes des fêtes et saisonniers", "Une seule personne-ressource"]
-    : ["Volume pricing from 10 baskets", "Branded cards and packaging", "Multi-address delivery across Canada", "Holiday and seasonal programmes", "One dedicated point of contact"];
+    ? ["Prix de volume dès 10 paniers", "Cartes et emballage personnalisés", "Livraison multi-adresses partout en Ontario", "Programmes des fêtes et saisonniers", "Une seule personne-ressource"]
+    : ["Volume pricing from 10 baskets", "Branded cards and packaging", "Multi-address delivery across Ontario", "Holiday and seasonal programmes", "One dedicated point of contact"];
 
   return (
     <div>

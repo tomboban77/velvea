@@ -3,7 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { getSettings } from "@/lib/settings";
 import { getSession } from "@/lib/auth";
-import { computeTotals, computeDiscount, isGtaCity } from "@/lib/pricing";
+import { computeTotals, computeDiscount } from "@/lib/pricing";
+import { resolveZone, getZones, pickupZone, methodAllowedInZone, provinceForFsa, toFsa } from "@/lib/zones";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { sendOrderAwaitingPayment, sendAdminOrderNotice, type OrderEmailItem } from "@/lib/email";
 import { generateOrderNumber } from "@/lib/utils";
@@ -14,7 +15,7 @@ import { HIDDEN_PRODUCT_SLUGS } from "@/lib/features";
 import { reserveDiscount, releaseDiscount, customerRedemptions } from "@/lib/discounts";
 import { signOrderToken } from "@/lib/tokens";
 import { parseStoreDate, storeYmd, storeMinutesOfDay, cutoffMinutes, addStoreDays } from "@/lib/dates";
-import type { DeliveryMethod, DiscountCode } from "@prisma/client";
+import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 import { z } from "zod";
 
 const addressSchema = z.object({
@@ -56,7 +57,7 @@ const itemSchema = z.object({
 const checkoutSchema = z.object({
   email: z.string().email().max(200),
   phone: z.string().max(40).optional().default(""),
-  deliveryMethod: z.enum(["SHIPPING", "LOCAL_SAMEDAY", "LOCAL_STANDARD"]),
+  deliveryMethod: z.enum(["SHIPPING", "LOCAL_SAMEDAY", "LOCAL_STANDARD", "PICKUP"]),
   shipping: addressSchema,
   giftMessage: z.string().max(500).optional().default(""),
   deliveryDate: z.string().max(10).optional().default(""),
@@ -82,6 +83,7 @@ export type CartChange = {
     | "price-changed"
     | "out-of-stock"
     | "delivery-area"
+    | "not-shippable"
     | "delivery-date"
     | "builder-unavailable"
     | "builder-capacity"
@@ -106,6 +108,8 @@ type LineItem = {
   customItems: string[];
   giftMessage: string | null;
   leadTimeDays: number;
+  /** False for baskets that cannot be handed to a carrier. */
+  shippable: boolean;
 };
 
 type ResolveOutcome =
@@ -237,6 +241,10 @@ async function resolveCustomLine(
     customItems,
     giftMessage: item.giftMessage?.trim() || null,
     leadTimeDays: 2,
+    // A basket travels only as well as its least robust contents. This used to
+    // be hardcoded true, so a custom basket of fresh flowers and cheese would
+    // have been handed to a courier.
+    shippable: addons.every((a) => a.shippable),
   };
 }
 
@@ -342,6 +350,7 @@ async function resolveLineItems(
       customItems: [],
       giftMessage: item.giftMessage?.trim() || null,
       leadTimeDays: product.leadTimeDays,
+      shippable: product.shippable,
     });
   }
 
@@ -353,50 +362,81 @@ async function resolveLineItems(
 // Delivery validation
 // ---------------------------------------------------------------------------
 
+/**
+ * Delivery rules for a resolved zone.
+ *
+ * Eligibility is no longer a city-name lookup. The zone was already resolved
+ * from the postal code, so this only has to police what that zone permits:
+ * the method, the cutoff, and how soon we can realistically be there.
+ */
 function validateDelivery({
+  zone,
   method,
   deliveryDate,
-  city,
   leadTimeDays,
-  cutoff,
+  handoffCutoff,
   locale,
 }: {
+  zone: DeliveryZone;
   method: DeliveryMethod;
   deliveryDate: string;
-  city: string;
   leadTimeDays: number;
-  cutoff: string;
+  handoffCutoff: string;
   locale: string;
 }): CartChange[] {
   const changes: CartChange[] = [];
-  const isLocal = method === "LOCAL_SAMEDAY" || method === "LOCAL_STANDARD";
 
-  if (isLocal && !isGtaCity(city)) {
+  if (!methodAllowedInZone(zone, method)) {
     changes.push({
       kind: "delivery-area",
       subject: say(locale, "Delivery method", "Mode de livraison"),
       message: say(
         locale,
-        "Local delivery is only available in Mississauga and the GTA. Choose Canada-wide shipping.",
-        "La livraison locale n'est offerte qu'à Mississauga et dans le RGT. Choisissez l'expédition au Canada."
+        `${t(zone.name, "en")} isn't served by that delivery method. Please choose another option.`,
+        `${t(zone.name, "fr")} n'est pas desservi par ce mode de livraison. Veuillez choisir une autre option.`
       ),
     });
     return changes;
   }
 
   const today = storeYmd();
-  const pastCutoff = storeMinutesOfDay() >= cutoffMinutes(cutoff);
+
+  // Collection happens at the studio, so there is no travel to plan for.
+  if (method === "PICKUP") {
+    if (deliveryDate && deliveryDate < today) {
+      changes.push({
+        kind: "delivery-date",
+        subject: say(locale, "Pickup date", "Date de ramassage"),
+        message: say(locale, "That date has passed.", "Cette date est passée."),
+      });
+    }
+    return changes;
+  }
 
   if (method === "LOCAL_SAMEDAY") {
+    // Same-day is a per-zone promise now: the far tiers carry no cutoff at
+    // all, because we cannot drive an hour out and back the same afternoon.
+    if (!zone.sameDayCutoff) {
+      changes.push({
+        kind: "delivery-area",
+        subject: say(locale, "Same-day delivery", "Livraison le jour même"),
+        message: say(
+          locale,
+          `Same-day delivery isn't available in ${t(zone.name, "en")}.`,
+          `La livraison le jour même n'est pas offerte dans ${t(zone.name, "fr")}.`
+        ),
+      });
+      return changes;
+    }
     // The cutoff was previously only enforced in the browser.
-    if (pastCutoff) {
+    if (storeMinutesOfDay() >= cutoffMinutes(zone.sameDayCutoff)) {
       changes.push({
         kind: "delivery-date",
         subject: say(locale, "Same-day delivery", "Livraison le jour même"),
         message: say(
           locale,
-          `Same-day orders close at ${cutoff} ET. Please choose another delivery method.`,
-          `Les commandes du jour même ferment à ${cutoff} HE. Veuillez choisir un autre mode de livraison.`
+          `Same-day orders for this area close at ${zone.sameDayCutoff} ET. Please choose another delivery method.`,
+          `Les commandes du jour même pour ce secteur ferment à ${zone.sameDayCutoff} HE. Veuillez choisir un autre mode de livraison.`
         ),
       });
     }
@@ -426,16 +466,20 @@ function validateDelivery({
     return changes;
   }
 
-  // Anything ordered after the cutoff starts its lead time tomorrow.
-  const earliest = addStoreDays(today, leadTimeDays + (pastCutoff ? 1 : 0));
+  // Two things have to happen before it arrives: we assemble it (the product
+  // lead time) and it travels (the zone's minimum). Anything ordered after the
+  // daily handoff starts that clock tomorrow.
+  const pastCutoff = storeMinutesOfDay() >= cutoffMinutes(handoffCutoff);
+  const totalDays = Math.max(leadTimeDays, zone.minLeadDays) + (pastCutoff ? 1 : 0);
+  const earliest = addStoreDays(today, totalDays);
   if (deliveryDate < earliest) {
     changes.push({
       kind: "delivery-date",
       subject: say(locale, "Delivery date", "Date de livraison"),
       message: say(
         locale,
-        `The earliest we can deliver this basket is ${earliest}.`,
-        `La date la plus proche pour ce panier est le ${earliest}.`
+        `The earliest we can deliver this basket to ${t(zone.name, "en")} is ${earliest}.`,
+        `La date la plus proche pour ce panier vers ${t(zone.name, "fr")} est le ${earliest}.`
       ),
     });
   }
@@ -451,6 +495,7 @@ function validateDelivery({
 
   return changes;
 }
+
 
 // ---------------------------------------------------------------------------
 // createCheckout
@@ -504,13 +549,91 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   }
 
   const method: DeliveryMethod = input.deliveryMethod;
+
+  // --- Zone ---
+  // The postal code decides where this is going. The province dropdown is only
+  // a cross-check: it is a guess the customer can get wrong, and trusting it is
+  // how an order to Toronto could previously be taxed at the Alberta rate.
+  const zones = await getZones();
+  const pickup = pickupZone(zones);
+  let zone;
+
+  if (method === "PICKUP") {
+    if (!pickup) {
+      return {
+        ok: false,
+        error: say(locale, "Pickup isn't available.", "Le ramassage n'est pas disponible."),
+      };
+    }
+    zone = pickup;
+  } else {
+    const match = await resolveZone(input.shipping.postalCode);
+    if (!match.ok) {
+      const message =
+        match.reason === "invalid-postal"
+          ? say(
+              locale,
+              "That doesn't look like a Canadian postal code. Please check it.",
+              "Ce code postal canadien semble incorrect. Veuillez le vérifier."
+            )
+          : match.reason === "quote"
+          ? say(
+              locale,
+              "We can reach this address, but it has to be quoted by hand. Please contact us and we'll arrange it.",
+              "Nous pouvons livrer à cette adresse, mais le tarif doit être établi manuellement. Veuillez nous contacter."
+            )
+          : say(
+              locale,
+              "We currently deliver within Ontario only. Pickup from our Mississauga studio is available for any address.",
+              "Nous livrons actuellement en Ontario seulement. Le ramassage à notre atelier de Mississauga demeure possible."
+            );
+      return {
+        ok: false,
+        error: message,
+        changes: [
+          {
+            kind: "delivery-area",
+            subject: say(locale, "Delivery address", "Adresse de livraison"),
+            message,
+          },
+        ],
+      };
+    }
+    zone = match.zone;
+  }
+
+  // Anything that cannot survive a carrier is local and pickup only. This used
+  // to be discovered at packing time, after the customer had paid.
+  if (zone.kind === "SHIPPING") {
+    const blocked = lines.filter((l) => !l.shippable);
+    if (blocked.length) {
+      return {
+        ok: false,
+        error: say(
+          locale,
+          "Some items in your bag can't be shipped. They're available for local delivery or pickup.",
+          "Certains articles de votre panier ne peuvent pas être expédiés. Ils sont offerts en livraison locale ou en ramassage."
+        ),
+        changes: blocked.map((l) => ({
+          kind: "not-shippable" as const,
+          subject: l.name,
+          message: say(
+            locale,
+            "Too perishable to ship — choose local delivery or pickup.",
+            "Trop périssable pour l'expédition — choisissez la livraison locale ou le ramassage."
+          ),
+        })),
+      };
+    }
+  }
+
   const leadTimeDays = lines.reduce((max, l) => Math.max(max, l.leadTimeDays), 0);
   const deliveryChanges = validateDelivery({
+    zone,
     method,
     deliveryDate: input.deliveryDate,
-    city: input.shipping.city,
     leadTimeDays,
-    cutoff: settings.delivery.sameDayCutoff,
+    handoffCutoff: settings.delivery.orderCutoff,
     locale,
   });
   if (deliveryChanges.length) {
@@ -524,6 +647,13 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
       changes: deliveryChanges,
     };
   }
+
+  // Tax follows the postal code, not the dropdown. Pickup is always collected
+  // here, so it is taxed at our own rate.
+  const taxProvince =
+    method === "PICKUP"
+      ? settings.contact.province
+      : provinceForFsa(toFsa(input.shipping.postalCode) ?? "") ?? input.shipping.province;
 
   // --- Discount ---
   const subtotalCents = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
@@ -595,8 +725,9 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
 
   const totals = computeTotals({
     settings,
+    zone,
     lines: lines.map((l) => ({ unitPriceCents: l.unitPriceCents, quantity: l.quantity })),
-    province: input.shipping.province,
+    province: taxProvince,
     method,
     discount,
   });
@@ -627,6 +758,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         phone: input.phone || null,
         status: "PENDING",
         deliveryMethod: method,
+        deliveryZoneKey: zone.key,
         locale,
         subtotalCents: totals.subtotalCents,
         shippingCents: totals.shippingCents,

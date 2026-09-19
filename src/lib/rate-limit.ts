@@ -32,6 +32,10 @@ export const RATE_LIMITS = {
   customerRegister: { limit: 5, windowSeconds: 60 * 60 },
   passwordReset: { limit: 5, windowSeconds: 60 * 60 },
   discountCheck: { limit: 20, windowSeconds: 5 * 60 },
+  // Fires as the postal code is typed, so it needs more headroom than a
+  // discount check and its own bucket — quoting delivery must not spend the
+  // budget a customer needs to apply their code.
+  deliveryQuote: { limit: 60, windowSeconds: 5 * 60 },
   checkout: { limit: 10, windowSeconds: 10 * 60 },
   review: { limit: 5, windowSeconds: 60 * 60 },
   newsletter: { limit: 5, windowSeconds: 60 * 60 },

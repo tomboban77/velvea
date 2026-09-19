@@ -30,10 +30,13 @@ export const RECIPIENTS: NavLink[] = [
   { slug: "a-friend", en: "A Friend", fr: "Un ami" },
 ];
 
+// No alcohol category: reselling liquor in Ontario needs AGCO authorisation
+// that we do not hold, so nothing alcoholic is listed or sold. If that ever
+// changes, the licence comes first — see the builder add-on that is disabled
+// for the same reason.
 export const CATEGORIES: NavLink[] = [
   { slug: "gourmet", en: "Gourmet & Snacks", fr: "Gourmet & collations" },
   { slug: "chocolate", en: "Chocolate", fr: "Chocolat" },
-  { slug: "wine-spirits", en: "Wine & Spirits", fr: "Vins & spiritueux" },
   { slug: "spa-wellness", en: "Spa & Wellness", fr: "Spa & bien-être" },
   { slug: "coffee-tea", en: "Coffee & Tea", fr: "Café & thé" },
   { slug: "fresh-fruit", en: "Fresh Fruit", fr: "Fruits frais" },

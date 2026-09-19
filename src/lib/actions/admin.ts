@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getVerifiedAdmin } from "@/lib/auth";
 import { can, denialMessage, type Permission } from "@/lib/permissions";
 import { saveSettings as persistSettings, type SiteSettings } from "@/lib/settings";
+import { clearZoneCache } from "@/lib/zones";
 import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -261,12 +262,7 @@ const settingsSchema = z.object({
     .optional(),
   delivery: z
     .object({
-      sameDayCutoff: z.string().regex(/^\d{1,2}:\d{2}$/, "Use HH:MM"),
-      localSameDayFeeCents: money,
-      localStandardFeeCents: money,
-      standardShippingCents: money,
-      expressShippingCents: money,
-      freeShippingThresholdCents: money,
+      orderCutoff: z.string().regex(/^\d{1,2}:\d{2}$/, "Use HH:MM"),
     })
     .partial()
     .optional(),
@@ -600,6 +596,7 @@ const builderItemSchema = z.object({
   imagePublicId: z.string().max(200).nullish(),
   position: z.number().int().min(0).max(9999).default(0),
   active: z.boolean().default(true),
+  shippable: z.boolean().default(true),
 });
 
 export async function upsertBuilderItem(input: z.input<typeof builderItemSchema>) {
@@ -613,6 +610,7 @@ export async function upsertBuilderItem(input: z.input<typeof builderItemSchema>
     imagePublicId: d.imagePublicId ?? null,
     position: d.position,
     active: d.active,
+    shippable: d.shippable,
   };
   if (d.id) await prisma.builderItem.update({ where: { id: d.id }, data });
   else await prisma.builderItem.create({ data });
@@ -652,4 +650,124 @@ export async function setUserRole(input: z.input<typeof roleSchema>) {
 
   await prisma.user.update({ where: { id: d.id }, data: { role: d.role } });
   revalidatePath("/admin/staff");
+}
+
+// ---------------------------------------------------------------------------
+// Delivery zones
+// ---------------------------------------------------------------------------
+
+/** A Canadian FSA: letter, digit, letter. D, F, I, O, Q and U are never used. */
+const FSA = /^[A-CEGHJ-NPR-TVXY]\d[A-CEGHJ-NPR-TV-Z]$/;
+
+const zoneSchema = z
+  .object({
+    id: z.string().max(64).nullish(),
+    key: z
+      .string()
+      .min(2)
+      .max(40)
+      .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers and dashes only"),
+    nameEn: z.string().min(1).max(80),
+    nameFr: z.string().min(1).max(80),
+    kind: z.enum(["PICKUP", "LOCAL", "SHIPPING", "QUOTE", "BLOCKED"]),
+    fsaPrefixes: z.array(z.string().max(3)).max(2000).default([]),
+    fsaLetters: z.array(z.string().max(1)).max(26).default([]),
+    provinces: z.array(z.string().max(2)).max(13).default([]),
+    baseFeeCents: z.number().int().min(0).max(100_000_00),
+    extraItemCents: z.number().int().min(0).max(100_000_00),
+    sameDaySurchargeCents: z.number().int().min(0).max(100_000_00),
+    freeThresholdCents: z.number().int().min(0).max(100_000_00).nullish(),
+    sameDayCutoff: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use 24-hour HH:MM")
+      .nullish(),
+    minLeadDays: z.number().int().min(0).max(60),
+    maxLeadDays: z.number().int().min(0).max(90),
+    position: z.number().int().min(0).max(9999),
+    active: z.boolean(),
+  })
+  .superRefine((d, ctx) => {
+    if (d.maxLeadDays < d.minLeadDays) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["maxLeadDays"],
+        message: "The longest estimate cannot be shorter than the shortest",
+      });
+    }
+    // A mistyped prefix is worse than a missing one: it silently never matches,
+    // so the zone looks configured while quietly doing nothing.
+    const badPrefix = d.fsaPrefixes.find((p) => !FSA.test(p.toUpperCase().trim()));
+    if (badPrefix) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["fsaPrefixes"],
+        message: `"${badPrefix}" is not a valid FSA — expected a form like L5B`,
+      });
+    }
+    const badLetter = d.fsaLetters.find((l) => !/^[A-CEGHJ-NPR-TVXY]$/.test(l.toUpperCase().trim()));
+    if (badLetter) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["fsaLetters"],
+        message: `"${badLetter}" is not a postal-code first letter`,
+      });
+    }
+    if (d.kind === "LOCAL" || d.kind === "SHIPPING") {
+      if (d.fsaPrefixes.length === 0 && d.fsaLetters.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fsaPrefixes"],
+          message: "Add at least one FSA or first letter, or nothing will match this zone",
+        });
+      }
+    }
+  });
+
+export async function upsertDeliveryZone(input: z.input<typeof zoneSchema>) {
+  await guard("zones:write");
+  const d = parse(zoneSchema, input);
+  const key = d.key.toLowerCase().trim();
+
+  const clash = await prisma.deliveryZone.findUnique({ where: { key } });
+  if (clash && clash.id !== d.id) {
+    throw new Error(`The key "${key}" is already used by another zone.`);
+  }
+
+  const data = {
+    key,
+    name: { en: d.nameEn, fr: d.nameFr },
+    kind: d.kind,
+    fsaPrefixes: [...new Set(d.fsaPrefixes.map((p) => p.toUpperCase().trim()))],
+    fsaLetters: [...new Set(d.fsaLetters.map((l) => l.toUpperCase().trim()))],
+    provinces: [...new Set(d.provinces.map((p) => p.toUpperCase().trim()))],
+    baseFeeCents: d.baseFeeCents,
+    extraItemCents: d.extraItemCents,
+    sameDaySurchargeCents: d.kind === "LOCAL" ? d.sameDaySurchargeCents : 0,
+    freeThresholdCents: d.freeThresholdCents ?? null,
+    sameDayCutoff: d.kind === "LOCAL" || d.kind === "PICKUP" ? d.sameDayCutoff ?? null : null,
+    minLeadDays: d.minLeadDays,
+    maxLeadDays: d.maxLeadDays,
+    position: d.position,
+    active: d.active,
+  };
+
+  if (d.id) {
+    await prisma.deliveryZone.update({ where: { id: d.id }, data });
+  } else {
+    await prisma.deliveryZone.create({ data });
+  }
+
+  // Zones are cached for 30s; drop it so a corrected rate takes effect at once
+  // rather than quoting the old number to the next few customers.
+  clearZoneCache();
+  revalidatePath("/admin/delivery-zones");
+  revalidatePath("/checkout");
+}
+
+export async function deleteDeliveryZone(zoneId: string) {
+  await guard("zones:write");
+  const { id: zid } = parse(z.object({ id }), { id: zoneId });
+  await prisma.deliveryZone.delete({ where: { id: zid } });
+  clearZoneCache();
+  revalidatePath("/admin/delivery-zones");
 }

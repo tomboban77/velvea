@@ -1,6 +1,6 @@
 import type { SiteSettings } from "./settings";
 import { taxRateForProvince } from "./settings";
-import type { DeliveryMethod, DiscountCode } from "@prisma/client";
+import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 
 export type PriceLine = { unitPriceCents: number; quantity: number };
 
@@ -14,21 +14,40 @@ export type PriceBreakdown = {
   taxRate: number;
 };
 
+/**
+ * The delivery fee for a resolved zone.
+ *
+ * Every rate now comes from the zone row rather than a global setting, so
+ * Mississauga and Thunder Bay are no longer quoted the same number. Baskets
+ * beyond the first add `extraItemCents`: local zones set that to zero because
+ * one trip carries any number of boxes, while a shipped order pays for each
+ * additional parcel.
+ */
 export function computeShipping(
-  settings: SiteSettings,
+  zone: Pick<
+    DeliveryZone,
+    "kind" | "baseFeeCents" | "extraItemCents" | "sameDaySurchargeCents" | "freeThresholdCents"
+  >,
   method: DeliveryMethod,
   subtotalCents: number,
+  itemCount: number,
   freeShippingOverride = false
 ): { shippingCents: number; freeShipping: boolean } {
-  const d = settings.delivery;
-  if (method === "LOCAL_SAMEDAY")
-    return { shippingCents: d.localSameDayFeeCents, freeShipping: false };
-  if (method === "LOCAL_STANDARD")
-    return { shippingCents: d.localStandardFeeCents, freeShipping: false };
-  // SHIPPING
+  if (method === "PICKUP" || zone.kind === "PICKUP") {
+    return { shippingCents: 0, freeShipping: false };
+  }
+
+  // A FREE_SHIPPING code now waives local delivery too. Previously the local
+  // branch returned before the override was ever consulted, so the code was
+  // accepted, shown as applied, and the customer still paid the fee.
+  const threshold = zone.freeThresholdCents;
   const free =
-    freeShippingOverride || subtotalCents >= d.freeShippingThresholdCents;
-  return { shippingCents: free ? 0 : d.standardShippingCents, freeShipping: free };
+    freeShippingOverride || (threshold !== null && subtotalCents >= threshold);
+  if (free) return { shippingCents: 0, freeShipping: true };
+
+  const extras = Math.max(0, itemCount - 1) * zone.extraItemCents;
+  const sameDay = method === "LOCAL_SAMEDAY" ? zone.sameDaySurchargeCents : 0;
+  return { shippingCents: zone.baseFeeCents + extras + sameDay, freeShipping: false };
 }
 
 export function computeDiscount(
@@ -65,24 +84,31 @@ export function computeDiscount(
 
 export function computeTotals({
   settings,
+  zone,
   lines,
   province,
   method,
   discount,
 }: {
   settings: SiteSettings;
+  zone: Pick<
+    DeliveryZone,
+    "kind" | "baseFeeCents" | "extraItemCents" | "sameDaySurchargeCents" | "freeThresholdCents"
+  >;
   lines: PriceLine[];
   province?: string;
   method: DeliveryMethod;
   discount: DiscountCode | null;
 }): PriceBreakdown {
   const subtotalCents = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
+  const itemCount = lines.reduce((s, l) => s + l.quantity, 0);
   const disc = computeDiscount(discount, subtotalCents);
   const discountCents = disc.discountCents;
   const { shippingCents, freeShipping } = computeShipping(
-    settings,
+    zone,
     method,
     subtotalCents,
+    itemCount,
     disc.freeShipping
   );
   const taxRate = taxRateForProvince(settings, province);
@@ -98,16 +124,4 @@ export function computeTotals({
     freeShipping,
     taxRate,
   };
-}
-
-// GTA cities eligible for local same-day / local standard.
-export const GTA_CITIES = [
-  "mississauga", "toronto", "brampton", "vaughan", "markham", "richmond hill",
-  "oakville", "burlington", "milton", "whitby", "ajax", "pickering", "oshawa",
-  "etobicoke", "scarborough", "north york", "north york", "thornhill",
-];
-
-export function isGtaCity(city?: string): boolean {
-  if (!city) return false;
-  return GTA_CITIES.includes(city.trim().toLowerCase());
 }

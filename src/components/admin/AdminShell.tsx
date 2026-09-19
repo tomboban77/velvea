@@ -18,6 +18,7 @@ import {
   Users,
   Blocks,
   Mail,
+  MapPinned,
   LogOut,
   ExternalLink,
   Menu,
@@ -45,6 +46,7 @@ const NAV: {
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/discounts", label: "Discounts", icon: Ticket, permission: "discounts:write" },
+  { href: "/admin/delivery-zones", label: "Delivery Zones", icon: MapPinned, permission: "zones:write" },
   // Hidden while gift cards are paused — see src/lib/features.ts.
   ...(GIFT_CARDS_ENABLED
     ? [{ href: "/admin/gift-cards", label: "Gift Cards", icon: Gift }]

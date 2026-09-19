@@ -1,1297 +1,380 @@
-# Velvéa — SEO / AEO / GEO build brief
+# Velvéa — SEO audit and launch brief
 
-**For:** the agent working in `D:\Grow\Velvea\velvea`
-**Written from:** a read of that repo on 2026-09-12, plus the patterns already shipped in the
-GrowMint repo (`D:\Grow\Grow`), which is the reference implementation for everything below.
+**Reviewed:** 2026-09-18. Replaces the 2026-09-12 brief.
+**Production:** https://www.velvea.ca/ — owner confirmed.
+**Stage:** still being set up; not accepting real orders — owner confirmed.
+**Decision:** keep the unfinished catalog out of search until launch — owner confirmed.
+**Implementation status:** this review updates the brief only. Recommendations below are not implemented or deployed.
 
-Velvéa is a transactional gift-basket store (Next 15.5.25, App Router, `src/` layout, next-intl
-`en`/`fr` with `localePrefix: "as-needed"`, Prisma/Postgres, Stripe, Cloudinary). GrowMint is a
-content/lead-gen site. The *tactics* transfer; the *page types* do not. Where they diverge this
-brief says so rather than telling you to copy a file that solves a problem Velvéa does not have.
+## 1. Assessment and evidence
 
-Read this whole file before touching code. Then work the tickets in section 4 in order — they are
-ordered so that each one makes the next one cheaper, and doing 4 before 1 means writing the same
-URL string in nine files.
+The original brief had useful foundations, but should not be executed unchanged. Several repository findings are stale; some technical instructions conflict; others promise SEO effects without evidence. First control pre-launch exposure and make business/product information accurate. Add discovery, measurement, and useful content around a verified launch inventory.
 
-### What is verified here, and what is not
+This revision is based on repository inspection, limited anonymous production HTTP checks, current official documentation linked below, and owner answers. Configuration and website copy show what is published, not whether a business promise is true.
 
-**Verified by reading the repository** at the date above: every finding in section 2, every file
-path, the delivery-area arrays and their drift, the `force-dynamic` count, the missing-description
-count, the absence of pagination, `localeDetection`, the message-file parity, and the query-level
-status filters. Where a count appears below, it was counted, not estimated.
+Not inspected: Search Console, Bing Webmaster Tools, Merchant Center, Business Profile, analytics accounts, private database records, server crawl logs, completed checkout, field performance, competitors, or keyword demand. Account existence, actual indexing, rankings, backlink authority, and keyword volumes remain unknown. Environment secrets were not needed.
 
-**Not verified, and you must check before relying on it:**
-- **Nothing was measured against a live site.** No Search Console, no analytics, no crawl, no
-  Lighthouse run, no live URL. Velvéa may not be deployed yet. Every performance and indexing claim
-  here is inferred from the code and from what the same stack did on GrowMint.
-- **No competitor analysis and no keyword research.** The query examples throughout ("birthday gift
-  baskets Canada", "same day gift delivery brampton") are informed guesses about intent, not volume
-  data. Validate them in Search Console or a keyword tool before committing the content budget in
-  V-12 and L-02.
-- **The catalogue size is unknown.** Whether pagination (V-22) is urgent or theoretical depends on
-  how many products a collection actually holds.
-- **Business facts are unconfirmed**: whether the Mississauga atelier takes walk-ins (decides the
-  Business Profile type in L-04), whether a written returns policy exists (gates V-05 and V-16),
-  and the real NAP (F8).
+The application uses Next.js 15.5.25, App Router, next-intl, Prisma, and English/French routes. English is unprefixed; French uses `/fr`. GrowMint may provide examples, but is not authoritative evidence for this site's architecture, operations, indexing diagnosis, or expected results.
 
-Treat this as a build brief, not an audit. The first thing to do after phase 1 is get Search
-Console open so the next revision of this document can be written against data.
+### Production sample
 
----
+Read-only HTTP requests, 2026-09-18 around 04:56–04:59 UTC. HTML was fetched without executing JavaScript. This is not a full crawl or rendered-browser/performance audit.
 
-## 0. The three acronyms, stated plainly
-
-They are not three programmes. They are three consumers of the same page, and the work overlaps
-heavily. Knowing which consumer a change is for stops you from over-building.
-
-| | Consumer | What it rewards | What it ignores |
-|---|---|---|---|
-| **SEO** | Googlebot / Bingbot → the blue links | Crawlability, unique indexable pages, internal links, Core Web Vitals, correct structured data, external links | Clever prose nobody links to |
-| **AEO** *(Answer Engine Optimisation)* | AI Overviews, featured snippets, Bing Copilot | A direct, self-contained answer sentence near the question; FAQ/HowTo/Product schema; facts stated as facts ("$150", "before 4 PM", "48 hours") | Brand adjectives, "curated elegance" |
-| **GEO** *(Generative Engine Optimisation)* | ChatGPT Search, Perplexity, Claude, Gemini | Being *named* on third-party sources the model already trusts; a clean entity (one name, one address, one set of profiles); full text in the first HTML response; `llms.txt` | On-page keyword density |
-
-The single most useful thing to internalise: **GEO is mostly off-site.** A model cites Velvéa
-because a gift guide on a Canadian lifestyle site listed it, not because Velvéa's own copy was
-persuasive. Everything in section 4 makes Velvéa *citable*; section 5 is what makes it *cited*, and
-section 5 is Tom's work, not yours. Do not spend a week polishing schema and report it as a GEO
-programme.
-
-Second thing: **ChatGPT Search reads Bing's index.** Velvéa is not in Bing Webmaster Tools at all
-today. That is a GEO blocker sitting in a webmaster console, not in the code.
-
-Third: **Local is its own discipline, not a subset of SEO.** Velvéa runs a real same-day delivery
-operation across 17 named GTA municipalities with its own fee schedule and cutoff. That earns a
-local programme — section 4b — rather than a footnote.
-
-### Where each discipline lives in this file
-
-| Discipline | Tickets | The core move |
+| Surface | Observed result | Interpretation |
 |---|---|---|
-| **Technical SEO** | V-01 → V-03, V-19, V-20, V-22, V-23 | Canonicals, prerendering, pagination, no duplicate URL space, CI guardrails |
-| **Structured data** | V-04 → V-06, V-09 | One entity graph, merchant-grade `Product`, breadcrumbs, `ItemList` |
-| **AEO** | V-07, V-12, plus L-02 | Answer-first sentences with the number in them, `FAQPage` on collections *and* city pages |
-| **GEO** | V-11, V-15, G-01 → G-03, §5 | `llms.txt`, Bing, AI crawlers unblocked, entity consistency, third-party presence |
-| **Local SEO** | **L-01 → L-07** | Business Profile, city delivery pages, `areaServed`, citations, local reviews |
-| **Content** | V-08, V-12, V-13, V-18, **V-21** | Depth, meta descriptions, internal link graph, honest French |
-| **Commerce** | V-05, V-16 | Merchant listings and the product feed |
-| **Performance** | V-14 | LCP, and the Framer Motion trap |
+| `/` | `200`; no canonical, `og:url`, or robots noindex found in fetched HTML; no `X-Robots-Tag` in captured headers | Homepage currently has no observed indexing exclusion. This does not prove it is indexed. |
+| `/fr` | French `html lang`; English title/description/OG copy | Metadata localization is incomplete. |
+| Homepage HTTP headers | `Link` alternates for `en`, `fr`, `x-default` | Hreflang already exists. The old “none” finding is false. |
+| `/` with `Accept-Language: fr-CA` | `307` to `/fr` | Automatic language redirection is live. |
+| `https://velvea.ca/` | `308` to `https://www.velvea.ca/` | This sampled redirect is correct; other variants still need testing. |
+| `/robots.txt` | Crawling allowed; utility exclusions cover unprefixed routes only | French account/checkout/order/search paths are not covered by those rules. See crawl/noindex distinction below. |
+| `/sitemap.xml` | 59 URL entries, six product URLs, no French `<loc>` entries; French alternates exist | Public sitemap inventory only, not a database count. |
+| `/products/blush-bloom-self-care-basket` | `200`; no canonical found; Product/Offer JSON-LD, CAD 159.00, `InStock` | Markup exists; actual purchasability is unconfirmed and real orders are not being accepted. |
+| Same product title | Ends with `Velvea · Velvea` | Stored SEO title and global suffix duplicate the brand. |
+| `/fr/shipping` | `200`; English heading/main content under `lang="fr"` | French readiness is visibly incomplete. |
+| Social metadata | Home, sampled product, and French shipping emit `twitter:card=summary_large_image`; root image is `/brand/velvea-og.png?v=6` | Old “no Twitter card / logo-only OG” finding is stale. Visual preview quality remains untested. |
+| Homepage caching | `private, no-cache, no-store` | One observed response, not a measured performance problem across the site. |
 
----
+The web research tool could not fetch this domain; direct HTTP requests succeeded. Do not report the research-tool failure as a site outage.
 
-## 1. What Velvéa already has (verified, do not rebuild)
+### Repository findings
 
-- App Router, server components throughout. No client-side-only content — crawlers get real text.
-- `src/app/robots.ts` — sensible disallow list (`/admin`, `/api/`, `/checkout`, `/account`,
-  `/order/`, `/search`), sitemap pointer.
-- `src/app/sitemap.ts` — genuinely good. Static routes, collections from `src/lib/nav.ts`, products
-  and articles from Prisma, real `lastModified` from `updatedAt`, and `alternates.languages` for
-  en/fr per entry. This is ahead of most stores.
-- `generateMetadata` on 27 route files — **titles** exist almost everywhere. Descriptions do not;
-  see F10.
-- **Image `alt` handling is already correct** and does not need work: `ProductCard` uses the product
-  name, the PDP hero uses `img.alt || product.name`, and decorative thumbnails and hover images
-  correctly pass `alt=""`. Do not "fix" these.
-- `getAllProducts` filters on `status: "ACTIVE"`, so the sitemap cannot leak draft products as soft
-  404s. Keep that filter if you refactor the query.
-- Root `metadata` in `src/app/layout.tsx`: `metadataBase`, title template `%s · Velvea`,
-  description, `openGraph`.
-- One piece of structured data: `Product` on `src/app/[locale]/products/[slug]/page.tsx`, with
-  `aggregateRating` gated on `reviewCount > 0` — the gate is correct and worth keeping.
-- A data model that already carries what schema needs: `Product.sku`, `currency`, `inventory`,
-  `avgRating`, `reviewCount`, `seoTitle`/`seoDescription`; `Article.author`, `publishedAt`,
-  `coverImage`; a real `Review` model with a status enum.
-- Visible breadcrumb UI on the PDP and in `Listing` (the markup for `BreadcrumbList` is free — the
-  data is already assembled in the `breadcrumb` prop).
-- `next.config.ts` sets `formats: ["image/avif", "image/webp"]`.
+**P0:** address before exposing unfinished commerce pages. **P1:** address before requesting launch-page indexing. **P2:** subsequent improvement, prioritized by evidence.
 
----
-
-## 2. Findings, ranked by what they cost
-
-### F1 — Every page is `force-dynamic`. All of them.
-`export const dynamic = "force-dynamic"` appears on **19 public routes** including the PDP, all
-collection pages, `/baskets`, `/guides` and `/guides/[slug]`. Nothing is prerendered, nothing is
-cached, every crawler hit is a cold database round trip.
-
-Three separate costs: TTFB on every crawl (Google's crawl budget is spent waiting), LCP on every
-real visit, and database load. It also makes `generateStaticParams` pointless, so Google never gets
-a fast static HTML response for the pages you most want indexed. This is the highest-cost finding
-in the file and the cheapest to fix. → **V-03**
-
-### F2 — No canonical URL on any page. None.
-`grep -rn "canonical\|alternates" src/app` returns exactly one hit, in `sitemap.ts`. So:
-- Every filtered/sorted collection URL (`?sort=price-asc`, `?max=150`, `?recipient=…`) is a
-  separate indexable URL with no canonical pointing home. `/occasions/birthday` and
-  `/occasions/birthday?sort=newest` are two pages to Google with identical products.
-- `og:url` is inherited from the root layout on every page, so every share card claims to be the
-  home page. This is the exact bug `lib/seo.ts` in the GrowMint repo exists to prevent — read the
-  comment block at the top of that file, it explains the failure mode in detail.
-- No `hreflang`. The sitemap declares en/fr alternates but the pages do not, and Google weights the
-  on-page annotation. The `/fr` tree is currently at risk of being read as duplicate content.
-→ **V-02**
-
-### F3 — One schema type on the whole site.
-Missing, in rough order of value for a store like this:
-`Organization` + `WebSite` (the entity itself — this is the GEO foundation), `LocalBusiness`
-(same-day GTA delivery is a local-intent product), `BreadcrumbList` (visible breadcrumbs already
-exist, so this is free), `ItemList` on collection pages, `FAQPage`, `Article` on guides, `Review`.
-And the existing `Product` node is missing `sku`, `url`, `@id`, `itemCondition`,
-`priceValidUntil`, `shippingDetails` and `hasMerchantReturnPolicy` — the last two are what Google
-requires for merchant listing rich results, which is the one rich result that puts a price and a
-star rating directly in the SERP for a product query. → **V-04 … V-09**
-
-### F4 — No Open Graph image worth sharing, no Twitter card.
-Root `openGraph.images` points at `/brand/velvea-logo.png?v=3` — a logo file, not a 1200×630 card.
-No `opengraph-image.tsx` anywhere, no `twitter` block in metadata. Product pages pass the raw
-Cloudinary product image, which is at least a real picture but is un-sized and un-cropped. Gift
-purchasing is heavily shared (someone sends a basket link to a partner) — this is a conversion
-finding as much as an SEO one. → **V-10**
-
-### F5 — No `llms.txt`, no RSS.
-`llms.txt` is the single cheapest GEO artefact: a plain-text map of the site written for a model
-rather than a crawler. GrowMint's is at `app/llms.txt/route.ts` and is generated from the same
-content modules the pages use, so it cannot drift. → **V-11**
-
-### F6 — No analytics, no Search Console, no Bing, no IndexNow.
-`grep` for `gtag|googletagmanager|plausible|verification` across `src/` returns nothing. There is
-no measurement of any of this work, and no way to tell whether a page is indexed. Bing's absence is
-specifically a ChatGPT-visibility blocker. → **V-15**
-
-### F7 — Collection pages are thin.
-`/occasions/[slug]` renders a title, a one-sentence fallback description and a product grid. That
-is the page expected to rank for "birthday gift baskets Canada", against competitors running
-800–1500 words plus an FAQ. Same for `/recipients/[slug]` and `/category/[slug]`. The generated
-fallback sentence ("Thoughtful gift baskets for birthday, composed by hand and delivered across
-Canada") is also near-identical across every slug, which is a duplicate-content pattern at scale.
-→ **V-12**
-
-### F8 — Placeholder NAP in `src/lib/settings.ts`.
-`phone: "+1 (905) 555-0142"` is a reserved fictional number, and `1 Mississauga Valley Blvd` is a
-municipal address, not a business one. **Do not emit `LocalBusiness` schema with these values.**
-Publishing a fake NAP is worse than publishing none: it poisons the entity across every aggregator
-that scrapes it, and it is the hardest kind of mistake to un-publish. V-04 is written so the
-`LocalBusiness` node is gated on real values being present. Flag this to Tom as a blocker, then
-carry on with everything else.
-
-### F9 — A real same-day delivery business with no local surface at all.
-Velvéa runs `LOCAL_SAMEDAY` ($15) and `LOCAL_STANDARD` ($9) delivery to **17 named GTA
-municipalities** with a 4 PM ET cutoff, and packs the baskets in Mississauga. None of that is
-visible to a search engine as a local offering: no Business Profile, no delivery-area page, no
-`areaServed`, no city landing pages, and the cutoff and fees exist only inside checkout.
-"Mississauga" appears in the copy as brand flavour ("our Mississauga atelier") rather than as a
-served area, and **"Brampton" appears nowhere outside a hardcoded array in `pricing.ts`** — despite
-being the second-largest city Velvéa delivers to same-day.
-
-That array is also duplicated in `src/lib/settings-client.ts` and the two copies have already
-drifted (`"north york"` is listed twice in one, once in the other). → **section 4b, L-01 … L-07**
-
-### F10 — 25 of 27 pages have no meta description.
-Only `/products/[slug]` and `/guides/[slug]` set one. Everything else — the home page's own locale
-route, `/baskets`, every occasion, recipient and category page, `/about`, `/corporate`, `/faq`,
-`/shipping`, `/contact`, `/custom`, `/gift-cards`, `/reviews`, `/guides` — returns a title and
-nothing more, so Google writes the snippet itself from whatever text it finds first.
-
-Most of those pages are the commercial ones. This is the highest effort-to-value ratio item in the
-entire brief: roughly a day of writing, no architecture, and it affects click-through on every
-result the site earns. → **V-21**
-
-### F11 — No pagination. Collections are hard-capped at 48 products.
-`getProductsByCollection(..., { take: 48 })` with no `skip`, no page param, and no "load more"
-control anywhere in `Listing`. Product 49 in any collection is reachable only through the sitemap
-or search. As the catalogue grows this silently strands inventory — from both crawlers and
-customers. → **V-22**
-
-### F12 — Locale detection redirects are on by default.
-`src/i18n/routing.ts` does not set `localeDetection`, so next-intl's default (`true`) applies and
-the middleware will redirect `/` based on the visitor's `Accept-Language` header and a stored
-cookie. Two consequences: a crawler or an AI fetcher sending a French header can be bounced to
-`/fr` for a URL you declared canonical as English, and cookie-influenced redirects make hreflang
-validation unreliable. → **V-23**
-
----
-
-## 3. What to copy from the GrowMint repo, and what not to
-
-Read these files before writing the equivalent. The *comments* are the point — they record why each
-shape was chosen and what broke when it was done the other way.
-
-| GrowMint file | Read it for | Transfers to Velvéa? |
+| Priority | Finding | Evidence and implication |
 |---|---|---|
-| `lib/seo.ts` | The canonical + `og:url` single-source helper, and the three-point comment on how Next's `openGraph` replacement (not merge) semantics bite you | **Yes, directly.** Needs an hreflang extension — Velvéa is bilingual and GrowMint is not |
-| `lib/structured-data.ts` | `@id` discipline (`#organization`, `#website`, `#webpage`), `sameAs`, `knowsAbout`, `alternateName`, one entity declared once and referenced by pointer everywhere else | **Yes, the technique.** Not the node list — swap `Service`/`ProfessionalService` for `Store`/`Product`/`ItemList`/`OfferCatalog` |
-| `app/sitemap.ts` | The `lastmod` honesty argument, and why `noindex` pages must never be submitted | Partly — Velvéa's sitemap is already good. Take the rule: never list a URL the page itself `noindex`es |
-| `app/llms.txt/route.ts` | Structure and tone of an `llms.txt` generated from live content, `dynamic = "force-static"` | **Yes**, with commerce sections instead of services |
-| `components/json-ld.tsx` | Four lines. Just take it | Yes |
-| `scripts/indexnow.mjs` | Bing/IndexNow submission wired as `postbuild`, production-gated, never fails a build | Yes |
-| `LOCAL-SEO.md` | The full Google Business Profile playbook — categories, service areas, the review flow | Yes, as Tom's reference |
-| `VISIBILITY-AUDIT.md` §3c | What a real Search Console reading looks like, and why "Discovered, currently not indexed" happens (crawl budget spent on renamed JS chunks after frequent deploys) | Read it. Velvéa will hit the same wall |
-| `lib/evidence.ts` | Build-time assertions on claims, so a wrong number stops the build instead of reaching a visitor | The technique, for review/rating data |
-
-**Copy the *shape* of `locations/[slug]`, not the volume.** GrowMint has five city pages, not
-forty, and `LOCAL-SEO.md` explains the rule: a city earns a page by having something specific to
-say, and five near-duplicate pages with the place name swapped are doorway pages that Google
-demotes. Velvéa passes that test for a handful of cities and fails it for the rest — see L-02 for
-which, and why.
-
-**Do not copy** `services/[slug]/[city]`. That is a service × city matrix; Velvéa's equivalent
-would be occasion × city (`birthday gift baskets Brampton` × 17 municipalities), which is the
-doorway pattern in its purest form and is explicitly warned against in `LOCAL-SEO.md`. Velvéa's
-scaling axis is occasion × recipient × category, which already exists.
-
----
-
-## 4. Tickets
-
-Each ticket: **Why** (the cost), **What** (the change), **Done when** (a check you can actually
-run). Do them in the order given in section 8.
-
----
-
-### V-01 — One config module, one URL string
-**Why.** `const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"` is copy-pasted
-in `robots.ts`, `sitemap.ts` and `layout.tsx`, and every ticket below needs it again. The localhost
-fallback is also a live hazard: if the env var is missing in a Vercel production build, you ship a
-sitemap and canonical set full of `http://localhost:3000` URLs.
-
-**What.** `src/lib/site.ts` exporting a frozen `site` object: `url`, `name` (`"Velvéa"`),
-`legalName`, `alternateNames` (`["Velvea", "Velvéa"]` — the accent *will* be dropped by people
-typing and by some aggregators; declare both), `description`, `locales`, `defaultLocale`,
-`currency: "CAD"`, plus `contact`/`social` re-exported from `DEFAULT_SETTINGS`. Throw at module
-load if `NEXT_PUBLIC_SITE_URL` is unset **and** `process.env.VERCEL_ENV === "production"`; fall back
-to localhost otherwise. Replace the three inline copies.
-
-**Done when.** `grep -rn "localhost:3000" src/` returns only `src/lib/site.ts`.
-
----
-
-### V-02 — `canonical()` helper: canonical + `og:url` + hreflang, from one path
-**Why.** F2. Three tags that must agree, currently written in zero places.
-
-**What.** `src/lib/seo.ts`, modelled on GrowMint's but bilingual:
-
-```ts
-import type { Metadata } from "next";
-import { site } from "@/lib/site";
-
-/**
- * Canonical, og:url and hreflang for one page, derived from one locale-less path.
- *
- * Next replaces `openGraph` and `alternates` wholesale when a segment declares
- * one — there is no deep merge — so anything the root layout sets and a page
- * omits is dropped. That is why `type` and `siteName` are repeated here, and why
- * a page that writes its own `alternates` must use this helper rather than
- * hand-rolling it.
- *
- * `title` and `description` are deliberately absent from `openGraph`: leaving
- * them unset lets Next fill them from the page's own values after the title
- * template runs, so each card gets that page's real title.
- */
-export function canonical(
-  path: string,                      // locale-less, leading slash, no query: "/occasions/birthday"
-  locale: string,
-  opts: { ownCard?: boolean } = {},
-): Pick<Metadata, "alternates" | "openGraph"> {
-  const clean = path === "/" ? "" : path;
-  const en = `${site.url}${clean || "/"}`;
-  const fr = `${site.url}/fr${clean}`;
-  return {
-    alternates: {
-      canonical: locale === "fr" ? fr : en,
-      languages: { en, fr, "x-default": en },
-    },
-    openGraph: {
-      type: "website",
-      siteName: site.name,
-      locale: locale === "fr" ? "fr_CA" : "en_CA",
-      url: locale === "fr" ? fr : en,
-      ...(!opts.ownCard && { images: [{ url: "/opengraph-image", width: 1200, height: 630 }] }),
-    },
-  };
-}
-```
-
-Then spread `...canonical(`/occasions/${slug}`, locale)` into the return of **every**
-`generateMetadata` in `src/app/[locale]/`. All 26 of them.
-
-Two rules that come with it:
-- **Query parameters never appear in a canonical.** `/occasions/birthday?sort=price-asc` must
-  canonicalise to `/occasions/birthday`. Since the helper takes a path and the page passes its own
-  slug, this is automatic — just never pass `searchParams` into it.
-- **`/search`, `/checkout`, `/account`, `/order/[n]` get `robots: { index: false, follow: true }`**
-  in their metadata, not just a robots.txt disallow. A disallowed page can still be indexed from an
-  external link; only the meta tag reliably keeps it out.
-
-**Done when.** `curl -s https://…/fr/occasions/birthday | grep -E 'rel="canonical"|hreflang|og:url'`
-shows a `/fr/` canonical, three `hreflang` links, and an `og:url` matching the canonical.
-
----
-
-### V-03 — Delete `force-dynamic`; prerender and revalidate
-**Why.** F1. Biggest win in the file.
-
-**What.** Remove `export const dynamic = "force-dynamic"` from every **public** route in
-`src/app/[locale]/`. Keep it on `/account`, `/checkout`, `/order/[orderNumber]` and everything under
-`src/app/admin` — those are per-user and must never be cached.
-
-Replace with:
-- `export const revalidate = 3600` on collection pages, `/baskets`, `/guides`, `/reviews` and the
-  marketing statics (`/about`, `/faq`, `/shipping`, `/contact`, `/custom`, `/corporate`,
-  `/gift-cards`).
-- `export const revalidate = 900` on `/products/[slug]` (price and stock change more often).
-- `generateStaticParams` on `/products/[slug]`, `/occasions/[slug]`, `/recipients/[slug]`,
-  `/category/[slug]`, `/guides/[slug]`, returning the published slugs from Prisma for **both**
-  locales. Leave `dynamicParams` at its default `true` so a product added after the build still
-  renders.
-- **On-demand invalidation** is the piece that makes the cache honest: call `revalidatePath` (or a
-  tag) from the admin server actions in `src/lib/actions/` that publish or edit a product, a
-  collection or an article. Without this, an admin edit takes up to an hour to appear and someone
-  will "fix" it by putting `force-dynamic` back.
-
-Sorting/filtering currently reads `searchParams`, which opts a page into dynamic rendering anyway.
-Two acceptable outcomes: move filtering to a client component over a prerendered product list (best
-— the page is static and filtering is instant), or accept dynamic rendering *for the filtered
-variant only* while the bare URL stays static. Either way the bare `/occasions/birthday` must be in
-the prerender manifest.
-
-**Done when.** `npm run build` prints `●` (SSG) or `ISR` next to the PDP and all collection routes,
-not `ƒ` (Dynamic). Record the static route count in the README the way GrowMint does.
-
----
-
-### V-04 — The entity graph: `Organization`, `WebSite`, and (gated) `LocalBusiness`
-**Why.** This is the GEO foundation. A model answering "where can I order a gift basket in
-Mississauga" needs to resolve "Velvéa" to one business with one address, one phone number and a set
-of profiles it can cross-check. Today there is nothing on the site making that assertion.
-
-**What.** `src/lib/structured-data.ts` + `src/components/JsonLd.tsx` (copy GrowMint's four-liner).
-
-```
-Organization  @id `${site.url}/#organization`
-  name, alternateName: ["Velvea", "Velvéa"], url, logo (square PNG, ≥112px, NOT the OG card),
-  image, description, email, telephone, address (PostalAddress),
-  sameAs: [instagram, facebook, pinterest, tiktok],   // from DEFAULT_SETTINGS.social
-  areaServed: { "@type": "Country", name: "Canada" },
-  knowsAbout: ["Gift baskets", "Corporate gifting", "Same-day gift delivery", …]
-
-WebSite       @id `${site.url}/#website`
-  name, alternateName, url, inLanguage: ["en-CA","fr-CA"],
-  publisher: { "@id": "…#organization" },
-  potentialAction: SearchAction → `${site.url}/search?q={search_term_string}`
-
-Store         @id `${site.url}/#store`        ← LocalBusiness subtype. GATED. See below.
-  name, image, telephone, address, geo, openingHoursSpecification (from settings.contact.hours),
-  priceRange, currenciesAccepted: "CAD", paymentAccepted,
-  areaServed: [Mississauga, Toronto, …GTA],  parentOrganization: { "@id": "…#organization" }
-```
-
-Emit `Organization` + `WebSite` once, in `src/app/[locale]/layout.tsx`. They belong to the site, not
-to a page.
-
-**The gate.** Wrap the `Store` node in a check that `settings.contact.phone` does not match
-`/555-01\d\d/` and that the street address is set to something other than the current placeholder.
-Log a build-time warning when it is skipped. See F8 — this is deliberate, not laziness.
-
-**Also:** `WebPage`/`AboutPage` nodes on `/` and `/about` only, following the reasoning in the
-comment above `webPageSchema` in GrowMint's `lib/structured-data.ts`: pages that already carry a
-primary entity (a `Product`, an `Article`) do not need one.
-
-**Done when.** The home page passes Google's Rich Results Test with `Organization` and `WebSite`
-detected and zero errors, and every `@id` reference resolves to a node that exists.
-
----
-
-### V-05 — `Product` schema to merchant-listing grade
-**Why.** Merchant listing rich results put price, availability and stars in the SERP. They are the
-highest-CTR result a product page can earn, and Google requires specific fields before it will show
-them. The current node has about half.
-
-**What.** Rewrite the inline object in `src/app/[locale]/products/[slug]/page.tsx` as
-`productSchema(product, locale)` in `src/lib/structured-data.ts`:
-
-```ts
-{
-  "@type": "Product",
-  "@id": `${site.url}/products/${slug}#product`,
-  name, description, image: [...],          // absolute URLs
-  sku: product.sku ?? undefined,
-  brand: { "@type": "Brand", name: "Velvéa" },
-  url: canonicalUrl,
-  inLanguage: locale === "fr" ? "fr-CA" : "en-CA",
-  offers: {
-    "@type": "Offer",
-    url: canonicalUrl,
-    priceCurrency: product.currency,        // already "CAD" on the model
-    price: (priceCents / 100).toFixed(2),
-    priceValidUntil: <today + 1 year, ISO date>,
-    itemCondition: "https://schema.org/NewCondition",
-    availability: product.inventory === null || product.inventory > 0
-      ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    seller: { "@id": `${site.url}/#organization` },
-    shippingDetails: { "@type": "OfferShippingDetails", … },     // ← required for merchant listings
-    hasMerchantReturnPolicy: { "@type": "MerchantReturnPolicy", … },
-  },
-  ...(reviewCount > 0 && { aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: avgRating.toFixed(1), reviewCount, bestRating: 5, worstRating: 1,
-  }}),
-  ...(reviews.length > 0 && { review: reviews.slice(0, 5).map(reviewNode) }),
-}
-```
-
-Build `shippingDetails` and `hasMerchantReturnPolicy` from `DEFAULT_SETTINGS.delivery` — the free
-threshold (`freeShippingThresholdCents`), the standard/express rates, and a `deliveryTime` derived
-from `product.leadTimeDays` plus transit. **Only state a return policy that Tom actually operates.**
-If there is no written policy yet, omit the field and raise it — a fabricated 30-day return window
-in schema is a legal exposure, not an SEO tactic.
-
-Where a product has variants at different prices, `offers` becomes an `AggregateOffer` with
-`lowPrice`/`highPrice`/`offerCount`. Prefer that over a `ProductGroup`/`hasVariant` split — Velvéa's
-variants are size tiers, not distinct SKUs.
-
-**Keep the existing `reviewCount > 0` gate.** `aggregateRating` on a product with no reviews is a
-manual-action risk.
-
-**Done when.** Rich Results Test reports "Merchant listing" eligible with no errors on a product
-that has reviews, and no `aggregateRating` warnings on one that does not.
-
----
-
-### V-06 — `BreadcrumbList` everywhere, `ItemList` on collections
-**Why.** Breadcrumbs replace the ugly URL in the SERP and are the cheapest structured data on the
-site — the visible breadcrumb components on the PDP and in `Listing` already hold the exact data.
-`ItemList` tells Google a collection page is a product list rather than an article, which is what
-makes it eligible for the carousel treatment.
-
-**What.**
-- `breadcrumbSchema(items)` — copy GrowMint's verbatim, it is ten lines. Feed it the same array the
-  `Listing` component already receives as `breadcrumb`, and the hardcoded trail on the PDP.
-- `itemListSchema(products, listUrl)` on `/baskets`, `/occasions/[slug]`, `/recipients/[slug]`,
-  `/category/[slug]`: `ItemList` → `ListItem` with `position` and `url` (URL-only form; do not
-  inline whole `Product` nodes into a list, it bloats the page and Google prefers the pointer).
-- Cap at the products actually rendered on the first page. Do not list products the visitor cannot
-  see.
-
-**Done when.** A collection page shows `BreadcrumbList` + `ItemList`, and the PDP shows
-`BreadcrumbList` + `Product`, all valid.
-
----
-
-### V-07 — `FAQPage`, and put the FAQ where it earns its keep
-**Why.** AEO's most direct lever. The Q&A content already exists in `messages/en.json` →
-`faq.items` (and the `fr` equivalent) and renders through `src/components/home/Faq.tsx`.
-
-**What.**
-1. `faqPageSchema(items)` on `/faq` — GrowMint's version works unchanged.
-2. **Answer text must match the visible answer exactly.** Do not write schema-only answers.
-3. Extend beyond the current six. The questions worth adding are the ones people actually type and
-   that models get asked: *"How late can I order for same-day delivery in Mississauga?"*,
-   *"Do you deliver to Quebec / the territories?"*, *"Can I send a gift basket to a hospital?"*,
-   *"What is the corporate minimum order?"*, *"Are prices shown to the recipient?"* (the existing
-   copy already answers this one — surface it), *"Is everything halal / kosher / nut-free?"*.
-4. Add **three to five occasion-specific questions to each collection page** and mark them up
-   there. This is the single most effective AEO change available: a page that answers
-   "how much should I spend on a corporate gift in Canada" in one direct sentence is a page an
-   answer engine can lift.
-5. **Answer-first writing rule** for all of the above: the first sentence is the complete answer
-   with the number in it. "Order by 4 PM ET for same-day delivery in Mississauga and the GTA."
-   Then the nuance. Never "We're delighted to offer a range of delivery options…".
-
-**Done when.** `/faq` validates as `FAQPage`; at least three collection pages carry their own
-`FAQPage` node with unique questions.
-
----
-
-### V-08 — Guides: `Article` schema, real authors, RSS
-**Why.** `/guides` is the only non-transactional content on the site and therefore the only thing
-that can earn a link. It currently ships with no schema and no feed.
-
-**What.**
-- `articleSchema(article, locale)` on `/guides/[slug]`: `@type: "Article"` (or `"BlogPosting"`),
-  `headline` (≤110 chars), `description`, `image` from `coverImage`, `datePublished`,
-  `dateModified` (fall back to `datePublished` rather than asserting an edit that never happened),
-  `author` as a **`Person` with a stable `@id`** — `Article.author` is a nullable string today, so
-  populate it and reference the same `@id` across articles — `publisher: { "@id": "…#organization" }`,
-  `inLanguage`, `mainEntityOfPage`.
-- If a guide has no named human author, that is a content problem, not a schema problem. Google's
-  guidance and every answer engine weight named authorship. Ask Tom for a byline.
-- `src/app/guides/rss.xml/route.ts` (or under `[locale]`) with `force-static`, plus the feed
-  `alternate` link in the `/guides` metadata. Feeds are how aggregators and several AI crawlers
-  discover new content cheaply.
-- Guides need **images with alt text**. GrowMint's audit finding 06 was "thirteen thousand words
-  with zero images" — check `Article.coverImage` coverage before repeating it here.
-
-**Done when.** A guide validates as `Article`, the feed returns valid RSS 2.0, and `/guides` links
-it via `alternates.types`.
-
----
-
-### V-09 — Reviews: render them, mark them up, keep them honest
-**Why.** `Review`, `avgRating` and `reviewCount` are on the model and a `/reviews` page exists.
-Stars in the SERP move CTR more than any title rewrite.
-
-**What.**
-- `Review` nodes nested in the product's `review` array (V-05), each with `author` (`Person`,
-  first name + initial is fine), `datePublished`, `reviewRating` with `bestRating: 5`, and
-  `reviewBody`. **Only `APPROVED` reviews** (check the `ReviewStatus` enum).
-- The `/reviews` page gets an `ItemList` of `Review` nodes, not an `AggregateRating` for the whole
-  site — site-wide aggregate ratings are not a supported rich result and read as manipulation.
-- **A build-time assertion**, in the spirit of `lib/evidence.ts`: fail the build if `avgRating > 0`
-  while `reviewCount === 0`, if `avgRating > 5`, or if a rendered review's rating falls outside
-  1–5. A wrong star rating in schema is a manual action; catching it in CI costs twenty lines.
-- Every review shown in schema must be visible on the page it is marked up on. This is the rule
-  Google enforces most aggressively.
-
-**Done when.** A product with approved reviews shows stars in Rich Results Test; the assertion
-fails a deliberately corrupted seed.
-
----
-
-### V-10 — Generated OG cards + Twitter cards
-**Why.** F4. Gift links get shared person-to-person; this is the one SEO ticket with a direct
-conversion argument.
-
-**What.**
-- `src/app/opengraph-image.tsx` — site-wide card via `next/og` `ImageResponse`, 1200×630, brand
-  colours and the wordmark, with `size` and `alt` exported alongside.
-- `src/app/[locale]/products/[slug]/opengraph-image.tsx` — per-product card: the Cloudinary hero,
-  the product name, the price. Pass `ownCard: true` to `canonical()` on that route so the helper
-  does not override the file-convention image (this is exactly the trap GrowMint's `lib/seo.ts`
-  comment point 3 describes — a page that declares `openGraph` at all stops inheriting the
-  generated card, so the file convention only wins when the page leaves `images` unset).
-- `twitter: { card: "summary_large_image" }` in the root metadata. Next derives the image from
-  `openGraph` — no second image needed.
-- Cloudinary can do the product crop as a URL transform (`c_fill,w_1200,h_630`), which is cheaper
-  than rendering one per request. Either approach is fine; pick one and be consistent.
-
-**Done when.** An OG debugger renders a correct card for `/`, a product, and a guide.
-
----
-
-### V-11 — `llms.txt`
-**Why.** F5. Cheapest GEO artefact on the list.
-
-**What.** `src/app/llms.txt/route.ts`, `export const dynamic = "force-static"`, generated from
-Prisma + `src/lib/nav.ts` so it cannot drift from the site. Read GrowMint's
-`app/llms.txt/route.ts` first — the shape is right, the content is not.
-
-Sections for Velvéa:
-```
-# Velvéa
-> <one-sentence description>
-<a paragraph of plain fact: what it sells, where it ships, price range, lead times,
- same-day cutoff, languages, corporate minimums, who it is. No adjectives a model
- cannot verify from the site.>
-
-## Ordering & delivery     ← cutoffs, provinces, fees, free-shipping threshold, lead times
-## Shop by occasion        ← every OCCASION + HOLIDAY slug, linked, one line each
-## Shop by recipient       ← every RECIPIENT slug
-## Categories              ← every CATEGORY slug
-## Bestsellers             ← 10 products, name + price + URL
-## Corporate gifting       ← /corporate, /corporate/quote, minimums, lead time
-## Guides                  ← 10 most recent, title + description
-## Company                 ← /about, /contact, /faq, /shipping, /reviews, NAP
-```
-
-Two rules: only claims the site itself makes in visible copy, and prices with the currency
-attached (`$149 CAD`). A model quoting "$149" without a currency to a US reader is a returned order.
-
-**Done when.** `curl https://…/llms.txt` returns `text/plain`, and the build output shows it
-prerendered rather than dynamic.
-
----
-
-### V-12 — Collection-page depth (the AEO/GEO content ticket)
-**Why.** F7. This is where the traffic actually is, and it is the one ticket that is mostly writing
-rather than code.
-
-**What.** For each of the top ~10 collection slugs (pick by commercial value: corporate, birthday,
-thank-you, sympathy, new-baby, Christmas, Mother's Day, housewarming, get-well, wedding):
-
-1. A **250–400 word intro** above or beside the grid: what belongs in this kind of gift, what to
-   spend, what to avoid, delivery timing for that occasion. Unique per slug — the current shared
-   fallback sentence is the thing to replace.
-2. A **"How to choose" block**: 3–5 short criteria. Marks up cleanly as `HowTo` if the steps are
-   genuinely sequential; do not force it if they are not.
-3. **3–5 FAQs** per V-07, marked up.
-4. **Internal links out** to two or three related collections and one guide, in prose, not a chrome
-   row.
-5. A **price band stated in text** — "Most birthday baskets sit between $85 and $180." Answer
-   engines lift ranges like this constantly, and it is a fact the site can back up.
-
-Move the DB-fallback description into the `Collection.description` JSON field so it is editable in
-the admin panel rather than generated in `page.tsx`. Content that lives in a template is content
-nobody updates.
-
-**Done when.** The ten pages average >700 words of unique body text (measure from the prerendered
-HTML in `.next/server/app`, chrome stripped — GrowMint's audit describes the method), and no two
-share an intro paragraph.
-
----
-
-### V-13 — Internal linking
-**Why.** Velvéa's deep pages (individual products, individual collections) are reachable mostly
-through a mega-menu and a grid. Link equity concentrates in the header and never reaches the long
-tail. GrowMint's finding 04 is the same problem and §3c has the fix pattern.
-
-**What.**
-- **Related products** on the PDP: today it is `getBestsellers(5)` — the same four products on every
-  single product page. Make it collection-aware (same occasion, then same recipient, then price
-  band). Identical related-rows sitewide are worth roughly nothing as internal links.
-- **Cross-collection rows**: on `/occasions/birthday`, a row of recipients ("Birthday gifts for
-  her / for him / for parents") linking the recipient collections, and vice versa. This is how the
-  occasion × recipient matrix becomes a link graph instead of two flat lists.
-- **Guides link to collections in prose**, and collections link to the one relevant guide.
-- Port `scripts/link-graph.mjs` from GrowMint: it enforces a minimum inbound internal link count per
-  page and fails when a page drops below it. Set the floor at 3 for collections and products.
-
-**Done when.** `npm run link-graph` passes with a floor of 3, and no two PDPs show an identical
-related set.
-
----
-
-### V-14 — Core Web Vitals
-**Why.** V-03 fixes TTFB. The rest is images and fonts — and on a gift-basket store, images are
-the product.
-
-**What.**
-- `priority` on the LCP image only (the hero on `/`, the first product image on the PDP, the first
-  grid tile on collections). `loading="lazy"` everywhere else. One `priority` per page.
-- Explicit `sizes` on every `next/image` in a grid. Without it Next serves a full-width source for a
-  300px tile.
-- `ProductImage.width`/`height` exist on the model — populate them and pass them, so there is no
-  layout shift while the image loads.
-- Fonts: `next/font` with `display: "swap"` and preloaded subsets. Check `src/lib/fonts.ts`.
-- **Framer Motion is the risk.** GrowMint's audit §3b found reveal animations shipping 70–82% of
-  body text at `opacity: 0` until hydration, which put mobile Performance at 66 and made the LCP
-  element a consent bar at five seconds. Check every `motion` usage in `src/components/` for the
-  same shape: **content must render visible in the server HTML and animate from visible, or be
-  below the fold.** Never gate above-the-fold text on hydration.
-- Measure with local Lighthouse against a production build (`npm run build && npm start`), mobile
-  preset. Record the numbers in the README as a table, per GrowMint's convention.
-
-**Done when.** Mobile Performance ≥85 on `/`, a collection page and a PDP, with the LCP element
-being the hero image on each.
-
----
-
-### V-15 — Measurement and indexing (do this early, not last)
-**Why.** F6. Everything above is unfalsifiable without it, and indexing lag is measured in weeks —
-start the clock now.
-
-**What (code).**
-- GA4 via `@next/third-parties/google`, loaded after `load`. GrowMint's `lib/gtag.ts` and
-  `lib/consent.ts` are the reference for both the loader and the gate.
-- **There is no cookie-consent mechanism in Velvéa today** — `grep -rln "consent"` finds it only in
-  the privacy page's prose. Velvéa sells into Quebec (the site is bilingual and `settings.ts`
-  carries a QC tax rate), so Law 25 applies alongside PIPEDA, and analytics cookies need consent
-  before they are set. **Build the consent gate in the same ticket as GA4, not after it.** Shipping
-  tracking first and consent later is the ordering that creates the exposure.
-  *Performance note from GrowMint's audit §3b: a consent bar mounted after hydration became the
-  measured LCP element on every inner page. Render it in the server HTML with a CSS entrance.*
-  *Known trap, from experience on GrowMint: GA4 will not render in local dev because the env var is
-  empty there, and overriding it in a shell does not help. Verify in production.*
-- Search Console verification via a DNS TXT record (survives redeploys, covers both hostnames) or
-  `metadata.verification.google`.
-- IndexNow: port `scripts/indexnow.mjs`, put the key file in `public/`, wire it as `postbuild` in
-  `package.json`. Keep the production gate — it must no-op on preview builds and never fail a build.
-- Confirm AI crawlers are not blocked. The current `robots.ts` `userAgent: "*"` allows them, which
-  is the right default, but declare them explicitly so nobody "tightens" robots.txt later without
-  understanding the cost: `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `ClaudeBot`,
-  `Google-Extended`, `Applebot-Extended`. **Allow all of them.** Blocking them is opting out of GEO.
-
-**What (consoles — Tom, or you with access).**
-- Google Search Console + Bing Webmaster Tools (import the property from GSC — it takes a minute).
-  **Bing is not optional: ChatGPT Search reads Bing's index.**
-- Submit `sitemap.xml` to both.
-- Manual indexing requests, ~10/day for the first week, highest-value pages first.
-- Expect the pattern GrowMint hit: a large "Discovered, currently not indexed" bucket, because
-  Next renames every JS chunk on every deploy and frequent deploys spend the crawl budget
-  re-downloading them. Batch deploys during the indexing window.
-
-**Done when.** GA4 shows live traffic in production, both consoles are verified with the sitemap
-read, and an IndexNow run returns HTTP 200/202.
-
----
-
-### V-16 — Google Merchant Center feed
-**Why.** Velvéa is a store. Free listings in the Shopping tab, and a product feed is a distribution
-channel that structured data alone does not give you. Nothing on the site currently produces one.
-
-**What.** `src/app/feeds/google-merchant.xml/route.ts` — RSS 2.0 with the `g:` namespace, one
-`item` per published product: `g:id` (use `sku`, falling back to `slug`), `title`, `description`,
-`link` (canonical), `g:image_link` + `g:additional_image_link`, `g:availability`, `g:price`
-(`"149.00 CAD"`), `g:brand`, `g:condition`, `g:product_type` from the collection,
-`g:google_product_category` (gift baskets sit under *Food, Beverages & Tobacco > Food Gift Baskets* —
-confirm the current category ID against Google's published taxonomy), `g:shipping`. Separate feeds
-per locale, or one feed with `g:language`.
-
-Prerequisite: Merchant Center requires a visible returns policy and shipping terms on the site.
-`/shipping` exists; check it actually states both. Same honesty constraint as V-05.
-
-**Done when.** The feed validates in Merchant Center with zero disapprovals.
-
----
-
-### V-17 — Local
-Promoted to its own programme. **See section 4b**, tickets L-01 through L-07.
-
----
-
-### V-18 — French is not a translation layer, it is half the index
-**Why.** `localePrefix: "as-needed"` gives clean URLs, and the sitemap already declares alternates.
-But every `Json` content field (`name`, `description`, `seoTitle`, `seoDescription`, `excerpt`,
-`body`) can hold an empty `fr` value, and `tc()` will silently fall back to English. A `/fr/` page
-serving English body text under a `fr-CA` `lang` attribute is a duplicate-content and quality signal
-problem, not a cosmetic one.
-
-**Scope this correctly before starting.** The UI strings are *not* the problem: `messages/en.json`
-and `messages/fr.json` both carry 260 keys with none missing. The risk is entirely in the database
-— the `Json` `{ en, fr }` columns on `Product`, `Collection` and `Article`, which no translation
-file covers and no check enforces. Do not spend time auditing the messages files.
-
-**What.**
-- An audit query over the `Json` columns: count products, collections and articles with missing or
-  empty `fr` values in any SEO-relevant field. Report it; do not machine-translate it silently.
-- If a locale genuinely has no content for an entity, `noindex` that locale's page rather than
-  serving the other language's text under it.
-- `<html lang>` already comes from `getLocale()` — good. Make sure `inLanguage` in every schema node
-  agrees with it (V-04/V-05/V-08 all take `locale` for this reason).
-- `og:locale` and `og:locale:alternate` — handled by V-02's helper.
-
-**Done when.** The audit reports zero indexed `/fr/` pages with English body content.
-
----
-
-### V-19 — Guardrails against thin and duplicate URLs
-**Why.** A store generates URL space faster than content. Left alone, Velvéa will end up with
-thousands of near-duplicate filtered URLs competing with each other.
-
-**What.**
-- `/search` — `noindex, follow` in metadata (robots.txt disallow alone is not enough).
-- Filtered/sorted collection URLs — canonical to the bare collection (V-02 handles this), and
-  `noindex` any URL carrying a filter param.
-- Pagination — self-canonical per page (not canonical-to-page-1), and a paginated URL enters the
-  sitemap only if it carries distinct products.
-- Empty collections — a collection with zero published products should `noindex` itself until it
-  has stock. Take the rule from GrowMint's sitemap comments: **never submit a URL whose own page
-  says `noindex`.** Apply it to `src/app/sitemap.ts`, which currently lists every slug in
-  `src/lib/nav.ts` unconditionally, including ones with no products behind them.
-- Out-of-stock products — keep the page, set `availability: OutOfStock`, show alternatives. Do not
-  404 or redirect; that throws away the ranking.
-- **Trailing-slash bug in the existing sitemap.** `entry()` builds the home URL as
-  `` `${siteUrl}${path === "/" ? "" : path}` ``, which yields `https://www.velvea.ca` with **no
-  trailing slash**, while V-02's helper produces `https://www.velvea.ca/` as the canonical. A
-  sitemap URL that does not byte-match its page's canonical is a self-inflicted duplicate signal.
-  Pick one form — the trailing slash — and make `entry()` and `canonical()` agree. Add it to
-  `check-seo.mjs`.
-- **Add images to the sitemap.** `MetadataRoute.Sitemap` entries accept an `images` array. For a
-  store whose product *is* a photograph, Image search is a real channel and this is a two-line
-  change in `sitemap.ts` — pass `p.images.map(i => i.url)` on each product entry.
-
-**Done when.** Search Console's "Duplicate without user-selected canonical" bucket stays empty, and
-the sitemap URL count matches the indexable page count.
-
----
-
-### V-20 — Make the rules enforceable
-**Why.** Everything above decays. GrowMint keeps `check-copy.mjs`, `check-dom.mjs` and
-`link-graph.mjs` for exactly this reason.
-
-**What.** `scripts/check-seo.mjs`, run in CI, reading the prerendered HTML from `.next/server/app`.
-Fail the build on:
-- a page with no canonical, or a canonical that disagrees with `og:url`
-- a title over 60 chars or a description over 155 (GrowMint's audit found seven of these)
-- a missing or duplicate `<h1>`
-- an `<img>` in article or product content with no `alt`
-- a sitemap URL whose page emits `noindex`
-- invalid JSON in any `application/ld+json` block
-- `aggregateRating` present with `reviewCount === 0`
-
-Add `typecheck` and `lint` to the same CI step.
-
-**Done when.** CI fails on a deliberately broken page and passes on `main`.
-
----
-
-### V-21 — Write 25 meta descriptions
-**Why.** F10. Cheapest win in the document, and it is not a technical ticket — it is a day of
-copywriting. Do not let it slip behind the schema work because the schema work is more interesting.
-
-**What.** A `description` in every `generateMetadata` under `src/app/[locale]/`, in **both
-locales** — these belong in `messages/en.json` and `messages/fr.json` alongside the rest of the
-copy, not hardcoded in `page.tsx`, or the French half will never be written.
-
-Rules: 140–155 characters, the primary term in the first half, and a reason to click that the title
-does not already give (a price band, the same-day cutoff, the free-shipping threshold). Collection
-descriptions must be **unique per slug** — the `${title} gift baskets, delivered across Canada`
-pattern applied to 30 slugs is the same duplicate-content problem as F7, moved into the SERP.
-
-For collection pages, generate from `Collection.description` where the admin has written one and
-fall back to a per-slug string, so editors can improve them without a deploy.
-
-Skip `/checkout`, `/account`, `/order/*` and `/search` — they get `noindex` in V-02 instead.
-
-**Done when.** `check-seo.mjs` (V-20) finds a 140–155 char description on every indexable page in
-both locales, with no duplicates.
-
----
-
-### V-22 — Pagination, or an honest reason not to have it
-**Why.** F11. A 48-product ceiling per collection.
-
-**What.** Either is defensible; pick one and be deliberate:
-- **Real pagination** — `?page=2` with `skip`/`take`, `rel` self-canonical on each page (not
-  canonical-to-page-1), every page in the sitemap, and crawlable `<a href>` links between pages.
-  Infinite scroll alone is not crawlable; if you use it, keep real links underneath.
-- **Raise the cap and prerender the lot** if collections will realistically stay under ~100
-  products. Simpler, faster, and perfectly legitimate at this catalogue size.
-
-What is *not* defensible is leaving a silent 48 cap with no indication more exists.
-
-**Done when.** Every `ACTIVE` product is reachable from a collection page by following links only,
-with JavaScript disabled.
-
----
-
-### V-23 — Turn off Accept-Language redirects
-**Why.** F12. Google's guidance is explicit that automatic redirection based on perceived language
-can prevent users and crawlers from seeing all versions of a site.
-
-**What.** Set `localeDetection: false` in `src/i18n/routing.ts`. Serve English at `/` for everyone,
-and let the visitor choose French with a visible language switcher that sets the preference. The
-`hreflang` annotations from V-02 are what tell Google which version to *show* — that is their job,
-and they do it without a redirect.
-
-Verify afterwards that `curl -H "Accept-Language: fr-CA" https://…/` returns 200 with the English
-page, not a 307 to `/fr`.
-
-**Done when.** No locale redirect fires for any `Accept-Language` header on any canonical URL.
-
----
-
-## 4b. Local SEO — Mississauga, Brampton and the GTA
-
-### Why this is a real programme and not a footnote
-
-I nearly wrote this off. Velvéa ships nationally, and "gift baskets \<city\>" pages for a
-nationally-shipping store are doorway pages. Then I read `src/lib/pricing.ts`:
-
-```ts
-// GTA cities eligible for local same-day / local standard.
-export const GTA_CITIES = [
-  "mississauga", "toronto", "brampton", "vaughan", "markham", "richmond hill",
-  "oakville", "burlington", "milton", "whitby", "ajax", "pickering", "oshawa",
-  "etobicoke", "scarborough", "north york", "north york", "thornhill",
-];
-```
-
-Two delivery methods exist alongside national shipping — `LOCAL_SAMEDAY` at **$15.00** and
-`LOCAL_STANDARD` at **$9.00** — gated on that list and on a **4 PM ET cutoff**
-(`sameDayCutoff: "16:00"`). The baskets are hand-packed in Mississauga.
-
-That is a genuine local service with a real footprint, a real price and a real deadline. It is
-*not* the doorway-page situation, and it changes the advice: a Brampton page that states Brampton's
-actual cutoff, fee, coverage and lead time is a page with something to say. A Brampton page that is
-the Mississauga page with the noun swapped is still a doorway page. The tickets below are written
-to keep you on the right side of that line.
-
-**Also note the bug in that snippet:** `"north york"` appears twice, and this list is duplicated in
-`src/lib/settings-client.ts` as `GTA_CITIES_CLIENT` — where it appears *once*. Two copies of the
-delivery area have already drifted. L-01 exists because of this.
-
----
-
-### L-01 — One source of truth for the delivery area
-**Why.** Three things will read this list: checkout pricing, the city pages (L-02) and the
-`areaServed` schema (L-03). It is currently defined twice, already inconsistent, and carries no
-data beyond a lowercase string — no slug, no display name, no tier, no transit time.
-
-**What.** `src/lib/delivery-area.ts` as the single definition. Each entry:
-
-```ts
-{
-  slug: "brampton",
-  name: "Brampton",
-  region: "Peel Region",
-  province: "ON",
-  tier: 1 | 2,              // 1 = earns a page (L-02); 2 = served, listed, no page
-  sameDay: true,
-  cutoff: "16:00",          // per city — Brampton may differ from Mississauga
-  transitNote: "Same-day when ordered before 4 PM ET",
-  postalPrefixes: ["L6P", "L6R", "L6S", …],   // optional, for the coverage answer
-}
-```
-
-Re-export `GTA_CITIES` / `isGtaCity` from it so `pricing.ts`, `settings-client.ts` and
-`CheckoutForm` keep working unchanged, then delete both hardcoded arrays. Fix the `north york`
-duplicate on the way through.
-
-**Tiering, concretely.** Tier 1 is the cities where Velvéa has something true and specific to say
-and enough commercial weight to justify the page:
-
-| City | Tier | Why |
-|---|---|---|
-| **Mississauga** | 1 | Home base. The atelier is here, it is already in the H1 of half the site, and it is the only city where "made here" is a claim |
-| **Brampton** | 1 | Adjacent, large, Peel Region, high corporate-gifting density (logistics and warehousing corridor) |
-| **Toronto** | 1 | Largest query volume in the country for this term; needs its own page or you cede it |
-| Oakville, Etobicoke, Vaughan, Markham, Burlington, Milton, Brampton-adjacent rest | 2 | Served, priced, listed on `/delivery` — **no page until someone writes real copy for it** |
-
-Do not promote a city to tier 1 to hit a page count. `LOCAL-SEO.md`'s caveat section is explicit:
-*"If you add a sixth city, write it properly or do not add it."*
-
-**Done when.** `grep -rn "GTA_CITIES\|mississauga\"" src/lib/` shows one definition, and checkout
-pricing still passes its existing behaviour for a Brampton address.
-
----
-
-### L-02 — `/delivery/[city]` pages for the tier-1 cities
-**Why.** "gift basket delivery mississauga", "same day gift delivery brampton",
-"corporate gift baskets toronto" are the highest-intent non-branded queries Velvéa can realistically
-win in year one, because local intent narrows the competitive field from national players to the
-handful of florists and basket shops actually in the GTA. Domain age matters far less here than it
-does for "gift baskets Canada".
-
-**What.** A `/delivery/[city]` route (not `/occasions/...`, not a collection — this is a *service
-area* page and its primary entity is the delivery service, not a product list).
-
-**Each page must carry, as the minimum bar for existing:**
-1. **The cutoff, in the first 100 words, as a sentence a machine can lift.** "Order by 4 PM ET for
-   same-day gift basket delivery in Brampton." This one sentence is the whole AEO play for local.
-2. **The actual fee** — $15 same-day, $9 local standard — stated in text, not only at checkout.
-3. **Coverage stated concretely**: neighbourhoods and postal prefixes, not "and surrounding areas".
-   For Brampton: Bramalea, Heart Lake, Springdale, Castlemore, Downtown Brampton. Answer engines
-   and readers both use this to decide "do they come to me".
-4. **Something only true of this city.** Mississauga: the atelier, pickup if offered, same-day
-   latest. Brampton: the corporate/warehouse corridor, hospital delivery to Brampton Civic.
-   Toronto: condo and concierge delivery handling, downtown timing. If you cannot write this
-   paragraph honestly, the city is tier 2.
-5. **3–5 city-specific FAQs**, marked up per V-07: *"Do you deliver to Brampton Civic Hospital?"*,
-   *"What time do same-day Brampton orders leave the atelier?"*, *"Is there a delivery minimum in
-   Brampton?"*
-6. **A product rail** of the bestsellers eligible for same-day in that city, and links to the two
-   or three most relevant collections (corporate, birthday, sympathy).
-7. **Breadcrumb** `Home → Delivery → Brampton`, plus a `/delivery` hub listing all 17 cities with
-   tier-2 cities linking to the hub anchor rather than to a page that does not exist.
-
-**Word floor: 700 unique words per page.** Below that it is not a page, it is a doorway. Enforce it
-in `check-seo.mjs` (V-20).
-
-**What not to do:** do not generate these from a template with a `{city}` variable. Do not create
-occasion × city pages. Do not create pages for tier-2 cities. The `/delivery` hub plus the Business
-Profile's service-area radius covers them, which is exactly the argument `LOCAL-SEO.md` makes.
-
-**Done when.** Three pages live, each >700 unique words, no shared paragraph between any two, each
-carrying its own `FAQPage` and `Service` node.
-
----
-
-### L-03 — Local structured data
-**Why.** This is what connects the site to the Business Profile and tells Google the delivery
-service is real and priced.
-
-**What.**
-- **`Store`** (the `LocalBusiness` node from V-04) — still gated on a real NAP per F8. When it
-  ships: `areaServed` as an array of `City` nodes built from L-01, each with
-  `containedInPlace: { "@type": "AdministrativeArea", name: "Ontario, Canada" }`. Copy the exact
-  shape from `localBusinessSchema()` in GrowMint's `D:\Grow\Grow\lib\structured-data.ts` —
-  the comment there explains why named cities beat a bare `"CA"` for "near me" intent.
-- **`Service`** on each city page, modelled on `locationServiceSchema()` in the same file:
-  `name: "Gift basket delivery in Brampton"`, `serviceType: "Gift basket delivery"`,
-  `provider: { "@id": "…#store" }`, `areaServed` the single city — **the city alone, not the whole
-  list.** The sitewide node already declares the full footprint; repeating it here destroys the
-  only claim the page-level node exists to make. That reasoning is in the doc comment on
-  `serviceAreaSchema()`.
-- **`OfferShippingDetails` with regional rates** on the product schema (V-05): a
-  `shippingDestination` of `DefinedRegion` for the GTA postal prefixes at $15/$9 with a
-  same-day `deliveryTime`, and a national destination at the standard rate. This is the field that
-  makes "same-day delivery" machine-readable rather than a marketing line.
-- **`hasMap`** pointing at the Business Profile URL, once it exists.
-- **`geo`** coordinates — only once they are the real pin. Gated like the rest.
-
-**Done when.** Rich Results Test shows `Store` with 17 `areaServed` cities on the home page, and
-each city page shows a `Service` scoped to one city.
-
----
-
-### L-04 — Google Business Profile
-**Why.** The map pack is won by the listing, not the website. For "gift basket delivery near me" in
-Mississauga this is roughly the entire game.
-
-**What.** Work `D:\Grow\Grow\LOCAL-SEO.md` (in the GrowMint repo) end to end. It is a 47 KB step-by-step
-playbook and every step transfers. The Velvéa-specific answers:
-
-- **Primary category:** `Gift Basket Store`. Secondaries: `Gift Shop`, `Corporate Gift Supplier`,
-  `Florist` only if they actually sell flowers, `Delivery Service`.
-- **Business type:** the critical fork is §2 of that doc — *"Do customers visit you at this
-  address?"*. If the Mississauga atelier does not take walk-ins, answer **No**, which makes it a
-  service-area business, hides the street address and shows the delivery area instead. Answering
-  Yes without a staffed, signed, publicly-accessible storefront is grounds for suspension.
-- **Service areas:** enter the tier-1 and tier-2 cities from L-01. Google caps this at 20 areas —
-  17 fits.
-- **Hours:** must match `settings.contact.hours` and the site footer exactly. Add the 4 PM same-day
-  cutoff as a Business Profile attribute or in the description, because it is the single question
-  customers call about.
-- **Products:** the Business Profile product feed accepts the catalogue — it is a second surface
-  for the same data V-16 already prepares.
-- **Photos:** real basket photography, geotagged, added on a schedule. Profile activity is a
-  ranking input.
-
-**Blocked on F8.** A real phone number and a real street address are prerequisites. `555-0142` is a
-reserved fictional number and cannot be verified. This is the one item on the whole list that
-nothing in the codebase can route around.
-
----
-
-### L-05 — NAP consistency and citations
-**Why.** The local pack is decided substantially by whether Google can confirm the same business,
-name, address and phone across many independent sources. Inconsistency is the most common reason an
-otherwise-good listing does not rank.
-
-**What.**
-- Pick **one** canonical NAP string and use it byte-identically in: the Business Profile,
-  `src/lib/settings.ts`, the footer, `/contact`, the `Store` schema, `llms.txt`, order emails
-  (`src/lib/email.ts` already prints `Velvea · Mississauga, Ontario`), and every directory.
-- **Settle the accent first.** The repo uses "Velvea" and "Velvéa" interchangeably — `layout.tsx`
-  says `Velvea`, the product schema says `Velvéa`, the admin footer says `Velvea`. Pick the legal
-  name for NAP purposes, and declare the other as `alternateName` (V-01 already sets this up). Do
-  not let the two forms diverge across directories; that is how one business becomes two entities.
-- Citation list, in `LOCAL-SEO.md` §8 order: Bing Places, Apple Business Connect *(matters more
-  than its traffic suggests — Apple Maps feeds Siri)*, Yelp Canada, Yellow Pages Canada, 411.ca,
-  Facebook Page, Instagram business profile, Canada411, plus gifting-vertical directories.
-- Every one of those URLs goes into `sameAs` on the `Organization` node (V-04). That is the machine
-  half of the same job, and it is what lets an answer engine reconcile the profiles to one business.
-
-**Done when.** A search for the exact phone number returns the same name and address everywhere it
-appears.
-
----
-
-### L-06 — Local reviews
-**Why.** `LOCAL-SEO.md` §9: reviews are the strongest local ranking factor you control after the
-profile itself. Velvéa has a structural advantage GrowMint does not — a gift basket has a delivery
-moment, and the recipient's delight is the natural review trigger.
-
-**What.**
-- **Post-delivery review request email**, fired from the order status transition. `src/lib/email.ts`
-  and Resend are already wired, so this is a template and a trigger, not a build.
-- Two asks, not one: the **product review** (on-site, feeds V-09 and the star rich result) and the
-  **Business Profile review** (feeds the map pack). Ask for the Business Profile one from the
-  *purchaser*, timed a day or two after confirmed delivery.
-- Send the short review link from the profile dashboard directly. Every extra click loses people.
-- Reply to all of them. Google surfaces owner responses.
-- **A steady trickle, not a burst.** Ten reviews in one week reads as manipulation; ten over three
-  months reads as a working business.
-- **Do not** offer discounts or gifts for reviews, write them internally, or review-gate by asking
-  happy customers only. It violates Google's policies and review-gating is separately illegal in
-  some jurisdictions.
-
-**Done when.** The email fires on delivery confirmation, and both review paths are one click from it.
-
----
-
-### L-07 — Local content and internal linking
-**Why.** Three city pages with no links into them rank for nothing. And local content is the
-cheapest genuine link bait Velvéa has — a Mississauga gift guide gets picked up by local blogs and
-community pages in a way a national one never will.
-
-**What.**
-- The `/delivery` hub in the footer, and the tier-1 cities linked from `/shipping`, `/contact`, the
-  `SameDayNotice` component and the checkout local-delivery copy — all places where the sentence is
-  *already about* where Velvéa delivers. Do not add a chrome link row; GrowMint retracted exactly
-  that change and §3c of `D:\Grow\Grow\VISIBILITY-AUDIT.md` explains why every added link
-  has to be honest in its own sentence.
-- Two or three genuinely local guides: *"Corporate gifting in Mississauga: what Peel Region
-  businesses actually send"*, *"Last-minute gifts in Brampton: what still arrives today"*. These
-  link to the city pages and are the pages a local publication might cite.
-- **`SameDayNotice`** (`src/components/ui/SameDayNotice.tsx`) already exists and knows the cutoff.
-  Surface a live "Order within 3h 12m for same-day delivery in Brampton" state on the city pages —
-  urgency that is also a crawlable statement of fact.
-- Enforce the inbound-link floor from V-13 on the city pages too.
-
-**Done when.** Each city page has ≥4 inbound internal links from pages whose copy is actually about
-delivery areas.
-
----
-
-## 4c. GEO — the three tickets that are not `llms.txt`
-
-V-11 and V-15 cover the artefacts. These cover the part people skip.
-
-### G-01 — Entity consistency
-**Why.** A generative engine answers "who is Velvéa" by reconciling every mention of the name it
-has seen. Two spellings, two addresses or three different descriptions produce either a hedged
-answer or no mention. This is L-05's job on the off-site half and V-04's on the on-site half — this
-ticket is making sure they agree.
-
-**What.** One description paragraph, one NAP, one name plus declared alternates, used verbatim in:
-the site, `llms.txt`, the `Organization` node, the Business Profile, every social bio, and every
-directory. Write it once in `src/lib/site.ts` and copy *from there* into the off-site properties —
-not the other way round.
-
-**Done when.** Asking ChatGPT, Claude and Perplexity "what is Velvéa" returns the same business with
-the same city and the same offering. Record the answers with dates; this is the GEO baseline.
-
-### G-02 — Be present where models already read
-**Why.** Models cite sources they already trust. For Canadian gifting that means gift round-ups,
-local press, Reddit threads (r/askTO, r/Mississauga), Pinterest, and corporate-gifting listicles.
-None of this is on-site work and all of it is what actually produces citations.
-
-**What.** Tom's ticket. Target the "best gift baskets in Toronto / Canada" listicles specifically —
-those pages are what a model retrieves for the query Velvéa wants to be named in. One inclusion in a
-well-ranked round-up is worth more for GEO than any schema in this document.
-
-### G-03 — Machine-checkable facts in the copy
-**Why.** Models quote specifics and skip adjectives. "Curated elegance" is unciteable; "$15
-same-day delivery in Mississauga, order by 4 PM ET" is citeable, and it is already true.
-
-**What.** Audit the visible copy for claims with no number attached and give them one: price bands
-per collection (V-12), the cutoff and fee per city (L-02), lead times per product
-(`Product.leadTimeDays` is already on the model and is not surfaced anywhere in the copy), the free
-shipping threshold ($150), corporate minimums. Every number must match what checkout actually
-charges — a model quoting a stale price is worse than it quoting none.
-
-**Done when.** Every headline claim on the site has a number, a date or a place attached to it.
-
----
-
-## 5. What no amount of code will do
-
-State this to Tom plainly, because it is where the actual ceiling is. GrowMint's audit reached the
-same conclusion after three passes: the technical layer was already ahead of its competitors, and
-it was the cheap half.
-
-1. **External links.** Velvéa's domain has no authority and nothing off-site is being built.
-   Gift guides, local press, Canadian lifestyle blogs, supplier and maker pages, charity and
-   corporate-gifting partners. This is also *the* GEO lever — a model names Velvéa because a page it
-   trusts named Velvéa first.
-2. **Reviews, in volume.** Google Business Profile reviews and on-site product reviews. Both feed
-   rich results; the first also feeds local pack ranking. A review request in the post-delivery
-   email is a two-hour build with a longer payoff than any schema in this document.
-3. **Real photography with alt text.** A gift store ranks in Image search and on Pinterest. Stock
-   Unsplash images (currently allowed in `next.config.ts` remote patterns) rank for nothing.
-4. **A real NAP.** See F8. Blocks L-04 entirely (a fictional number cannot be verified) and gates
-   both the `Store` node in V-04 and the `areaServed` work in L-03.
-5. **Time.** A new domain does not rank for "gift baskets Canada" in ninety days regardless of what
-   is in this file. The realistic near-term wins are long-tail occasion and recipient queries,
-   branded search, local same-day queries, and AI citations — all of which this work sets up.
-
----
-
-## 6. Acceptance checklist
-
-Run this against production, not localhost.
-
-**Crawl & index**
-- [ ] `robots.txt` resolves, points at the sitemap, allows all AI crawlers
-- [ ] `sitemap.xml` lists only indexable URLs, with real `lastmod`
-- [ ] Build output shows SSG/ISR on every public route; `ƒ` only on account/checkout/order/admin
-- [ ] Every public page has a canonical matching its `og:url`, and hreflang en/fr/x-default
-- [ ] Sitemap URLs byte-match their pages' canonicals (trailing slash included)
-- [ ] `/search`, `/checkout`, `/account`, `/order/*` all `noindex`
-- [ ] Every indexable page has a unique 140–155 char description, in both locales
-- [ ] No `Accept-Language` redirect fires on any canonical URL
-- [ ] Every `ACTIVE` product reachable from a collection by links alone, JavaScript disabled
-- [ ] Product images present in the sitemap
-
-**Structured data** (Rich Results Test, zero errors)
-- [ ] `Organization` + `WebSite` + `SearchAction` on every page
-- [ ] `Store` on the home page — *or* consciously gated on real NAP
-- [ ] `Product` merchant-listing eligible, with shipping and returns
-- [ ] `BreadcrumbList` on PDP and all collections
-- [ ] `ItemList` on all collections
-- [ ] `FAQPage` on `/faq` and ≥3 collection pages
-- [ ] `Article` on every guide, with a named `Person` author
-
-**AEO / GEO**
-- [ ] `/llms.txt` served, static, current
-- [ ] Every FAQ answer opens with the answer, containing the number
-- [ ] Price bands, delivery cutoffs and lead times stated in body text, not only in the cart
-- [ ] Guides RSS feed valid and linked
-- [ ] Full body text present in view-source (not injected on hydration)
-- [ ] One name, one NAP, one description across site / `llms.txt` / schema / profiles (G-01)
-- [ ] Baseline recorded: what ChatGPT, Claude and Perplexity say about Velvéa today, with the date
-
-**Local**
-- [ ] One delivery-area definition; `north york` duplicate gone; both hardcoded arrays deleted
-- [ ] `/delivery` hub lists all 17 cities; Mississauga, Brampton, Toronto have pages >700 unique words
-- [ ] Each city page states its cutoff and fee in the first 100 words
-- [ ] Each city page carries its own `FAQPage` and a single-city `Service` node
-- [ ] `Store` node lists all 17 cities in `areaServed` (or is consciously gated on real NAP)
-- [ ] `OfferShippingDetails` carries the GTA regional rate alongside the national one
-- [ ] Business Profile verified, categories set, service areas matching L-01
-- [ ] NAP byte-identical across profile, site, schema, `llms.txt`, emails and every citation
-- [ ] Post-delivery review request fires, with both review paths one click away
-
-**Performance**
-- [ ] Mobile Lighthouse ≥85 Performance on `/`, a collection, a PDP
-- [ ] LCP element is the hero image on all three
-- [ ] One `priority` image per page; `sizes` on every grid image
-
-**Measurement**
-- [ ] GA4 live in production, gated behind a consent mechanism that ships with it
-- [ ] Search Console + Bing verified, sitemaps read
-- [ ] IndexNow returns 202 on a production build
-- [ ] Merchant Center feed accepted
-
----
-
-## 7. Landmines
-
-- **Next replaces `openGraph` and `alternates` wholesale — it does not deep-merge them.** Anything
-  the root layout sets and a page omits is *gone*, not inherited. This is the single most common way
-  a metadata refactor silently breaks every share card. Read the comment at the top of
-  `lib/seo.ts` in the GrowMint repo before writing V-02.
-- **`opengraph-image.tsx` only applies to the segment that owns it, and only when that segment
-  declares no `images` of its own.** A page that sets `openGraph` at all stops inheriting the
-  generated card. Hence the `ownCard` flag in V-02.
-- **Never emit schema describing something not visible on the page.** Reviews, ratings, authors,
-  FAQ answers, prices. This is the rule Google issues manual actions over.
-- **Never publish placeholder NAP.** F8.
-- **Do not machine-translate content into `fr` to fill the index.** V-18.
-- **City pages: three, written properly — not seventeen from a template.** Velvéa's same-day
-  footprint earns real delivery-area pages (L-02), and that is the *only* reason they are justified.
-  The moment one is generated from a `{city}` variable it becomes a doorway page. Never build
-  occasion × city.
-- **Do not put `force-dynamic` back** because an admin edit did not appear instantly. That is what
-  the on-demand revalidation in V-03 is for.
-- **Batch deploys during an indexing push.** Every deploy renames the JS chunks and a fresh crawl
-  budget goes into re-downloading them instead of reading new pages — GrowMint measured 53% of
-  crawl requests going to JavaScript for exactly this reason.
-- **Verify against the installed Next version.** Both repos are on 15.5.x today (Velvéa 15.5.25,
-  GrowMint 15.5.22), so the patterns transfer as written. If Velvéa's Next is upgraded, re-check the
-  metadata and `ImageResponse` APIs before assuming this file is still accurate.
-
----
-
-## 8. Suggested order of work
-
-| Phase | Tickets | Why this order |
-|---|---|---|
-| 1 — foundation | V-01, V-02, V-03, V-23, **L-01** | Everything else writes URLs, reads rendered pages, or reads the city list. Do these first or do them twice |
-| 2 — start the clocks | V-15, **L-04**, V-10 | Indexing, measurement and Business Profile verification all lag by weeks. Start them before they are convenient |
-| 3 — the graph | V-04, V-05, V-06, V-09, **L-03** | The entity, the rich results, the delivery area |
-| 4 — the answers | V-07, V-11, V-08, **G-01** | AEO/GEO surface |
-| 5 — local pages | **L-02, L-07, L-05** | The highest-intent queries Velvéa can realistically win in year one |
-| 6 — the content | **V-21**, V-12, V-13, V-18, **G-03** | The slow, high-value half. V-21 is a day's writing and the cheapest win here — do it first in this phase, not last |
-| 7 — the store | V-16, V-22, V-14, **L-06** | Feed, pagination, vitals, and the review engine |
-| 8 — keep it | V-19, V-20 | Guardrails, so phases 1–7 do not rot |
-
-**L-04 is the long pole.** Business Profile verification takes 1–3 weeks and gates the map pack,
-the `Store` schema and half of L-05 — which is why it sits in phase 2 rather than with the other
-local work, and why F8 (the placeholder phone number) needs an answer from Tom in week one.
-
-**G-02 and section 5 run on Tom's side throughout**, and are the actual ceiling.
-
-### Realistic timing
-
-Adapted from `LOCAL-SEO.md`'s timeline, which was written for a business in the same city:
-
-| When | What |
+| P0 | No coordinated pre-launch indexing gate found | Reviewed root metadata, robots, sitemap, and live sample. Owner wants unfinished catalog excluded. |
+| P0 | Product schema hardcodes availability | `src/app/[locale]/products/[slug]/page.tsx` always emits `InStock`; `ProductDetail.tsx` considers product inventory and variant stock. |
+| P0 | Schema price can differ from initial variant | JSON-LD uses base `priceCents`; product UI selects the first variant and uses its price. Code-path risk; no live mismatch demonstrated. |
+| P0 | Data outages can resemble missing content | `src/lib/queries.ts` catches errors and returns null/empty lists. PDP/articles can produce `notFound()` and listings/sitemap can become empty. Persistent caching could retain failed results. |
+| P0 | Defaults are not verified business facts | `settings.ts` has a `555-0142` phone, address, social URLs, and delivery values. `getSettings()` merges database overrides. Live homepage did not contain that placeholder phone. Do not equate defaults with production data. |
+| P0 | Policy/delivery copy needs owner review | Privacy/terms explicitly contain template/review-before-publishing wording. Shipping promises express options; `computeShipping()` has no express method branch. |
+| P1 | Canonicals and page-specific OG URLs absent | No implementation found in `src/app` or sampled HTML. Root has no `og:url`; old claim that every page inherits homepage `og:url` is inaccurate. |
+| P1 | Metadata commonly inherited/untranslated | 31 localized page templates; nine `generateMetadata` functions; only product/article functions supply descriptions. Others commonly inherit root description, rather than having no description at all. |
+| P1 | Sitemap incomplete/misleading | Caps at 500 products/200 articles; only English `<loc>`; current-time fallback dates; navigation collections listed without checking usefulness/readiness. |
+| P1 | French risk is in UI/code and database | English support/legal text and titles, English phrases in collection metadata, English guide CTA. `t()` falls back for absent locale properties but preserves empty strings; `localized()` copies English into empty French fields. Message-key parity is insufficient. |
+| P1 | Utility noindex coverage incomplete | Checkout/order and several account routes already have noindex. Search, account login/register, and admin login need review. Extend existing controls. |
+| P1 | JSON-LD serialization needs escaping | Raw `JSON.stringify` is inserted into a script. Escape `<` or use a vetted safe serializer to prevent embedded `</script>` from terminating the block. |
+| P1 | Delivery definition duplicated | Server list: 18 entries/17 unique strings; client: 17. Entries include districts/localities, not 17 separate municipalities. `SameDayNotice` uses client defaults and renders its promise after mounting. |
+| P1 | Same-day eligibility needs alignment | Checkout's same-day branch returns before later lead-time validation. Notice lacks product lead-time/operating-calendar logic. Confirm rules before advertising deadlines. |
+| P2 | Pagination not connected | Baskets/collections request 48 products; Listing has no pagination. Query helpers already support `skip`/`take` and totals. Current sitemap has six products; overflow is a growth risk, not established current loss. |
+| P2 | Caching needs route-specific decisions | 15 public marketing/catalog templates have `force-dynamic`, excluding account/checkout/order/search and including disabled gift cards. Not every page does. Locale static params and admin invalidation already exist. |
+| P2 | Images/reveals need measurement | Listing prioritizes first five cards; cards already have `sizes`. CSS `.js .reveal` initially hides reveal content. No Lighthouse/field regression was measured. |
+
+Preserve active-product listing filters, hidden gift-card exclusions, approved-review filtering, rating recalculation, visible breadcrumbs, locale-aware links, primary image alt text, decorative empty alt text, and AVIF/WebP support. PDP rendering already rejects DRAFT; align the broader query used by metadata with public visibility rules.
+
+## 2. Corrections to the original advice
+
+These replace the earlier instructions.
+
+| Previous claim | Corrected guidance |
 |---|---|
-| Weeks 1–3 | Profile verified. Searching "Velvéa" shows the location panel. This one is near-automatic |
-| Weeks 2–4 | Search Console and Bing verified, sitemap read, city pages indexed |
-| Months 2–3 | Long-tail local queries start returning the listing. Reviews accumulating |
-| Months 3–6 | Realistic window for the Mississauga map pack on "gift basket delivery near me" |
-| Months 6–12 | Organic movement on national terms — and only if section 5 is happening |
+| HTML hreflang is stronger than sitemap | HTML, HTTP headers, and sitemap annotations are equivalent to Google. Keep eligible alternatives consistent. [Localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions). |
+| Query parameters never belong in canonicals | Pagination and some variant designs legitimately use them. Page 2 needs its own canonical. [Pagination](https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading). |
+| Canonical every filter to parent and noindex it | Exclusion and duplicate consolidation differ. A narrower selection is not automatically a duplicate. Use the URL policy below. [Canonicals](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls). |
+| Disallow plus noindex guarantees removal | A crawler must fetch noindex to see it; robots blocking can prevent that. Neither secures private data. [Noindex](https://developers.google.com/search/docs/crawling-indexing/block-indexing). |
+| All public pages must become static | Dynamic server-rendered pages can be indexed. Caching is a performance/freshness decision. [Next.js 15 caching](https://nextjs.org/docs/15/app/guides/caching). |
+| AggregateOffer is preferable for size variants | Merchant listings require Offer; snippets have different support. Evaluate real variants with ProductGroup guidance. Variant SKUs already exist in the model. [Merchant listings](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing), [variants](https://developers.google.com/search/docs/appearance/structured-data/product-variants). |
+| Shipping/returns are universally required Product fields; set expiry one year ahead | Requirements differ by feature/channel. Distinguish optional warnings from errors; never invent policies or expiry dates. [Merchant listings](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing). |
+| FAQ/HowTo schema is a major rich-result opportunity | FAQ rich results stopped appearing May 7, 2026; HowTo was retired in 2023. Helpful Q&A is still useful content. [Current changelog](https://developers.google.com/search/updates), [HowTo retirement](https://developers.google.com/search/blog/2023/08/howto-faq-changes). |
+| Require SearchAction and collection carousels | Sitelinks search box was removed in 2024; generic ItemList alone does not establish product carousel eligibility. [Search box retirement](https://developers.google.com/search/blog/2024/10/sitelinks-search-box), [carousels](https://developers.google.com/search/docs/appearance/structured-data/carousel). |
+| llms.txt and allowing training bots are mandatory | Google requires no special AI file/schema. OpenAI search and training controls are independent. [Google AI guidance](https://developers.google.com/search/docs/appearance/ai-features), [OpenAI crawlers](https://developers.openai.com/api/docs/bots). |
+| Missing Bing verification in code proves a ChatGPT blocker | Account ownership cannot be inferred from source. Remove unsupported single-index explanations of ChatGPT search. Bing is useful; its absence is unverified. |
+| Every guide requires a human Person author | Use actual authorship; Person and Organization are supported. [Articles](https://developers.google.com/search/docs/appearance/structured-data/article). |
+| 700 words makes a city page valid; templates make it spam | Distinct usefulness, truthful details, and avoiding doorway/scaled-content abuse matter. No word-count floor. [Helpful content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content), [spam policies](https://developers.google.com/search/docs/essentials/spam-policies). |
+| Fail CI above 60/155 title/description characters | Editorial heuristics are not Google limits. Review meaning, duplication, language, and likely truncation. [Snippets](https://developers.google.com/search/docs/appearance/snippet). |
+| Renamed JS/deploy frequency explains this site's delayed indexing | Not established. Diagnose this site's responses, content, links, and crawl/index reports. [Crawl budget](https://developers.google.com/crawling/docs/crawl-budget). |
+| Geotag photos, enforce review velocity, promise ranking dates | Remove unsupported thresholds/promises. Google's local guidance emphasizes relevance, distance, and prominence. [Local ranking](https://support.google.com/business/answer/7091). |
+| Byte-identical NAP/public address everywhere | Keep underlying identity accurate; ordinary formatting differences are not automatically separate entities. Protect non-public addresses. [Business representation](https://support.google.com/business/answer/3038177). |
 
-Anyone promising page one for "gift baskets Canada" inside ninety days is selling something else.
+Also remove claims that stock photos cannot rank, only guides earn links, identical related-product rows have no link value, homepage empty path versus `/` inherently creates duplicates, every heading needs a number, or each schema mistake causes a manual action. File-based Next metadata has higher priority than config metadata, contrary to the old OG-image explanation. [Next.js metadata](https://nextjs.org/docs/15/app/api-reference/functions/generate-metadata).
+
+## 3. Owner decisions still needed
+
+Confirmed: production domain, setup stage, and exclusion of unfinished catalog until launch. Do not interpret “setting everything up” as evidence that each external account is absent.
+
+| Unanswered question | Dependent work |
+|---|---|
+| Which Search Console/Bing/Merchant Center/Business Profile accounts already exist and who manages them? | Ownership, baseline, submissions |
+| Any finished pages to keep discoverable before launch? What defines launch readiness/date? | Exact pre-launch route inventory/switch |
+| Correct public brand spelling, legal entity, contact details, social profiles, location, and publishable address? | Identity, contact/policy content, local schema |
+| Staffed customer visits/pickup? In-person delivery versus third-party carriers only? | Business Profile eligibility/type |
+| Priority regions and buyers: local consumers, national, corporate, or mix? Which products are ready? | Research and launch-page priorities |
+| Real areas/fees/cutoff, working days/holidays, lead times, express options, national exclusions, free-shipping rules? | Copy, checkout, shipping data |
+| Approved returns/cancellation/damage/perishables/substitution/support procedures? | Commerce/policy launch |
+| French at launch or later? Who reviews UI, product, guide, policy, and checkout translations? | French indexing and alternates |
+| Evidence for dietary/certification/origin/handmade/sustainability claims? Regulated products? | Product copy and feed eligibility |
+| Preferred analytics/consent approach, privacy reviewer, and training-crawler policy? | Measurement and separate crawler permissions |
+
+Independent work: URL helpers using confirmed origin, metadata plumbing, exclusion design, sitemap mechanics, serialization, consistency tests, and draft research inventory. Dependent business claims remain unset until answered.
+
+## 4. Launch-critical specification
+
+### A. Pre-launch control — new V-00, P0
+
+Owner decision: keep unfinished catalog out of search. This review records that decision; it has not activated it.
+
+1. Define centralized indexing state and an explicit inventory of unfinished products, catalog/collections, and commerce landing pages in both locales. Use a safe non-indexable default for unfinished commerce and preview deployments. Define any finished homepage/announcement exception explicitly.
+2. Emit crawlable noindex via metadata or `X-Robots-Tag`; omit affected URLs from sitemap and language-alternate declarations. Do not replace noindex with a blanket robots disallow. Private staging may use authentication.
+3. Do not submit unfinished inventory to Merchant Center or request indexing. Public offers must not imply immediate purchasability through a non-operational purchase flow.
+4. Keep private customer/order data authenticated regardless of launch state. Noindex is not access control.
+5. Document the launch switch, deployment step, invalidation, and rollback. Missing configuration must not expose unfinished inventory.
+
+**Done when:** representative unfinished EN/FR URLs return noindex on production and disappear from sitemap/alternates. A controlled launch test removes exclusion only for ready URLs. Existing indexing must be checked separately; removal is not instantaneous.
+
+### B. URLs, metadata, languages — V-01, V-02, V-18, V-21, V-23, P1
+
+Create a shared normalized production-origin/URL module. Reject invalid/localhost production origins. Keep preview/indexing state separate. Use effective runtime settings for mutable business information, not verified-looking exports of `DEFAULT_SETTINGS`.
+
+Build a metadata helper accepting path, locale, title, description, image, indexability, and eligible alternates. Cover routes with static metadata and inherited values, not only `generateMetadata`. Do not put a homepage canonical in a root layout that all descendants inherit.
+
+Distinct ready pages and real translations get self-canonicals. Set page-specific OG URL/text/image/locale. Resolve duplicated branding by defining whether stored titles are unbranded or deliberately absolute. Preserve needed nested metadata fields explicitly; Next performs shallow merging. Test file-based image precedence rather than copying the old `ownCard` assumption.
+
+Hreflang already comes from next-intl response headers. Choose a controlled implementation that can omit unready translations/pages. If adding content-aware HTML/sitemap alternatives, disable conflicting automatic headers using `alternateLinks: false`. Set `localeDetection: false` for stable canonical URLs and keep a visible switcher with real links. A stored cookie will not automatically drive redirects with detection disabled. [next-intl routing](https://next-intl.dev/docs/routing/configuration).
+
+Audit both code/UI and database translations: names, descriptions, contents, titles, guides, policies, checkout, and errors. Separate absent, empty, and English-copied French values. Proper names may legitimately match. Public unfinished translations should be noindex and excluded from eligible alternates; do not mechanically canonicalize all French to English. Translation tools can assist, but competent review is required.
+
+Use existing Product/Collection/Article SEO fields. Write relevant localized titles/descriptions without unconfirmed claims or rigid length tests. Stored collection SEO fields already exist and should not be replaced with navigation fallbacks as the editorial source of truth. Meta keywords should not be treated as a Google ranking tactic.
+
+**Done when:** full HTML/headers for home, collection, product, guide, utility, missing-page, and pagination cases show correct URLs, language, indexability, and reciprocal eligible alternatives. French pages submitted for indexing have reviewed French main content. Test language headers/cookies, switcher, `/en` normalization, and metadata streaming behavior for relevant crawlers.
+
+### C. Truthful commerce and reliable rendering — V-03, V-05, V-09, L-01, P0/P1
+
+Fix hardcoded InStock and potential base-price/default-variant disagreement first. Use one authoritative purchasable-product representation across visible UI, schema, later feed, and server checkout validation. Include actual currency/price/stock, representative crawlable images, URLs, and assigned identifiers. Never invent GTINs, SKUs, reviews, policy terms, or price expiries.
+
+Model real variants using supported ProductGroup/Offer patterns and URLs that actually select the advertised variant. Distinguish meaningful variant parameters from tracking parameters. Choose canonical behavior according to single-page versus separate-page variants. [Product variants](https://developers.google.com/search/docs/appearance/structured-data/product-variants).
+
+Use approved review aggregates across all approved records, not only the 12 loaded by the slug query. Preserve recalculation and test approval/rejection/deletion/no-review states and invalidation. Omit zero-review aggregates. Self-hosted organization/business reviews do not automatically qualify for business stars. [Review guidelines](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+
+Escape `<` or use a vetted serializer in shared JSON-LD output. [Next.js JSON-LD guidance](https://nextjs.org/docs/15/app/guides/json-ld).
+
+Consolidate delivery definitions; deduplicate North York, distinguish districts/aliases from municipalities, and confirm whether province/postal checks are required. Do not invent postal prefixes or per-city cutoff tiers. Use effective fees/cutoffs and a shared product/date/operating-calendar eligibility rule for copy, countdown, checkout, and later feeds. Current free threshold applies to national SHIPPING, not local methods. Confirm real rules before promising free or same-day delivery.
+
+Separate data outage from absent content. Do not persist failed empty/404 results; provide observable transient-error behavior and preserve a last successful cached result where feasible. Then evaluate rendering per route: root locale calls, translations, searchParams, layout queries, and sessions can affect caching. Reading server searchParams does not make only the query variant dynamic while automatically leaving the bare URL static. Do not move an entire future catalog into the client just to get static build output.
+
+Audit existing invalidation for both locales and product/collection pages, cards/navigation, sitemap, and future feeds. Include price/stock/status/slug/settings, review/article deletion, and payment/order stock mutations. Request memoization differs from cross-request caching. Choose lifetimes from actual update needs. Dynamic server rendering remains acceptable. [Next.js 15 caching](https://nextjs.org/docs/15/app/guides/caching).
+
+**Done when:** fixtures for stocked/sold-out/variant/discount/zero-review products agree across surfaces; rejected reviews disappear; delivery boundaries agree; a simulated data outage does not become a durable empty catalog/false 404; mutations refresh relevant surfaces within the agreed limit; private data never enters shared caches. Product feature tests have no required-property errors; Google displaying stars is not an acceptance criterion.
+
+### D. URL policy and sitemap — V-19, V-22, P0/P1
+
+Pre-launch exclusion takes precedence over this launch policy.
+
+| URL type | Intended launch behavior |
+|---|---|
+| Ready product/useful collection/home/corporate/custom/guide/support | Crawlable 200, self-canonical, indexable; sitemap according to ready inventory |
+| Pagination `?page=2` | Crawlable links, self-canonical including page; sitemap optional; never canonicalize every page to page 1 |
+| Tracking/equivalent sort-only variants | Canonical to equivalent clean page; clean internal links; avoid multiplying combinations |
+| Uncurated filters/internal search | Crawlable noindex when exclusion is required; no sitemap/alternates; do not call every distinct subset a parent duplicate |
+| Researched useful filter landing page | Explicit editorial decision, stable URL, distinct offer/content, self-canonical, relevant links |
+| Account/login/register/checkout/order/admin utility | Authenticate sensitive data, noindex public utilities, no sitemap/alternates; coordinate crawl access so needed noindex can be read |
+| Empty valid collection | Retain useful seasonal content or noindex a thin placeholder; no blanket deletion of established seasonal URLs |
+| Temporarily sold-out product | Useful 200 with accurate availability/alternatives |
+| Permanently removed/renamed product | Genuine replacement redirect if appropriate; otherwise 404/410; update links/sitemap/feed; no blanket home redirects |
+| Missing/invalid route | Verify status and streamed/not-found behavior avoid indexable soft 404s |
+| Unfinished locale/preview | Noindex/protection and no discovery submissions |
+
+Validate pagination/filter/sort inputs to avoid unbounded URL combinations. Robots rules must cover both locales and be tested by user-agent group. Do not block a URL whose noindex must be read, or treat robots as privacy protection.
+
+Enumerate all eligible sitemap entities without silent 500/200 caps. Apply status, hidden feature, locale, and launch readiness. If using sitemap hreflang, emit separate entries for each eligible locale. Use actual significant modification dates or omit unknown lastmod; not generation-time dates. Images are useful optional sitemap data. Google ignores priority/changefreq. [Sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
+
+Measure collection sizes. Pagination is urgent if launch inventory exceeds 48, otherwise a growth task. Existing skip/take support needs validated page input, stable ordering/tie-breaker, totals, real links, and meaningful filter-state preservation. Raising a hard cap alone is not a lasting solution.
+
+**Done when:** parsed sitemap matches eligible inventory; no redirects/noindex/missing/hidden/unready URLs. A fixture with more than 48 products remains reachable with JS disabled, without duplicate/missing products across pages. Test meaningful query canonicals, empty/seasonal collections, removals, and failures. Search Console exclusions are investigated rather than promised to be zero.
+
+## 5. Remaining implementation tickets
+
+Original IDs retained for traceability. Work order is in section 7; this is not a mandatory list of every schema type to add.
+
+### V-04 — Organization and website identity · P1
+
+Add safely serialized Organization (or appropriate online-store subtype) and WebSite nodes with stable IDs, confirmed name/URL/logo, and verified identity profiles. Homepage placement can establish identity; repeating all nodes everywhere is not a ranking requirement.
+
+Physical Store/LocalBusiness data requires confirmed operations and a publishable address. Business Profile verification itself is not a prerequisite for truthful website schema. A phone regex is not entity verification. Drop required SearchAction, speculative expertise lists, and forced WebPage coverage.
+
+**Done when:** no placeholders/private address/unverified profiles; consistent IDs; applicable required fields validate. Use a general schema validator for generic types and Rich Results Test for supported Google features.
+
+### V-06 — Breadcrumbs and collection semantics · P1/P2
+
+Generate BreadcrumbList from visible breadcrumbs with absolute locale-correct URLs, particularly products, collections, and guides. Optional ItemList describes only displayed products in displayed order; no promised product carousel.
+
+**Done when:** breadcrumb labels/order/links match UI and locale, valid supported markup, no hidden inventory included.
+
+### V-07 — Useful questions and answers · P1 content / optional markup
+
+Review existing FAQ against actual customer needs and confirmed policies. Add collection-specific answers where useful. Dietary claims, hospitals, deadlines, and corporate minimums need confirmation. Direct wording helps; not every answer needs a number. FAQ markup is optional semantics, not a Google rich-result or launch requirement following the 2026 retirement.
+
+**Done when:** visible accurate answers agree with checkout/policies and are reviewed in each indexed locale; any markup matches the answers.
+
+### V-08 — Guides and editorial trust · P2
+
+Publish guides addressing researched needs, with relevant product/collection links, actual Person or Organization authorship, truthful dates, appropriate imagery, and Article/BlogPosting markup. Use existing article SEO description with excerpt fallback; localize current English CTA/byline text. [Article guidance](https://developers.google.com/search/docs/appearance/structured-data/article).
+
+RSS is optional after a maintained publishing program exists. If implemented, define refresh/invalidation; force-static alone does not make a feed current.
+
+**Done when:** content, author, language, dates, metadata, and links agree. No invented byline, fixed word quota, or mandatory RSS launch gate.
+
+### V-10 — Social previews · P2
+
+Inspect the existing OG asset and live Twitter tags before generating replacements. Supply relevant localized text/images for home, collection, PDP, and guide shares. A 1200×630 image is a useful preview target, not a ranking requirement. Generated image routes are optional.
+
+**Done when:** actual preview checks show correct accessible image/title/language; page-specific cards do not unexpectedly revert to the global image.
+
+### V-11 — AI discovery and optional llms.txt · P2
+
+Prioritize accurate accessible text and links. Google requires no special AI file/schema. [Google AI features](https://developers.google.com/search/docs/appearance/ai-features).
+
+llms.txt is optional without a ranking/citation promise; it must not expose unfinished inventory or stale business facts. Separate search access from training preference: OAI-SearchBot and GPTBot controls are independent. Avoid bot-specific blanket allows that override sensitive-path exclusions. [OpenAI crawler controls](https://developers.openai.com/api/docs/bots).
+
+**Done when:** approved search access works at robots and hosting layers after launch; training preference recorded separately; optional files consistent. Chatbot answers are observations, not deterministic tests.
+
+### V-12 — Research-led content plan · P1 planning / P2 expansion
+
+Confirm offer and demand before commissioning ten long collection articles or three city pages. Build this inventory:
+
+`query/topic | locale | intent | existing URL | eligible products | commercial priority | demand source/date | observed search-result types | gap | next action`
+
+Birthday, sympathy, corporate, recipient, and delivery topics are hypotheses from navigation/catalog, not validated priorities. Research actual launch regions/languages and result types. Label keyword estimates by source/date/location/language. Search Console helps once impressions exist; no pre-launch data does not establish no demand.
+
+Map each distinct intent to a primary page, preserve useful existing URLs, and consolidate overlapping thin collections. Write useful selection guidance, real contents/options, restrictions, delivery conditions, and relevant questions. Put supporting detail where it helps shopping; no mandatory long introduction above every grid. Substantiate claims and use accurate photography.
+
+Reuse Collection SEO fields. A computed price band must represent actual purchasable products/variants. Maintain seasonal pages when useful rather than creating new dated URLs every year.
+
+**Done when:** prioritized launch-page map has evidence and owner-confirmed region/product focus; each page serves a distinct customer need. No invented volumes, word floors, guaranteed rankings, or mass occasion × recipient × city pages.
+
+### V-13 — Navigation and internal discovery · P1
+
+Every ready product needs a crawlable path from ready catalog content. Add relevant breadcrumbs, collections, editorial links, and related products where useful. Shared related sets are acceptable in a small catalog; audit broken/orphan URLs instead of arbitrary three/four-link minimums.
+
+**Done when:** a link crawl reaches ready inventory without forms, button clicks, or sitemap-only discovery. Disabled gift cards and missing locale pages stay out of navigation.
+
+### V-14 — Measured performance · P1 baseline / P2 optimization
+
+Measure production home, collection, and PDP on mobile/desktop using repeatable lab runs; add field data when traffic permits. Good field targets at the 75th percentile are LCP ≤2.5 s, INP ≤200 ms, CLS ≤0.1. A Lighthouse score alone does not establish these. [Web Vitals](https://web.dev/articles/vitals).
+
+Measure the actual LCP element; it need not be an image. Review first-five-card preloads, responsive images/layout, fonts, JS work, and reveal behavior. Essential content must remain visible under delayed/failed hydration. Static delivery terms belong in server HTML; countdowns should only enhance accurate authoritative rules.
+
+**Done when:** baseline and comparable post-change results recorded; no material visual/interaction regressions; essential content available without hydration. Report absent field data honestly.
+
+### V-15 — Ownership, analytics, and discovery · P1
+
+Confirm existing accounts before creating duplicates. Verify Search Console/Bing where needed; record security/manual-action status, sitemap processing, canonical choice, and URL indexing observations. Ownership can be verified before launch; submit only ready URLs.
+
+Choose analytics with the owner. If GA4 is chosen, implement applicable view_item, add_to_cart, begin_checkout, purchase, and corporate inquiry conversions. Deduplicate purchase events with stable transaction IDs; verify against successful orders; exclude personal data. Align tracking with the approved consent/privacy approach. Do not infer legal requirements merely from a French URL or QC tax constant.
+
+Current CSP does not include Google analytics script/collection endpoints. Adjust the minimum needed directives for the chosen integration. Test declined/granted/changed consent as applicable, event value/currency, production config, and duplicate prevention.
+
+IndexNow is optional. Notify eligible changed/deleted URLs after successful publication/invalidation, not blindly at postbuild before deployment. Handle retries and HTTP 200/202 semantics; acceptance is not proof of indexing. [IndexNow protocol](https://www.indexnow.org/documentation).
+
+**Done when:** ownership evidenced, ready sitemap submitted at launch, relevant conversion events tested, limitations recorded. No daily indexing-request quota or promised indexing date.
+
+### V-16 — Merchant Center readiness · P1 after purchase readiness
+
+Confirm account ownership, website verification/claim, countries/languages, shipping/returns, and actual ability to buy. Draft product data before launch; submit purchasable inventory when ready.
+
+Use stable IDs independent of slugs. Match language, selected variant, price, availability, shipping, and imagery. Taxonomy depends on actual contents: this catalog includes self-care/beauty items, so not every basket is food. Supply identifiers only when assigned; do not fabricate GTINs or misuse identifier_exists.
+
+Configure language in the data-source setup; do not invent a g:language product attribute. Follow applicable variant/grouping/bundle rules. Shipping thresholds and regional exclusions must represent multi-item carts accurately. [Product data specification](https://support.google.com/merchants/answer/7052112).
+
+**Done when:** representative feed/landing-page comparisons pass, blocking account/item diagnostics are resolved, and policies/purchase flow match. Valid data does not guarantee free-listing exposure.
+
+### V-17 — Local program
+
+See section 6. Local SEO is part of the overall search program, conditional on actual operations and eligibility.
+
+### V-20 — Automated guardrails · P1 alongside changes
+
+Use meaningful fixtures for URLs, readiness, offers, and publication states plus HTTP checks against a controlled production build. Inspecting static .next/server/app files alone misses dynamic routes and streamed metadata.
+
+Block regressions in noindex/launch state, canonical origin/path, alternate readiness/reciprocity, public-status filters, sitemap eligibility, safe/valid JSON-LD, offer/review consistency, key navigation, and mutation freshness. Cover both locales.
+
+Warn about descriptive metadata quality, headings, and meaningful-image alt gaps. Do not fail builds on arbitrary character counts, word quotas, heading counts alone, or inbound-link floors.
+
+**Done when:** tests catch broken fixtures; lint/typecheck/relevant build checks pass without private production data. Record manual rich-result/social-preview checks separately.
+
+## 6. Conditional local and external work
+
+L-01 delivery consistency is in section 4C; V-17 refers to this section.
+
+### L-02 / L-07 — Delivery hub, selective pages, and links · P2
+
+First decide whether existing shipping content adequately covers confirmed service areas; a separate delivery hub is optional. Publish a city page only with real service, distinct useful information, relevant demand, and eligible products. Mississauga/Brampton/Toronto are candidates, not approved priorities or proven highest-volume queries.
+
+State actual coverage/restrictions, fees, and fulfillment. Do not invent pickup, hospital/condo handling, neighborhoods, or local experience. Link useful pages from relevant shipping/contact/product copy. No mass geography pages or word/link quotas.
+
+**Done when:** each page has a distinct purpose, verified facts, useful shopping path, and relevant incoming links. No requirement to make a page for every served locality.
+
+### L-03 — Local/service markup · P2, conditional
+
+Use appropriate geography types for real areas. Service markup is optional, not a rich-result/local-ranking guarantee. Reference the organization if a qualifying public LocalBusiness node does not exist. Check Google-supported Canadian shipping geography before encoding postal rules; generic schema validity does not prove feature support.
+
+**Done when:** truthful coverage/provider, no private-address leakage or invented premises, consistent references, and validation of supported shipping data.
+
+### L-04 — Business Profile eligibility/setup · Owner, conditional
+
+Confirm eligibility first: shipping locally does not automatically make an online-only brand eligible. Establish qualifying in-person customer contact. Choose the appropriate storefront/service-area/hybrid setup, protect non-public addresses, and use actual available/applicable categories. Retail delivery alone does not justify a courier category. [Eligibility](https://support.google.com/business/answer/13763036?hl=en), [representation](https://support.google.com/business/answer/3038177).
+
+**Done when:** owner-confirmed eligibility/profile facts and verification state recorded without a promised date. Profile verification does not block ordinary website SEO.
+
+### L-05 / G-01 — Consistent identity · Owner + implementation
+
+Use confirmed real-world brand, legitimate contacts, public-location policy, and accurate description across owned surfaces. sameAs should reference actual identity profiles. Resolve material contradictions without demanding identical prose/address formatting.
+
+**Done when:** reviewed owned-profile inventory agrees with website entity information. AI descriptions are monitored observations, not acceptance criteria.
+
+### L-06 — Authentic reviews · After real orders
+
+Request reviews after actual delivery/experience. Avoid fabrication, incentives, and selectively soliciting positive reviews. Product and Business Profile reviews have separate purposes. Confirm communication preferences, timing, idempotency, and ownership before building a trigger. No arbitrary review-velocity threshold or two-hour implementation estimate.
+
+**Done when:** a controlled status-transition test creates at most one appropriate request and respects the chosen communication policy. This review sends no messages to customers.
+
+### G-02 / G-03 — Relevant mentions and factual copy · Ongoing
+
+Pursue relevant editorial coverage, supplier/partner references, and genuine community participation. Do not buy ranking links, manufacture endorsements, or conceal promotional relationships. Evaluate relevance and qualified visits instead of promising one mention outweighs all on-site work.
+
+Keep product contents, delivery conditions, restrictions, and policies understandable/current. Specificity helps only when accurate. AI citations and first-page rankings cannot be guaranteed or scheduled.
+
+## 7. Work order and acceptance
+
+| Stage | Work | Exit evidence |
+|---|---|---|
+| A — Protect setup | V-00; exact route inventory and owner facts | Deployed exclusion of unfinished catalog; no unfinished discovery submissions |
+| B — Truth and foundation | V-01/02/19/21/23; V-03 reliability; V-05 accuracy; V-18; L-01; begin V-15 ownership | Correct URLs/metadata, sitemap logic, commerce consistency, known locale readiness |
+| C — Ready inventory | V-04/06/09/12/13; V-14 baseline; V-20 alongside changes; V-22 if capacity needs it | Agreed inventory passes technical/content/commerce checks |
+| D — Intentional launch | Enable ready indexing; sitemap submission; analytics/feed checks | Noindex removed only where intended; inspection/diagnostic evidence |
+| E — Evidence-led expansion | V-07/08/10/11, further content, conditional local work, optimization | Documented customer/search need and measured improvements |
+
+### Launch checklist
+
+- [ ] Owner confirms ready products/pages, identity, policies, delivery rules, and locale scope.
+- [ ] Pre-launch exclusion and explicit launch removal are tested on production responses.
+- [ ] Preview/private/utility controls remain effective in both locales.
+- [ ] HTTPS/www canonicals and protocol/host/slash redirects checked for loops/chains.
+- [ ] Ready pages have relevant localized metadata without duplicated branding.
+- [ ] Canonicals, sitemap, internal links, and eligible reciprocal alternatives agree.
+- [ ] Pagination/filter/search/variant URLs follow their explicit policies.
+- [ ] Sitemap contains complete eligible inventory, honest dates, no hidden/unready URLs.
+- [ ] Missing content and data outages differ; failed refreshes cannot persist empty catalogs.
+- [ ] Every ready product is reachable through links; disabled gift cards remain excluded.
+- [ ] Product/variant price, stock, reviews, and delivery promises match actual purchase behavior.
+- [ ] JSON-LD safely serialized; supported feature tests have no required-property errors.
+- [ ] Real support/returns/privacy/terms content published; indexed French reviewed.
+- [ ] Essential content works without hydration; performance baseline/limitations recorded.
+- [ ] Search Console/Bing ownership/submission states recorded, not assumed.
+- [ ] Chosen analytics/consent and deduplicated conversion events tested.
+- [ ] Merchant submissions follow purchase/policy readiness and landing-page agreement.
+- [ ] Change log records launch switch, affected URLs, checks, date, and responsible person.
+
+### Measurement after launch
+
+Review weekly initially, separating branded/non-branded queries, page types, locales, regions, and devices where data permits. Track organic clicks/impressions, landing-page conversions/revenue, qualified corporate inquiries, priority-page indexing, Merchant diagnostics, and field performance. Establish targets after a baseline and commercial priorities exist.
+
+Investigate individual URLs: responses, noindex, selected canonical, content completeness, links, sitemap, rendering, and console reports. Do not assume crawl budget or deployment frequency explains delays. Prioritize customer impact and affected ready inventory.
+
+AI referrals/citations can be sampled with date/prompt/locale, but are variable/incomplete. A chatbot response is not a ranking report. No fixed promises are made for verification, indexing, map-pack placement, national rankings, or AI citations.
+
+## 8. Review status and next dependency
+
+This revision replaces unsupported requirements with verified findings, conditional recommendations, and acceptance checks, and records the owner's pre-launch exclusion decision.
+
+**Next implementation task:** V-00, with an explicit route inventory and launch switch. Business-specific copy, physical-location schema, delivery pages, shipping/return markup, and French indexing depend on section 3 answers. This review has not changed production indexing, application behavior, external account settings, or customer communications.

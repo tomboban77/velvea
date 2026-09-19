@@ -57,6 +57,7 @@ export default async function EditProductPage({
     badges: product.badges,
     leadTimeDays: product.leadTimeDays,
     weightGrams: product.weightGrams,
+    shippable: product.shippable,
     inventory: product.inventory,
     collectionIds: product.collections.map((c) => c.collectionId),
     images: product.images.map((img) => ({

@@ -183,10 +183,12 @@ export default async function OrderPage({
             <dt className="text-muted">{fr ? "Livraison" : "Shipping"}</dt>
             <dd>{order!.shippingCents ? money(order!.shippingCents) : fr ? "Gratuite" : "Free"}</dd>
           </div>
-          <div className="flex justify-between">
-            <dt className="text-muted">{fr ? "Taxes" : "Tax"}</dt>
-            <dd>{money(order!.taxCents)}</dd>
-          </div>
+          {order!.taxCents > 0 && (
+            <div className="flex justify-between">
+              <dt className="text-muted">{fr ? "Taxes" : "Tax"}</dt>
+              <dd>{money(order!.taxCents)}</dd>
+            </div>
+          )}
           <div className="flex justify-between border-t border-line pt-3 text-base font-semibold">
             <dt>Total</dt>
             <dd>{money(order!.totalCents)}</dd>

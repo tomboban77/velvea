@@ -21,12 +21,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     ? [
         { h: "Notre conviction", p: "Le bon cadeau ne dépend jamais du prix. Un anniversaire appelle un peu d'indulgence ; un geste de sympathie doit être doux et réfléchi. Trouver le ton juste, c'est ce qui rend un cadeau mémorable." },
         { h: "Notre promesse", p: "Seuls des produits que nous offririons nous-mêmes entrent dans nos paniers. Chacun est assemblé après votre commande, fini à la main et arrangé pour arriver exactement comme en ligne." },
-        { h: "Fait à Mississauga", p: "De notre atelier à leur porte : livraison le jour même dans le Grand Toronto avant 16 h, et expédition suivie dans chaque province et territoire." },
+        { h: "Fait à Mississauga", p: "De notre atelier à leur porte : livraison le jour même dans le Grand Toronto, et livraison suivie partout en Ontario." },
       ]
     : [
         { h: "What we believe", p: "The right gift never depends on price. A birthday calls for a little indulgence; a sympathy gift needs to feel gentle and considered. Getting the tone right is what makes a gift memorable." },
         { h: "Our promise", p: "Only products we would give ourselves make it into a basket. Each one is assembled after you order, finished by hand and arranged to arrive exactly as it appeared online." },
-        { h: "Made in Mississauga", p: "From our atelier to their door: same-day delivery across the GTA before 4 PM, and tracked shipping to every province and territory." },
+        { h: "Made in Mississauga", p: "From our atelier to their door: same-day delivery across the GTA, and tracked delivery anywhere in Ontario." },
       ];
 
   return (

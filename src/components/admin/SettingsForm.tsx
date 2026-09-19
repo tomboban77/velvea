@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { Save, Loader2, Check } from "lucide-react";
 import { Card } from "./ui";
 import { Field, TextInput } from "./form";
@@ -19,9 +20,6 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
       setTimeout(() => setSaved(false), 1800);
     });
   }
-
-  const money = (c: number) => (c / 100).toString();
-  const toCents = (v: string) => Math.round((parseFloat(v) || 0) * 100);
 
   return (
     <div className="space-y-6">
@@ -56,17 +54,58 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
       </Card>
 
       <Card className="space-y-4">
-        <h2 className="font-display text-lg">Delivery & shipping</h2>
+        <h2 className="font-display text-lg">Delivery</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Same-day cutoff (HH:MM)"><TextInput value={s.delivery.sameDayCutoff} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, sameDayCutoff: v } })} /></Field>
-          <Field label="Free shipping threshold ($)"><TextInput type="number" value={money(s.delivery.freeShippingThresholdCents)} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, freeShippingThresholdCents: toCents(v) } })} /></Field>
-          <Field label="Standard shipping ($)"><TextInput type="number" value={money(s.delivery.standardShippingCents)} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, standardShippingCents: toCents(v) } })} /></Field>
-          <Field label="Express shipping ($)"><TextInput type="number" value={money(s.delivery.expressShippingCents)} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, expressShippingCents: toCents(v) } })} /></Field>
-          <Field label="Local same-day fee ($)"><TextInput type="number" value={money(s.delivery.localSameDayFeeCents)} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, localSameDayFeeCents: toCents(v) } })} /></Field>
-          <Field label="Local standard fee ($)"><TextInput type="number" value={money(s.delivery.localStandardFeeCents)} onChange={(v) => setS({ ...s, delivery: { ...s.delivery, localStandardFeeCents: toCents(v) } })} /></Field>
+          <Field
+            label="Daily order cutoff (HH:MM)"
+            hint="Orders after this start their lead time tomorrow."
+          >
+            <TextInput
+              value={s.delivery.orderCutoff}
+              onChange={(v) => setS({ ...s, delivery: { ...s.delivery, orderCutoff: v } })}
+            />
+          </Field>
         </div>
         <p className="text-xs text-muted">
-          Note: the client-side checkout preview uses built-in defaults. After changing these, the authoritative totals at checkout update immediately; update the preview constants in <code>settings-client.ts</code> to match the summary shown before payment.
+          Delivery fees, same-day cutoffs and the areas we serve now live in{" "}
+          <Link href="/admin/delivery-zones" className="underline">Delivery zones</Link>, one row per
+          area. Changes there take effect immediately — the storefront asks the server for a
+          quote rather than keeping its own copy of the rates.
+        </p>
+      </Card>
+
+      <Card className="space-y-4">
+        <h2 className="font-display text-lg">Sales tax</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Ontario HST (%)"
+            hint="Applied to the basket and the delivery fee together."
+          >
+            <TextInput
+              type="number"
+              value={String(s.tax.rates.ON ?? s.tax.default)}
+              onChange={(v) =>
+                setS({
+                  ...s,
+                  tax: {
+                    ...s.tax,
+                    rates: { ...s.tax.rates, ON: parseFloat(v) || 0 },
+                    default: parseFloat(v) || 0,
+                  },
+                })
+              }
+            />
+          </Field>
+        </div>
+        {/* There was no way to change this from the admin at all, which matters
+            most for a business that is not yet registered: charging tax you are
+            not registered to collect is worse than not charging it. */}
+        <p className="text-xs text-muted">
+          Set this to <strong>0</strong> if the business is not yet registered for GST/HST.
+          Registration is only required once taxable revenue passes $30,000 over four
+          consecutive quarters, and charging HST without a registration number is not
+          permitted. Confirm your status with the CRA or your accountant rather than
+          assuming 13%.
         </p>
       </Card>
     </div>

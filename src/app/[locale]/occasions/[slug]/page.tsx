@@ -42,8 +42,8 @@ export default async function OccasionPage({
         collection?.description
           ? tc(collection.description, locale)
           : locale === "fr"
-          ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout au Canada.`
-          : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Canada.`
+          ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout en Ontario.`
+          : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Ontario.`
       }
       products={products}
       total={total}

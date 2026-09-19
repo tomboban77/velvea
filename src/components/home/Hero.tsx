@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
+import { advertisedSameDayCutoff } from "@/lib/zones";
 import { formatMoney, cn } from "@/lib/utils";
 
 export type HeroProduct = { slug: string; name: string; image: string | null; priceCents: number; badge?: string | null };
@@ -19,6 +20,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
   const locale = await getLocale();
   const fr = locale === "fr";
   const money = (c: number) => formatMoney(c, fr ? "fr-CA" : "en-CA");
+  const cutoff = await advertisedSameDayCutoff();
 
   const withImage = products.filter((p) => p.image);
   const [lead, ...rest] = withImage;
@@ -57,9 +59,11 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
               {t("ctaSecondary")}
             </Link>
           </div>
-          <div className="hero-note">
-            <SameDayNotice />
-          </div>
+          {cutoff && (
+            <div className="hero-note">
+              <SameDayNotice cutoff={cutoff} />
+            </div>
+          )}
         </div>
 
         {shelf.length > 0 ? (

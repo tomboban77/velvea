@@ -6,6 +6,7 @@ import { ProductRail } from "@/components/shop/ProductRail";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
+import { advertisedSameDayCutoff } from "@/lib/zones";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   setRequestLocale(locale);
   const t = await getTranslations("pdp");
 
-  const product = await getProductBySlug(slug);
+  const [product, sameDayCutoff] = await Promise.all([
+    getProductBySlug(slug),
+    advertisedSameDayCutoff(),
+  ]);
   if (!product || product.status === "DRAFT") notFound();
 
   const view: ProductDetailView = {
@@ -45,6 +49,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     leadTimeDays: product.leadTimeDays,
     images: product.images.map((img) => ({ url: img.url, alt: img.alt ?? "" })),
     inventory: product.inventory,
+    shippable: product.shippable,
     variants: product.variants.map((v) => ({
       id: v.id,
       label: tc(v.label, locale),
@@ -88,7 +93,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         />
       </div>
 
-      <ProductDetail product={view} />
+      <ProductDetail product={view} sameDayCutoff={sameDayCutoff} />
 
       <div id="reviews">
         <ProductReviews

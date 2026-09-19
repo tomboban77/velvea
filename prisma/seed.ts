@@ -1,6 +1,7 @@
 import { PrismaClient, type Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS } from "../src/lib/nav";
+import { ZONE_SEED } from "./zones";
 
 const prisma = new PrismaClient();
 
@@ -437,6 +438,25 @@ async function main() {
     create: { code: "WELCOME10", type: "PERCENT", value: 10, minSubtotalCents: 5000, active: true },
   });
   console.log(`  - discount WELCOME10`);
+
+  // --- Delivery zones ---
+  // Upserted by key so re-seeding never overwrites a rate that has been tuned
+  // in the admin; only genuinely new zones are inserted.
+  let zonesAdded = 0;
+  for (const zone of ZONE_SEED) {
+    const exists = await prisma.deliveryZone.findUnique({ where: { key: zone.key } });
+    if (exists) continue;
+    await prisma.deliveryZone.create({ data: zone });
+    zonesAdded++;
+  }
+  const pendingReview = ZONE_SEED.filter((z) => z.active === false).length;
+  console.log(`  - delivery zones (${zonesAdded} added)`);
+  if (zonesAdded > 0 && pendingReview > 0) {
+    console.log(`    ${pendingReview} zone(s) are seeded INACTIVE pending postal-code review.`);
+    console.log("    Verify their FSA prefixes against canadapost.ca, then activate");
+    console.log("    them in Admin -> Delivery zones. Until then those addresses fall");
+    console.log("    through to Ontario ground shipping, which is priced to cover them.");
+  }
 
   // --- Settings ---
   await prisma.setting.upsert({

@@ -19,6 +19,7 @@ export function emptyProduct(): ProductFormData {
     badges: [],
     leadTimeDays: 1,
     weightGrams: null,
+    shippable: true,
     inventory: null,
     collectionIds: [],
     images: [],

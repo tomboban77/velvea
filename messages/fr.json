@@ -5,8 +5,8 @@
   },
   "announcement": {
     "one": "Une carte manuscrite avec chaque cadeau",
-    "two": "Jour même dans le Grand Toronto · Commandez avant 16 h",
-    "three": "Livré partout au Canada"
+    "two": "Jour même dans le Grand Toronto · Commandez avant l’heure limite",
+    "three": "Livré partout en Ontario"
   },
   "nav": {
     "shop": "Boutique",
@@ -83,11 +83,11 @@
     "reviewsCount": "{count, plural, one {# avis} other {# avis}}"
   },
   "hero": {
-    "eyebrow": "Fondée en 2026 · Mississauga · Partout au Canada",
+    "eyebrow": "Fondée en 2026 · Mississauga · Partout en Ontario",
     "titleA": "L'art du cadeau",
     "titleB": "réfléchi",
     "titleC": ".",
-    "lede": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga et livrés partout au Canada. Pour les moments qui méritent plus qu'une carte.",
+    "lede": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga et livrés partout en Ontario. Pour les moments qui méritent plus qu'une carte.",
     "ctaPrimary": "Découvrir la collection",
     "ctaSecondary": "Composer un panier",
     "pictured": "En photo",
@@ -102,7 +102,7 @@
     "p1": "Composé à la main, à la commande",
     "p1Sub": "Dans notre atelier de Mississauga",
     "p2": "Jour même dans le Grand Toronto",
-    "p2Sub": "Commandez avant 16 h · Expédition partout au Canada",
+    "p2Sub": "Commandez avant l’heure limite · Livraison partout en Ontario",
     "p3": "Carte manuscrite incluse",
     "p3Sub": "Aucun prix sur le bordereau"
   },
@@ -156,7 +156,7 @@
     "s1": "Choisissez le contenant",
     "s1Sub": "Paniers tressés, coffrets et plateaux",
     "s2": "Sélectionnez chaque article",
-    "s2Sub": "Gourmet, vin, chocolat, bien-être et plus",
+    "s2Sub": "Gourmet, chocolat, café, bien-être et plus",
     "s3": "Ajoutez vos mots",
     "s3Sub": "Une carte manuscrite, glissée à l'intérieur",
     "cta": "Commencer à composer",
@@ -174,14 +174,14 @@
     "s2": "Emballé à la main, à la commande",
     "s2Sub": "Assemblé après votre commande et fini avec papier de soie, ruban et votre carte.",
     "s3": "Livré avec soin",
-    "s3Sub": "Jour même dans le Grand Toronto avant 16 h. Expédition suivie dans chaque province.",
+    "s3Sub": "Jour même dans le Grand Toronto. Livraison suivie partout en Ontario.",
     "factsTitle": "La livraison en bref",
     "f1": "Mississauga & Grand Toronto",
-    "f1Sub": "Jour même · Commandez avant 16 h",
-    "f2": "Partout au Canada",
-    "f2Sub": "Expédition suivie dans chaque province et territoire",
-    "f3": "Livraison gratuite",
-    "f3Sub": "Pour les commandes de plus de {amount}",
+    "f1Sub": "Jour même · Commandez avant l’heure limite",
+    "f2": "Partout en Ontario",
+    "f2Sub": "Livraison suivie à toute adresse ontarienne",
+    "f3": "Ramassage à l’atelier",
+    "f3Sub": "À Mississauga, sans frais",
     "link": "Détails de livraison",
     "stepsEyebrow": "Comment ça marche"
   },
@@ -191,7 +191,7 @@
     "lede": "Reconnaissance des clients, jalons des employés et programmes de fin d'année, pris en charge de bout en bout. Un seul interlocuteur, des prix de volume et la livraison à chaque adresse de votre liste.",
     "f1": "Prix de volume dès 10 paniers",
     "f2": "Cartes à votre image & messages personnalisés",
-    "f3": "Livraison multi-adresses partout au Canada",
+    "f3": "Livraison multi-adresses partout en Ontario",
     "f4": "Programmes des fêtes & saisonniers",
     "f5": "Un interlocuteur dédié",
     "requestQuote": "Demander un devis",
@@ -239,8 +239,8 @@
     "more": "Lire la FAQ complète",
     "items": [
       {
-        "q": "Livrez-vous partout au Canada ?",
-        "a": "Oui. Nous expédions avec suivi dans chaque province et territoire, et offrons la livraison le jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant 16 h."
+        "q": "Où livrez-vous ?",
+        "a": "Partout en Ontario. Nous livrons nous-mêmes à Mississauga et dans le Grand Toronto, y compris le jour même pour les commandes admissibles, et nous expédions avec suivi partout ailleurs dans la province. Le ramassage à notre atelier de Mississauga est gratuit."
       },
       {
         "q": "Un message cadeau est-il inclus ?",
@@ -274,7 +274,7 @@
     "invalidLink": "Ce lien n'est plus valide."
   },
   "footer": {
-    "blurb": "Des paniers-cadeaux composés à la main à Mississauga et livrés partout au Canada. Entreprise détenue par une femme, fondée en 2026.",
+    "blurb": "Des paniers-cadeaux composés à la main à Mississauga et livrés partout en Ontario. Entreprise détenue par une femme, fondée en 2026.",
     "concierge": "Conciergerie cadeaux",
     "conciergeSub": "Une question sur une commande, une occasion ou un programme d'entreprise ? Nous répondons en un jour ouvrable.",
     "shop": "Boutique",
@@ -298,7 +298,7 @@
     "currency": "Canada · CAD",
     "secure": "Paiement sécurisé",
     "newsletterEyebrow": "Restons en contact",
-    "bottomTagline": "Paniers-cadeaux haut de gamme, emballés à la main à Mississauga et livrés partout au Canada."
+    "bottomTagline": "Paniers-cadeaux haut de gamme, emballés à la main à Mississauga et livrés partout en Ontario."
   },
   "pdp": {
     "home": "Accueil",
@@ -315,16 +315,19 @@
     "reviews": "{count} avis",
     "review": "{count} avis",
     "newArrival": "Nouveauté",
-    "sameDayLeft": "Commandez d'ici <b>{time}</b> pour la livraison le jour même dans le Grand Toronto",
-    "sameDayNext": "Commandez maintenant pour une livraison le lendemain dans le Grand Toronto",
-    "canadaWide": "Expédition suivie partout au Canada",
+    "sameDayLeft": "Commandez d'ici <b>{time}</b> pour la livraison locale le jour même",
+    "sameDayNext": "Commandez maintenant pour une livraison locale le lendemain",
+    "ontarioWide": "Livraison suivie partout en Ontario",
+    "localOnly": "Livraison locale et ramassage seulement",
+    "deliveryAtCheckout": "Les frais de livraison sont calculés selon le code postal au paiement",
     "leadTime": "Expédié en {days, plural, one {# jour ouvrable} other {# jours ouvrables}}",
     "card": "Carte manuscrite incluse",
     "noPrices": "Aucun prix sur le bordereau",
     "packed": "Préparé à la commande",
-    "shippingFree": "Livraison gratuite pour les commandes de plus de {amount}",
-    "shippingLocal": "Jour même à Mississauga et dans le Grand Toronto pour les commandes passées avant 16 h.",
-    "shippingCanada": "Expédition suivie dans chaque province et territoire, généralement de 2 à 5 jours ouvrables.",
+    "shippingPickup": "Ramassage gratuit à notre atelier de Mississauga.",
+    "shippingLocalOnly": "Trop périssable pour l’expédition — livraison locale ou ramassage seulement.",
+    "shippingLocal": "Jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant l’heure limite.",
+    "shippingOntario": "Livraison suivie partout en Ontario, généralement de 2 à 5 jours ouvrables.",
     "returns": "Quelque chose ne va pas ? Écrivez-nous dans les 48 heures suivant la livraison et nous y remédierons.",
     "arrives": "Comment il arrive",
     "arrivesLede": "La présentation fait partie du cadeau. Chaque panier quitte l'atelier fini et protégé.",
@@ -333,7 +336,7 @@
     "a2": "Votre carte, écrite à la main",
     "a2Sub": "Ajoutez votre message à la caisse. Les prix ne sont jamais inclus.",
     "a3": "Suivi jusqu'à la porte",
-    "a3Sub": "Jour même dans le Grand Toronto avant 16 h. Expédition suivie partout au Canada.",
+    "a3Sub": "Jour même dans le Grand Toronto avant l’heure limite. Livraison suivie partout en Ontario.",
     "related": "Vous aimerez aussi",
     "shopAll": "Tous les paniers",
     "save": "Économisez {amount}",
@@ -372,7 +375,7 @@
     "rating": "Les mieux notés",
     "browse": "Parcourir",
     "allTitle": "Tous les paniers-cadeaux",
-    "allLede": "Notre gamme complète de paniers composés à la main, livrés partout au Canada.",
+    "allLede": "Notre gamme complète de paniers composés à la main, livrés partout en Ontario.",
     "emptyTitle": "Rien ici pour l'instant",
     "emptyLede": "Nous composons cette collection. Explorez la gamme complète ou créez quelque chose sur mesure.",
     "filters": "Filtres",

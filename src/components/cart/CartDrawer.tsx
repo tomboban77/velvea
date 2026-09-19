@@ -7,14 +7,10 @@ import Image from "next/image";
 import { X, Plus, Minus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
 import { useCart } from "./CartProvider";
 import { formatMoney, cn } from "@/lib/utils";
-import { getSettingsClient } from "@/lib/settings-client";
 
 export function CartDrawer() {
   const t = useTranslations();
   const { items, isOpen, closeCart, updateQty, removeItem, subtotalCents } = useCart();
-  const threshold = getSettingsClient().freeShippingThresholdCents;
-  const remaining = Math.max(0, threshold - subtotalCents);
-  const progress = Math.min(100, (subtotalCents / threshold) * 100);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -66,24 +62,13 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            {/* free shipping meter */}
-            <div className="border-b border-line bg-cream/60 px-6 py-3.5">
-              {remaining > 0 ? (
-                <p className="text-xs text-ink-soft">
-                  You&apos;re {formatMoney(remaining)} away from{" "}
-                  <span className="font-semibold text-ink">free shipping</span>.
-                </p>
-              ) : (
-                <p className="text-xs font-semibold text-success">
-                  You&apos;ve unlocked free shipping.
-                </p>
-              )}
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
-                <div
-                  className="h-full rounded-full bg-violet-deep transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+            {/* Delivery is priced by destination, so there is nothing to
+                promise here until we know the postal code. */}
+            <div className="border-b border-line bg-cream/60 px-6 py-3">
+              <p className="text-xs text-ink-soft">
+                Delivery is calculated at checkout from the postal code. Pickup from our
+                Mississauga studio is always free.
+              </p>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-4">

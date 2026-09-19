@@ -40,6 +40,7 @@ export type ProductFormData = {
   badges: string[];
   leadTimeDays: number;
   weightGrams: number | null;
+  shippable: boolean;
   inventory: number | null;
   collectionIds: string[];
   images: UploadedImage[];
@@ -67,6 +68,7 @@ export function emptyProduct(): ProductFormData {
     badges: [],
     leadTimeDays: 1,
     weightGrams: null,
+    shippable: true,
     inventory: null,
     collectionIds: [],
     images: [],
@@ -125,6 +127,7 @@ export function ProductForm({
       badges: d.badges,
       leadTimeDays: d.leadTimeDays,
       weightGrams: d.weightGrams,
+      shippable: d.shippable,
       inventory: d.inventory,
       collectionIds: d.collectionIds,
       images: d.images,
@@ -485,6 +488,14 @@ export function ProductForm({
                 onChange={(v) => set("inventory", v === "" ? null : parseInt(v) || 0)}
               />
             </Field>
+            <div className="pt-1">
+              <Toggle
+                checked={d.shippable}
+                onChange={(v) => set("shippable", v)}
+                label="Can be shipped"
+                description="Turn off for anything too perishable to travel — fresh, chilled or chocolate-heavy. Those baskets stay available for local delivery and pickup, and are refused at checkout for shipped addresses instead of being found at packing time."
+              />
+            </div>
             <Field label="Slug" hint="Auto-generated from the name if left blank.">
               <TextInput value={d.slug} onChange={(v) => set("slug", v)} placeholder="noel-nights" />
             </Field>

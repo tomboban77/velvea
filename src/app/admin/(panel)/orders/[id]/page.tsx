@@ -63,6 +63,8 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
             <Printer className="h-4 w-4" /> Packing slip
           </Link>
           <Badge tone="gray">{order.deliveryMethod.replace("_", " ")}</Badge>
+          {/* Which zone priced this order — the number to check a rate against. */}
+          {order.deliveryZoneKey && <Badge tone="violet">{order.deliveryZoneKey}</Badge>}
         </div>
       </div>
 
@@ -126,10 +128,12 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                 <dt className="text-muted">Shipping</dt>
                 <dd>{formatMoney(order.shippingCents)}</dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-muted">Tax</dt>
-                <dd>{formatMoney(order.taxCents)}</dd>
-              </div>
+              {order.taxCents > 0 && (
+                <div className="flex justify-between">
+                  <dt className="text-muted">Tax</dt>
+                  <dd>{formatMoney(order.taxCents)}</dd>
+                </div>
+              )}
               <div className="flex justify-between border-t border-line pt-2 text-base font-semibold">
                 <dt>Total</dt>
                 <dd>{formatMoney(order.totalCents)}</dd>

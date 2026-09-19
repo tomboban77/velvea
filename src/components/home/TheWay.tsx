@@ -1,17 +1,11 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, MapPin, Truck, BadgePercent } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getSettings } from "@/lib/settings";
-import { formatMoney } from "@/lib/utils";
 
 /** How it works (three numbered steps) plus delivery facts, in one calm section. */
 export async function TheWay() {
   const t = await getTranslations("way");
-  const locale = await getLocale();
-  const s = await getSettings();
-  const free = formatMoney(s.delivery.freeShippingThresholdCents, locale === "fr" ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
-
   const steps = [
     { title: t("s1"), sub: t("s1Sub") },
     { title: t("s2"), sub: t("s2Sub") },
@@ -20,7 +14,7 @@ export async function TheWay() {
   const facts = [
     { icon: MapPin, title: t("f1"), sub: t("f1Sub") },
     { icon: Truck, title: t("f2"), sub: t("f2Sub") },
-    { icon: BadgePercent, title: t("f3"), sub: t("f3Sub", { amount: free }) },
+    { icon: BadgePercent, title: t("f3"), sub: t("f3Sub") },
   ];
 
   return (

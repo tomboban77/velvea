@@ -10,21 +10,19 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // The preview totals on this page used to come from a hard-coded copy of the
-  // defaults, so any rate the admin edited showed one number and charged
-  // another. The real settings are passed in instead.
+  // Rates, eligibility and tax are no longer passed down at all: the form asks
+  // the server for a quote once it has a postal code, so there is only ever one
+  // copy of the pricing rules. Only the studio address is needed here, for
+  // pickup orders.
   const [settings, user] = await Promise.all([getSettings(), getCurrentUser()]);
 
   return (
     <CheckoutForm
-      settings={{
-        freeShippingThresholdCents: settings.delivery.freeShippingThresholdCents,
-        standardShippingCents: settings.delivery.standardShippingCents,
-        localSameDayFeeCents: settings.delivery.localSameDayFeeCents,
-        localStandardFeeCents: settings.delivery.localStandardFeeCents,
-        sameDayCutoff: settings.delivery.sameDayCutoff,
-        taxRates: settings.tax.rates,
-        defaultTaxRate: settings.tax.default,
+      studio={{
+        addressLine: settings.contact.addressLine,
+        city: settings.contact.city,
+        province: settings.contact.province,
+        postalCode: settings.contact.postalCode,
       }}
       defaultEmail={user?.email ?? ""}
     />

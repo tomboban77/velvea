@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useCart, giftLineId } from "@/components/cart/CartProvider";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
-import { CLIENT_SETTINGS } from "@/lib/settings-client";
 import { formatMoney, cn, truncate } from "@/lib/utils";
 
 export type ProductDetailView = {
@@ -36,9 +35,17 @@ export type ProductDetailView = {
   }[];
   /** null = unlimited. Enforced again at checkout. */
   inventory: number | null;
+  shippable: boolean;
 };
 
-export function ProductDetail({ product }: { product: ProductDetailView }) {
+export function ProductDetail({
+  product,
+  sameDayCutoff,
+}: {
+  product: ProductDetailView;
+  /** Home-zone cutoff for the live countdown; null hides it. */
+  sameDayCutoff: string | null;
+}) {
   const t = useTranslations("pdp");
   const tc = useTranslations("common");
   const locale = useLocale();
@@ -106,7 +113,6 @@ export function ProductDetail({ product }: { product: ProductDetailView }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightbox, product.images.length]);
-  const free = formatMoney(CLIENT_SETTINGS.freeShippingThresholdCents, fr ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
 
   const GIFT_MAX = 300;
 
@@ -323,17 +329,17 @@ export function ProductDetail({ product }: { product: ProductDetailView }) {
 
             {/* delivery */}
             <div className="mt-6 space-y-3 rounded-lg bg-cream p-5">
-              <SameDayNotice />
+              {sameDayCutoff && <SameDayNotice cutoff={sameDayCutoff} />}
               <p className="info-row">
                 <Truck strokeWidth={1.6} />
                 <span>
-                  {t("canadaWide")}
+                  {product.shippable ? t("ontarioWide") : t("localOnly")}
                   {product.leadTimeDays > 0 && <> · {t("leadTime", { days: product.leadTimeDays })}</>}
                 </span>
               </p>
               <p className="info-row">
                 <BadgePercent strokeWidth={1.6} />
-                <span>{t("shippingFree", { amount: free })}</span>
+                <span>{t("deliveryAtCheckout")}</span>
               </p>
             </div>
 
@@ -379,8 +385,8 @@ export function ProductDetail({ product }: { product: ProductDetailView }) {
               <Accordion title={t("tabShipping")} open={openSection === "shipping"} onToggle={() => setOpenSection(openSection === "shipping" ? null : "shipping")}>
                 <ul className="space-y-2 text-[0.95rem] leading-relaxed text-ink-soft">
                   <li>{t("shippingLocal")}</li>
-                  <li>{t("shippingCanada")}</li>
-                  <li>{t("shippingFree", { amount: free })}</li>
+                  <li>{product.shippable ? t("shippingOntario") : t("shippingLocalOnly")}</li>
+                  <li>{t("shippingPickup")}</li>
                   <li className="pt-1 text-muted">{t("returns")}</li>
                 </ul>
               </Accordion>

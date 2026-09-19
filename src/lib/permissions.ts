@@ -26,6 +26,9 @@ export const PERMISSIONS = [
   "builder:delete",
   "discounts:write",
   "settings:write",
+  // Delivery zones set what customers are charged, so they sit with settings
+  // on the ADMIN side rather than with day-to-day fulfilment.
+  "zones:write",
   "customers:read",
   "staff:manage",
 ] as const;

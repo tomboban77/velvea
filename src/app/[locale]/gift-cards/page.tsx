@@ -33,7 +33,7 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
         </h1>
         <p className="mt-4 text-ink-soft">
           {fr
-            ? "Une carte-cadeau Velvea les laisse choisir leur panier idéal, livré partout au Canada."
+            ? "Une carte-cadeau Velvea les laisse choisir leur panier idéal, livré partout en Ontario."
             : "A Velvea gift card lets them choose their perfect basket, delivered anywhere in Canada."}
         </p>
         <ul className="mt-6 space-y-3">

@@ -113,7 +113,7 @@ export type OrderEmailData = {
   discountCents: number;
   totalCents: number;
   discountCode?: string | null;
-  deliveryMethod?: "SHIPPING" | "LOCAL_SAMEDAY" | "LOCAL_STANDARD" | null;
+  deliveryMethod?: "SHIPPING" | "LOCAL_SAMEDAY" | "LOCAL_STANDARD" | "PICKUP" | null;
   deliveryDate?: Date | string | null;
   deliveryNotes?: string | null;
   shipping: OrderEmailAddress;
@@ -123,11 +123,13 @@ export type OrderEmailData = {
 function methodLabel(method: OrderEmailData["deliveryMethod"], locale?: string | null): string {
   switch (method) {
     case "LOCAL_SAMEDAY":
-      return pick(locale, "Same-day delivery (GTA)", "Livraison le jour même (RGT)");
+      return pick(locale, "Same-day local delivery", "Livraison locale le jour même");
     case "LOCAL_STANDARD":
-      return pick(locale, "Local delivery (GTA)", "Livraison locale (RGT)");
+      return pick(locale, "Local delivery", "Livraison locale");
+    case "PICKUP":
+      return pick(locale, "Pickup at our studio", "Ramassage à notre atelier");
     default:
-      return pick(locale, "Canada-wide shipping", "Expédition au Canada");
+      return pick(locale, "Shipping within Ontario", "Expédition en Ontario");
   }
 }
 
@@ -163,15 +165,21 @@ function totalsTable(data: OrderEmailData): string {
       }</td><td style="text-align:right;color:#3f7d5b">−${money(data.discountCents)}</td></tr>`
     : "";
   const shippingValue = data.shippingCents ? money(data.shippingCents) : L("Free", "Gratuite");
+  // Omitted entirely at zero: we are not registered to collect GST/HST, and a
+  // "Tax $0.00" line on a receipt implies we are.
+  const taxRow =
+    data.taxCents > 0
+      ? `<tr><td style="color:#8a8072;padding:2px 0">${L("Tax", "Taxes")}</td><td style="text-align:right">${money(
+          data.taxCents
+        )}</td></tr>`
+      : "";
   return `<table style="width:100%;font-size:14px;margin-top:12px">
       <tr><td style="color:#8a8072;padding:2px 0">${L("Subtotal", "Sous-total")}</td><td style="text-align:right">${money(
         data.subtotalCents
       )}</td></tr>
       ${discountRow}
       <tr><td style="color:#8a8072;padding:2px 0">${L("Shipping", "Livraison")}</td><td style="text-align:right">${shippingValue}</td></tr>
-      <tr><td style="color:#8a8072;padding:2px 0">${L("Tax", "Taxes")}</td><td style="text-align:right">${money(
-        data.taxCents
-      )}</td></tr>
+      ${taxRow}
       <tr><td style="padding:8px 0 0;font-weight:700">Total</td><td style="text-align:right;padding:8px 0 0;font-weight:700">${money(
         data.totalCents
       )}</td></tr>

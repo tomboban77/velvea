@@ -49,7 +49,7 @@ Use these slugs (or the plain labels) in `occasions`, `recipients`, `categories`
 
 - **Occasions:** birthday, anniversary, thank-you, sympathy, new-baby, get-well, congratulations, housewarming, wedding, holiday
 - **Recipients:** for-him, for-her, couples, new-parents, family, clients, employees, a-friend
-- **Categories:** gourmet, chocolate, wine-spirits, spa-wellness, coffee-tea, fresh-fruit, vegan, baby
+- **Categories:** gourmet, chocolate, spa-wellness, coffee-tea, fresh-fruit, vegan, baby
 
 ## Tip for AI tools
 

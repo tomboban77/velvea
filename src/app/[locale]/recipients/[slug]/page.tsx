@@ -50,8 +50,8 @@ export default async function RecipientPage({
         collection?.description
           ? tc(collection.description, locale)
           : locale === "fr"
-          ? `Le bon cadeau ${title.toLowerCase()}, livré partout au Canada.`
-          : `The right gift ${title.toLowerCase()}, delivered across Canada.`
+          ? `Le bon cadeau ${title.toLowerCase()}, livré partout en Ontario.`
+          : `The right gift ${title.toLowerCase()}, delivered across Ontario.`
       }
       products={products}
       total={total}
