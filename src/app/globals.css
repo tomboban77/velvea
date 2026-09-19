@@ -679,13 +679,14 @@ select.field {
      that crop into a visible cut line. Scaled past 100% instead: the sprays sit
      larger and reach further down, and what falls outside left and right bleeds
      off the frame, which reads as intended. */
-  background: var(--color-lilac) url("/images/bg.png") center top / 120% auto no-repeat;
+  background: var(--color-lilac) url("/images/bg.webp") center top / 120% auto no-repeat;
   position: relative;
   overflow: hidden;
 }
 @media (max-width: 767px) {
-  /* narrow and tall: scale up so the sprays stay in frame either side of the copy */
-  .hero { background-size: 230% auto; }
+  /* portrait plate, drawn to frame the copy down both sides; `cover` suits it as
+     drawn, and the browser only fetches the plate its media query selects */
+  .hero { background-image: url("/images/bg_mobile.webp"); background-size: cover; }
 }
 .hero-stage {
   position: relative;

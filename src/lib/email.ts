@@ -30,22 +30,38 @@ function bareAddress(value: string): string {
   return (match ? match[1] : value).trim();
 }
 
-async function send(to: string, subject: string, html: string) {
+/**
+ * Returns true only when Resend accepted the message. The Resend SDK reports
+ * API rejections (unverified domain, bad from-address, restricted key…) in the
+ * resolved `error` field rather than by throwing, so that has to be checked
+ * explicitly or a refused email disappears without a trace.
+ */
+async function send(to: string, subject: string, html: string): Promise<boolean> {
   const resend = client();
   if (!resend) {
     console.log(`\n[email not sent - RESEND_API_KEY missing]\n  to: ${to}\n  subject: ${subject}\n`);
-    return;
+    return false;
   }
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: FROM,
       to,
       subject,
       html,
       ...(REPLY_TO ? { replyTo: bareAddress(REPLY_TO) } : {}),
     });
+    if (error) {
+      console.error(
+        `Email send rejected (${error.name}${error.statusCode ? ` ${error.statusCode}` : ""}): ${error.message}`,
+        { from: FROM, to, subject }
+      );
+      return false;
+    }
+    console.log(`[email sent] id=${data?.id ?? "?"} to=${to} subject="${subject}"`);
+    return true;
   } catch (err) {
-    console.error("Email send failed:", err);
+    console.error("Email send failed:", err, { from: FROM, to, subject });
+    return false;
   }
 }
 
@@ -502,7 +518,7 @@ export async function sendEmailVerification(data: {
   email: string;
   token: string;
   locale?: string | null;
-}) {
+}): Promise<boolean> {
   const L = (en: string, fr: string) => pick(data.locale, en, fr);
   const link = `${SITE}/account/verify?token=${encodeURIComponent(data.token)}`;
   const body = `<p style="color:#514a40">${escapeHtml(
@@ -512,7 +528,7 @@ export async function sendEmailVerification(data: {
     )
   )}</p>
   ${button(link, L("Confirm my email", "Confirmer mon courriel"))}`;
-  await send(
+  return send(
     data.email,
     L("Confirm your Velvea email", "Confirmez votre courriel Velvea"),
     shell(L("Confirm your email", "Confirmez votre courriel"), body, data.locale)

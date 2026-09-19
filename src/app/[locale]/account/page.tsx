@@ -5,19 +5,52 @@ import { getCurrentUser } from "@/lib/auth";
 import { customerLogoutAction, resendVerificationAction } from "@/lib/actions/auth";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/utils";
-import { Package, LogOut, MailWarning } from "lucide-react";
+import type { ResendVerificationStatus } from "@/lib/actions/auth";
+import { Package, LogOut, MailWarning, CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My Account", robots: { index: false, follow: false } };
 
-export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
+const RESEND_MESSAGES: Record<ResendVerificationStatus, { en: string; fr: string }> = {
+  sent: {
+    en: "Confirmation email sent. Check your inbox and spam folder; it can take a minute to arrive.",
+    fr: "Courriel de confirmation envoyé. Vérifiez votre boîte de réception et vos pourriels; il peut prendre une minute.",
+  },
+  limited: {
+    en: "Too many requests. Please wait an hour before asking for another confirmation email.",
+    fr: "Trop de demandes. Attendez une heure avant de redemander un courriel de confirmation.",
+  },
+  failed: {
+    en: "We couldn't send the confirmation email right now. Please try again later or contact us.",
+    fr: "Impossible d'envoyer le courriel de confirmation pour le moment. Réessayez plus tard ou contactez-nous.",
+  },
+  verified: {
+    en: "Your email is already confirmed.",
+    fr: "Votre courriel est déjà confirmé.",
+  },
+};
+
+function resendStatus(value: string | undefined): ResendVerificationStatus | null {
+  return value && value in RESEND_MESSAGES ? (value as ResendVerificationStatus) : null;
+}
+
+export default async function AccountPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ verify?: string }>;
+}) {
   const { locale } = await params;
+  const { verify } = await searchParams;
   setRequestLocale(locale);
   const fr = locale === "fr";
   const user = await getCurrentUser();
   if (!user) redirect({ href: "/account/login", locale });
 
   const verified = Boolean(user!.emailVerified);
+  const resend = resendStatus(verify);
+  const resendMessage = resend ? RESEND_MESSAGES[resend][fr ? "fr" : "en"] : null;
 
   /**
    * Orders are matched on userId, plus the account email only once that email
@@ -51,19 +84,38 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
       </div>
 
       {!verified && (
-        <div className="mt-8 flex flex-wrap items-center gap-4 rounded-lg border border-line bg-cream/50 px-5 py-4">
-          <MailWarning className="h-5 w-5 shrink-0 text-violet" />
-          <p className="flex-1 text-sm text-ink-soft">
-            {fr
-              ? "Confirmez votre adresse courriel pour voir ici les commandes passées en tant qu'invité."
-              : "Confirm your email address to see orders you placed as a guest here."}
-          </p>
-          <form action={resendVerificationAction}>
-            <button className="btn btn-outline btn-sm">
-              {fr ? "Renvoyer le courriel" : "Resend email"}
-            </button>
-          </form>
+        <div className="mt-8 rounded-lg border border-line bg-cream/50 px-5 py-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <MailWarning className="h-5 w-5 shrink-0 text-violet" />
+            <p className="flex-1 text-sm text-ink-soft">
+              {fr
+                ? "Confirmez votre adresse courriel pour voir ici les commandes passées en tant qu'invité."
+                : "Confirm your email address to see orders you placed as a guest here."}
+            </p>
+            <form action={resendVerificationAction}>
+              <input type="hidden" name="locale" value={locale} />
+              <button className="btn btn-outline btn-sm">
+                {fr ? "Renvoyer le courriel" : "Resend email"}
+              </button>
+            </form>
+          </div>
+          {resendMessage && (
+            <p
+              role="status"
+              className={`mt-3 flex items-start gap-2 text-sm ${
+                resend === "sent" ? "text-violet-deep" : "text-ink-soft"
+              }`}
+            >
+              {resend === "sent" && <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}
+              {resendMessage}
+            </p>
+          )}
         </div>
+      )}
+      {verified && resend === "verified" && (
+        <p role="status" className="mt-6 text-sm text-ink-soft">
+          {RESEND_MESSAGES.verified[fr ? "fr" : "en"]}
+        </p>
       )}
 
       <h2 className="mt-10 mb-4 font-display text-2xl">{fr ? "Vos commandes" : "Your orders"}</h2>

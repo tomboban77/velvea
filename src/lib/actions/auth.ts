@@ -254,19 +254,36 @@ export async function verifyEmailToken(token: string): Promise<boolean> {
   }
 }
 
-/** Plain form action — used from the account page, so it returns void. */
-export async function resendVerificationAction(): Promise<void> {
+/** Outcome of a "Resend email" click, carried back to the account page as ?verify=… */
+export type ResendVerificationStatus = "sent" | "limited" | "failed" | "verified";
+
+/**
+ * Plain form action used from the account page. Every path used to return
+ * silently, which made a refused or rate-limited send look identical to a
+ * successful one. Now each outcome redirects back with a status the page shows.
+ */
+export async function resendVerificationAction(formData: FormData): Promise<void> {
+  const locale = field(formData, "locale") === "fr" ? "fr" : "en";
+  const back = (status: ResendVerificationStatus) => redirect(`/account?verify=${status}`);
+
   const session = await getSession();
-  if (!session) return;
+  if (!session) redirect("/account/login");
 
   const limit = await rateLimitBoth("passwordReset", session.email);
-  if (!limit.ok) return;
+  if (!limit.ok) back("limited");
 
   const user = await prisma.user.findUnique({ where: { id: session.sub } });
-  if (!user || user.emailVerified) return;
+  if (!user) redirect("/account/login");
+  if (user.emailVerified) back("verified");
 
-  const token = await issueToken("EMAIL_VERIFY", user.email, user.id);
-  await sendEmailVerification({ email: user.email, token });
+  let ok = false;
+  try {
+    const token = await issueToken("EMAIL_VERIFY", user.email, user.id);
+    ok = await sendEmailVerification({ email: user.email, token, locale });
+  } catch (err) {
+    console.error("[auth] resend verification failed:", err);
+  }
+  back(ok ? "sent" : "failed");
 }
 
 // ---------------------------------------------------------------------------
