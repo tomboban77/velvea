@@ -43,6 +43,7 @@ type InputProduct = {
   bestseller?: boolean;
   badges?: string[];
   leadTimeDays?: number;
+  shippable?: boolean; // false = local delivery/pickup only (fresh, chilled)
   inventory?: number | null;
   occasions?: string[];
   recipients?: string[];
@@ -155,6 +156,7 @@ async function main() {
       bestseller: p.bestseller ?? false,
       badges: p.badges ?? [],
       leadTimeDays: p.leadTimeDays ?? 1,
+      shippable: p.shippable ?? true,
       inventory: p.inventory ?? null,
       seoTitle: L(p.seoTitle) ?? {},
       seoDescription: L(p.seoDescription) ?? {},

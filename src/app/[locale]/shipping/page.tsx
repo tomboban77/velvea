@@ -118,6 +118,14 @@ export default async function ShippingPage({ params }: { params: Promise<{ local
         exactly as it appeared online. Orders placed after {settings.delivery.orderCutoff} ET
         begin their preparation the following day.
       </p>
+
+      <h2>All sales are final</h2>
+      <p>
+        Because each basket is perishable and made for one recipient, we cannot accept
+        returns, exchanges or cancellations once an order is placed. If a basket arrives
+        damaged, incomplete or not as ordered, write to us within 48 hours of delivery with a
+        photo and we will make it right.
+      </p>
     </ProsePage>
   );
 }

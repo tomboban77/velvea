@@ -257,6 +257,10 @@
       {
         "q": "Travaillez-vous avec les entreprises ?",
         "a": "Oui. Demandez un devis pour des prix de volume, des cartes à votre image et la livraison multi-adresses. Nous répondons en un jour ouvrable."
+      },
+      {
+        "q": "Puis-je annuler, retourner ou échanger ma commande ?",
+        "a": "Toutes les ventes sont finales. Chaque panier est périssable et préparé à la commande pour un destinataire, nous ne pouvons donc accepter ni retour, ni échange, ni annulation une fois la commande passée. Si nous faisons une erreur et qu'un panier arrive endommagé, incomplet ou non conforme, écrivez-nous dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
       }
     ]
   },
@@ -306,7 +310,7 @@
     "about": "À propos de ce panier",
     "inside": "À l'intérieur",
     "care": "Entretien & notes",
-    "shipping": "Livraison & retours",
+    "shipping": "Livraison",
     "size": "Format",
     "quantity": "Quantité",
     "addToBag": "Ajouter au panier",
@@ -328,7 +332,7 @@
     "shippingLocalOnly": "Trop périssable pour l’expédition — livraison locale ou ramassage seulement.",
     "shippingLocal": "Jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant l’heure limite.",
     "shippingOntario": "Livraison suivie partout en Ontario, généralement de 2 à 5 jours ouvrables.",
-    "returns": "Quelque chose ne va pas ? Écrivez-nous dans les 48 heures suivant la livraison et nous y remédierons.",
+    "returns": "Toutes les ventes sont finales. Si votre panier arrive endommagé ou ne correspond pas à votre commande, écrivez-nous dans les 48 heures suivant la livraison et nous y remédierons.",
     "arrives": "Comment il arrive",
     "arrivesLede": "La présentation fait partie du cadeau. Chaque panier quitte l'atelier fini et protégé.",
     "a1": "Arrangé et fini à la main",
@@ -355,7 +359,7 @@
     "description": "À propos de ce panier",
     "tabInside": "Contenu",
     "tabDetails": "Détails",
-    "tabShipping": "Livraison et retours",
+    "tabShipping": "Livraison",
     "selectSize": "Choisir une taille",
     "qtyLabel": "Quantité",
     "youSave": "Vous économisez {amount}",

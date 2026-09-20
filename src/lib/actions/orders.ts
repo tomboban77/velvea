@@ -5,6 +5,7 @@ import {
   sendOrderConfirmation,
   sendAdminOrderNotice,
   sendOrderShipped,
+  sendOrderDelivered,
   sendOrderCancelled,
   sendOrderRefunded,
   type OrderEmailData,
@@ -276,6 +277,31 @@ export async function markOrderShipped(
       carrier: order.carrier,
       trackingNumber: order.trackingNumber,
       trackingUrl: order.trackingUrl,
+      shipping: shippingOf(order),
+    });
+  }
+}
+
+/** Mark an order delivered (or picked up) and let the customer know. */
+export async function markOrderDelivered(
+  orderId: string,
+  opts: { note?: string | null; notify?: boolean } = {}
+): Promise<void> {
+  const order = await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      status: "DELIVERED",
+      deliveredAt: new Date(),
+      timeline: { create: { label: "Delivered", note: opts.note || null } },
+    },
+  });
+
+  if (opts.notify !== false) {
+    await sendOrderDelivered({
+      orderNumber: order.orderNumber,
+      email: order.email,
+      locale: order.locale,
+      deliveryMethod: order.deliveryMethod,
       shipping: shippingOf(order),
     });
   }

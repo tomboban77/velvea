@@ -257,6 +257,10 @@
       {
         "q": "Do you work with businesses?",
         "a": "We do. Request a corporate quote for volume pricing, branded cards and multi-address delivery. We reply within one business day."
+      },
+      {
+        "q": "Can I cancel, return or exchange my order?",
+        "a": "All sales are final. Every basket is perishable and packed to order for one recipient, so we cannot accept returns, exchanges or cancellations once an order is placed. If we get something wrong and a basket arrives damaged, incomplete or not as ordered, write to us within 48 hours of delivery with a photo and we will make it right."
       }
     ]
   },
@@ -306,7 +310,7 @@
     "about": "About this basket",
     "inside": "What's inside",
     "care": "Care & notes",
-    "shipping": "Shipping & returns",
+    "shipping": "Shipping & delivery",
     "size": "Size",
     "quantity": "Quantity",
     "addToBag": "Add to bag",
@@ -328,7 +332,7 @@
     "shippingLocalOnly": "Too perishable to ship — local delivery or studio pickup only.",
     "shippingLocal": "Same-day in Mississauga and the GTA on eligible orders placed before the daily cutoff.",
     "shippingOntario": "Tracked delivery anywhere in Ontario, typically 2 to 5 business days.",
-    "returns": "Something not right? Write to us within 48 hours of delivery and we will make it right.",
+    "returns": "All sales are final. If your basket arrives damaged or is not what you ordered, write to us within 48 hours of delivery and we will make it right.",
     "arrives": "How it arrives",
     "arrivesLede": "Presentation is part of the gift. Every basket leaves the atelier finished and protected.",
     "a1": "Arranged and finished by hand",
@@ -355,7 +359,7 @@
     "description": "About this basket",
     "tabInside": "What is inside",
     "tabDetails": "Details",
-    "tabShipping": "Delivery & returns",
+    "tabShipping": "Delivery",
     "selectSize": "Choose a size",
     "qtyLabel": "Quantity",
     "youSave": "You save {amount}",

@@ -10,7 +10,7 @@ import { clearZoneCache } from "@/lib/zones";
 import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
-import { cancelOrder, markOrderShipped, recordRefund } from "@/lib/actions/orders";
+import { cancelOrder, markOrderShipped, markOrderDelivered, recordRefund } from "@/lib/actions/orders";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 /**
@@ -78,7 +78,7 @@ export async function updateOrderStatus(input: z.input<typeof orderStatusSchema>
   await guard("orders:write");
   const data = parse(orderStatusSchema, input);
 
-  // CANCELLED and SHIPPED have side effects (stock, discount release, email),
+  // CANCELLED, SHIPPED and DELIVERED have side effects (stock, discount release, email),
   // so they go through the order helpers rather than a bare status write.
   if (data.status === "CANCELLED") {
     await cancelOrder(data.id, { reason: data.note, notify: data.notify });
@@ -93,12 +93,13 @@ export async function updateOrderStatus(input: z.input<typeof orderStatusSchema>
       },
       { notify: data.notify }
     );
+  } else if (data.status === "DELIVERED") {
+    await markOrderDelivered(data.id, { note: data.note, notify: data.notify });
   } else {
     await prisma.order.update({
       where: { id: data.id },
       data: {
         status: data.status,
-        ...(data.status === "DELIVERED" ? { deliveredAt: new Date() } : {}),
         timeline: { create: { label: `Status: ${data.status}`, note: data.note || null } },
       },
     });

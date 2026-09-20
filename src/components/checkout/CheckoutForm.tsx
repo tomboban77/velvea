@@ -499,10 +499,34 @@ export function CheckoutForm({
             </div>
           )}
 
+          {/* Final-sale disclosure sits above the pay button so it is read before
+              payment, which is what Ontario's consumer-protection rules expect. */}
+          <div className="mt-5 rounded-md border border-line bg-cream/50 px-4 py-3 text-xs leading-relaxed text-ink-soft">
+            <p className="font-semibold text-ink">
+              {locale === "fr" ? "Toutes les ventes sont finales." : "All sales are final."}
+            </p>
+            <p className="mt-1">
+              {locale === "fr"
+                ? "Nos paniers sont périssables et préparés à la commande : aucun retour, échange, annulation ni remboursement pour changement d'avis. Si votre panier arrive endommagé ou ne correspond pas à votre commande, écrivez-nous dans les 48 heures et nous y remédierons."
+                : "Our baskets are perishable and packed to order, so there are no returns, exchanges, cancellations or change-of-mind refunds. If your basket arrives damaged or not as ordered, write to us within 48 hours and we will make it right."}
+            </p>
+            <p className="mt-2 text-muted">
+              {locale === "fr" ? "En passant cette commande, vous acceptez nos " : "By placing this order you agree to our "}
+              <Link href="/terms" className="underline hover:text-violet-deep">
+                {locale === "fr" ? "conditions d'utilisation" : "Terms of Service"}
+              </Link>
+              {locale === "fr" ? " et notre " : " and "}
+              <Link href="/privacy" className="underline hover:text-violet-deep">
+                {locale === "fr" ? "politique de confidentialité" : "Privacy Policy"}
+              </Link>
+              .
+            </p>
+          </div>
+
           <button
             type="submit"
             disabled={pending || !canSubmit}
-            className="btn btn-gold btn-lg mt-5 w-full disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn btn-gold btn-lg mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
             {pending

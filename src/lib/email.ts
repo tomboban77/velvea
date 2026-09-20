@@ -258,7 +258,15 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
     <table style="width:100%;border-collapse:collapse;font-size:14px">${itemRows(data.items, data.locale)}</table>
     ${totalsTable(data)}
     ${deliveryBlock(data)}
-    ${button(link, L("View your order", "Voir votre commande"))}`;
+    ${button(link, L("View your order", "Voir votre commande"))}
+    <p style="margin-top:18px;font-size:13px;line-height:1.5;color:#8a8072">${escapeHtml(
+      L(
+        "All sales are final. Our baskets are perishable and packed to order, so we cannot accept returns, exchanges or cancellations. If your basket arrives damaged or not as ordered, reply to this email within 48 hours of delivery with a photo and we will make it right.",
+        "Toutes les ventes sont finales. Nos paniers sont périssables et préparés à la commande : nous ne pouvons accepter ni retour, ni échange, ni annulation. Si votre panier arrive endommagé ou ne correspond pas à votre commande, répondez à ce courriel dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
+      )
+    )} <a href="${SITE}/terms" style="color:#b0894e">${escapeHtml(
+      L("Terms of Service", "Conditions d'utilisation")
+    )}</a></p>`;
   await send(
     data.email,
     L(`Your Velvea order ${data.orderNumber}`, `Votre commande Velvea ${data.orderNumber}`),
@@ -392,6 +400,63 @@ export async function sendOrderCancelled(data: {
     data.email,
     L(`Velvea order ${data.orderNumber} cancelled`, `Commande Velvea ${data.orderNumber} annulée`),
     shell(L("Order cancelled", "Commande annulée"), body, data.locale)
+  );
+}
+
+/** Sent when an order is marked delivered or picked up: closes the loop and opens the 48-hour window. */
+export async function sendOrderDelivered(data: {
+  orderNumber: string;
+  email: string;
+  locale?: string | null;
+  deliveryMethod?: string | null;
+  shipping: OrderEmailAddress;
+}) {
+  const L = (en: string, fr: string) => pick(data.locale, en, fr);
+  const link = await orderUrl(data.orderNumber, SITE);
+  const pickup = data.deliveryMethod === "PICKUP";
+  const body = `
+    <p style="color:#514a40">${escapeHtml(
+      pickup
+        ? L(
+            "Your Velvea basket has been picked up. We hope it brings a smile.",
+            "Votre panier Velvea a été récupéré. Nous espérons qu'il fera plaisir."
+          )
+        : L(
+            "Your Velvea basket has been delivered. We hope it brings a smile.",
+            "Votre panier Velvea a été livré. Nous espérons qu'il fera plaisir."
+          )
+    )}</p>
+    <p style="margin:16px 0 4px"><strong>${escapeHtml(L("Order", "Commande"))} ${escapeHtml(
+      data.orderNumber
+    )}</strong></p>
+    ${
+      pickup
+        ? ""
+        : `<p style="color:#514a40">${escapeHtml(data.shipping.fullName)}<br>${escapeHtml(
+            data.shipping.line1
+          )}<br>${escapeHtml(data.shipping.city)}, ${escapeHtml(data.shipping.province)} ${escapeHtml(
+            data.shipping.postalCode
+          )}</p>`
+    }
+    <p style="margin-top:14px;color:#514a40">${escapeHtml(
+      L(
+        "If anything about your basket isn't right, reply to this email within 48 hours with a photo and we will make it right.",
+        "Si quelque chose ne va pas avec votre panier, répondez à ce courriel dans les 48 heures avec une photo et nous y remédierons."
+      )
+    )}</p>
+    ${button(link, L("View your order", "Voir votre commande"))}`;
+  await send(
+    data.email,
+    pickup
+      ? L(
+          `Your Velvea order ${data.orderNumber} has been picked up`,
+          `Votre commande Velvea ${data.orderNumber} a été récupérée`
+        )
+      : L(
+          `Your Velvea order ${data.orderNumber} has been delivered`,
+          `Votre commande Velvea ${data.orderNumber} a été livrée`
+        ),
+    shell(L(pickup ? "Picked up" : "Delivered", pickup ? "Récupérée" : "Livrée"), body, data.locale)
   );
 }
 

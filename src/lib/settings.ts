@@ -40,7 +40,7 @@ export type SiteSettings = {
 export const DEFAULT_SETTINGS: SiteSettings = {
   contact: {
     email: "giftsvelvea@gmail.com",
-    phone: "+1 (905) 555-0142",
+    phone: "+1 (431) 726-1706",
     addressLine: "5105 Hurontario Street",
     city: "Mississauga",
     province: "ON",

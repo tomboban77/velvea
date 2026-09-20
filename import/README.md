@@ -32,6 +32,7 @@ Add many products at once, with images, in one command.
 | `status` | no | `ACTIVE` (default `ACTIVE` in the importer; use `DRAFT` to hide) |
 | `featured` | no | `true`/`false` — show on homepage |
 | `bestseller` | no | `true`/`false` |
+| `shippable` | no | `true` (default) or `false` for fresh/chilled baskets that are local delivery and pickup only |
 | `badges` | no | any of `new`, `bestseller`, `limited`, `sale` |
 | `occasions` | no | slugs or labels (see below) |
 | `recipients` | no | slugs or labels |

@@ -19,7 +19,7 @@ const STATUSES: OrderStatus[] = [
 ];
 
 /** Statuses whose side effects (email, stock, refund) need an explicit choice. */
-const NOTIFIES: OrderStatus[] = ["SHIPPED", "CANCELLED"];
+const NOTIFIES: OrderStatus[] = ["SHIPPED", "DELIVERED", "CANCELLED"];
 
 function useSaver() {
   const router = useRouter();
