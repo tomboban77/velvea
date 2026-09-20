@@ -12,14 +12,18 @@ const isProd = process.env.NODE_ENV === "production";
  * 'unsafe-inline' for styles and scripts; 'unsafe-eval' is dev-only (React
  * Refresh). Stripe Checkout is a redirect rather than an embed, so no frame-src
  * is needed, but connect-src still allows Stripe's telemetry endpoint.
+ *
+ * Vercel Analytics and Speed Insights load from the same origin on Vercel
+ * (/_vercel/insights, /_vercel/speed-insights); the va.vercel-scripts.com and
+ * vitals.vercel-insights.com entries cover their dev/debug script and beacon.
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com`,
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com https://va.vercel-scripts.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.stripe.com https://api.cloudinary.com",
+  "connect-src 'self' https://api.stripe.com https://api.cloudinary.com https://vitals.vercel-insights.com",
   "form-action 'self' https://checkout.stripe.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

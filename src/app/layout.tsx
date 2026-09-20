@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { getLocale } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fontVars } from "@/lib/fonts";
 import "./globals.css";
 
@@ -47,7 +49,13 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Vercel Analytics: cookieless page views and referrers. Speed Insights:
+            real-user Core Web Vitals. Both no-op outside a Vercel deployment. */}
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }
