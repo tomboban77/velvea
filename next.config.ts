@@ -19,11 +19,13 @@ const isProd = process.env.NODE_ENV === "production";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com https://va.vercel-scripts.com`,
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com https://va.vercel-scripts.com https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com",
   "font-src 'self' data:",
   "connect-src 'self' https://api.stripe.com https://api.cloudinary.com https://vitals.vercel-insights.com",
+  // Cloudflare Turnstile renders its challenge inside an iframe.
+  "frame-src https://challenges.cloudflare.com",
   "form-action 'self' https://checkout.stripe.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

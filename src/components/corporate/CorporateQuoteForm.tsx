@@ -4,10 +4,14 @@ import { useState } from "react";
 import { useLocale } from "next-intl";
 import { Check, Loader2, ArrowRight } from "lucide-react";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { Turnstile, TURNSTILE_ENABLED } from "@/components/ui/Turnstile";
 
 export function CorporateQuoteForm() {
   const fr = useLocale() === "fr";
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+  // Turnstile tokens are single-use, so the widget is remounted after a failure.
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [f, setF] = useState({
     company: "", contactName: "", email: "", phone: "",
     budget: "", quantity: "", occasion: "", message: "",
@@ -23,12 +27,19 @@ export function CorporateQuoteForm() {
       const res = await fetch("/api/corporate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, locale: fr ? "fr" : "en" }),
+        body: JSON.stringify({ ...f, locale: fr ? "fr" : "en", turnstileToken }),
       });
       setState(res.ok ? "done" : "error");
+      if (!res.ok) resetTurnstile();
     } catch {
       setState("error");
+      resetTurnstile();
     }
+  }
+
+  function resetTurnstile() {
+    setTurnstileToken(null);
+    setTurnstileKey((k) => k + 1);
   }
 
   if (state === "done") {
@@ -90,7 +101,11 @@ export function CorporateQuoteForm() {
       {state === "error" && (
         <p className="mt-3 text-sm text-danger">{fr ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again."}</p>
       )}
-      <button disabled={state === "loading"} className="btn btn-gold btn-lg mt-6 w-full sm:w-auto">
+      <Turnstile key={turnstileKey} action="corporate" onToken={setTurnstileToken} className="mt-6" />
+      <button
+        disabled={state === "loading" || (TURNSTILE_ENABLED && !turnstileToken)}
+        className="btn btn-gold btn-lg mt-6 w-full sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
+      >
         {state === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         {fr ? "Envoyer la demande" : "Request a quote"}
         {state !== "loading" && <ArrowRight className="h-4 w-4" />}

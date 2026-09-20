@@ -5,6 +5,7 @@ import { useLocale } from "next-intl";
 import { Star, ShieldCheck, PenLine, Check } from "lucide-react";
 import { formatDate, cn } from "@/lib/utils";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { Turnstile, TURNSTILE_ENABLED } from "@/components/ui/Turnstile";
 
 type Review = {
   id: string;
@@ -43,8 +44,16 @@ export function ProductReviews({
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Turnstile tokens are single-use, so the widget is remounted after a failure.
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const fr = locale === "fr";
+
+  function resetTurnstile() {
+    setTurnstileToken(null);
+    setTurnstileKey((k) => k + 1);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +63,7 @@ export function ProductReviews({
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, ...form }),
+        body: JSON.stringify({ productId, ...form, turnstileToken }),
       });
       if (res.ok) {
         setSubmitted(true);
@@ -63,8 +72,10 @@ export function ProductReviews({
       }
       const payload = (await res.json().catch(() => null)) as { error?: string } | null;
       setError(payload?.error ?? (fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted."));
+      resetTurnstile();
     } catch {
       setError(fr ? "Votre avis n'a pas pu être envoyé." : "Your review couldn't be submitted.");
+      resetTurnstile();
     } finally {
       setBusy(false);
     }
@@ -126,7 +137,11 @@ export function ProductReviews({
             </div>
             <input placeholder={fr ? "Titre" : "Title"} className="field mt-3" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             <textarea required rows={4} placeholder={fr ? "Votre avis…" : "Your review…"} className="field mt-3 resize-y" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
-            <button disabled={busy} className="btn btn-primary mt-5">
+            <Turnstile key={turnstileKey} action="review" onToken={setTurnstileToken} className="mt-5" />
+            <button
+              disabled={busy || (TURNSTILE_ENABLED && !turnstileToken)}
+              className="btn btn-primary mt-5 disabled:cursor-not-allowed disabled:opacity-60"
+            >
               {busy ? "…" : fr ? "Soumettre" : "Submit review"}
             </button>
           </form>

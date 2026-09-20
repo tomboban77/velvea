@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Check } from "lucide-react";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { Turnstile, TURNSTILE_ENABLED } from "@/components/ui/Turnstile";
 import { cn } from "@/lib/utils";
 
 export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
@@ -12,6 +13,9 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [company, setCompany] = useState("");
+  // Turnstile tokens are single-use, so the widget is remounted after a failure.
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
   /** Set when the confirm/unsubscribe links bounce the visitor back here. */
   const [outcome, setOutcome] = useState<string | null>(null);
   const dark = tone === "dark";
@@ -32,10 +36,11 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, locale, company }),
+        body: JSON.stringify({ email, locale, company, turnstileToken }),
       });
       if (!res.ok) {
         setState("error");
+        resetTurnstile();
         return;
       }
       const payload = (await res.json().catch(() => null)) as { status?: string } | null;
@@ -44,7 +49,13 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
       setEmail("");
     } catch {
       setState("error");
+      resetTurnstile();
     }
+  }
+
+  function resetTurnstile() {
+    setTurnstileToken(null);
+    setTurnstileKey((k) => k + 1);
   }
 
   // Double opt-in: subscribing only sends a confirmation email, so the copy
@@ -85,12 +96,20 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
           />
           <button
             type="submit"
-            disabled={state === "loading"}
-            className={cn("btn min-h-[52px] shrink-0", dark ? "btn-light" : "btn-primary")}
+            disabled={state === "loading" || (TURNSTILE_ENABLED && !turnstileToken)}
+            className={cn("btn min-h-[52px] shrink-0 disabled:cursor-not-allowed disabled:opacity-60", dark ? "btn-light" : "btn-primary")}
           >
             {state === "loading" ? "…" : t("cta")}
             <ArrowRight />
           </button>
+          {/* Invisible unless Cloudflare needs the visitor to interact; then it takes the full row. */}
+          <Turnstile
+            key={turnstileKey}
+            action="newsletter"
+            theme={dark ? "dark" : "light"}
+            onToken={setTurnstileToken}
+            className="basis-full empty:hidden"
+          />
         </form>
       )}
       <p className={cn("mt-3 text-xs", dark ? "text-white/55" : "text-muted")}>
