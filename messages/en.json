@@ -384,7 +384,9 @@
     "emptyLede": "We are composing this collection. Explore the full range or build something bespoke.",
     "filters": "Filters",
     "showing": "Showing {count} of {total}",
-    "all": "All"
+    "all": "All",
+    "search": "Search baskets",
+    "searchPlaceholder": "Search by name…"
   },
   "custom": {
     "eyebrow": "Build your own",

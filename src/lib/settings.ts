@@ -28,6 +28,17 @@ export type SiteSettings = {
      */
     orderCutoff: string;
   };
+  home: {
+    /**
+     * Baskets on the homepage hero shelf, in slot order. Up to five. Empty
+     * slots are filled automatically (featured first, then newest).
+     */
+    heroProductIds: string[];
+    /** Which picked basket sits in the centre, largest. Null means the first. */
+    heroLeadId: string | null;
+    /** How many baskets each homepage collection tab shows before "See all". */
+    collectionLimit: number;
+  };
   tax: {
     // Combined sales-tax rate (%) applied by destination province.
     rates: Record<string, number>;
@@ -55,6 +66,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   delivery: {
     orderCutoff: "16:00",
+  },
+  home: {
+    heroProductIds: [],
+    heroLeadId: null,
+    collectionLimit: 8,
   },
   // Velvea is a small supplier: taxable revenue is under the $30,000 threshold
   // at which GST/HST registration becomes mandatory, so no tax is charged. It
@@ -91,6 +107,7 @@ export async function getSettings(): Promise<SiteSettings> {
       contact: { ...DEFAULT_SETTINGS.contact, ...stored.contact },
       social: { ...DEFAULT_SETTINGS.social, ...stored.social },
       delivery: { ...DEFAULT_SETTINGS.delivery, ...stored.delivery },
+      home: { ...DEFAULT_SETTINGS.home, ...stored.home },
       tax: {
         rates: { ...DEFAULT_SETTINGS.tax.rates, ...stored.tax?.rates },
         default: stored.tax?.default ?? DEFAULT_SETTINGS.tax.default,
@@ -109,6 +126,7 @@ export async function saveSettings(patch: Partial<SiteSettings>): Promise<void> 
     contact: { ...current.contact, ...patch.contact },
     social: { ...current.social, ...patch.social },
     delivery: { ...current.delivery, ...patch.delivery },
+    home: { ...current.home, ...patch.home },
     tax: {
       rates: { ...current.tax.rates, ...patch.tax?.rates },
       default: patch.tax?.default ?? current.tax.default,

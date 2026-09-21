@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Checkout", robots: { index: false, follow: false } };
@@ -16,6 +17,17 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
   // pickup orders.
   const [settings, user] = await Promise.all([getSettings(), getCurrentUser()]);
 
+  // A signed-in customer gets their profile and saved addresses offered as
+  // starting values; guests see the same empty form as before.
+  const addresses = user
+    ? await prisma.address
+        .findMany({
+          where: { userId: user.id },
+          orderBy: [{ isDefault: "desc" }, { label: "asc" }, { fullName: "asc" }],
+        })
+        .catch(() => [])
+    : [];
+
   return (
     <CheckoutForm
       studio={{
@@ -24,7 +36,11 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
         province: settings.contact.province,
         postalCode: settings.contact.postalCode,
       }}
-      defaultEmail={user?.email ?? ""}
+      customer={
+        user
+          ? { email: user.email, name: user.name ?? "", phone: user.phone ?? "", addresses }
+          : null
+      }
     />
   );
 }

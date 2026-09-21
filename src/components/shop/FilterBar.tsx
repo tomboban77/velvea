@@ -1,15 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { Search, X } from "lucide-react";
 import { Select } from "@/components/ui/Select";
 import { formatMoney, cn } from "@/lib/utils";
 
 const PRICE_STEPS = [7500, 12500, 20000];
 
-/** Price chips + sort, driven by URL params (`max`, `sort`). */
-export function FilterBar({ total }: { total: number }) {
+/** Search + price chips + sort, driven by URL params (`q`, `max`, `sort`). */
+export function FilterBar({ total, searchable = false }: { total: number; searchable?: boolean }) {
   const t = useTranslations("listing");
   const router = useRouter();
   const pathname = usePathname();
@@ -17,6 +19,8 @@ export function FilterBar({ total }: { total: number }) {
   const locale = useLocale();
   const currentSort = params.get("sort") ?? "featured";
   const currentMax = params.get("max") ?? "";
+  const currentQ = params.get("q") ?? "";
+  const [q, setQ] = useState(currentQ);
 
   function update(next: Record<string, string | null>) {
     const sp = new URLSearchParams(params.toString());
@@ -32,6 +36,39 @@ export function FilterBar({ total }: { total: number }) {
 
   return (
     <div className="flex flex-col gap-4 border-b border-line py-4 sm:flex-row sm:items-center sm:justify-between">
+      {searchable && (
+        <form
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            update({ q: q.trim() || null });
+          }}
+          className="relative flex shrink-0 items-center"
+        >
+          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted" aria-hidden />
+          <input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("search")}
+            className="field h-10 w-full pl-9 pr-9 text-sm sm:w-64"
+          />
+          {currentQ && (
+            <button
+              type="button"
+              onClick={() => {
+                setQ("");
+                update({ q: null });
+              }}
+              aria-label={t("clear")}
+              className="absolute right-2 flex h-6 w-6 items-center justify-center rounded-full text-muted hover:bg-cream hover:text-ink"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </form>
+      )}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
         <span className="mr-1 shrink-0 text-[0.78rem] font-semibold text-ink-soft">{t("price")}</span>
         <button onClick={() => update({ max: null })} className={cn("chip", !currentMax && "is-active")}>

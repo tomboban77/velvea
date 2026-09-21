@@ -36,10 +36,14 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
 
   const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA");
   const onSale = !!product.compareAtCents && product.compareAtCents > product.priceCents;
-  const badge = onSale ? "sale" : product.badges[0];
+  const soldOut = product.soldOut;
+  // Sold out outranks every other badge: a shopper must see it before the price.
+  const badge = soldOut ? "soldOut" : onSale ? "sale" : product.badges[0];
   const badgeLabel =
-    badge === "new" ? t("new") : badge === "bestseller" ? t("bestseller") : badge === "limited" ? t("limited") : badge === "sale" ? t("sale") : null;
-  const badgeTone = badge === "bestseller" ? "badge-plum" : badge === "sale" ? "badge-ink" : "badge-gold";
+    badge === "soldOut"
+      ? t("soldOut")
+      : badge === "new" ? t("new") : badge === "bestseller" ? t("bestseller") : badge === "limited" ? t("limited") : badge === "sale" ? t("sale") : null;
+  const badgeTone = badge === "bestseller" ? "badge-plum" : badge === "sale" || badge === "soldOut" ? "badge-ink" : "badge-gold";
 
   return (
     <article className="product-card group">
@@ -66,14 +70,16 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
           )}
         </Link>
         {badgeLabel && <span className={cn("badge product-badge", badgeTone)}>{badgeLabel}</span>}
-        <button
-          onClick={quickAdd}
-          aria-label={`${t("quickAdd")}: ${product.name}`}
-          title={added ? t("added") : t("quickAdd")}
-          className={cn("product-quick-add", added && "is-added")}
-        >
-          {added ? <Check className="h-4 w-4" strokeWidth={2} /> : <Plus className="h-4 w-4" strokeWidth={2} />}
-        </button>
+        {!soldOut && (
+          <button
+            onClick={quickAdd}
+            aria-label={`${t("quickAdd")}: ${product.name}`}
+            title={added ? t("added") : t("quickAdd")}
+            className={cn("product-quick-add", added && "is-added")}
+          >
+            {added ? <Check className="h-4 w-4" strokeWidth={2} /> : <Plus className="h-4 w-4" strokeWidth={2} />}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col pt-4">
@@ -102,8 +108,17 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
           {onSale && <span className="text-sm text-muted line-through">{money(product.compareAtCents!)}</span>}
         </p>
 
-        <button onClick={quickAdd} className={cn("btn btn-outline btn-sm mt-4 w-full", added && "!border-success !bg-success !text-white")}>
-          {added ? (
+        <button
+          onClick={quickAdd}
+          disabled={soldOut}
+          className={cn(
+            "btn btn-outline btn-sm mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60",
+            added && "!border-success !bg-success !text-white"
+          )}
+        >
+          {soldOut ? (
+            t("soldOut")
+          ) : added ? (
             <>
               <Check /> {t("added")}
             </>

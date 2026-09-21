@@ -267,6 +267,14 @@ const settingsSchema = z.object({
     })
     .partial()
     .optional(),
+  home: z
+    .object({
+      heroProductIds: z.array(z.string().min(1).max(64)).max(5),
+      heroLeadId: z.string().min(1).max(64).nullable(),
+      collectionLimit: z.number().int().min(4).max(24),
+    })
+    .partial()
+    .optional(),
   tax: z
     .object({
       rates: z.record(z.string().length(2), z.number().min(0).max(30)),

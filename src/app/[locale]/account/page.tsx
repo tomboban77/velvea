@@ -6,7 +6,16 @@ import { customerLogoutAction, resendVerificationAction } from "@/lib/actions/au
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/utils";
 import type { ResendVerificationStatus } from "@/lib/actions/auth";
-import { Package, LogOut, MailWarning, CheckCircle2 } from "lucide-react";
+import {
+  Package,
+  LogOut,
+  MailWarning,
+  CheckCircle2,
+  User,
+  MapPin,
+  KeyRound,
+  ChevronRight,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My Account", robots: { index: false, follow: false } };
@@ -57,16 +66,47 @@ export default async function AccountPage({
    * has been verified. Matching an unverified email meant registering with a
    * guest's address handed you their order history.
    */
-  const orders = await prisma.order
-    .findMany({
-      where: verified
-        ? { OR: [{ userId: user!.id }, { email: user!.email }] }
-        : { userId: user!.id },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-      include: { _count: { select: { items: true } } },
-    })
-    .catch(() => []);
+  const [orders, addressCount] = await Promise.all([
+    prisma.order
+      .findMany({
+        where: verified
+          ? { OR: [{ userId: user!.id }, { email: user!.email }] }
+          : { userId: user!.id },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: { _count: { select: { items: true } } },
+      })
+      .catch(() => []),
+    prisma.address.count({ where: { userId: user!.id } }).catch(() => 0),
+  ]);
+
+  const sections = [
+    {
+      href: "/account/profile" as const,
+      icon: User,
+      title: fr ? "Profil" : "Profile",
+      sub: fr ? "Nom et téléphone" : "Name and phone",
+    },
+    {
+      href: "/account/addresses" as const,
+      icon: MapPin,
+      title: fr ? "Adresses" : "Addresses",
+      sub:
+        addressCount === 0
+          ? fr
+            ? "Aucune adresse enregistrée"
+            : "No saved addresses"
+          : fr
+          ? `${addressCount} adresse${addressCount > 1 ? "s" : ""} enregistrée${addressCount > 1 ? "s" : ""}`
+          : `${addressCount} saved address${addressCount > 1 ? "es" : ""}`,
+    },
+    {
+      href: "/account/password" as const,
+      icon: KeyRound,
+      title: fr ? "Mot de passe" : "Password",
+      sub: fr ? "Changer votre mot de passe" : "Change your password",
+    },
+  ];
 
   return (
     <div className="container-x max-w-4xl py-14">
@@ -117,6 +157,26 @@ export default async function AccountPage({
           {RESEND_MESSAGES.verified[fr ? "fr" : "en"]}
         </p>
       )}
+
+      <h2 className="mt-10 mb-4 font-display text-2xl">{fr ? "Vos renseignements" : "Your details"}</h2>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {sections.map(({ href, icon: Icon, title, sub }) => (
+          <Link
+            key={href}
+            href={href}
+            className="group flex items-center gap-4 rounded-lg border border-line bg-white p-5 transition-colors hover:border-line-strong hover:bg-cream/30"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream text-ink-soft group-hover:bg-lilac group-hover:text-violet-deep">
+              <Icon className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-ink">{title}</span>
+              <span className="block truncate text-xs text-muted">{sub}</span>
+            </span>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        ))}
+      </div>
 
       <h2 className="mt-10 mb-4 font-display text-2xl">{fr ? "Vos commandes" : "Your orders"}</h2>
       {orders.length === 0 ? (

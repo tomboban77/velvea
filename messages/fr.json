@@ -384,7 +384,9 @@
     "emptyLede": "Nous composons cette collection. Explorez la gamme complète ou créez quelque chose sur mesure.",
     "filters": "Filtres",
     "showing": "{count} sur {total}",
-    "all": "Tous"
+    "all": "Tous",
+    "search": "Rechercher des paniers",
+    "searchPlaceholder": "Rechercher par nom…"
   },
   "custom": {
     "eyebrow": "Composer un panier",

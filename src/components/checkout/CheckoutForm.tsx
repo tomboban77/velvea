@@ -10,6 +10,7 @@ import { createCheckout, validateDiscountCode, type CartChange } from "@/lib/act
 import { quoteDelivery, type DeliveryQuote } from "@/lib/actions/delivery";
 import { Honeypot } from "@/components/ui/Honeypot";
 import { formatMoney, cn } from "@/lib/utils";
+import type { SavedAddress } from "@/lib/addresses";
 import type { DeliveryMethod } from "@prisma/client";
 
 export type StudioAddress = {
@@ -18,6 +19,30 @@ export type StudioAddress = {
   province: string;
   postalCode: string;
 };
+
+/** The signed-in customer, used only to prefill; guests get `null`. */
+export type CheckoutCustomer = {
+  email: string;
+  name: string;
+  phone: string;
+  addresses: SavedAddress[];
+};
+
+/** Copy a saved address into the delivery fields. */
+function addressFields(a: SavedAddress) {
+  return {
+    fullName: a.fullName,
+    line1: a.line1,
+    line2: a.line2 ?? "",
+    city: a.city,
+    postalCode: a.postalCode,
+  };
+}
+
+function addressSummary(a: SavedAddress): string {
+  const where = `${a.line1}, ${a.city}`;
+  return a.label ? `${a.label} — ${where}` : `${a.fullName} — ${where}`;
+}
 
 const ICONS: Record<DeliveryMethod, React.ComponentType<{ className?: string }>> = {
   PICKUP: Store,
@@ -28,14 +53,15 @@ const ICONS: Record<DeliveryMethod, React.ComponentType<{ className?: string }>>
 
 export function CheckoutForm({
   studio,
-  defaultEmail = "",
+  customer = null,
 }: {
   /** Where pickup orders are collected, and the address recorded against them. */
   studio: StudioAddress;
-  defaultEmail?: string;
+  customer?: CheckoutCustomer | null;
 }) {
   const t = useTranslations();
   const locale = useLocale();
+  const fr = locale === "fr";
   const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
   const [pending, startTransition] = useTransition();
@@ -43,23 +69,38 @@ export function CheckoutForm({
   const [changes, setChanges] = useState<CartChange[]>([]);
   const [company, setCompany] = useState("");
 
+  const saved = customer?.addresses ?? [];
+  const defaultSaved = saved.find((a) => a.isDefault) ?? null;
+
   const [f, setF] = useState({
-    email: defaultEmail,
-    phone: "",
-    fullName: "",
+    email: customer?.email ?? "",
+    phone: customer?.phone ?? "",
+    // The default saved address wins; otherwise the profile name is a fair
+    // guess at who is receiving it, and the customer can overtype either.
+    fullName: customer?.name ?? "",
     line1: "",
     line2: "",
     city: "",
     postalCode: "",
+    ...(defaultSaved ? addressFields(defaultSaved) : {}),
     giftMessage: "",
     deliveryDate: "",
     deliveryNotes: "",
   });
+  // "" means the customer is typing an address rather than using a saved one.
+  const [savedId, setSavedId] = useState(defaultSaved?.id ?? "");
   const [method, setMethod] = useState<DeliveryMethod | null>(null);
   const [code, setCode] = useState("");
   const [discount, setDiscount] = useState<{ label: string; cents: number; freeShip: boolean } | null>(null);
   const [codeMsg, setCodeMsg] = useState<string | null>(null);
   const set = (k: keyof typeof f, v: string) => setF((p) => ({ ...p, [k]: v }));
+
+  function chooseSaved(id: string) {
+    setSavedId(id);
+    const a = saved.find((x) => x.id === id);
+    if (!a) return;
+    setF((p) => ({ ...p, ...addressFields(a), phone: a.phone || p.phone }));
+  }
 
   // --- Delivery quote ------------------------------------------------------
   // Rates, eligibility and tax all come from the server, computed by the same
@@ -288,6 +329,29 @@ export function CheckoutForm({
 
         <Section title={isPickup ? "Who is collecting" : "Delivery address"}>
           <div className="space-y-3">
+            {!isPickup && saved.length > 0 && (
+              <div>
+                <label className="label" htmlFor="saved-address">
+                  {fr ? "Adresse enregistrée" : "Saved address"}
+                </label>
+                <select
+                  id="saved-address"
+                  className="field"
+                  value={savedId}
+                  onChange={(e) => chooseSaved(e.target.value)}
+                >
+                  <option value="">
+                    {fr ? "Entrer une autre adresse" : "Enter a different address"}
+                  </option>
+                  {saved.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {addressSummary(a)}
+                      {a.isDefault ? (fr ? " (par défaut)" : " (default)") : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <input required placeholder="Recipient full name" className="field"
               value={f.fullName} onChange={(e) => set("fullName", e.target.value)} />
             {isPickup ? (

@@ -119,6 +119,24 @@ export async function getProductsByCollection(
   }
 }
 
+/**
+ * Active products for a hand-picked list (the homepage hero), returned in the
+ * order the ids were given. Ids that are inactive, hidden or deleted drop out.
+ */
+export async function getProductsByIds(ids: string[]): Promise<ProductCard[]> {
+  if (!ids.length) return [];
+  try {
+    const rows = await prisma.product.findMany({
+      where: { id: { in: ids }, status: "ACTIVE", ...notHidden },
+      include: productInclude,
+    });
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    return ids.map((id) => byId.get(id)).filter((p): p is ProductCard => Boolean(p));
+  } catch {
+    return [];
+  }
+}
+
 export async function getAllProducts(opts?: {
   sort?: string;
   skip?: number;

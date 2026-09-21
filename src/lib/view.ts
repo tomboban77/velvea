@@ -13,10 +13,16 @@ export type ProductView = {
   rating: number;
   reviewCount: number;
   badges: string[];
+  /** Inventory exhausted, or every variant marked out of stock. Cards disable add-to-bag. */
+  soldOut: boolean;
 };
 
 export function toProductView(p: ProductCard, locale: string): ProductView {
+  const soldOut =
+    (p.inventory !== null && p.inventory <= 0) ||
+    (p.variants.length > 0 && p.variants.every((v) => !v.inStock));
   return {
+    soldOut,
     id: p.id,
     slug: p.slug,
     name: t(p.name, locale),

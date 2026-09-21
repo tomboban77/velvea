@@ -18,6 +18,7 @@ export async function Listing({
   breadcrumb,
   showOccasions = false,
   activeSlug,
+  searchable = false,
 }: {
   eyebrow?: string;
   title: string;
@@ -28,6 +29,8 @@ export async function Listing({
   /** show an occasion browse strip under the header (used on /baskets and occasion pages) */
   showOccasions?: boolean;
   activeSlug?: string;
+  /** Show a name search box in the filter bar (the page must honour the `q` param). */
+  searchable?: boolean;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("listing");
@@ -63,9 +66,11 @@ export async function Listing({
       </div>
 
       <div className="container-x pb-16 pt-4">
+        {/* With a search box the bar stays visible on an empty result so the term can be cleared. */}
+        {views.length === 0 && searchable && <FilterBar total={total} searchable />}
         {views.length > 0 ? (
           <>
-            <FilterBar total={total} />
+            <FilterBar total={total} searchable={searchable} />
             <div className="grid-products mt-8">
               {views.map((v, i) => (
                 <ProductCard key={v.id} product={v} priority={i < 5} />

@@ -12,7 +12,8 @@ import { Atelier } from "@/components/home/Atelier";
 import { Reviews } from "@/components/home/Reviews";
 import { Journal } from "@/components/home/Journal";
 import { Faq } from "@/components/home/Faq";
-import { getAllProducts, getFeaturedProducts } from "@/lib/queries";
+import { getAllProducts, getFeaturedProducts, getProductsByIds } from "@/lib/queries";
+import { getSettings } from "@/lib/settings";
 import { toProductView } from "@/lib/view";
 import { t as tc } from "@/lib/i18n-content";
 import { formatMoney } from "@/lib/utils";
@@ -24,11 +25,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations("collection");
 
-  const [{ products: all }, featured] = await Promise.all([getAllProducts({ take: 12 }), getFeaturedProducts(12)]);
+  const { home } = await getSettings();
+  const [{ products: all }, featured, picked] = await Promise.all([
+    getAllProducts({ take: Math.max(12, home.collectionLimit) }),
+    getFeaturedProducts(12),
+    getProductsByIds(home.heroProductIds),
+  ]);
 
-  // Hero shelf: featured baskets first (lead in the middle), topped up with the rest.
+  // Hero shelf: baskets picked in Admin -> Homepage first, then featured, then
+  // the rest, de-duplicated. Hero centres whichever product comes first, so the
+  // chosen lead is moved to the front.
   const seen = new Set<string>();
-  const heroRows = [...featured, ...all].filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true))).slice(0, 5);
+  const ordered = [...picked, ...featured, ...all].filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+  const leadIdx = home.heroLeadId ? ordered.findIndex((p) => p.id === home.heroLeadId) : -1;
+  if (leadIdx > 0) ordered.unshift(...ordered.splice(leadIdx, 1));
+  const heroRows = ordered.slice(0, 5);
   const heroProducts: HeroProduct[] = heroRows.map((p) => ({
     slug: p.slug,
     name: tc(p.name, locale),
@@ -38,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   }));
 
   // Tabs are only shown when they contain something and differ from "all".
-  const view = (rows: typeof all) => rows.slice(0, 10).map((p) => toProductView(p, locale));
+  const view = (rows: typeof all) => rows.slice(0, home.collectionLimit).map((p) => toProductView(p, locale));
   const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
   const candidates: (CollectionTab & { count: number })[] = [
     { key: "all", label: t("tabAll"), href: "/baskets", seeAll: t("seeAll", { label: t("tabAll").toLowerCase() }), products: view(all), count: all.length },
