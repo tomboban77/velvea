@@ -80,8 +80,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // `verified` was hard-coded false; it now reflects an actual paid order.
-    const verified = await hasPurchased(data.productId, subject, session?.sub);
+    // "Verified buyer" is only earned through a signed-in account whose email
+    // is confirmed. Matching on a typed-in email let anyone claim a stranger's
+    // purchase by guessing the address they ordered with.
+    const verifiedAccount = session
+      ? await prisma.user
+          .findUnique({ where: { id: session.sub }, select: { emailVerified: true } })
+          .then((u) => Boolean(u?.emailVerified))
+          .catch(() => false)
+      : false;
+    const verified = verifiedAccount
+      ? await hasPurchased(data.productId, session!.email, session!.sub)
+      : false;
 
     await prisma.review.create({
       data: {

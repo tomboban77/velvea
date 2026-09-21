@@ -8,6 +8,7 @@ import {
   sendOrderDelivered,
   sendOrderCancelled,
   sendOrderRefunded,
+  sendOwnerAlert,
   type OrderEmailData,
   type OrderEmailItem,
 } from "@/lib/email";
@@ -135,6 +136,12 @@ export async function markOrderPaid(
         },
       })
       .catch(() => {});
+    // The customer has been charged but the order stays PENDING: a human has to look.
+    await sendOwnerAlert(
+      `Payment amount mismatch on ${order.orderNumber}`,
+      `Stripe charged ${(opts.amountPaidCents / 100).toFixed(2)} CAD but the order total is ${(order.totalCents / 100).toFixed(2)} CAD. The order is held as PENDING. Check the payment in Stripe and either mark it paid or refund it.`,
+      `/admin/orders/${order.id}`
+    );
     return { settled: false, reason: "amount mismatch" };
   }
 
@@ -146,11 +153,35 @@ export async function markOrderPaid(
       ...(opts.paymentIntentId ? { stripePaymentIntentId: opts.paymentIntentId } : {}),
     },
   });
-  if (claimed.count !== 1) return { settled: false, reason: "already settled" };
+  if (claimed.count !== 1) {
+    // Normal when the webhook and the success page race: the loser lands here.
+    // Not normal when the order was cancelled first: the customer has paid for
+    // an order nobody will pack, so record it and alert the owner.
+    if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+      await prisma.orderEvent
+        .create({
+          data: {
+            orderId,
+            label: "Payment received on cancelled order",
+            note: "Stripe confirmed payment after this order was cancelled. Refund it in Stripe or reinstate it.",
+          },
+        })
+        .catch(() => {});
+      await sendOwnerAlert(
+        `Payment received on cancelled order ${order.orderNumber}`,
+        `The customer completed payment after the order was ${order.status.toLowerCase()}. Refund it in the Stripe dashboard, or contact the customer and reinstate the order.`,
+        `/admin/orders/${order.id}`
+      );
+    }
+    return { settled: false, reason: "already settled" };
+  }
 
-  await prisma.orderEvent.create({
-    data: { orderId, label: "Payment received", note: "Order confirmed" },
-  });
+  // The claim above is the point of no return; a failure writing the timeline
+  // must not turn into a webhook 500, which would make Stripe retry into an
+  // order that is now PAID and skip the stock commit and emails below.
+  await prisma.orderEvent
+    .create({ data: { orderId, label: "Payment received", note: "Order confirmed" } })
+    .catch((err) => console.error("[orders] timeline write failed:", err));
 
   await commitInventory(order.items);
 
@@ -158,29 +189,53 @@ export async function markOrderPaid(
   // so nothing is incremented here.
 
   const data = emailDataOf(order);
-  await sendOrderConfirmation(data);
+  const confirmed = await sendOrderConfirmation(data);
+  if (!confirmed) {
+    // The order is paid regardless; leave a trace so the owner can resend by hand.
+    await prisma.orderEvent
+      .create({ data: { orderId, label: "Confirmation email failed", note: `Could not send to ${order.email}` } })
+      .catch(() => {});
+  }
   await sendAdminOrderNotice(data, { paid: true });
   return { settled: true };
 }
 
-/** Move an order to CANCELLED, release its discount and return its stock. */
+/**
+ * Move an order to CANCELLED, release its discount and return its stock.
+ *
+ * Only unpaid orders can be cancelled here. A paid order has money attached,
+ * so it goes through the refund flow instead: a full refund moves it to
+ * REFUNDED and restores stock. Cancelling a PENDING order also expires its
+ * Stripe Checkout session so the customer cannot pay for it afterwards.
+ */
 export async function cancelOrder(
   orderId: string,
   opts: { reason?: string; notify?: boolean } = {}
-): Promise<{ cancelled: boolean }> {
+): Promise<{ cancelled: boolean; reason?: "not-found" | "already-closed" | "paid" }> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { items: true },
   });
-  if (!order || order.status === "CANCELLED" || order.status === "REFUNDED") {
-    return { cancelled: false };
+  if (!order) return { cancelled: false, reason: "not-found" };
+  if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+    return { cancelled: false, reason: "already-closed" };
   }
+  if (PAID_STATUSES.includes(order.status)) return { cancelled: false, reason: "paid" };
 
   const claimed = await prisma.order.updateMany({
-    where: { id: orderId, status: { notIn: ["CANCELLED", "REFUNDED"] } },
+    where: { id: orderId, status: "PENDING" },
     data: { status: "CANCELLED", cancelledAt: new Date() },
   });
-  if (claimed.count !== 1) return { cancelled: false };
+  if (claimed.count !== 1) return { cancelled: false, reason: "already-closed" };
+
+  if (order.stripeSessionId && isStripeConfigured()) {
+    try {
+      await getStripe().checkout.sessions.expire(order.stripeSessionId);
+    } catch {
+      // Already expired or completed. If it completed, markOrderPaid will
+      // notice the CANCELLED status and alert the owner.
+    }
+  }
 
   await prisma.orderEvent.create({
     data: { orderId, label: "Cancelled", note: opts.reason ?? null },
@@ -200,11 +255,22 @@ export async function cancelOrder(
   return { cancelled: true };
 }
 
-/** Record a refund (Stripe is the source of truth; this mirrors it locally). */
+/**
+ * Record a refund (Stripe is the source of truth; this mirrors it locally).
+ *
+ * `amountCents` is a delta by default (the admin refund control passes the
+ * amount just refunded). Stripe's `charge.refunded` event carries the
+ * *cumulative* `amount_refunded`, so the webhook passes `cumulative: true` and
+ * only the difference from what is already recorded is applied. Without that,
+ * an admin refund followed by its own webhook counted twice.
+ *
+ * The write is conditional on `refundedCents` still being what we read, so a
+ * webhook and an admin click landing together cannot both apply.
+ */
 export async function recordRefund(
   orderId: string,
   amountCents: number,
-  opts: { notify?: boolean } = {}
+  opts: { notify?: boolean; cumulative?: boolean } = {}
 ): Promise<{ recorded: boolean }> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -213,23 +279,29 @@ export async function recordRefund(
   if (!order) return { recorded: false };
 
   const alreadyRefunded = order.refundedCents;
-  const total = Math.min(order.totalCents, alreadyRefunded + amountCents);
+  const target = opts.cumulative ? amountCents : alreadyRefunded + amountCents;
+  const total = Math.min(order.totalCents, target);
   if (total <= alreadyRefunded) return { recorded: false };
 
   const full = total >= order.totalCents;
-  await prisma.order.update({
-    where: { id: orderId },
+  const claimed = await prisma.order.updateMany({
+    where: { id: orderId, refundedCents: alreadyRefunded },
     data: {
       refundedCents: total,
       ...(full ? { status: "REFUNDED" } : {}),
-      timeline: {
-        create: {
-          label: full ? "Refunded" : "Partially refunded",
-          note: `${(total - alreadyRefunded) / 100} CAD refunded`,
-        },
-      },
     },
   });
+  if (claimed.count !== 1) return { recorded: false };
+
+  await prisma.orderEvent
+    .create({
+      data: {
+        orderId,
+        label: full ? "Refunded" : "Partially refunded",
+        note: `${((total - alreadyRefunded) / 100).toFixed(2)} CAD refunded`,
+      },
+    })
+    .catch((err) => console.error("[orders] refund timeline write failed:", err));
 
   if (full && PAID_STATUSES.includes(order.status)) await restoreInventory(order.items);
 
@@ -250,6 +322,7 @@ export async function markOrderShipped(
   tracking: { carrier?: string | null; trackingNumber?: string | null; trackingUrl?: string | null },
   opts: { notify?: boolean } = {}
 ): Promise<void> {
+  await assertOpenOrder(orderId, "shipped");
   const order = await prisma.order.update({
     where: { id: orderId },
     data: {
@@ -282,11 +355,24 @@ export async function markOrderShipped(
   }
 }
 
+/**
+ * A cancelled or refunded order must not be moved along the fulfilment path,
+ * however two admin tabs race. Throws a message the admin UI can show.
+ */
+async function assertOpenOrder(orderId: string, verb: string): Promise<void> {
+  const current = await prisma.order.findUnique({ where: { id: orderId }, select: { status: true } });
+  if (!current) throw new Error("Order not found.");
+  if (current.status === "CANCELLED" || current.status === "REFUNDED") {
+    throw new Error(`This order is ${current.status.toLowerCase()} and cannot be ${verb}.`);
+  }
+}
+
 /** Mark an order delivered (or picked up) and let the customer know. */
 export async function markOrderDelivered(
   orderId: string,
   opts: { note?: string | null; notify?: boolean } = {}
 ): Promise<void> {
+  await assertOpenOrder(orderId, "marked delivered");
   const order = await prisma.order.update({
     where: { id: orderId },
     data: {

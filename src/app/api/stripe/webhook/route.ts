@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { markOrderPaid, cancelOrder, recordRefund } from "@/lib/actions/orders";
+import { sendOwnerAlert } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -109,7 +110,9 @@ export async function POST(req: NextRequest) {
         if (intentId) {
           const orderId = await orderIdFromPaymentIntent(stripe, intentId);
           if (orderId) {
-            await recordRefund(orderId, charge.amount_refunded, { notify: true });
+            // `amount_refunded` is the running total on the charge, not this
+            // refund's amount, so it is applied as a cumulative figure.
+            await recordRefund(orderId, charge.amount_refunded, { notify: true, cumulative: true });
           }
         }
         break;
@@ -129,6 +132,12 @@ export async function POST(req: NextRequest) {
                 note: `Stripe dispute ${dispute.id} — reason: ${dispute.reason}. Respond in the Stripe dashboard.`,
               },
             });
+            // Disputes have a response deadline; the owner must hear about it today.
+            await sendOwnerAlert(
+              "Payment disputed",
+              `A customer disputed a charge (reason: ${dispute.reason}). Respond in the Stripe dashboard before the deadline or the funds are lost.`,
+              `/admin/orders/${orderId}`
+            );
           }
         }
         break;
@@ -154,6 +163,11 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     console.error(`Webhook handler error (${event.type}):`, err);
+    // Stripe retries on 500 for up to three days; the owner should know it is happening.
+    await sendOwnerAlert(
+      `Stripe webhook failed (${event.type})`,
+      `The webhook handler threw while processing ${event.type} (event ${event.id}). Stripe will retry. Check the Vercel logs and the Stripe dashboard.`
+    );
     return NextResponse.json({ error: "Handler error" }, { status: 500 });
   }
 

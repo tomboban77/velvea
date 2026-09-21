@@ -55,6 +55,11 @@ const EN = {
     { name: "Vercel", text: " hosts the website and provides cookieless analytics." },
     { name: "Neon", text: " hosts our database." },
     { name: "Cloudinary", text: " stores and serves product images." },
+    { name: "Upstash", text: " provides rate limiting; it receives your IP address for a few minutes to stop abuse." },
+    {
+      name: "Cloudflare Turnstile",
+      text: " provides bot protection on our public forms; it receives your IP address and browser signals.",
+    },
   ],
   providersCouriers:
     "Delivery partners and couriers receive the recipient's name, address and phone number for orders they carry.",
@@ -63,11 +68,11 @@ const EN = {
 
   cookiesH: "Cookies and similar technologies",
   cookiesP:
-    "We keep this minimal. A secure session cookie keeps you signed in to your account. Your browser's local storage remembers your cart and preferences on your own device. We use Vercel Analytics, which measures page views without cookies and does not identify or track individual visitors across sites. We do not use advertising cookies or trackers.",
+    "We keep this minimal. A secure session cookie keeps you signed in to your account. Your browser's local storage remembers your cart and preferences on your own device. We use Vercel Analytics, which measures page views without cookies and does not identify or track individual visitors across sites. Cloudflare Turnstile may set a short-lived cookie on the forms it protects while it checks that you are not a bot. We do not use advertising cookies or trackers.",
 
   retentionH: "How long we keep information",
   retentionP:
-    "Order records are kept for seven years to meet Canadian tax and accounting requirements. Account information is kept until you ask us to delete your account. Contact and quote messages are kept for as long as needed to deal with them and for a reasonable period afterwards. Information we no longer need is deleted or anonymized.",
+    "Order records are kept for seven years to meet Canadian tax and accounting requirements. Account information is kept until you ask us to delete your account. Contact and quote messages are kept for as long as needed to deal with them and for a reasonable period afterwards. Information we no longer need is deleted or anonymized on request or during periodic review.",
 
   securityH: "How we protect it",
   securityP:
@@ -152,6 +157,14 @@ const FR: typeof EN = {
     { name: "Vercel", text: " héberge le site Web et fournit des analyses sans témoins." },
     { name: "Neon", text: " héberge notre base de données." },
     { name: "Cloudinary", text: " stocke et diffuse les images de produits." },
+    {
+      name: "Upstash",
+      text: " assure la limitation du débit; il reçoit votre adresse IP pendant quelques minutes afin de prévenir les abus.",
+    },
+    {
+      name: "Cloudflare Turnstile",
+      text: " protège nos formulaires publics contre les robots; il reçoit votre adresse IP et des signaux de votre navigateur.",
+    },
   ],
   providersCouriers:
     "Les partenaires de livraison et les messagers reçoivent le nom, l'adresse et le numéro de téléphone du destinataire pour les commandes qu'ils transportent.",
@@ -160,11 +173,11 @@ const FR: typeof EN = {
 
   cookiesH: "Témoins (cookies) et technologies similaires",
   cookiesP:
-    "Nous en faisons un usage minimal. Un témoin de session sécurisé vous garde connecté à votre compte. Le stockage local de votre navigateur mémorise votre panier et vos préférences sur votre propre appareil. Nous utilisons Vercel Analytics, qui mesure les consultations de pages sans témoins et n'identifie ni ne suit les visiteurs individuels d'un site à l'autre. Nous n'utilisons aucun témoin publicitaire ni traceur.",
+    "Nous en faisons un usage minimal. Un témoin de session sécurisé vous garde connecté à votre compte. Le stockage local de votre navigateur mémorise votre panier et vos préférences sur votre propre appareil. Nous utilisons Vercel Analytics, qui mesure les consultations de pages sans témoins et n'identifie ni ne suit les visiteurs individuels d'un site à l'autre. Cloudflare Turnstile peut déposer un témoin de courte durée sur les formulaires qu'il protège pendant qu'il vérifie que vous n'êtes pas un robot. Nous n'utilisons aucun témoin publicitaire ni traceur.",
 
   retentionH: "Durée de conservation des renseignements",
   retentionP:
-    "Les dossiers de commande sont conservés pendant sept ans afin de respecter les exigences fiscales et comptables canadiennes. Les renseignements de compte sont conservés jusqu'à ce que vous nous demandiez de supprimer votre compte. Les messages de contact et les demandes de devis sont conservés aussi longtemps que nécessaire pour y donner suite, puis pendant une période raisonnable. Les renseignements dont nous n'avons plus besoin sont supprimés ou anonymisés.",
+    "Les dossiers de commande sont conservés pendant sept ans afin de respecter les exigences fiscales et comptables canadiennes. Les renseignements de compte sont conservés jusqu'à ce que vous nous demandiez de supprimer votre compte. Les messages de contact et les demandes de devis sont conservés aussi longtemps que nécessaire pour y donner suite, puis pendant une période raisonnable. Les renseignements dont nous n'avons plus besoin sont supprimés ou anonymisés sur demande ou lors d'une révision périodique.",
 
   securityH: "Comment nous les protégeons",
   securityP:

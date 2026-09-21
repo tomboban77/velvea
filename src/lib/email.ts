@@ -5,10 +5,29 @@ import { escapeHtml, escapeHtmlMultiline } from "./html";
 import { formatStoreDate } from "./dates";
 import { siteUrl } from "./env";
 import { orderUrl } from "./tokens";
+import { getSettings, type SiteSettings } from "./settings";
 
 const FROM = process.env.EMAIL_FROM || "Velvea <hello@velvea.ca>";
 const REPLY_TO = process.env.EMAIL_REPLY_TO || process.env.ORDER_NOTIFY_EMAIL || "";
 const SITE = siteUrl();
+
+/**
+ * Placeholder that `shell()` leaves in the footer. `shell()` is synchronous
+ * and called from every template, so the business identification (name,
+ * mailing address, phone, email — required on commercial email by CASL and on
+ * order confirmations by Ontario's consumer regulation) is filled in by
+ * `send()`, which can await the DB-backed settings.
+ */
+const FOOTER_TOKEN = "{{VELVEA_FOOTER}}";
+
+function footerHtml(settings: SiteSettings): string {
+  const c = settings.contact;
+  const address = `${escapeHtml(c.addressLine)}, ${escapeHtml(c.city)}, ${escapeHtml(c.province)} ${escapeHtml(
+    c.postalCode
+  )}`;
+  const email = escapeHtml(c.email);
+  return `Velvea · ${address} · ${escapeHtml(c.phone)} · <a href="mailto:${email}" style="color:#8a8072">${email}</a> · <a href="${SITE}" style="color:#b0894e">velvea.ca</a>`;
+}
 
 /** Every customer-facing string lives here so EN and FR stay in step. */
 type Lang = "en" | "fr";
@@ -36,7 +55,15 @@ function bareAddress(value: string): string {
  * resolved `error` field rather than by throwing, so that has to be checked
  * explicitly or a refused email disappears without a trace.
  */
-async function send(to: string, subject: string, html: string): Promise<boolean> {
+async function send(
+  to: string,
+  subject: string,
+  html: string,
+  headers?: Record<string, string>
+): Promise<boolean> {
+  // Never throws: getSettings falls back to defaults when the DB is unreachable.
+  const settings = await getSettings();
+  html = html.split(FOOTER_TOKEN).join(footerHtml(settings));
   const resend = client();
   if (!resend) {
     console.log(`\n[email not sent - RESEND_API_KEY missing]\n  to: ${to}\n  subject: ${subject}\n`);
@@ -49,6 +76,7 @@ async function send(to: string, subject: string, html: string): Promise<boolean>
       subject,
       html,
       ...(REPLY_TO ? { replyTo: bareAddress(REPLY_TO) } : {}),
+      ...(headers ? { headers } : {}),
     });
     if (error) {
       console.error(
@@ -70,6 +98,28 @@ function adminRecipient(): string {
   return to ? bareAddress(to) : "";
 }
 
+/**
+ * Something went wrong with money or a webhook and a person needs to look.
+ * Goes to the order-notification inbox. Never throws: an alert failing must
+ * not take down the code path that raised it.
+ */
+export async function sendOwnerAlert(subject: string, text: string, adminPath?: string): Promise<boolean> {
+  const to = adminRecipient();
+  if (!to) {
+    console.error(`[alert not sent - no ORDER_NOTIFY_EMAIL] ${subject}: ${text}`);
+    return false;
+  }
+  try {
+    const body = `<p style="color:#514a40">${escapeHtmlMultiline(text)}</p>${
+      adminPath ? `<p><a href="${escapeHtml(`${SITE}${adminPath}`)}">Open in admin</a></p>` : ""
+    }`;
+    return await send(to, `[Velvea alert] ${subject}`, shell(subject, body, "en"));
+  } catch (err) {
+    console.error("[alert] failed:", err);
+    return false;
+  }
+}
+
 function shell(title: string, body: string, locale?: string | null, footerExtra = ""): string {
   return `<!doctype html><html lang="${lang(locale)}"><body style="margin:0;background:#fbf8f2;font-family:Helvetica,Arial,sans-serif;color:#211b15">
   <div style="max-width:560px;margin:0 auto;padding:32px 24px">
@@ -81,7 +131,7 @@ function shell(title: string, body: string, locale?: string | null, footerExtra 
       ${body}
     </div>
     <p style="text-align:center;color:#8a8072;font-size:12px;margin-top:20px">
-      Velvea · Mississauga, Ontario · <a href="${SITE}" style="color:#b0894e">velvea.ca</a>${footerExtra}
+      ${FOOTER_TOKEN}${footerExtra}
     </p>
   </div></body></html>`;
 }
@@ -267,7 +317,7 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
     )} <a href="${SITE}/terms" style="color:#b0894e">${escapeHtml(
       L("Terms of Service", "Conditions d'utilisation")
     )}</a></p>`;
-  await send(
+  return send(
     data.email,
     L(`Your Velvea order ${data.orderNumber}`, `Votre commande Velvea ${data.orderNumber}`),
     shell(L("Order confirmed", "Commande confirmée"), body, data.locale)
@@ -642,6 +692,11 @@ export async function sendNewsletterWelcome(data: {
   await send(
     data.email,
     L("Welcome to Velvea", "Bienvenue chez Velvea"),
-    shell(L("Welcome", "Bienvenue"), body, data.locale, footer)
+    shell(L("Welcome", "Bienvenue"), body, data.locale, footer),
+    // RFC 8058 one-click unsubscribe; the route accepts GET and POST.
+    {
+      "List-Unsubscribe": `<${unsubscribe}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    }
   );
 }

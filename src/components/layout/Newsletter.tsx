@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { ArrowRight, Check } from "lucide-react";
 import { Honeypot } from "@/components/ui/Honeypot";
 import { Turnstile, TURNSTILE_ENABLED } from "@/components/ui/Turnstile";
@@ -113,7 +114,16 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
         </form>
       )}
       <p className={cn("mt-3 text-xs", dark ? "text-white/55" : "text-muted")}>
-        {state === "error" ? <span className={dark ? "text-gold-pale" : "text-danger"}>{t("error")}</span> : t("consent")}
+        {state === "error" ? (
+          <span className={dark ? "text-gold-pale" : "text-danger"}>{t("error")}</span>
+        ) : (
+          <>
+            {t("consent")}{" "}
+            <Link href="/privacy" className="underline underline-offset-2">
+              {t("privacyLink")}
+            </Link>
+          </>
+        )}
       </p>
     </div>
   );

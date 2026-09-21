@@ -7,15 +7,18 @@ import { updateOrderStatus, shipOrder, addOrderNote, refundOrder } from "@/lib/a
 import { formatMoney } from "@/lib/utils";
 import type { OrderStatus } from "@prisma/client";
 
+/**
+ * PENDING and REFUNDED are outcomes, not choices: payment and refunds are
+ * recorded by Stripe (or the Refund control), never by picking a status.
+ * PAID stays for manual payments and is ADMIN-only on the server.
+ */
 const STATUSES: OrderStatus[] = [
-  "PENDING",
   "PAID",
   "PROCESSING",
   "FULFILLED",
   "SHIPPED",
   "DELIVERED",
   "CANCELLED",
-  "REFUNDED",
 ];
 
 /** Statuses whose side effects (email, stock, refund) need an explicit choice. */
@@ -67,6 +70,13 @@ export function OrderStatusControl({
         className="field w-full"
         disabled={pending}
       >
+        {/* The current status is shown even when it is not a pickable one
+            (PENDING, REFUNDED), so the dropdown never misrepresents the order. */}
+        {!STATUSES.includes(current) && (
+          <option value={current} disabled>
+            {current} (current)
+          </option>
+        )}
         {STATUSES.map((s) => (
           <option key={s} value={s}>
             {s}

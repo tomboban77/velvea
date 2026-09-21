@@ -372,6 +372,8 @@ export function ProductDetail({
                     </li>
                   ))}
                 </ul>
+                {/* Allergen disclosure: items are packed together and labels change without notice. */}
+                <p className="mt-4 text-xs text-muted">{t("allergen")}</p>
               </div>
             )}
 

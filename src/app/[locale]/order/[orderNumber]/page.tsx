@@ -3,7 +3,7 @@ import { Link } from "@/i18n/routing";
 import { CheckCircle2, Clock, Package, Truck, Home, Lock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { settleFromSession } from "@/lib/actions/orders";
-import { getSession, isAdminRole } from "@/lib/auth";
+import { getSession, getVerifiedAdmin } from "@/lib/auth";
 import { verifyOrderToken } from "@/lib/tokens";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
@@ -59,7 +59,9 @@ export default async function OrderPage({
             .then((u) => u?.emailVerified)
             .catch(() => null)
         )));
-  const isAdmin = isAdminRole(session?.role);
+  // Re-checked against the database, not the token, so a demoted account loses
+  // access to customer orders immediately rather than when its cookie expires.
+  const isAdmin = session ? Boolean(await getVerifiedAdmin()) : false;
 
   const authorized = Boolean(order) && (ownsViaSession || ownsViaToken || ownsViaAccount || isAdmin);
 

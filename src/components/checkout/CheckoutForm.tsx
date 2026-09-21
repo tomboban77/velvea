@@ -213,7 +213,13 @@ export function CheckoutForm({
       setCodeMsg(res.label!);
     } else {
       setDiscount(null);
-      setCodeMsg(res.reason ? `Not applied: ${res.reason}` : "Code not valid");
+      setCodeMsg(
+        res.reason
+          ? `${fr ? "Non appliqué" : "Not applied"}: ${res.reason}`
+          : fr
+          ? "Code non valide"
+          : "Code not valid"
+      );
     }
   }
 
@@ -222,7 +228,11 @@ export function CheckoutForm({
     setError(null);
     setChanges([]);
     if (!method) {
-      setError("Enter a postal code to see delivery options.");
+      setError(
+        fr
+          ? "Entrez un code postal pour voir les options de livraison."
+          : "Enter a postal code to see delivery options."
+      );
       return;
     }
     // A pickup order is collected here, so the studio is the address recorded
@@ -245,35 +255,47 @@ export function CheckoutForm({
           postalCode: f.postalCode,
         };
     startTransition(async () => {
-      const res = await createCheckout({
-        email: f.email,
-        phone: f.phone,
-        deliveryMethod: method,
-        shipping: {
-          fullName: f.fullName,
-          ...address,
-          country: "CA",
+      // A thrown action (network drop, server crash) would otherwise leave the
+      // button spinning with no message; only a *returned* error is handled below.
+      let res: Awaited<ReturnType<typeof createCheckout>>;
+      try {
+        res = await createCheckout({
+          email: f.email,
           phone: f.phone,
-        },
-        giftMessage: f.giftMessage,
-        deliveryDate: f.deliveryDate,
-        deliveryNotes: f.deliveryNotes,
-        discountCode: discount ? code : "",
-        locale: locale === "fr" ? "fr" : "en",
-        company,
-        items: items.map((i) => ({
-          giftMessage: i.giftMessage,
-          productId: i.productId,
-          variantId: i.variantId,
-          slug: i.slug,
-          name: i.name,
-          unitPriceCents: i.unitPriceCents,
-          quantity: i.quantity,
-          isCustom: i.isCustom,
-          customConfig: i.customConfig,
-          image: i.image,
-        })),
-      });
+          deliveryMethod: method,
+          shipping: {
+            fullName: f.fullName,
+            ...address,
+            country: "CA",
+            phone: f.phone,
+          },
+          giftMessage: f.giftMessage,
+          deliveryDate: f.deliveryDate,
+          deliveryNotes: f.deliveryNotes,
+          discountCode: discount ? code : "",
+          locale: locale === "fr" ? "fr" : "en",
+          company,
+          items: items.map((i) => ({
+            giftMessage: i.giftMessage,
+            productId: i.productId,
+            variantId: i.variantId,
+            slug: i.slug,
+            name: i.name,
+            unitPriceCents: i.unitPriceCents,
+            quantity: i.quantity,
+            isCustom: i.isCustom,
+            customConfig: i.customConfig,
+            image: i.image,
+          })),
+        });
+      } catch {
+        setError(
+          fr
+            ? "Impossible de lancer le paiement pour le moment. Veuillez réessayer."
+            : "We couldn't start the payment right now. Please try again."
+        );
+        return;
+      }
 
       if (!res.ok) {
         setError(res.error);
@@ -298,7 +320,7 @@ export function CheckoutForm({
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-cream">
           <ShoppingBag className="h-7 w-7 text-muted" />
         </div>
-        <h1 className="mt-5 font-display text-3xl">Your bag is empty</h1>
+        <h1 className="mt-5 font-display text-3xl">{fr ? "Votre sac est vide" : "Your bag is empty"}</h1>
         <Link href="/baskets" className="btn btn-primary mt-6">
           {t("common.shopGiftBaskets")}
         </Link>
@@ -314,20 +336,29 @@ export function CheckoutForm({
         <div>
           <h1 className="font-display text-4xl">{t("common.checkout")}</h1>
           <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
-            <Lock className="h-3.5 w-3.5" /> Secure checkout · CAD
+            <Lock className="h-3.5 w-3.5" /> {fr ? "Paiement sécurisé · CAD" : "Secure checkout · CAD"}
           </p>
         </div>
 
         <Section title="Contact">
           <div className="grid gap-3 sm:grid-cols-2">
-            <input required type="email" placeholder="Email" className="field"
+            <input required type="email" id="checkout-email" autoComplete="email"
+              placeholder={fr ? "Courriel" : "Email"} aria-label={fr ? "Courriel" : "Email"} className="field"
               value={f.email} onChange={(e) => set("email", e.target.value)} />
-            <input placeholder="Phone (for delivery)" className="field"
+            <input id="checkout-phone" type="tel" autoComplete="tel"
+              placeholder={fr ? "Téléphone (pour la livraison)" : "Phone (for delivery)"}
+              aria-label={fr ? "Téléphone (pour la livraison)" : "Phone (for delivery)"} className="field"
               value={f.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
         </Section>
 
-        <Section title={isPickup ? "Who is collecting" : "Delivery address"}>
+        <Section
+          title={
+            isPickup
+              ? fr ? "Qui vient chercher la commande" : "Who is collecting"
+              : fr ? "Adresse de livraison" : "Delivery address"
+          }
+        >
           <div className="space-y-3">
             {!isPickup && saved.length > 0 && (
               <div>
@@ -352,29 +383,36 @@ export function CheckoutForm({
                 </select>
               </div>
             )}
-            <input required placeholder="Recipient full name" className="field"
+            <input required id="checkout-full-name" autoComplete="name"
+              placeholder={fr ? "Nom complet du destinataire" : "Recipient full name"}
+              aria-label={fr ? "Nom complet du destinataire" : "Recipient full name"} className="field"
               value={f.fullName} onChange={(e) => set("fullName", e.target.value)} />
             {isPickup ? (
               <div className="rounded-lg border border-line bg-cream/50 px-4 py-3 text-sm">
-                <p className="font-medium text-ink">Collect from our studio</p>
+                <p className="font-medium text-ink">{fr ? "À récupérer à notre atelier" : "Collect from our studio"}</p>
                 <p className="mt-0.5 text-muted">
                   {studio.addressLine}, {studio.city}, {studio.province} {studio.postalCode}
                 </p>
               </div>
             ) : (
               <>
-                <input required placeholder="Street address" className="field"
+                <input required id="checkout-line1" autoComplete="address-line1"
+                  placeholder={fr ? "Adresse" : "Street address"} aria-label={fr ? "Adresse" : "Street address"} className="field"
                   value={f.line1} onChange={(e) => set("line1", e.target.value)} />
-                <input placeholder="Apartment, suite (optional)" className="field"
+                <input id="checkout-line2" autoComplete="address-line2"
+                  placeholder={fr ? "Appartement, bureau (facultatif)" : "Apartment, suite (optional)"}
+                  aria-label={fr ? "Appartement, bureau (facultatif)" : "Apartment, suite (optional)"} className="field"
                   value={f.line2} onChange={(e) => set("line2", e.target.value)} />
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <input required placeholder="City" className="field"
+                  <input required id="checkout-city" autoComplete="address-level2"
+                    placeholder={fr ? "Ville" : "City"} aria-label={fr ? "Ville" : "City"} className="field"
                     value={f.city} onChange={(e) => set("city", e.target.value)} />
                   {/* No province selector: the postal code already determines
                       it, and a dropdown that can disagree with the address is
                       how an order to Toronto got taxed at another province's
                       rate. */}
-                  <input required placeholder="Postal code" className="field uppercase"
+                  <input required id="checkout-postal-code" autoComplete="postal-code"
+                    placeholder={fr ? "Code postal" : "Postal code"} aria-label={fr ? "Code postal" : "Postal code"} className="field uppercase"
                     value={f.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
                 </div>
               </>
@@ -382,13 +420,16 @@ export function CheckoutForm({
           </div>
         </Section>
 
-        <Section title="Delivery method">
+        <Section title={fr ? "Mode de livraison" : "Delivery method"}>
           {/* Always render the postal-code field above, even for pickup, so the
               customer can switch back without the options vanishing. */}
           {isPickup && (
             <div className="mb-3">
-              <label className="label">Postal code (for delivery options)</label>
-              <input placeholder="Postal code" className="field uppercase"
+              <label className="label" htmlFor="pickup-postal-code">
+                {fr ? "Code postal (pour les options de livraison)" : "Postal code (for delivery options)"}
+              </label>
+              <input id="pickup-postal-code" autoComplete="postal-code"
+                placeholder={fr ? "Code postal" : "Postal code"} className="field uppercase"
                 value={f.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
             </div>
           )}
@@ -397,10 +438,13 @@ export function CheckoutForm({
             <div className="rounded-lg border border-dashed border-line px-4 py-6 text-center text-sm text-muted">
               {quoting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Checking your address…
+                  <Loader2 className="h-4 w-4 animate-spin" />{" "}
+                  {fr ? "Vérification de votre adresse…" : "Checking your address…"}
                 </span>
               ) : quote && !quote.ok ? (
                 quote.message
+              ) : fr ? (
+                "Entrez un code postal pour voir les options et les tarifs de livraison."
               ) : (
                 "Enter a postal code to see delivery options and pricing."
               )}
@@ -423,13 +467,13 @@ export function CheckoutForm({
 
           {quote?.ok ? (
             <p className="mt-2 text-xs text-muted">
-              Delivering to {quote.zoneName}
-              {quoting && " · updating…"}
+              {fr ? "Livraison vers" : "Delivering to"} {quote.zoneName}
+              {quoting && (fr ? " · mise à jour…" : " · updating…")}
             </p>
           ) : (
             quote && (
               <p className="mt-2 text-xs text-muted">
-                {quoting ? "Checking your address…" : quote.message}
+                {quoting ? (fr ? "Vérification de votre adresse…" : "Checking your address…") : quote.message}
               </p>
             )
           )}
@@ -443,30 +487,40 @@ export function CheckoutForm({
             >
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>
-                {blockedItems.join(", ")} {blockedItems.length > 1 ? "are" : "is"} too
-                perishable to ship. Choose local delivery or pickup.
+                {fr
+                  ? `${blockedItems.join(", ")} ${blockedItems.length > 1 ? "sont trop périssables pour être expédiés" : "est trop périssable pour être expédié"}. Choisissez la livraison locale ou le ramassage.`
+                  : `${blockedItems.join(", ")} ${blockedItems.length > 1 ? "are" : "is"} too perishable to ship. Choose local delivery or pickup.`}
               </span>
             </p>
           )}
         </Section>
 
-        <Section title="Gift options">
+        <Section title={fr ? "Options cadeau" : "Gift options"}>
           {items.some((i) => i.giftMessage) && (
             <p className="mb-2 text-xs text-muted">
-              Baskets with their own card message keep it. This one covers anything without.
+              {fr
+                ? "Les paniers qui ont déjà leur propre message le conservent. Celui-ci s'applique aux autres."
+                : "Baskets with their own card message keep it. This one covers anything without."}
             </p>
           )}
-          <textarea rows={3} placeholder="Add a gift message (printed on a card)…" className="field resize-y"
+          <textarea rows={3} id="checkout-gift-message"
+            placeholder={fr ? "Ajoutez un message-cadeau (imprimé sur une carte)…" : "Add a gift message (printed on a card)…"}
+            aria-label={fr ? "Message-cadeau" : "Gift message"} className="field resize-y"
             value={f.giftMessage} onChange={(e) => set("giftMessage", e.target.value)} />
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="label">Preferred delivery date</label>
-              <input type="date" className="field"
+              <label className="label" htmlFor="checkout-delivery-date">
+                {fr ? "Date de livraison souhaitée" : "Preferred delivery date"}
+              </label>
+              <input type="date" id="checkout-delivery-date" className="field"
                 value={f.deliveryDate} onChange={(e) => set("deliveryDate", e.target.value)} />
             </div>
             <div>
-              <label className="label">Delivery notes</label>
-              <input placeholder="Buzz code, leave at door…" className="field"
+              <label className="label" htmlFor="checkout-delivery-notes">
+                {fr ? "Consignes de livraison" : "Delivery notes"}
+              </label>
+              <input id="checkout-delivery-notes"
+                placeholder={fr ? "Code d'interphone, laisser à la porte…" : "Buzz code, leave at door…"} className="field"
                 value={f.deliveryNotes} onChange={(e) => set("deliveryNotes", e.target.value)} />
             </div>
           </div>
@@ -476,7 +530,7 @@ export function CheckoutForm({
       {/* right: summary */}
       <div className="lg:sticky lg:top-24 lg:self-start">
         <div className="rounded-lg border border-line bg-white p-6">
-          <h2 className="font-display text-xl">Order summary</h2>
+          <h2 className="font-display text-xl">{fr ? "Résumé de la commande" : "Order summary"}</h2>
           <ul className="mt-4 divide-y divide-line">
             {items.map((i) => (
               <li key={i.id} className="flex gap-3 py-3">
@@ -512,11 +566,12 @@ export function CheckoutForm({
           <div className="mt-4 flex gap-2">
             <div className="relative flex-1">
               <Tag className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-              <input placeholder="Discount code" className="field pl-9 uppercase"
+              <input id="checkout-discount-code"
+                placeholder={fr ? "Code promo" : "Discount code"} aria-label={fr ? "Code promo" : "Discount code"} className="field pl-9 uppercase"
                 value={code} onChange={(e) => setCode(e.target.value)} />
             </div>
             <button type="button" onClick={applyCode} className="btn btn-outline btn-sm">
-              Apply
+              {fr ? "Appliquer" : "Apply"}
             </button>
           </div>
           {codeMsg && (
@@ -526,18 +581,18 @@ export function CheckoutForm({
           )}
 
           <dl className="mt-5 space-y-2 border-t border-line pt-4 text-sm">
-            <Row label="Subtotal" value={formatMoney(subtotalCents)} />
+            <Row label={fr ? "Sous-total" : "Subtotal"} value={formatMoney(subtotalCents)} />
             {totals.discountCents > 0 && (
-              <Row label="Discount" value={`−${formatMoney(totals.discountCents)}`} accent />
+              <Row label={fr ? "Rabais" : "Discount"} value={`−${formatMoney(totals.discountCents)}`} accent />
             )}
             <Row
-              label={isPickup ? "Pickup" : "Delivery"}
-              value={totals.shippingCents ? formatMoney(totals.shippingCents) : "Free"}
+              label={isPickup ? (fr ? "Ramassage" : "Pickup") : fr ? "Livraison" : "Delivery"}
+              value={totals.shippingCents ? formatMoney(totals.shippingCents) : fr ? "Gratuit" : "Free"}
             />
             {/* Hidden while the rate is zero. A "Tax $0.00" line on a receipt
                 reads as an error, and we are not registered to charge it. */}
             {totals.rate > 0 && (
-              <Row label={`Tax (${totals.rate}%)`} value={formatMoney(totals.taxCents)} />
+              <Row label={fr ? `Taxes (${totals.rate} %)` : `Tax (${totals.rate}%)`} value={formatMoney(totals.taxCents)} />
             )}
           </dl>
           <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
@@ -594,15 +649,19 @@ export function CheckoutForm({
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
             {pending
-              ? "Processing…"
+              ? fr ? "Traitement…" : "Processing…"
               : !method
-              ? "Enter a postal code"
+              ? fr ? "Entrez un code postal" : "Enter a postal code"
               : shippingBlocked
-              ? "Choose local delivery or pickup"
+              ? fr ? "Choisissez la livraison locale ou le ramassage" : "Choose local delivery or pickup"
+              : fr
+              ? `Payer ${formatMoney(totals.totalCents)}`
               : `Pay ${formatMoney(totals.totalCents)}`}
           </button>
           <p className="mt-3 text-center text-xs text-muted">
-            Taxes and delivery are finalized on this page. You can review everything before paying.
+            {fr
+              ? "Les taxes et la livraison sont finalisées sur cette page. Vous pouvez tout vérifier avant de payer."
+              : "Taxes and delivery are finalized on this page. You can review everything before paying."}
           </p>
         </div>
       </div>
@@ -643,6 +702,7 @@ function MethodOption({
   sub: string;
   price: number;
 }) {
+  const fr = useLocale() === "fr";
   return (
     <button
       type="button"
@@ -659,7 +719,7 @@ function MethodOption({
         <span className="block text-sm font-semibold text-ink">{title}</span>
         <span className="block text-xs text-muted">{sub}</span>
       </span>
-      <span className="text-sm font-semibold text-ink">{price ? formatMoney(price) : "Free"}</span>
+      <span className="text-sm font-semibold text-ink">{price ? formatMoney(price) : fr ? "Gratuit" : "Free"}</span>
     </button>
   );
 }

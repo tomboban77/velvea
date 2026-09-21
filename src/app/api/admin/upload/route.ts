@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession, isAdminRole } from "@/lib/auth";
+import { getVerifiedAdmin } from "@/lib/auth";
+import { can } from "@/lib/permissions";
 import { isCloudinaryConfigured, uploadImage } from "@/lib/cloudinary";
+
+/** Cloudinary folders the admin UI may write into: "velvea" or one level below it. */
+const FOLDER_PATTERN = /^velvea(\/[a-z0-9-]{1,40})?$/;
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -14,8 +18,10 @@ export const maxDuration = 30;
 const MAX_BYTES = 4 * 1024 * 1024; // 4MB
 
 export async function POST(req: NextRequest) {
-  const session = await getSession();
-  if (!session || !isAdminRole(session.role)) {
+  // Re-reads the role from the database so a demoted user's still-valid token
+  // cannot keep uploading; STAFF need the products permission like elsewhere.
+  const admin = await getVerifiedAdmin();
+  if (!admin || !can(admin.role, "products:write")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!isCloudinaryConfigured()) {
@@ -29,6 +35,9 @@ export async function POST(req: NextRequest) {
     const form = await req.formData();
     const file = form.get("file");
     const folder = (form.get("folder") as string) || "velvea";
+    if (!FOLDER_PATTERN.test(folder)) {
+      return NextResponse.json({ error: "Invalid folder" }, { status: 400 });
+    }
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }

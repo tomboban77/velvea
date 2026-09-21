@@ -10,7 +10,13 @@ import { clearZoneCache } from "@/lib/zones";
 import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
-import { cancelOrder, markOrderShipped, markOrderDelivered, recordRefund } from "@/lib/actions/orders";
+import {
+  cancelOrder,
+  markOrderPaid,
+  markOrderShipped,
+  markOrderDelivered,
+  recordRefund,
+} from "@/lib/actions/orders";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 /**
@@ -75,13 +81,38 @@ const orderStatusSchema = z.object({
 });
 
 export async function updateOrderStatus(input: z.input<typeof orderStatusSchema>) {
-  await guard("orders:write");
+  const admin = await guard("orders:write");
   const data = parse(orderStatusSchema, input);
 
-  // CANCELLED, SHIPPED and DELIVERED have side effects (stock, discount release, email),
-  // so they go through the order helpers rather than a bare status write.
-  if (data.status === "CANCELLED") {
-    await cancelOrder(data.id, { reason: data.note, notify: data.notify });
+  // Every status with side effects (money, stock, discount release, email) goes
+  // through the order helpers rather than a bare status write, and the money
+  // statuses are not something STAFF can set by hand.
+  if (data.status === "REFUNDED") {
+    throw new Error("Use the Refund control below: it refunds through Stripe and records the amount.");
+  } else if (data.status === "PENDING") {
+    throw new Error("An order cannot be moved back to pending.");
+  } else if (data.status === "PAID") {
+    if (!can(admin.role, "orders:refund")) throw new Error(denialMessage("orders:refund"));
+    // Manual payment (e-transfer, in person). Same path as a Stripe payment so
+    // stock is committed and the confirmation goes out.
+    const result = await markOrderPaid(data.id);
+    if (!result.settled) {
+      throw new Error(
+        result.reason === "already settled"
+          ? "This order is no longer pending, so it cannot be marked paid."
+          : `Could not mark this order paid (${result.reason ?? "unknown"}).`
+      );
+    }
+    if (data.note) {
+      await prisma.orderEvent.create({ data: { orderId: data.id, label: "Marked paid manually", note: data.note } });
+    }
+  } else if (data.status === "CANCELLED") {
+    const result = await cancelOrder(data.id, { reason: data.note, notify: data.notify });
+    if (!result.cancelled && result.reason === "paid") {
+      throw new Error(
+        "This order has been paid. Refund it with the Refund control instead; a full refund closes the order and returns its stock."
+      );
+    }
   } else if (data.status === "SHIPPED") {
     const order = await prisma.order.findUnique({ where: { id: data.id } });
     await markOrderShipped(
@@ -113,7 +144,12 @@ const trackingSchema = z.object({
   id,
   carrier: z.string().max(80).optional().default(""),
   trackingNumber: z.string().max(120).optional().default(""),
-  trackingUrl: z.union([z.string().url().max(500), z.literal("")]).optional().default(""),
+  // http(s) only: this is rendered as a link on the customer's order page and in
+  // the shipped email, so a javascript: or data: URL must never get through.
+  trackingUrl: z
+    .union([z.string().url({ protocol: /^https?$/ }).max(500), z.literal("")])
+    .optional()
+    .default(""),
   notify: z.boolean().optional().default(true),
 });
 

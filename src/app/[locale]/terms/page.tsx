@@ -50,7 +50,7 @@ const EN = {
   finalP1:
     "Our baskets are perishable and hand-packed to order for one recipient. For that reason we do not accept returns, exchanges or cancellations once an order is placed, and we do not offer refunds for a change of mind, a recipient who declines the gift, or details entered incorrectly at checkout. This policy is shown to you at checkout before you pay.",
   finalP2A:
-    "If we make a mistake, we fix it. Should your basket arrive damaged, incomplete or different from what you ordered, contact us within 48 hours of delivery with a photo and we will replace it or, at our discretion, refund it. Nothing in these terms limits any rights you have under the Ontario",
+    "If we make a mistake, we fix it. Should your basket arrive damaged, incomplete or different from what you ordered, contact us within 48 hours of delivery with a photo and we will replace it or, at our discretion, refund it. If we do not deliver your order within 30 days of the delivery date you chose, you may cancel it for a full refund. Nothing in these terms limits any rights you have under the Ontario",
   finalLaw: " Consumer Protection Act, 2002",
   finalP2B: " or other applicable law.",
 
@@ -122,7 +122,7 @@ const FR: typeof EN = {
 
   subsH: "Substitutions",
   subsP:
-    "Nos paniers sont composés de produits de saison et de produits artisanaux en petites séries. Si un article n'est pas disponible, nous pouvons le remplacer par un article de valeur égale ou supérieure qui préserve l'apparence, la qualité et le thème d'ensemble du panier.",
+    "Nos paniers sont composés de produits de saison et en petites séries. Si un article n'est pas disponible, nous pouvons le remplacer par un article de valeur égale ou supérieure qui préserve l'apparence, la qualité et le thème d'ensemble du panier.",
 
   foodH: "Aliments, allergènes et besoins alimentaires",
   foodP:
@@ -132,7 +132,7 @@ const FR: typeof EN = {
   finalP1:
     "Nos paniers sont périssables et emballés à la main, sur commande, pour un seul destinataire. Pour cette raison, nous n'acceptons ni retour, ni échange, ni annulation une fois la commande passée, et nous n'offrons aucun remboursement en cas de changement d'avis, de refus du cadeau par le destinataire ou de renseignements saisis incorrectement à la caisse. Cette politique vous est présentée à la caisse avant le paiement.",
   finalP2A:
-    "Si nous commettons une erreur, nous la corrigeons. Si votre panier arrive endommagé, incomplet ou différent de ce que vous avez commandé, communiquez avec nous dans les 48 heures suivant la livraison en joignant une photo, et nous le remplacerons ou, à notre discrétion, le rembourserons. Rien dans les présentes conditions ne limite les droits dont vous bénéficiez en vertu de la",
+    "Si nous commettons une erreur, nous la corrigeons. Si votre panier arrive endommagé, incomplet ou différent de ce que vous avez commandé, communiquez avec nous dans les 48 heures suivant la livraison en joignant une photo, et nous le remplacerons ou, à notre discrétion, le rembourserons. Si nous ne livrons pas votre commande dans les 30 jours suivant la date de livraison choisie, vous pouvez l'annuler et obtenir un remboursement complet. Rien dans les présentes conditions ne limite les droits dont vous bénéficiez en vertu de la",
   finalLaw: " Loi de 2002 sur la protection du consommateur de l'Ontario",
   finalP2B: " ou de toute autre loi applicable.",
 

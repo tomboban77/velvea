@@ -7,7 +7,7 @@ import { computeTotals, computeDiscount } from "@/lib/pricing";
 import { resolveZone, getZones, pickupZone, methodAllowedInZone, provinceForFsa, toFsa } from "@/lib/zones";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { sendOrderAwaitingPayment, sendAdminOrderNotice, type OrderEmailItem } from "@/lib/email";
-import { generateOrderNumber } from "@/lib/utils";
+import { generateOrderNumber, formatMoney } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { offlineOrdersAllowed, siteUrl } from "@/lib/env";
 import { rateLimitBoth, rateLimitByIp, rateLimitMessage } from "@/lib/rate-limit";
@@ -318,6 +318,22 @@ async function resolveLineItems(
       unitPriceCents = variant.priceCents;
       variantLabel = t(variant.label, locale);
       variantId = variant.id;
+    }
+
+    // The server price always wins, but a difference from what the cart showed
+    // is surfaced rather than silently charged: the total on screen must never
+    // quietly differ from the total on the card.
+    if (!item.isCustom && item.unitPriceCents !== unitPriceCents) {
+      changes.push({
+        kind: "price-changed",
+        subject: name,
+        message: say(
+          locale,
+          `The price has changed to ${formatMoney(unitPriceCents)} since you added it. Please review your bag.`,
+          `Le prix est passé à ${formatMoney(unitPriceCents, "fr-CA")} depuis l'ajout au sac. Veuillez vérifier votre sac.`
+        ),
+      });
+      continue;
     }
 
     if (product.inventory !== null && product.inventory < item.quantity) {

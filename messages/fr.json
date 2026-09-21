@@ -163,7 +163,7 @@
     "previewTitle": "Votre panier",
     "previewVessel": "Coffret souvenir",
     "previewNote": "Emballé à la main à la commande",
-    "previewItems": "Chocolat noir · Rosé pétillant · Bougie · Biscuits artisanaux",
+    "previewItems": "Chocolat noir · Jus de raisin pétillant · Bougie · Biscuits artisanaux",
     "startNote": "À partir de {price}"
   },
   "way": {
@@ -272,6 +272,7 @@
     "success": "Presque terminé — vérifiez votre boîte de réception et confirmez votre abonnement.",
     "error": "Une erreur est survenue. Veuillez réessayer.",
     "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvéa. Vous pouvez vous désabonner à tout moment.",
+    "privacyLink": "Politique de confidentialité",
     "alreadySubscribed": "Vous êtes déjà inscrit.",
     "confirmed": "Vous êtes inscrit. Bienvenue chez Velvéa.",
     "unsubscribed": "Vous êtes désabonné. Au plaisir de vous revoir.",
@@ -309,6 +310,7 @@
     "baskets": "Paniers-cadeaux",
     "about": "À propos de ce panier",
     "inside": "À l'intérieur",
+    "allergen": "Peut contenir des noix, des produits laitiers, du gluten et du soya, ou avoir été emballé à proximité. Veuillez lire l'étiquette de chaque article.",
     "care": "Entretien & notes",
     "shipping": "Livraison",
     "size": "Format",

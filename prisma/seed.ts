@@ -10,7 +10,7 @@ const L = (en: string, fr?: string) => ({ en, fr: fr || en });
 /**
  * Demo products, their reviews and the placeholder gift guides are opt-in.
  * They are invented sample data with no images, so seeding them into a real
- * store just means deleting twelve baskets by hand later. Structure the store
+ * store just means deleting ten baskets by hand later. Structure the store
  * genuinely needs — collections, the custom builder, settings, the admin user —
  * is always seeded.
  *
@@ -118,18 +118,6 @@ async function main() {
       badges: ["bestseller"],
     },
     {
-      slug: "wine-belgian-biscuit",
-      name: "Wine & Luxury Belgian Biscuit",
-      tagline: "A red wine paired with fine Belgian biscuit cookies.",
-      price: 10900,
-      occasions: ["birthday", "thank-you", "anniversary"],
-      recipients: ["for-him", "for-her", "clients"],
-      categories: ["wine-spirits", "chocolate"],
-      contents: ["Red wine 750ml", "Belgian biscuit cookies", "Dark chocolate almonds", "Fig spread"],
-      featured: true,
-      bestseller: true,
-    },
-    {
       slug: "healing-hugs-sympathy",
       name: "Healing Hugs Sympathy Basket",
       fr: "Panier de sympathie Réconfort",
@@ -166,17 +154,6 @@ async function main() {
       bestseller: true,
     },
     {
-      slug: "the-connoisseur-wine",
-      name: "The Connoisseur Wine Duo",
-      tagline: "Two curated bottles with charcuterie companions.",
-      price: 16500,
-      occasions: ["anniversary", "congratulations", "holiday"],
-      recipients: ["couples", "clients"],
-      categories: ["wine-spirits", "gourmet"],
-      contents: ["Red wine", "White wine", "Aged cheddar", "Rosemary crackers", "Olives"],
-      featured: true,
-    },
-    {
       slug: "spa-serenity-wellness",
       name: "Spa Serenity Wellness Basket",
       fr: "Panier bien-être Sérénité",
@@ -207,7 +184,7 @@ async function main() {
       price: 13500,
       occasions: ["housewarming", "congratulations"],
       recipients: ["couples", "family"],
-      categories: ["gourmet", "wine-spirits"],
+      categories: ["gourmet"],
       contents: ["Olive oil", "Balsamic", "Pasta", "Truffles", "Sparkling", "Candle"],
     },
     {
@@ -239,8 +216,8 @@ async function main() {
       price: 18900,
       occasions: ["holiday", "thank-you", "congratulations"],
       recipients: ["clients", "employees"],
-      categories: ["gourmet", "wine-spirits", "chocolate"],
-      contents: ["Champagne", "Assorted cookies", "Chocolate bar", "Brie spread", "Table crackers", "Truffles"],
+      categories: ["gourmet", "chocolate"],
+      contents: ["Sparkling grape juice", "Assorted cookies", "Chocolate bar", "Brie spread", "Table crackers", "Truffles"],
       featured: true,
       bestseller: true,
       badges: ["bestseller"],
@@ -323,7 +300,6 @@ async function main() {
   // --- Reviews ---
   const reviewSeeds = [
     { slug: "noel-nights-gourmet", author: "Pia M.", loc: "Montréal, QC", rating: 5, title: "Client holiday basket", body: "My client wrote to say they truly enjoyed the gourmet basket. It looked exactly like the photos and arrived beautifully packed." },
-    { slug: "wine-belgian-biscuit", author: "Opeyemi A.", loc: "Beaver Bank, NS", rating: 5, title: "Absolutely perfect gift", body: "From the moment the box opened, the presentation was elegant and every item felt considered. An instant hit." },
     { slug: "healing-hugs-sympathy", author: "Anuja V.", loc: "Toronto, ON", rating: 5, title: "A perfect expression of care", body: "I sent this to a friend mourning a loss. She said it was the kindest, gentlest thing to receive." },
     { slug: "executive-corporate", author: "Daniel R.", loc: "Calgary, AB", rating: 5, title: "Impeccable for clients", body: "Ordered fifteen for year-end client gifts. Every one arrived on time and looked premium." },
     { slug: "sweet-celebration-birthday", author: "Mei L.", loc: "Vancouver, BC", rating: 4, title: "Lovely birthday surprise", body: "Beautifully arranged and delivered same day in the GTA. Would order again." },
@@ -382,7 +358,7 @@ async function main() {
   const builderCats: { name: string; items: { n: string; p: number }[] }[] = [
     { name: "Chocolate & Sweets", items: [{ n: "Belgian truffles", p: 1400 }, { n: "Sea-salt caramels", p: 1200 }, { n: "Maple crunch", p: 1000 }, { n: "Dark chocolate bar", p: 800 }] },
     { name: "Savoury", items: [{ n: "Aged cheddar", p: 1300 }, { n: "Rosemary crackers", p: 700 }, { n: "Marinated olives", p: 900 }, { n: "Fig spread", p: 850 }] },
-    { name: "Sip", items: [{ n: "Red wine", p: 2600 }, { n: "Sparkling grape", p: 1500 }, { n: "Artisan coffee", p: 1600 }, { n: "Herbal tea", p: 1100 }] },
+    { name: "Sip", items: [{ n: "Sparkling grape", p: 1500 }, { n: "Artisan coffee", p: 1600 }, { n: "Herbal tea", p: 1100 }] },
     { name: "Little Extras", items: [{ n: "Soy candle", p: 1800 }, { n: "Handwritten card", p: 500 }, { n: "Fresh flowers", p: 2200 }] },
   ];
   for (let i = 0; i < builderCats.length; i++) {

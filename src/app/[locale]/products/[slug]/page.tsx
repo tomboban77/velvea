@@ -81,7 +81,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* JSON.stringify does not escape "<", so a product description containing
+          "</script>" would break out of this tag. Escaping "<" keeps the JSON valid. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
 
       <div className="container-x pt-5">
         <Breadcrumb

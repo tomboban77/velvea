@@ -70,8 +70,11 @@ export function sanitizeHtml(input: string): string {
 
   // Remove dangerous elements along with their contents.
   for (const tag of VOID_CONTENT_TAGS) {
-    html = html.replace(new RegExp(`<${tag}\b[^>]*>[\s\S]*?<\/${tag}\s*>`, "gi"), "");
-    html = html.replace(new RegExp(`<\/?${tag}\b[^>]*>`, "gi"), "");
+    // String.raw keeps the regex escapes intact: in a plain template literal
+    // "\b" is a backspace and "\s" is a bare "s", which silently made these
+    // patterns match nothing and left script text visible in the article.
+    html = html.replace(new RegExp(String.raw`<${tag}\b[^>]*>[\s\S]*?</${tag}\s*>`, "gi"), "");
+    html = html.replace(new RegExp(String.raw`</?${tag}\b[^>]*>`, "gi"), "");
   }
   // Comments can hide conditional-comment script in some clients.
   html = html.replace(/<!--[\s\S]*?-->/g, "");

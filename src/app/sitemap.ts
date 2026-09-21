@@ -3,7 +3,13 @@ import { getAllProducts, getPublishedArticles } from "@/lib/queries";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS } from "@/lib/nav";
 import { GIFT_CARDS_ENABLED } from "@/lib/features";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+/**
+ * Regenerate hourly rather than only at build time, so a basket added in admin
+ * reaches the sitemap without a redeploy.
+ */
+export const revalidate = 3600;
+
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
 /** English lives at `/`, French at `/fr` (localePrefix: as-needed). */
 function entry(path: string, opts?: { priority?: number; changeFrequency?: MetadataRoute.Sitemap[number]["changeFrequency"]; lastModified?: Date }) {

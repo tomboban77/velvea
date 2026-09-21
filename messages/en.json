@@ -163,7 +163,7 @@
     "previewTitle": "Your basket",
     "previewVessel": "Keepsake box",
     "previewNote": "Hand-packed to order",
-    "previewItems": "Dark chocolate · Sparkling rosé · Candle · Artisan biscuits",
+    "previewItems": "Dark chocolate · Sparkling grape · Candle · Artisan biscuits",
     "startNote": "From {price}"
   },
   "way": {
@@ -272,6 +272,7 @@
     "success": "Almost there — check your inbox and confirm your subscription.",
     "error": "Something went wrong. Please try again.",
     "consent": "By subscribing you agree to receive occasional emails from Velvéa. You can unsubscribe at any time.",
+    "privacyLink": "Privacy Policy",
     "alreadySubscribed": "You're already on the list.",
     "confirmed": "You're on the list. Welcome to Velvéa.",
     "unsubscribed": "You've been unsubscribed. Sorry to see you go.",
@@ -309,6 +310,7 @@
     "baskets": "Gift baskets",
     "about": "About this basket",
     "inside": "What's inside",
+    "allergen": "May contain or have been packed alongside nuts, dairy, gluten and soy. Please read the label on each item.",
     "care": "Care & notes",
     "shipping": "Shipping & delivery",
     "size": "Size",

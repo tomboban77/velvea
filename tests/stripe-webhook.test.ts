@@ -309,7 +309,7 @@ describe("charge.refunded", () => {
     expect(res.status).toBe(200);
     expect(mocks.retrieve).toHaveBeenCalledWith("pi_9");
     expect(mocks.recordRefund).toHaveBeenCalledTimes(1);
-    expect(mocks.recordRefund).toHaveBeenCalledWith("ord_9", 2500, { notify: true });
+    expect(mocks.recordRefund).toHaveBeenCalledWith("ord_9", 2500, { notify: true, cumulative: true });
     expect(mocks.findFirst).not.toHaveBeenCalled();
   });
 
@@ -326,7 +326,7 @@ describe("charge.refunded", () => {
       where: { stripePaymentIntentId: "pi_9" },
       select: { id: true },
     });
-    expect(mocks.recordRefund).toHaveBeenCalledWith("ord_db", 1000, { notify: true });
+    expect(mocks.recordRefund).toHaveBeenCalledWith("ord_db", 1000, { notify: true, cumulative: true });
   });
 
   it("does not record anything when no order matches the payment intent", async () => {
