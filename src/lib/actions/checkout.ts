@@ -52,6 +52,10 @@ const itemSchema = z.object({
   image: z.string().max(500).optional(),
   /** Per-basket handwritten card. Falls back to the order-level message. */
   giftMessage: z.string().max(300).optional(),
+  /** Upgrade to a full-size store greeting card; the fee is re-read from settings. */
+  premiumCard: z.boolean().optional(),
+  /** The fee the cart showed, so a change is surfaced rather than silently charged. */
+  cardFeeCents: z.number().int().nonnegative().optional(),
 });
 
 const checkoutSchema = z.object({
@@ -107,6 +111,8 @@ type LineItem = {
   /** Localized add-on names, for emails and the admin order view. */
   customItems: string[];
   giftMessage: string | null;
+  /** Per-unit fee for the store greeting card upgrade; 0 for the free card. */
+  cardFeeCents: number;
   leadTimeDays: number;
   /** False for baskets that cannot be handed to a carrier. */
   shippable: boolean;
@@ -240,6 +246,8 @@ async function resolveCustomLine(
     },
     customItems,
     giftMessage: item.giftMessage?.trim() || null,
+    // The builder has no card upgrade yet; its own note is written on the free card.
+    cardFeeCents: 0,
     leadTimeDays: 2,
     // A basket travels only as well as its least robust contents. This used to
     // be hardcoded true, so a custom basket of fresh flowers and cheese would
@@ -250,7 +258,8 @@ async function resolveCustomLine(
 
 async function resolveLineItems(
   items: z.infer<typeof itemSchema>[],
-  locale: string
+  locale: string,
+  premiumCardFeeCents: number
 ): Promise<ResolveOutcome> {
   const lines: LineItem[] = [];
   const changes: CartChange[] = [];
@@ -336,6 +345,22 @@ async function resolveLineItems(
       continue;
     }
 
+    // The card fee follows the same rule as the price: settings win, but a
+    // difference from what the cart showed is surfaced, never silently charged.
+    const cardFeeCents = item.premiumCard ? premiumCardFeeCents : 0;
+    if (item.premiumCard && (item.cardFeeCents ?? 0) !== cardFeeCents) {
+      changes.push({
+        kind: "price-changed",
+        subject: name,
+        message: say(
+          locale,
+          `The greeting card fee has changed to ${formatMoney(cardFeeCents)} since you added it. Please review your bag.`,
+          `Les frais de carte de vœux sont passés à ${formatMoney(cardFeeCents, "fr-CA")} depuis l'ajout au sac. Veuillez vérifier votre sac.`
+        ),
+      });
+      continue;
+    }
+
     if (product.inventory !== null && product.inventory < item.quantity) {
       changes.push({
         kind: "out-of-stock",
@@ -365,6 +390,7 @@ async function resolveLineItems(
       customConfig: null,
       customItems: [],
       giftMessage: item.giftMessage?.trim() || null,
+      cardFeeCents,
       leadTimeDays: product.leadTimeDays,
       shippable: product.shippable,
     });
@@ -547,7 +573,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   const settings = await getSettings();
   const session = await getSession();
 
-  const resolved = await resolveLineItems(input.items, locale);
+  const resolved = await resolveLineItems(input.items, locale, settings.gifting.premiumCardFeeCents);
   if (!resolved.ok) {
     return {
       ok: false,
@@ -672,7 +698,9 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
       : provinceForFsa(toFsa(input.shipping.postalCode) ?? "") ?? input.shipping.province;
 
   // --- Discount ---
-  const subtotalCents = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
+  // The card upgrade is part of the line, so it counts toward the subtotal,
+  // discounts and the free-delivery threshold like any other add-on.
+  const subtotalCents = lines.reduce((s, l) => s + (l.unitPriceCents + l.cardFeeCents) * l.quantity, 0);
   let discount: DiscountCode | null = null;
   let discountReserved = false;
 
@@ -742,7 +770,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   const totals = computeTotals({
     settings,
     zone,
-    lines: lines.map((l) => ({ unitPriceCents: l.unitPriceCents, quantity: l.quantity })),
+    lines: lines.map((l) => ({ unitPriceCents: l.unitPriceCents + l.cardFeeCents, quantity: l.quantity })),
     province: taxProvince,
     method,
     discount,
@@ -799,6 +827,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
             isCustom: l.isCustom,
             customConfig: l.customConfig as object | undefined,
             giftMessage: l.giftMessage,
+            cardFeeCents: l.cardFeeCents,
           })),
         },
         timeline: { create: { label: "Order placed", note: "Awaiting payment" } },
@@ -825,6 +854,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     isCustom: l.isCustom,
     customItems: l.customItems,
     giftMessage: l.giftMessage,
+    cardFeeCents: l.cardFeeCents,
   }));
   const emailData = {
     orderNumber,
@@ -861,6 +891,21 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
           },
         },
       }));
+      // The card upgrade is its own Stripe line so the receipt shows what was paid for.
+      for (const l of lines) {
+        if (l.cardFeeCents > 0) {
+          lineItems.push({
+            quantity: l.quantity,
+            price_data: {
+              currency: "cad",
+              unit_amount: l.cardFeeCents,
+              product_data: {
+                name: say(locale, "Premium greeting card", "Carte de vœux premium") + ` — ${l.name}`,
+              },
+            },
+          });
+        }
+      }
       if (totals.shippingCents > 0) {
         lineItems.push({
           quantity: 1,

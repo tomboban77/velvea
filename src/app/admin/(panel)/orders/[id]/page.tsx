@@ -102,10 +102,15 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                           &ldquo;{i.giftMessage}&rdquo;
                         </p>
                       )}
+                      {i.cardFeeCents > 0 && (
+                        <p className="text-xs text-violet">
+                          Premium greeting card · +{formatMoney(i.cardFeeCents)} each
+                        </p>
+                      )}
                       <p className="text-xs text-muted">Qty {i.quantity}</p>
                     </div>
                     <span className="font-semibold">
-                      {formatMoney(i.unitPriceCents * i.quantity)}
+                      {formatMoney((i.unitPriceCents + i.cardFeeCents) * i.quantity)}
                     </span>
                   </li>
                 );

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import { Lock, Truck, Clock, MapPin, Store, Tag, Check, Loader2, ShoppingBag, Gift, AlertTriangle } from "lucide-react";
-import { useCart } from "@/components/cart/CartProvider";
+import { useCart, lineUnitCents } from "@/components/cart/CartProvider";
 import { createCheckout, validateDiscountCode, type CartChange } from "@/lib/actions/checkout";
 import { quoteDelivery, type DeliveryQuote } from "@/lib/actions/delivery";
 import { Honeypot } from "@/components/ui/Honeypot";
@@ -277,6 +277,8 @@ export function CheckoutForm({
           company,
           items: items.map((i) => ({
             giftMessage: i.giftMessage,
+            premiumCard: i.premiumCard,
+            cardFeeCents: i.cardFeeCents,
             productId: i.productId,
             variantId: i.variantId,
             slug: i.slug,
@@ -554,8 +556,14 @@ export function CheckoutForm({
                       &ldquo;{i.giftMessage}&rdquo;
                     </p>
                   )}
+                  {i.premiumCard && (
+                    <p className="mt-1 text-[0.7rem] text-violet">
+                      {fr ? "Carte de vœux premium" : "Premium greeting card"}
+                      {i.cardFeeCents ? ` · +${formatMoney(i.cardFeeCents)}` : ""}
+                    </p>
+                  )}
                   <span className="mt-auto text-sm font-semibold">
-                    {formatMoney(i.unitPriceCents * i.quantity)}
+                    {formatMoney(lineUnitCents(i) * i.quantity)}
                   </span>
                 </div>
               </li>

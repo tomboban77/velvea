@@ -159,12 +159,17 @@ export default async function OrderPage({
                       &ldquo;{i.giftMessage}&rdquo;
                     </p>
                   )}
+                  {i.cardFeeCents > 0 && (
+                    <p className="text-xs text-violet">
+                      {fr ? "Carte de vœux premium" : "Premium greeting card"} · +{money(i.cardFeeCents)}
+                    </p>
+                  )}
                   <p className="text-xs text-muted">
                     {fr ? "Qté" : "Qty"} {i.quantity}
                   </p>
                 </div>
                 <span className="text-sm font-semibold">
-                  {money(i.unitPriceCents * i.quantity)}
+                  {money((i.unitPriceCents + i.cardFeeCents) * i.quantity)}
                 </span>
               </li>
             );

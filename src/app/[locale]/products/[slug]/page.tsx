@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ProductDetail, type ProductDetailView } from "@/components/shop/ProductDetail";
+import { getSettings } from "@/lib/settings";
 import { ProductReviews } from "@/components/shop/ProductReviews";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -27,9 +28,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   setRequestLocale(locale);
   const t = await getTranslations("pdp");
 
-  const [product, sameDayCutoff] = await Promise.all([
+  const [product, sameDayCutoff, settings] = await Promise.all([
     getProductBySlug(slug),
     advertisedSameDayCutoff(),
+    getSettings(),
   ]);
   if (!product || product.status === "DRAFT") notFound();
 
@@ -98,7 +100,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         />
       </div>
 
-      <ProductDetail product={view} sameDayCutoff={sameDayCutoff} />
+      <ProductDetail
+        product={view}
+        sameDayCutoff={sameDayCutoff}
+        premiumCardFeeCents={settings.gifting.premiumCardFeeCents}
+      />
 
       <div id="reviews">
         <ProductReviews

@@ -44,6 +44,14 @@ export type SiteSettings = {
     rates: Record<string, number>;
     default: number;
   };
+  gifting: {
+    /**
+     * Flat fee, in cents, for upgrading the free Velvéa card to a full-size
+     * store-bought greeting card with the message handwritten inside. Charged
+     * per basket. The free card stays free.
+     */
+    premiumCardFeeCents: number;
+  };
 };
 
 // Combined sales tax by province. Only ON applies while we serve one province;
@@ -90,6 +98,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     },
     default: 0,
   },
+  // GTA florists charge $5.75 to $7.99 for a retail card; $6.99 sits at the median
+  // and covers the card plus the time to write it.
+  gifting: {
+    premiumCardFeeCents: 699,
+  },
 };
 
 const SETTINGS_KEY = "site";
@@ -112,6 +125,7 @@ export async function getSettings(): Promise<SiteSettings> {
         rates: { ...DEFAULT_SETTINGS.tax.rates, ...stored.tax?.rates },
         default: stored.tax?.default ?? DEFAULT_SETTINGS.tax.default,
       },
+      gifting: { ...DEFAULT_SETTINGS.gifting, ...stored.gifting },
     };
     cache = { value: merged, at: Date.now() };
     return merged;
@@ -131,6 +145,7 @@ export async function saveSettings(patch: Partial<SiteSettings>): Promise<void> 
       rates: { ...current.tax.rates, ...patch.tax?.rates },
       default: patch.tax?.default ?? current.tax.default,
     },
+    gifting: { ...current.gifting, ...patch.gifting },
   };
   await prisma.setting.upsert({
     where: { key: SETTINGS_KEY },

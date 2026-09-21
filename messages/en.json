@@ -244,7 +244,7 @@
       },
       {
         "q": "Is a gift message included?",
-        "a": "Always. Add your message at checkout and we write it by hand on a Velvéa card, tucked inside the basket. Prices are never included with the gift."
+        "a": "Always. Add your message on the product page or at checkout and we write it by hand on a Velvéa card, tucked inside the basket, at no charge. For a small flat fee you can upgrade to a full-size store greeting card for the occasion. Prices are never included with the gift."
       },
       {
         "q": "Are baskets pre-made or packed to order?",
@@ -263,6 +263,10 @@
         "a": "All sales are final. Every basket is perishable and packed to order for one recipient, so we cannot accept returns, exchanges or cancellations once an order is placed. If we get something wrong and a basket arrives damaged, incomplete or not as ordered, write to us within 48 hours of delivery with a photo and we will make it right."
       }
     ]
+  },
+  "cart": {
+    "premiumCard": "Premium greeting card",
+    "footerNote": "Shipping & taxes calculated at checkout. Handwritten card included · no prices on the slip."
   },
   "newsletter": {
     "title": "Notes, on occasion",
@@ -355,7 +359,13 @@
     "giftCardTitle": "Add a handwritten card",
     "giftCardHint": "Optional — written by hand and tucked inside",
     "giftCardPlaceholder": "Happy birthday, Dad. Enjoy every bite. — Love, Tom",
-    "giftCardNote": "Written on a Velvéa card. Prices are never included.",
+    "giftCardNote": "Written by hand. Prices are never included.",
+    "giftCardTypeLegend": "Card type",
+    "giftCardFree": "Velvéa card",
+    "giftCardFreeSub": "Our signature card, handwritten and tucked inside.",
+    "giftCardPremium": "Premium greeting card",
+    "giftCardPremiumSub": "A full-size store greeting card for the occasion, your message handwritten inside.",
+    "giftCardNoCharge": "Free",
     "deliveryTitle": "Delivery",
     "giftingTitle": "Gifting details",
     "description": "About this basket",

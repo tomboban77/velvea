@@ -165,6 +165,8 @@ export type OrderEmailItem = {
   customItems?: string[];
   /** The card written for this basket specifically. */
   giftMessage?: string | null;
+  /** Per-unit fee for the store greeting card upgrade; 0 or unset for the free card. */
+  cardFeeCents?: number | null;
 };
 
 export type OrderEmailData = {
@@ -214,9 +216,15 @@ function itemRows(items: OrderEmailItem[], locale?: string | null): string {
             i.giftMessage
           )}&rdquo;</span>`
         : "";
-      return `<tr><td style="padding:8px 0;border-bottom:1px solid #f0e7d6">${escapeHtml(i.name)} × ${i.quantity}${sub}${card}</td>
+      const fee = i.cardFeeCents ?? 0;
+      const premium = fee > 0
+        ? `<br><span style="color:#6d288f;font-size:12px">${escapeHtml(
+            pick(locale, "Premium greeting card", "Carte de vœux premium")
+          )} · +${money(fee)}</span>`
+        : "";
+      return `<tr><td style="padding:8px 0;border-bottom:1px solid #f0e7d6">${escapeHtml(i.name)} × ${i.quantity}${sub}${card}${premium}</td>
         <td style="padding:8px 0;border-bottom:1px solid #f0e7d6;text-align:right;vertical-align:top">${money(
-          i.unitPriceCents * i.quantity
+          (i.unitPriceCents + fee) * i.quantity
         )}</td></tr>`;
     })
     .join("");

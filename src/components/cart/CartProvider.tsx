@@ -28,20 +28,38 @@ export type CartItem = {
    * with different messages are two lines, not one — see `giftLineId`.
    */
   giftMessage?: string;
+  /** Upgrade from the free Velvéa card to a full-size store greeting card. */
+  premiumCard?: boolean;
+  /** Fee for that upgrade at the time it was added, per unit. Re-checked at checkout. */
+  cardFeeCents?: number;
 };
 
+/** What one unit of a line costs including its card upgrade, if any. */
+export function lineUnitCents(item: Pick<CartItem, "unitPriceCents" | "premiumCard" | "cardFeeCents">): number {
+  return item.unitPriceCents + (item.premiumCard ? item.cardFeeCents ?? 0 : 0);
+}
+
 /**
- * Line id for a product, made distinct by its card message so the same basket
- * bought for two people stays two separate lines with two separate cards.
+ * Line id for a product, made distinct by its card message and card type so
+ * the same basket bought for two people stays two separate lines with two
+ * separate cards.
  */
-export function giftLineId(base: string, giftMessage?: string): string {
+export function giftLineId(base: string, giftMessage?: string, premiumCard?: boolean): string {
   const message = giftMessage?.trim();
-  if (!message) return base;
-  let hash = 0;
-  for (let i = 0; i < message.length; i++) {
-    hash = (hash * 31 + message.charCodeAt(i)) | 0;
+  let id = base;
+  if (message) {
+    let hash = 0;
+    for (let i = 0; i < message.length; i++) {
+      hash = (hash * 31 + message.charCodeAt(i)) | 0;
+    }
+    id = `${base}:g${(hash >>> 0).toString(36)}`;
   }
-  return `${base}:g${(hash >>> 0).toString(36)}`;
+  return premiumCard ? `${id}:p` : id;
+}
+
+/** Strip the card suffixes from a line id to get back to product[:variant]. */
+function baseLineId(id: string): string {
+  return id.replace(/:p$/, "").split(":g")[0];
 }
 
 type CartContextValue = {
@@ -131,8 +149,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const idx = prev.findIndex((p) => p.id === id);
       if (idx === -1) return prev;
       const line = prev[idx];
-      const base = line.id.split(":g")[0];
-      const nextId = line.isCustom ? line.id : giftLineId(base, giftMessage);
+      const base = baseLineId(line.id);
+      const nextId = line.isCustom ? line.id : giftLineId(base, giftMessage, line.premiumCard);
       const next = [...prev];
       next[idx] = { ...line, id: nextId, giftMessage: giftMessage.trim() || undefined };
       // If an identical line already exists, fold them together.
@@ -156,7 +174,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return items.reduce(
       (acc, it) => {
         acc.count += it.quantity;
-        acc.subtotalCents += it.quantity * it.unitPriceCents;
+        acc.subtotalCents += it.quantity * lineUnitCents(it);
         return acc;
       },
       { count: 0, subtotalCents: 0 }

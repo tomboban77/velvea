@@ -108,6 +108,35 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           assuming 13%.
         </p>
       </Card>
+
+      <Card className="space-y-4">
+        <h2 className="font-display text-lg">Gifting</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Premium greeting card fee ($)"
+            hint="Charged per basket when a customer upgrades from the free Velvéa card to a full-size store card. Set 0 to make it free."
+          >
+            <TextInput
+              type="number"
+              value={(s.gifting.premiumCardFeeCents / 100).toFixed(2)}
+              onChange={(v) =>
+                setS({
+                  ...s,
+                  gifting: {
+                    ...s.gifting,
+                    premiumCardFeeCents: Math.max(0, Math.round((parseFloat(v) || 0) * 100)),
+                  },
+                })
+              }
+            />
+          </Field>
+        </div>
+        <p className="text-xs text-muted">
+          The handwritten Velvéa card is always free. This fee only applies to the optional
+          upgrade offered on each product page, and it shows on the packing slip so the packer
+          knows to use a store card.
+        </p>
+      </Card>
     </div>
   );
 }

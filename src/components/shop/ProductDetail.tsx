@@ -41,10 +41,13 @@ export type ProductDetailView = {
 export function ProductDetail({
   product,
   sameDayCutoff,
+  premiumCardFeeCents,
 }: {
   product: ProductDetailView;
   /** Home-zone cutoff for the live countdown; null hides it. */
   sameDayCutoff: string | null;
+  /** Per-basket fee for the store greeting card upgrade. 0 shows it as free. */
+  premiumCardFeeCents: number;
 }) {
   const t = useTranslations("pdp");
   const tc = useTranslations("common");
@@ -60,6 +63,7 @@ export function ProductDetail({
   const [lightbox, setLightbox] = useState(false);
   const [giftOpen, setGiftOpen] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
+  const [premiumCard, setPremiumCard] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
   const buyRef = useRef<HTMLDivElement>(null);
 
@@ -120,10 +124,12 @@ export function ProductDetail({
     if (unavailable) return;
     const base = variantId ? `${product.id}:${variantId}` : product.id;
     addItem({
-      // The card message is part of the line identity, so the same basket
-      // bought for two people stays two lines with two different cards.
-      id: giftLineId(base, giftMessage),
+      // The card message and card type are part of the line identity, so the
+      // same basket bought for two people stays two lines with two cards.
+      id: giftLineId(base, giftMessage, premiumCard),
       giftMessage: giftMessage.trim() || undefined,
+      premiumCard: premiumCard || undefined,
+      cardFeeCents: premiumCard ? premiumCardFeeCents : undefined,
       productId: product.id,
       slug: product.slug,
       name: product.name,
@@ -272,7 +278,11 @@ export function ProductDetail({
                 <span className="flex-1">
                   <span className="block text-[0.95rem] font-semibold text-ink">{t("giftCardTitle")}</span>
                   <span className="block text-sm text-muted">
-                    {giftMessage.trim() ? truncate(giftMessage.trim(), 48) : t("giftCardHint")}
+                    {giftMessage.trim()
+                      ? truncate(giftMessage.trim(), 48)
+                      : premiumCard
+                      ? t("giftCardPremium")
+                      : t("giftCardHint")}
                   </span>
                 </span>
                 <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted transition-transform duration-300", giftOpen && "rotate-180")} strokeWidth={1.8} />
@@ -292,6 +302,48 @@ export function ProductDetail({
                       <span>{t("giftCardNote")}</span>
                       <span>{giftMessage.length}/{GIFT_MAX}</span>
                     </div>
+
+                    {/* Card type: the Velvéa card is always free; the store card is a
+                        flat per-basket fee that rides on the line and is re-priced at
+                        checkout from settings. */}
+                    <fieldset className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <legend className="sr-only">{t("giftCardTypeLegend")}</legend>
+                      {[
+                        { value: false, title: t("giftCardFree"), sub: t("giftCardFreeSub"), price: t("giftCardNoCharge") },
+                        {
+                          value: true,
+                          title: t("giftCardPremium"),
+                          sub: t("giftCardPremiumSub"),
+                          price: premiumCardFeeCents > 0 ? `+${money(premiumCardFeeCents)}` : t("giftCardNoCharge"),
+                        },
+                      ].map((opt) => {
+                        const active = premiumCard === opt.value;
+                        return (
+                          <label
+                            key={String(opt.value)}
+                            className={cn(
+                              "flex cursor-pointer items-start gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
+                              active ? "border-violet-deep bg-lilac/40" : "border-line hover:border-line-strong"
+                            )}
+                          >
+                            <input
+                              type="radio"
+                              name={`card-type-${product.id}`}
+                              className="mt-1 accent-violet-deep"
+                              checked={active}
+                              onChange={() => setPremiumCard(opt.value)}
+                            />
+                            <span className="flex-1">
+                              <span className="flex items-baseline justify-between gap-2">
+                                <span className="text-sm font-semibold text-ink">{opt.title}</span>
+                                <span className="text-xs font-semibold text-violet-deep">{opt.price}</span>
+                              </span>
+                              <span className="block text-xs text-muted">{opt.sub}</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </fieldset>
                   </div>
                 </div>
               </div>

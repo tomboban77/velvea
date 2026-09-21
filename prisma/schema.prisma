@@ -340,6 +340,10 @@ model OrderItem {
   // Per-basket card message. Falls back to Order.giftMessage when unset, so a
   // single-recipient order still works exactly as before.
   giftMessage    String?
+  /// Fee charged for upgrading to a full-size store greeting card, per unit.
+  /// 0 means the free Velvéa card. Snapshotted so later fee changes never
+  /// rewrite an old order.
+  cardFeeCents   Int     @default(0)
 
   @@index([orderId])
   @@index([productId])

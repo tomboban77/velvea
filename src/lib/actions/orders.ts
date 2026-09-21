@@ -44,6 +44,7 @@ function emailItemsOf(items: OrderItem[]): OrderEmailItem[] {
           ? cfg.items.map((c) => (c.qty > 1 ? `${c.name} × ${c.qty}` : c.name))
           : undefined,
       giftMessage: i.giftMessage,
+      cardFeeCents: i.cardFeeCents,
     };
   });
 }

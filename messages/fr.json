@@ -244,7 +244,7 @@
       },
       {
         "q": "Un message cadeau est-il inclus ?",
-        "a": "Toujours. Ajoutez votre message à la caisse et nous l'écrivons à la main sur une carte Velvéa, glissée dans le panier. Les prix ne sont jamais inclus."
+        "a": "Toujours. Ajoutez votre message sur la page du produit ou à la caisse et nous l'écrivons à la main sur une carte Velvéa, glissée dans le panier, sans frais. Pour de modestes frais fixes, vous pouvez opter pour une carte de vœux grand format adaptée à l'occasion. Les prix ne sont jamais inclus."
       },
       {
         "q": "Les paniers sont-ils préfabriqués ou préparés à la commande ?",
@@ -263,6 +263,10 @@
         "a": "Toutes les ventes sont finales. Chaque panier est périssable et préparé à la commande pour un destinataire, nous ne pouvons donc accepter ni retour, ni échange, ni annulation une fois la commande passée. Si nous faisons une erreur et qu'un panier arrive endommagé, incomplet ou non conforme, écrivez-nous dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
       }
     ]
+  },
+  "cart": {
+    "premiumCard": "Carte de vœux premium",
+    "footerNote": "Livraison et taxes calculées à la caisse. Carte manuscrite incluse · aucun prix sur le bordereau."
   },
   "newsletter": {
     "title": "Quelques notes, à l'occasion",
@@ -355,7 +359,13 @@
     "giftCardTitle": "Ajouter une carte manuscrite",
     "giftCardHint": "Facultatif — écrite à la main et glissée à l'intérieur",
     "giftCardPlaceholder": "Joyeux anniversaire, papa. Savoure chaque bouchée. — Tom",
-    "giftCardNote": "Écrite sur une carte Velvéa. Les prix ne sont jamais inclus.",
+    "giftCardNote": "Écrite à la main. Les prix ne sont jamais inclus.",
+    "giftCardTypeLegend": "Type de carte",
+    "giftCardFree": "Carte Velvéa",
+    "giftCardFreeSub": "Notre carte signature, écrite à la main et glissée à l'intérieur.",
+    "giftCardPremium": "Carte de vœux premium",
+    "giftCardPremiumSub": "Une carte de vœux grand format adaptée à l'occasion, votre message écrit à la main à l'intérieur.",
+    "giftCardNoCharge": "Gratuit",
     "deliveryTitle": "Livraison",
     "giftingTitle": "Détails du cadeau",
     "description": "À propos de ce panier",

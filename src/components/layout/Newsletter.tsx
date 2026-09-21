@@ -84,7 +84,7 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
           {banner}
         </div>
       ) : (
-        <form onSubmit={submit} className="relative flex flex-col gap-2 sm:flex-row">
+        <form onSubmit={submit} className="relative flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Honeypot value={company} onChange={setCompany} />
           <input
             type="email"
@@ -92,7 +92,7 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("placeholder")}
-            className={cn("field min-h-[52px] flex-1", dark && "border-white/25 bg-white/10 text-white placeholder:text-white/60 focus:border-white focus:shadow-none")}
+            className={cn("field min-h-[52px] min-w-0 flex-1", dark && "border-white/25 bg-white/10 text-white placeholder:text-white/60 focus:border-white focus:shadow-none")}
             aria-label={t("placeholder")}
           />
           <button
@@ -103,7 +103,9 @@ export function Newsletter({ tone = "light" }: { tone?: "light" | "dark" }) {
             {state === "loading" ? "…" : t("cta")}
             <ArrowRight />
           </button>
-          {/* Invisible unless Cloudflare needs the visitor to interact; then it takes the full row. */}
+          {/* Invisible unless Cloudflare needs the visitor to interact; then it takes the full row.
+              The form wraps so this full-width basis lands on its own row rather than
+              squeezing the email input beside it. */}
           <Turnstile
             key={turnstileKey}
             action="newsletter"

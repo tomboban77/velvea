@@ -107,10 +107,15 @@ export default async function PackingSlip({ params }: { params: Promise<{ id: st
                 <td className="py-3">
                   <p className="font-medium">{i.name}</p>
                   {i.variantLabel && <p className="text-xs text-[#8a8072]">{i.variantLabel}</p>}
+                  {i.cardFeeCents > 0 && (
+                    <p className="mt-2 inline-block rounded border border-[#6d288f] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-[#6d288f]">
+                      Premium store greeting card — paid
+                    </p>
+                  )}
                   {i.giftMessage && (
                     <div className="mt-2 rounded border border-[#e8dfcf] bg-[#f5efe3] px-3 py-2">
                       <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#8a8072]">
-                        Card for this basket
+                        {i.cardFeeCents > 0 ? "Write inside the store card" : "Card for this basket"}
                       </p>
                       <p className="whitespace-pre-wrap text-sm italic">{i.giftMessage}</p>
                     </div>

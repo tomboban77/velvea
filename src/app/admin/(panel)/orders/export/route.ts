@@ -92,6 +92,7 @@ export async function GET(req: NextRequest) {
           .map(
             (i) =>
               `${i.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}` +
+              (i.cardFeeCents > 0 ? ` [premium card ${money(i.cardFeeCents)}]` : "") +
               (i.giftMessage ? ` [card: ${i.giftMessage}]` : "")
           )
           .join(" | "),

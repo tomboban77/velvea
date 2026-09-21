@@ -318,6 +318,12 @@ const settingsSchema = z.object({
     })
     .partial()
     .optional(),
+  gifting: z
+    .object({
+      premiumCardFeeCents: z.number().int().min(0).max(10_000),
+    })
+    .partial()
+    .optional(),
 });
 
 export async function updateSettings(patch: Partial<SiteSettings>) {

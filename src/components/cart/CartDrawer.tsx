@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { X, Plus, Minus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
-import { useCart } from "./CartProvider";
+import { useCart, lineUnitCents } from "./CartProvider";
 import { formatMoney, cn } from "@/lib/utils";
 
 export function CartDrawer() {
@@ -110,6 +110,12 @@ export function CartDrawer() {
                           &ldquo;{item.giftMessage}&rdquo;
                         </p>
                       )}
+                      {item.premiumCard && (
+                        <p className="mt-1 text-[0.7rem] text-violet">
+                          {t("cart.premiumCard")}
+                          {item.cardFeeCents ? ` · +${formatMoney(item.cardFeeCents)}` : ""}
+                        </p>
+                      )}
                       <div className="mt-auto flex items-center justify-between pt-2">
                         <div className="inline-flex items-center rounded-full border border-line-strong">
                           <button
@@ -131,7 +137,7 @@ export function CartDrawer() {
                           </button>
                         </div>
                         <span className="text-sm font-semibold text-ink">
-                          {formatMoney(item.unitPriceCents * item.quantity)}
+                          {formatMoney(lineUnitCents(item) * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -146,7 +152,7 @@ export function CartDrawer() {
                 <span className="font-display text-2xl">{formatMoney(subtotalCents)}</span>
               </div>
               <p className="mt-1 text-xs text-muted">
-                Shipping &amp; taxes calculated at checkout. Handwritten card included · no prices on the slip.
+                {t("cart.footerNote")}
               </p>
               <Link
                 href="/checkout"
