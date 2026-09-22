@@ -4,10 +4,17 @@ import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { PromiseBar } from "@/components/home/PromiseBar";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { pageMetadata } from "@/lib/seo";
 
-export async function generateMetadata() {
-  const t = await getTranslations("atelier");
-  return { title: t("eyebrow") };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/about",
+    title: t("aboutTitle"),
+    description: t("aboutDescription"),
+  });
 }
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {

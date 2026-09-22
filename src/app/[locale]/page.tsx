@@ -17,8 +17,16 @@ import { getSettings } from "@/lib/settings";
 import { toProductView } from "@/lib/view";
 import { t as tc } from "@/lib/i18n-content";
 import { formatMoney } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
 const UNDER_CENTS = 10000;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  // The homepage title carries the brand itself, so the " · Velvéa" template is skipped.
+  return pageMetadata({ locale, path: "/", title: t("homeTitle"), description: t("homeDescription"), absoluteTitle: true });
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -4,7 +4,30 @@
 **Production:** https://www.velvea.ca/ — owner confirmed.
 **Stage:** still being set up; not accepting real orders — owner confirmed.
 **Decision:** keep the unfinished catalog out of search until launch — owner confirmed.
-**Implementation status:** this review updates the brief only. Recommendations below are not implemented or deployed.
+**Implementation status:** the technical layer below was implemented in code on 2026-09-21 (see section 0). Nothing is deployed until the owner pushes and sets `SITE_INDEXING` in Vercel. Owner-dependent items in section 3 remain open.
+
+## 0. Implementation status — 2026-09-21
+
+All code lives in `src/lib/seo.ts` (pure, unit-tested in `tests/seo.test.ts`), `src/components/seo/JsonLd.tsx`, `src/lib/collection-page.ts`, `src/app/sitemap.ts`, `src/app/robots.ts`, `src/middleware.ts`, and each page's `generateMetadata`.
+
+| Ticket | Status | What was done |
+|---|---|---|
+| V-00 pre-launch control | **Done (code)** | `SITE_INDEXING` env: unset/`off` (default) = every storefront page `noindex, follow` via metadata **and** `X-Robots-Tag` from middleware, sitemap empty; `home` = homepage only; `all` = launch. robots.txt keeps crawling allowed so the noindex can be read. Documented in `.env.example` and CLAUDE.md. **Owner must set the value in Vercel** (see section 3). |
+| V-01 / V-02 / V-18 / V-21 / V-23 | **Done** | `pageMetadata()` on every storefront page: self-canonical, `en-CA` / `fr-CA` / `x-default` hreflang, per-page OG url/title/description/image/locale, Twitter card, translated titles + descriptions (`messages/*.json` → `meta.*`). next-intl `alternateLinks: false` (no conflicting `en`/`fr` Link headers) and `localeDetection: false` (stable `/`). Products/guides whose FR copy equals the EN copy (`hasFrench`) get no hreflang pair and a noindex FR page. Origin is validated on the production deployment (`VERCEL_ENV=production`): https, not localhost. |
+| V-03 Product JSON-LD | **Done** | Availability from inventory/variant stock (same rule as the sold-out button); one Offer per variant with its own price; `url`, `sku`, zero-review aggregate omitted; `<` and U+2028/9 escaped. Not done: `shippingDetails` / `hasMerchantReturnPolicy` (needs confirmed policy — section 3). |
+| V-04 Organization / WebSite | **Done** | Emitted from the locale layout using effective settings (admin overrides). Contact/social values are whatever settings hold — owner must verify them (section 3). |
+| V-06 Breadcrumbs / CollectionPage | **Done** | `BreadcrumbList` on product and guide pages; `CollectionPage` + `ItemList` on /baskets and every collection page (clean, unfiltered views only). |
+| V-07 FAQPage | **Done** | `/faq` emits `FAQPage` from the same message items the component renders. |
+| V-08 Article markup | **Done** | `Article` with author, `datePublished`, `dateModified`, `inLanguage`; OG `type: article`; CTA and byline localized. |
+| V-09 outage vs absence | **Done** | `getProductBySlug`, `getArticleBySlug` and the sitemap reads rethrow on DB error → error boundary / failed sitemap fetch, never a 404 or an empty catalogue. Listings keep their empty-state fallback. |
+| V-10 social previews | **Done** | Per-page OG + Twitter through `pageMetadata()`; brand card fallback. |
+| V-13 internal links | Already done | Footer, mega-menu, breadcrumbs, related rail. |
+| V-19 sitemap | **Done** | One entry per locale per path with language alternates; no caps; empty collections, paused gift card and untranslated FR pages excluded; `lastModified` only from real record dates; no priority/changefreq; hourly revalidate. Fails (500) on DB error. |
+| V-22 URL policy | **Done** | Server-rendered pagination (`?page=`, 48/page, real links, stable `createdAt,id` tie-breaker) on /baskets and all collection pages; out-of-range page → 404. `sort` → canonical to clean page; `min`/`max`/`recipient`/`q`/guides `category` → noindex; empty collection → noindex; /search noindex and no longer robots-blocked; utility pages noindex + disallowed in both locales. Not done: redirects for renamed/removed products (needs slug-history storage → schema change; decide). |
+| V-15 ownership / analytics | **Done (code)** | Vercel Analytics + Speed Insights already present. `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION` emit the ownership meta tags when set. GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) loads with Consent Mode v2 all-denied; the storefront consent banner grants `analytics_storage` on accept and remembers the choice; ad signals stay denied; privacy policy gains GA paragraphs only when GA is configured. Owner sets the three env vars in Vercel. Bing has no analytics product beyond Webmaster Tools (verification covered) and Microsoft Clarity (not added). |
+| L-03 LocalBusiness | **Closed — not applicable** | Owner confirmed 2026-09-21: online-only, no premises customers can visit. Organization markup carries `areaServed: Ontario` instead. Owner to check the FAQ "pickup from our Mississauga studio" claim and the PICKUP zone against that. |
+| V-20 guardrails | **Done** | `tests/seo.test.ts` (33 tests): origin, indexing switch, canonical/hreflang, OG, noindex rules, `hasFrench`, JSON-LD escaping, product availability/variants, sitemap and robots builders, pagination policy. |
+| V-11 llms.txt, V-16 Merchant feed, V-14 performance baseline, V-12 content plan | **Not started** | Depend on owner answers (crawler policy, purchase readiness) or on measurement. |
 
 ## 1. Assessment and evidence
 
@@ -377,4 +400,4 @@ AI referrals/citations can be sampled with date/prompt/locale, but are variable/
 
 This revision replaces unsupported requirements with verified findings, conditional recommendations, and acceptance checks, and records the owner's pre-launch exclusion decision.
 
-**Next implementation task:** V-00, with an explicit route inventory and launch switch. Business-specific copy, physical-location schema, delivery pages, shipping/return markup, and French indexing depend on section 3 answers. This review has not changed production indexing, application behavior, external account settings, or customer communications.
+**Next implementation task (2026-09-21):** owner sets `SITE_INDEXING` in Vercel (`home` or `all`) once section 3 answers are in; then GSC/Bing verification tokens, GA4/consent decision, Merchant feed and LocalBusiness markup. Business-specific copy, physical-location schema, delivery pages, shipping/return markup, and French indexing depend on section 3 answers. This review has not changed production indexing, application behavior, external account settings, or customer communications.

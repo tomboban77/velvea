@@ -3,12 +3,19 @@ import { Link } from "@/i18n/routing";
 import { Check, ArrowRight } from "lucide-react";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { getProductsByCollection } from "@/lib/queries";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata() {
-  const t = await getTranslations("corporate");
-  return { title: t("pageTitle") };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/corporate",
+    title: t("corporateTitle"),
+    description: t("corporateDescription"),
+  });
 }
 
 export default async function CorporatePage({ params }: { params: Promise<{ locale: string }> }) {

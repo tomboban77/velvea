@@ -230,7 +230,14 @@
   "guides": {
     "eyebrow": "Le journal",
     "title": "Guides et notes cadeaux",
-    "lede": "Des conseils sur les cadeaux d'entreprise, la sympathie, les idées saisonnières et le ton juste pour chaque destinataire."
+    "lede": "Des conseils sur les cadeaux d'entreprise, la sympathie, les idées saisonnières et le ton juste pour chaque destinataire.",
+    "readMinutes": "{count} min de lecture",
+    "ctaTitle": "Trouvez le cadeau parfait",
+    "ctaBody": "Parcourez des paniers composés à la main pour chaque occasion.",
+    "ctaButton": "Voir les paniers-cadeaux",
+    "all": "Tous",
+    "readGuide": "Lire le guide",
+    "comingSoon": "Les guides arrivent bientôt."
   },
   "faq": {
     "eyebrow": "Bon à savoir",
@@ -398,7 +405,12 @@
     "showing": "{count} sur {total}",
     "all": "Tous",
     "search": "Rechercher des paniers",
-    "searchPlaceholder": "Rechercher par nom…"
+    "searchPlaceholder": "Rechercher par nom…",
+    "pagination": "Pagination",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page}",
+    "pageOf": "Page {page} sur {total}"
   },
   "custom": {
     "eyebrow": "Composer un panier",
@@ -406,5 +418,44 @@
     "lede": "Choisissez un contenant, ajoutez vos favoris et nous l'emballons à la main avec soin.",
     "emptyTitle": "L'outil de composition se prépare",
     "emptyLede": "En attendant, découvrez nos paniers prêts à offrir."
+  },
+  "meta": {
+    "homeTitle": "Velvéa — Paniers-cadeaux haut de gamme livrés partout en Ontario",
+    "homeDescription": "Paniers-cadeaux haut de gamme, composés à la main à Mississauga et livrés partout en Ontario. Livraison le jour même dans le Grand Toronto sur les commandes admissibles.",
+    "basketsTitle": "Tous les paniers-cadeaux",
+    "basketsDescription": "Découvrez tous les paniers-cadeaux Velvéa : gourmet, chocolat, spa, café et thé, composés à la main à Mississauga et livrés partout en Ontario.",
+    "pageSuffix": "{title} — page {page}",
+    "collectionTitle": "Paniers-cadeaux · {name}",
+    "recipientTitle": "Paniers-cadeaux {name}",
+    "occasionDescription": "Des paniers-cadeaux attentionnés pour {name}, composés à la main à Mississauga et livrés partout en Ontario.",
+    "recipientDescription": "Le bon cadeau {name}, composé à la main à Mississauga et livré partout en Ontario.",
+    "categoryDescription": "Paniers-cadeaux {name}, composés à la main à Mississauga et livrés partout en Ontario.",
+    "occasionsTitle": "Paniers-cadeaux par occasion",
+    "occasionsDescription": "Anniversaire, merci, sympathie, naissance et plus : trouvez un panier-cadeau composé à la main pour chaque moment, livré partout en Ontario.",
+    "recipientsTitle": "Paniers-cadeaux par destinataire",
+    "recipientsDescription": "Paniers-cadeaux pour lui, pour elle, les nouveaux parents, les clients et les employés, composés à la main à Mississauga.",
+    "categoryIndexTitle": "Paniers-cadeaux par catégorie",
+    "categoryIndexDescription": "Paniers-cadeaux gourmet, chocolat, spa et bien-être, café et thé, fruits frais et véganes, livrés partout en Ontario.",
+    "customTitle": "Composez votre panier-cadeau",
+    "customDescription": "Choisissez un contenant, ajoutez vos favoris et nous emballons à la main un panier-cadeau sur mesure à Mississauga, livré partout en Ontario.",
+    "corporateTitle": "Paniers-cadeaux d'entreprise en Ontario",
+    "corporateDescription": "Reconnaissance des clients, jalons des employés et programmes des fêtes : prix de volume, cartes à votre image et livraison multi-adresses partout en Ontario.",
+    "corporateQuoteTitle": "Demander un devis d'entreprise",
+    "corporateQuoteDescription": "Parlez-nous de votre projet de cadeaux d'entreprise et recevez une proposition sur mesure sous un jour ouvrable.",
+    "aboutTitle": "Notre histoire",
+    "aboutDescription": "Velvéa est un petit atelier de cadeaux à Mississauga, en Ontario, qui compose chaque panier à la main avec des produits que nous offririons nous-mêmes.",
+    "guidesTitle": "Guides cadeaux et conseils",
+    "guidesDescription": "Des conseils sur les cadeaux d'entreprise, les paniers de sympathie, les idées saisonnières et le ton juste pour chaque destinataire.",
+    "guideFallbackTitle": "Guide cadeau",
+    "reviewsTitle": "Avis clients",
+    "reviewsDescription": "Ce que les clients de partout en Ontario disent de leurs paniers-cadeaux Velvéa.",
+    "faqTitle": "Questions fréquentes",
+    "faqDescription": "Zones de livraison, heures limites pour le jour même, messages cadeaux, allergènes et tout ce que vous voulez savoir avant de commander.",
+    "contactTitle": "Joindre Velvéa",
+    "contactDescription": "Une question sur une commande, une occasion ou un projet d'entreprise ? Joignez l'atelier Velvéa à Mississauga. Nous répondons sous un jour ouvrable.",
+    "searchTitle": "Recherche",
+    "giftCardsTitle": "Cartes-cadeaux",
+    "giftCardsDescription": "Offrez le choix avec une carte-cadeau Velvéa, échangeable sur n'importe quel panier.",
+    "productFallbackTitle": "Panier-cadeau"
   }
 }

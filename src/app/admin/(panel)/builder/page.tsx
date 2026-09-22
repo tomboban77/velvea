@@ -30,7 +30,7 @@ export default async function BuilderPage() {
       <PageHeader title="Custom Builder" subtitle="Manage containers and add-on items for build-your-own baskets." />
       <BuilderManager
         containers={containers.map((c) => ({ id: c.id, name: asL(c.name), priceCents: c.priceCents, imageUrl: c.imageUrl, imagePublicId: c.imagePublicId, capacity: c.capacity, active: c.active }))}
-        categories={categories.map((cat) => ({ id: cat.id, name: asL(cat.name), items: cat.items.map((i) => ({ id: i.id, name: asL(i.name), priceCents: i.priceCents, imageUrl: i.imageUrl, imagePublicId: i.imagePublicId, active: i.active, shippable: i.shippable })) }))}
+        categories={categories.map((cat) => ({ id: cat.id, name: asL(cat.name), position: cat.position, items: cat.items.map((i) => ({ id: i.id, name: asL(i.name), priceCents: i.priceCents, imageUrl: i.imageUrl, imagePublicId: i.imagePublicId, position: i.position, active: i.active, shippable: i.shippable })) }))}
       />
     </>
   );

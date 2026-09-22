@@ -1,13 +1,26 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { GiftCardPicker } from "@/components/shop/GiftCardPicker";
 import { GIFT_CARDS_ENABLED, GIFT_CARD_SLUG } from "@/lib/features";
 import { getProductBySlug } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { Check } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Gift Cards" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/gift-cards",
+    title: t("giftCardsTitle"),
+    description: t("giftCardsDescription"),
+    // Paused feature: the page 404s, and must not be indexed if that ever slips.
+    index: GIFT_CARDS_ENABLED,
+    alternates: GIFT_CARDS_ENABLED,
+  });
+}
 
 export default async function GiftCardsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

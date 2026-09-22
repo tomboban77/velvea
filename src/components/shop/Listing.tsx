@@ -3,6 +3,7 @@ import { Link } from "@/i18n/routing";
 import { ProductCard } from "./ProductCard";
 import { FilterBar } from "./FilterBar";
 import { EmptyBaskets } from "./EmptyBaskets";
+import { Pagination } from "./Pagination";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { toProductView } from "@/lib/view";
 import { OCCASIONS, labelFor } from "@/lib/nav";
@@ -19,6 +20,7 @@ export async function Listing({
   showOccasions = false,
   activeSlug,
   searchable = false,
+  pagination,
 }: {
   eyebrow?: string;
   title: string;
@@ -31,6 +33,8 @@ export async function Listing({
   activeSlug?: string;
   /** Show a name search box in the filter bar (the page must honour the `q` param). */
   searchable?: boolean;
+  /** Present when the page honours `?page=`; renders real prev/next links under the grid. */
+  pagination?: { page: number; totalPages: number; basePath: string; params: Record<string, string | undefined> };
 }) {
   const locale = await getLocale();
   const t = await getTranslations("listing");
@@ -76,6 +80,7 @@ export async function Listing({
                 <ProductCard key={v.id} product={v} priority={i < 5} />
               ))}
             </div>
+            {pagination && <Pagination {...pagination} />}
           </>
         ) : (
           <div className="pt-6">

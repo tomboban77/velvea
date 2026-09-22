@@ -1,17 +1,6 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+import { buildRobots, siteOrigin } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/admin", "/admin/", "/api/", "/checkout", "/account", "/order/", "/search"],
-      },
-    ],
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
-  };
+  return buildRobots(siteOrigin());
 }

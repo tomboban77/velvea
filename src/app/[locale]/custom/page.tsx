@@ -5,12 +5,19 @@ import { getBuilderData } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata() {
-  const t = await getTranslations("custom");
-  return { title: t("title") };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/custom",
+    title: t("customTitle"),
+    description: t("customDescription"),
+  });
 }
 
 export default async function CustomPage({ params }: { params: Promise<{ locale: string }> }) {

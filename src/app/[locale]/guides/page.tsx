@@ -5,9 +5,15 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { getPublishedArticles } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Gift Guides & Gifting Advice" };
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ category?: string }> }) {
+  const [{ locale }, { category }] = await Promise.all([params, searchParams]);
+  const t = await getTranslations({ locale, namespace: "meta" });
+  // A category filter is an uncurated subset of the same list: crawlable, not indexed.
+  return pageMetadata({ locale, path: "/guides", title: t("guidesTitle"), description: t("guidesDescription"), index: !category });
+}
 
 export default async function GuidesPage({
   params,
@@ -21,8 +27,6 @@ export default async function GuidesPage({
   setRequestLocale(locale);
   const t = await getTranslations("guides");
   const tp = await getTranslations("pdp");
-  const fr = locale === "fr";
-
   const articles = await getPublishedArticles({ category, limit: 24 });
   const cats = ["CORPORATE", "SYMPATHY", "OCCASIONS", "RECIPIENTS", "SEASONAL", "ETIQUETTE"];
 
@@ -30,7 +34,7 @@ export default async function GuidesPage({
     <div>
       <PageHeader eyebrow={t("eyebrow")} title={t("title")} lede={t("lede")} breadcrumb={[{ label: tp("home"), href: "/" }, { label: t("title"), href: "/guides" }]}>
         <div className="mt-7 flex flex-wrap gap-2">
-          <Link href="/guides" className={cn("chip", !category && "is-active")}>{fr ? "Tous" : "All"}</Link>
+          <Link href="/guides" className={cn("chip", !category && "is-active")}>{t("all")}</Link>
           {cats.map((c) => (
             <Link key={c} href={`/guides?category=${c}`} className={cn("chip capitalize", category === c && "is-active")}>
               {c.toLowerCase()}
@@ -42,7 +46,7 @@ export default async function GuidesPage({
       <div className="container-x py-10 lg:py-14">
         {articles.length === 0 ? (
           <p className="rounded-lg border border-dashed border-line-strong bg-cream/60 px-6 py-16 text-center text-ink-soft">
-            {fr ? "Les guides arrivent bientôt." : "Guides are coming soon."}
+            {t("comingSoon")}
           </p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
@@ -52,7 +56,7 @@ export default async function GuidesPage({
                 <h2 className="mt-3 font-display text-[1.5rem] font-medium leading-snug text-ink group-hover:text-violet-deep">{tc(a.title, locale)}</h2>
                 <p className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-ink-soft">{tc(a.excerpt, locale)}</p>
                 <span className="link-draw mt-6">
-                  {fr ? "Lire le guide" : "Read guide"} <ArrowRight className="h-4 w-4" />
+                  {t("readGuide")} <ArrowRight className="h-4 w-4" />
                 </span>
               </Link>
             ))}

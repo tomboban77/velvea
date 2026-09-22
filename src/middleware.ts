@@ -64,7 +64,19 @@ export default async function middleware(req: NextRequest) {
   }
 
   // Storefront — internationalized routing.
-  return intlMiddleware(req);
+  const res = intlMiddleware(req);
+
+  // Pre-launch: SITE_INDEXING is "off" (or unset) until the catalogue is ready
+  // to be found, or "home" while only the homepage is. The header reaches
+  // every storefront response, including ones whose metadata a page forgot to
+  // set, and is read by crawlers the same way as a meta robots tag. Crawling
+  // itself stays allowed in robots.txt so this can be read.
+  const mode = (process.env.SITE_INDEXING || "").trim().toLowerCase();
+  const isHome = pathname === "/" || pathname === "/fr" || pathname === "/fr/";
+  if (mode !== "all" && !(mode === "home" && isHome)) {
+    res.headers.set("X-Robots-Tag", "noindex, follow");
+  }
+  return res;
 }
 
 export const config = {

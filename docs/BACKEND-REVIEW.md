@@ -3,6 +3,31 @@
 Scope: payments, orders, auth, admin operations, emails, data model, i18n. Findings verified in source.
 Status legend: **Fix before launch** · **Fix soon after launch** · **Improve** · **Nice to have**.
 
+## Status — verified against source 21 Sept 2026
+
+**Numbered findings 1–25: all resolved** except as noted. Verified item by item in code (`npm test`
+130 passing, `tsc` clean).
+
+- **#4 gift cards — mitigated, not built.** Paused behind `GIFT_CARDS_ENABLED = false`
+  (`src/lib/features.ts`); hidden from listings, search, sitemap, checkout, nav and admin. Issuance,
+  emailing and redemption still do not exist. Re-enable only after implementing both.
+- **#20 — minor residual.** Order create and `stripeSessionId` update are two writes, not one
+  transaction. No double-charge path (idempotency keys on session and coupon are in place).
+
+**Improve list:** done — account profile/password/addresses + checkout prefill, seasonal collections
+seeded, review verification/dedupe, discounts edit, customers list, staff/role screen, DB-level admin
+product search, `publishedAt` preserved, indexes, `Order.locale/shippedAt/deliveredAt`. Done 21 Sept:
+builder item image/active/reorder + category rename with real FR name; collections reorder + SEO
+title/description fields in admin; `fr-CA` money formatting in cart drawer and checkout.
+
+**Still open**
+- Per-collection product ordering (`ProductCollection.position`) has no admin UI and nothing in
+  `queries.ts` orders by it.
+- `Order.billing` is declared in the schema and never written — populate or drop (schema change).
+- Checkout copy is bilingual but through ~46 inline `fr ?` ternaries rather than the message catalogue.
+- `ContainerCard` in the builder admin omits `position` on save, so saving a container resets it to 0
+  (invisible today because every container is at 0).
+
 ## Fix before launch (security / money)
 
 | # | Issue | Where | Fix |

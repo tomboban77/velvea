@@ -19,6 +19,10 @@ Resend (email) · Cloudinary (images) · Upstash Redis (rate limiting, REST) · 
   any catalogue change (`scripts/audit-alcohol.ts`; `-- --fix` takes flagged items off sale).
 - Gift cards are built but **paused** behind `GIFT_CARDS_ENABLED = false` in `src/lib/features.ts`
   (no issuance/redemption exists yet). Don't re-enable without implementing both.
+- **Search indexing is switched off by default.** `SITE_INDEXING` (unset/`off` · `home` · `all`) in
+  `src/lib/seo.ts` drives noindex on every storefront page, the `X-Robots-Tag` header in
+  `src/middleware.ts` and the sitemap contents. Production launches by setting `SITE_INDEXING=all`
+  in Vercel; nothing in code should hard-code indexability.
 - The owner runs the dev server and does visual checks themselves: after a UI change, run `tsc`
   and lint, then hand over. Don't start `npm run dev` or screenshot loops unprompted.
 
@@ -87,15 +91,24 @@ tests/                  Vitest suites + helpers (empty.ts aliases "server-only",
 - **Rate limiting** (`src/lib/rate-limit.ts`): named rules in `RATE_LIMITS`; Upstash REST when
   configured, per-instance memory fallback otherwise; fails open on infra errors, never on a breach.
   `verifyTurnstile` (`src/lib/turnstile.ts`) is a no-op until `TURNSTILE_SECRET_KEY` is set.
-- Reads in `src/lib/queries.ts` return safe fallbacks when the DB is empty/unreachable, and
-  exclude `HIDDEN_PRODUCT_SLUGS` (the paused gift card).
+- List reads in `src/lib/queries.ts` return safe fallbacks when the DB is empty/unreachable, and
+  exclude `HIDDEN_PRODUCT_SLUGS` (the paused gift card). Detail lookups (`getProductBySlug`,
+  `getArticleBySlug`) and the `getSitemap*` reads rethrow on purpose: an outage must render the
+  error boundary (500), never a 404 or an empty sitemap that search engines would believe.
+- **SEO**: every storefront `generateMetadata` goes through `pageMetadata()` in `src/lib/seo.ts`
+  (canonical, en-CA/fr-CA/x-default hreflang, OG/Twitter, noindex). Structured data goes through
+  `<JsonLd>` (`src/components/seo/JsonLd.tsx`). Listing pages share `src/lib/collection-page.ts`
+  (pagination via `?page=`, sort → canonical to clean URL, price/recipient filters → noindex,
+  empty collection → noindex). Untranslated FR products/guides (`hasFrench` false) get no hreflang
+  pair and a noindex FR page.
 - Styling: Tailwind utilities + component classes from `globals.css`; plum is the single brand
   colour, 4px radii. Prefer editing existing classes over adding new CSS.
 - Comments in the code explain *why* (past bugs, legal constraints). Keep that habit.
 
 ## Testing
 
-`npm test` runs 5 suites (~100 tests) covering pricing, discount reservation, the Stripe webhook,
-email error handling and rate limiting. Pattern: `vi.hoisted` mocks + `vi.mock("@/lib/prisma", …)`,
+`npm test` runs 6 suites (~130 tests) covering pricing, discount reservation, the Stripe webhook,
+email error handling, rate limiting and the SEO layer (`tests/seo.test.ts`: origin, indexing
+switch, canonical/hreflang metadata, JSON-LD, sitemap and robots builders). Pattern: `vi.hoisted` mocks + `vi.mock("@/lib/prisma", …)`,
 requests built with `new Request(...)` cast to `NextRequest`. Add new tests under `tests/` and keep
 them free of network and database access.

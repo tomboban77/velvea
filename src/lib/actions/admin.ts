@@ -679,6 +679,22 @@ export async function deleteBuilderItem(itemId: string) {
   revalidatePath("/custom");
 }
 
+/** Reorder the add-ons within one category in a single pass (up/down controls in the admin). */
+export async function reorderBuilderItems(order: { id: string; position: number }[]) {
+  await guard("builder:write");
+  const data = parse(
+    z.array(z.object({ id, position: z.number().int().min(0).max(9999) })).max(500),
+    order
+  );
+  await prisma.$transaction(
+    data.map((it) =>
+      prisma.builderItem.update({ where: { id: it.id }, data: { position: it.position } })
+    )
+  );
+  revalidatePath("/admin/builder");
+  revalidatePath("/custom");
+}
+
 // ---------------------------------------------------------------------------
 // Staff
 // ---------------------------------------------------------------------------

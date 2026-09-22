@@ -19,11 +19,13 @@ const isProd = process.env.NODE_ENV === "production";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com https://va.vercel-scripts.com https://challenges.cloudflare.com`,
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://js.stripe.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com",
+  // Google Analytics beacons can go out as images; regional collection hosts
+  // are region1.google-analytics.com etc., hence the wildcard.
+  "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://*.google-analytics.com https://www.googletagmanager.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.stripe.com https://api.cloudinary.com https://vitals.vercel-insights.com",
+  "connect-src 'self' https://api.stripe.com https://api.cloudinary.com https://vitals.vercel-insights.com https://*.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
   // Cloudflare Turnstile renders its challenge inside an iframe.
   "frame-src https://challenges.cloudflare.com",
   "form-action 'self' https://checkout.stripe.com",

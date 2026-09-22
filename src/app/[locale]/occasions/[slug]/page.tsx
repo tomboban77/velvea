@@ -1,59 +1,61 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/shop/Listing";
-import { getProductsByCollection } from "@/lib/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { t as tc } from "@/lib/i18n-content";
-import { OCCASIONS, HOLIDAYS, labelFor } from "@/lib/nav";
+import { OCCASIONS, HOLIDAYS } from "@/lib/nav";
+import { collectionJsonLd, collectionMetadata, collectionTitle, loadCollection, totalPages, type CollectionSearch } from "@/lib/collection-page";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
-  const { slug, locale } = await params;
-  const match = [...OCCASIONS, ...HOLIDAYS].find((o) => o.slug === slug);
-  return { title: match ? `${labelFor(match, locale)} Gift Baskets` : "Gift Baskets" };
+const NAV = [...OCCASIONS, ...HOLIDAYS];
+const BASE = "/occasions";
+
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ slug: string; locale: string }>; searchParams: Promise<CollectionSearch> }) {
+  const [{ slug, locale }, sp] = await Promise.all([params, searchParams]);
+  return collectionMetadata({ type: "OCCASION", base: BASE, navList: NAV, slug, locale, sp });
 }
 
-export default async function OccasionPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string; locale: string }>;
-  searchParams: Promise<{ sort?: string; min?: string; max?: string; recipient?: string }>;
-}) {
-  const { slug, locale } = await params;
+export default async function OccasionPage({ params, searchParams }: { params: Promise<{ slug: string; locale: string }>; searchParams: Promise<CollectionSearch> }) {
+  const [{ slug, locale }, sp] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
-  const { sort, min, max, recipient } = await searchParams;
   const t = await getTranslations();
-  const floor = min && Number.isFinite(Number(min)) && Number(min) >= 0 ? Number(min) : undefined;
-  const cap = max && Number.isFinite(Number(max)) && Number(max) >= 0 ? Number(max) : undefined;
 
-  const { collection, products, total } = await getProductsByCollection("OCCASION", slug, { sort, take: 48, min: floor, max: cap, recipient });
+  const data = await loadCollection("OCCASION", slug, sp);
+  const fallback = NAV.find((o) => o.slug === slug);
+  if (!data.collection && !fallback) notFound();
+  const pages = totalPages(data.total);
+  // An out-of-range page is a 404, not an empty page 1: soft 404s get indexed.
+  if (data.page === null || (data.page > 1 && data.page > pages)) notFound();
 
-  const fallback = [...OCCASIONS, ...HOLIDAYS].find((o) => o.slug === slug);
-  if (!collection && !fallback) notFound();
-
-  const title = collection ? tc(collection.name, locale) : fallback ? labelFor(fallback, locale) : slug;
+  const title = collectionTitle(data, fallback, slug, locale);
+  const description = data.collection?.description
+    ? tc(data.collection.description, locale)
+    : locale === "fr"
+    ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout en Ontario.`
+    : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Ontario.`;
+  const heading = locale === "fr" ? `Paniers · ${title}` : `${title} gift baskets`;
 
   return (
-    <Listing
-      eyebrow={t("occasions.eyebrow")}
-      title={locale === "fr" ? `Paniers · ${title}` : `${title} gift baskets`}
-      description={
-        collection?.description
-          ? tc(collection.description, locale)
-          : locale === "fr"
-          ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout en Ontario.`
-          : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Ontario.`
-      }
-      products={products}
-      total={total}
-      showOccasions
-      activeSlug={slug}
-      breadcrumb={[
-        { label: t("pdp.home"), href: "/" },
-        { label: t("nav.occasions"), href: "/occasions" },
-        { label: title, href: `/occasions/${slug}` },
-      ]}
-    />
+    <>
+      {!data.filtered && data.products.length > 0 && (
+        <JsonLd data={collectionJsonLd({ base: BASE, slug, locale, page: data.page, name: heading, description, productSlugs: data.products.map((p) => p.slug) })} />
+      )}
+      <Listing
+        eyebrow={t("occasions.eyebrow")}
+        title={heading}
+        description={description}
+        products={data.products}
+        total={data.total}
+        showOccasions
+        activeSlug={slug}
+        breadcrumb={[
+          { label: t("pdp.home"), href: "/" },
+          { label: t("nav.occasions"), href: BASE },
+          { label: title, href: `${BASE}/${slug}` },
+        ]}
+        pagination={{ page: data.page, totalPages: pages, basePath: `${BASE}/${slug}`, params: { sort: sp.sort, min: sp.min, max: sp.max, recipient: sp.recipient } }}
+      />
+    </>
   );
 }

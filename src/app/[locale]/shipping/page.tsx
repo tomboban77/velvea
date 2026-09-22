@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import { ProsePage } from "@/components/ui/ProsePage";
 import { getSettings } from "@/lib/settings";
 import { getZonesForDisplay } from "@/lib/zones";
@@ -98,7 +99,8 @@ function copyFor(locale: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  return { title: copyFor(locale).metaTitle };
+  const c = copyFor(locale);
+  return pageMetadata({ locale, path: "/shipping", title: c.metaTitle, description: c.intro });
 }
 
 export const dynamic = "force-dynamic";

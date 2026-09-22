@@ -3,9 +3,29 @@ import { HIDDEN_PRODUCT_SLUGS } from "./features";
 import type { Prisma } from "@prisma/client";
 
 /**
- * All reads are wrapped so pages still render when the database is empty or
- * unreachable (e.g. before the first migration). They return safe fallbacks.
+ * List reads are wrapped so pages still render when the database is empty or
+ * unreachable (e.g. before the first migration): they return safe fallbacks.
+ *
+ * Detail lookups (`getProductBySlug`, `getArticleBySlug`) and the sitemap
+ * queries are the exception and rethrow. For them a fallback is a lie with
+ * consequences: `null` becomes a 404 that search engines record as "this
+ * product is gone", and an empty sitemap reads as "the catalogue is empty".
+ * A thrown error renders the error boundary with a 500, which crawlers treat
+ * as transient and retry.
  */
+
+/** Stable ordering: a tie-breaker on id keeps pagination free of duplicates and gaps. */
+function productOrder(sort?: string): Prisma.ProductOrderByWithRelationInput[] {
+  const primary: Prisma.ProductOrderByWithRelationInput =
+    sort === "price-asc"
+      ? { priceCents: "asc" }
+      : sort === "price-desc"
+      ? { priceCents: "desc" }
+      : sort === "rating"
+      ? { avgRating: "desc" }
+      : { featured: "desc" };
+  return [primary, { createdAt: "desc" }, { id: "asc" }];
+}
 
 /**
  * Products that exist in the database but must not be sold yet — currently the
@@ -57,24 +77,21 @@ export async function getBestsellers(limit = 8): Promise<ProductCard[]> {
   }
 }
 
+/** Rethrows on a database error — see the note at the top of this file. */
 export async function getProductBySlug(slug: string) {
-  try {
-    if (HIDDEN_PRODUCT_SLUGS.includes(slug)) return null;
-    return await prisma.product.findFirst({
-      where: { slug, status: { not: "ARCHIVED" } },
-      include: {
-        ...productInclude,
-        collections: { include: { collection: true } },
-        reviews: {
-          where: { status: "APPROVED" },
-          orderBy: { createdAt: "desc" },
-          take: 12,
-        },
+  if (HIDDEN_PRODUCT_SLUGS.includes(slug)) return null;
+  return prisma.product.findFirst({
+    where: { slug, status: { not: "ARCHIVED" } },
+    include: {
+      ...productInclude,
+      collections: { include: { collection: true } },
+      reviews: {
+        where: { status: "APPROVED" },
+        orderBy: { createdAt: "desc" },
+        take: 12,
       },
-    });
-  } catch {
-    return null;
-  }
+    },
+  });
 }
 
 export async function getProductsByCollection(
@@ -87,14 +104,7 @@ export async function getProductsByCollection(
     if (!collection || collection.type !== type)
       return { collection: null, products: [] as ProductCard[], total: 0 };
 
-    const orderBy: Prisma.ProductOrderByWithRelationInput =
-      opts?.sort === "price-asc"
-        ? { priceCents: "asc" }
-        : opts?.sort === "price-desc"
-        ? { priceCents: "desc" }
-        : opts?.sort === "rating"
-        ? { avgRating: "desc" }
-        : { featured: "desc" };
+    const orderBy = productOrder(opts?.sort);
 
     const where: Prisma.ProductWhereInput = {
       status: "ACTIVE",
@@ -146,14 +156,7 @@ export async function getAllProducts(opts?: {
   max?: number;
 }) {
   try {
-    const orderBy: Prisma.ProductOrderByWithRelationInput =
-      opts?.sort === "price-asc"
-        ? { priceCents: "asc" }
-        : opts?.sort === "price-desc"
-        ? { priceCents: "desc" }
-        : opts?.sort === "rating"
-        ? { avgRating: "desc" }
-        : { featured: "desc" };
+    const orderBy = productOrder(opts?.sort);
 
     const where: Prisma.ProductWhereInput = {
       status: "ACTIVE",
@@ -234,14 +237,46 @@ export async function getPublishedArticles(opts?: {
   }
 }
 
+/** Rethrows on a database error — see the note at the top of this file. */
 export async function getArticleBySlug(slug: string) {
-  try {
-    return await prisma.article.findFirst({
-      where: { slug, status: "PUBLISHED" },
-    });
-  } catch {
-    return null;
-  }
+  return prisma.article.findFirst({
+    where: { slug, status: "PUBLISHED" },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Sitemap reads. No `take` cap (the sitemap must list the whole eligible
+// inventory) and no try/catch (an outage must fail the fetch, not empty it).
+// ---------------------------------------------------------------------------
+
+export function getSitemapProducts() {
+  return prisma.product.findMany({
+    where: { status: "ACTIVE", ...notHidden },
+    select: { slug: true, updatedAt: true, description: true, tagline: true },
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+export function getSitemapArticles() {
+  return prisma.article.findMany({
+    where: { status: "PUBLISHED" },
+    select: { slug: true, updatedAt: true, publishedAt: true, body: true },
+    orderBy: { publishedAt: "asc" },
+  });
+}
+
+/** Collections with how many *sellable* products each holds, so empty ones can be left out. */
+export async function getSitemapCollections() {
+  const rows = await prisma.collection.findMany({
+    select: {
+      type: true,
+      slug: true,
+      updatedAt: true,
+      _count: { select: { products: { where: { product: { status: "ACTIVE", ...notHidden } } } } },
+    },
+    orderBy: [{ type: "asc" }, { position: "asc" }],
+  });
+  return rows.map((c) => ({ type: c.type, slug: c.slug, updatedAt: c.updatedAt, productCount: c._count.products }));
 }
 
 export async function getBuilderData() {

@@ -1,55 +1,54 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/shop/Listing";
-import { getProductsByCollection } from "@/lib/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { t as tc } from "@/lib/i18n-content";
-import { CATEGORIES, labelFor } from "@/lib/nav";
+import { CATEGORIES } from "@/lib/nav";
+import { collectionJsonLd, collectionMetadata, collectionTitle, loadCollection, totalPages, type CollectionSearch } from "@/lib/collection-page";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string; locale: string }>;
-}) {
-  const { slug, locale } = await params;
-  const match = CATEGORIES.find((o) => o.slug === slug);
-  return { title: match ? `${labelFor(match, locale)} Gift Baskets` : "Gift Baskets" };
+const BASE = "/category";
+
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ slug: string; locale: string }>; searchParams: Promise<CollectionSearch> }) {
+  const [{ slug, locale }, sp] = await Promise.all([params, searchParams]);
+  return collectionMetadata({ type: "CATEGORY", base: BASE, navList: CATEGORIES, slug, locale, sp });
 }
 
-export default async function CategoryPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string; locale: string }>;
-  searchParams: Promise<{ sort?: string; max?: string }>;
-}) {
-  const { slug, locale } = await params;
+export default async function CategoryPage({ params, searchParams }: { params: Promise<{ slug: string; locale: string }>; searchParams: Promise<CollectionSearch> }) {
+  const [{ slug, locale }, sp] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
-  const { sort, max } = await searchParams;
   const t = await getTranslations();
 
-  const { collection, products, total } = await getProductsByCollection("CATEGORY", slug, {
-    sort,
-    take: 48,
-  });
+  // The price cap used to be applied after the fetch, so the count and the
+  // pagination disagreed with the grid. It goes to the query like elsewhere.
+  const data = await loadCollection("CATEGORY", slug, sp);
   const fallback = CATEGORIES.find((o) => o.slug === slug);
-  if (!collection && !fallback) notFound();
+  if (!data.collection && !fallback) notFound();
+  const pages = totalPages(data.total);
+  if (data.page === null || (data.page > 1 && data.page > pages)) notFound();
 
-  const title = collection ? tc(collection.name, locale) : fallback ? labelFor(fallback, locale) : slug;
-  const filtered = max ? products.filter((p) => p.priceCents <= parseInt(max)) : products;
+  const title = collectionTitle(data, fallback, slug, locale);
+  const description = data.collection?.description ? tc(data.collection.description, locale) : undefined;
 
   return (
-    <Listing
-      eyebrow={t("nav.category")}
-      title={title}
-      products={filtered}
-      total={max ? filtered.length : total}
-      breadcrumb={[
-        { label: t("brand.name"), href: "/" },
-        { label: t("nav.category"), href: "/category" },
-        { label: title, href: `/category/${slug}` },
-      ]}
-    />
+    <>
+      {!data.filtered && data.products.length > 0 && (
+        <JsonLd data={collectionJsonLd({ base: BASE, slug, locale, page: data.page, name: title, description, productSlugs: data.products.map((p) => p.slug) })} />
+      )}
+      <Listing
+        eyebrow={t("nav.category")}
+        title={title}
+        description={description}
+        products={data.products}
+        total={data.total}
+        breadcrumb={[
+          { label: t("brand.name"), href: "/" },
+          { label: t("nav.category"), href: BASE },
+          { label: title, href: `${BASE}/${slug}` },
+        ]}
+        pagination={{ page: data.page, totalPages: pages, basePath: `${BASE}/${slug}`, params: { sort: sp.sort, min: sp.min, max: sp.max } }}
+      />
+    </>
   );
 }

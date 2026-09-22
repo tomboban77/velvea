@@ -62,6 +62,7 @@ export function CheckoutForm({
   const t = useTranslations();
   const locale = useLocale();
   const fr = locale === "fr";
+  const money = (c: number) => formatMoney(c, fr ? "fr-CA" : "en-CA");
   const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
   const [pending, startTransition] = useTransition();
@@ -559,11 +560,11 @@ export function CheckoutForm({
                   {i.premiumCard && (
                     <p className="mt-1 text-[0.7rem] text-violet">
                       {fr ? "Carte de vœux premium" : "Premium greeting card"}
-                      {i.cardFeeCents ? ` · +${formatMoney(i.cardFeeCents)}` : ""}
+                      {i.cardFeeCents ? ` · +${money(i.cardFeeCents)}` : ""}
                     </p>
                   )}
                   <span className="mt-auto text-sm font-semibold">
-                    {formatMoney(lineUnitCents(i) * i.quantity)}
+                    {money(lineUnitCents(i) * i.quantity)}
                   </span>
                 </div>
               </li>
@@ -589,23 +590,23 @@ export function CheckoutForm({
           )}
 
           <dl className="mt-5 space-y-2 border-t border-line pt-4 text-sm">
-            <Row label={fr ? "Sous-total" : "Subtotal"} value={formatMoney(subtotalCents)} />
+            <Row label={fr ? "Sous-total" : "Subtotal"} value={money(subtotalCents)} />
             {totals.discountCents > 0 && (
-              <Row label={fr ? "Rabais" : "Discount"} value={`−${formatMoney(totals.discountCents)}`} accent />
+              <Row label={fr ? "Rabais" : "Discount"} value={`−${money(totals.discountCents)}`} accent />
             )}
             <Row
               label={isPickup ? (fr ? "Ramassage" : "Pickup") : fr ? "Livraison" : "Delivery"}
-              value={totals.shippingCents ? formatMoney(totals.shippingCents) : fr ? "Gratuit" : "Free"}
+              value={totals.shippingCents ? money(totals.shippingCents) : fr ? "Gratuit" : "Free"}
             />
             {/* Hidden while the rate is zero. A "Tax $0.00" line on a receipt
                 reads as an error, and we are not registered to charge it. */}
             {totals.rate > 0 && (
-              <Row label={fr ? `Taxes (${totals.rate} %)` : `Tax (${totals.rate}%)`} value={formatMoney(totals.taxCents)} />
+              <Row label={fr ? `Taxes (${totals.rate} %)` : `Tax (${totals.rate}%)`} value={money(totals.taxCents)} />
             )}
           </dl>
           <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
             <span className="font-display text-lg">Total</span>
-            <span className="font-display text-2xl">{formatMoney(totals.totalCents)}</span>
+            <span className="font-display text-2xl">{money(totals.totalCents)}</span>
           </div>
 
           {error && (
@@ -663,8 +664,8 @@ export function CheckoutForm({
               : shippingBlocked
               ? fr ? "Choisissez la livraison locale ou le ramassage" : "Choose local delivery or pickup"
               : fr
-              ? `Payer ${formatMoney(totals.totalCents)}`
-              : `Pay ${formatMoney(totals.totalCents)}`}
+              ? `Payer ${money(totals.totalCents)}`
+              : `Pay ${money(totals.totalCents)}`}
           </button>
           <p className="mt-3 text-center text-xs text-muted">
             {fr
@@ -727,7 +728,7 @@ function MethodOption({
         <span className="block text-sm font-semibold text-ink">{title}</span>
         <span className="block text-xs text-muted">{sub}</span>
       </span>
-      <span className="text-sm font-semibold text-ink">{price ? formatMoney(price) : fr ? "Gratuit" : "Free"}</span>
+      <span className="text-sm font-semibold text-ink">{price ? formatMoney(price, fr ? "fr-CA" : "en-CA") : fr ? "Gratuit" : "Free"}</span>
     </button>
   );
 }

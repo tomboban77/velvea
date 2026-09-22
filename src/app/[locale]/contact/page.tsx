@@ -3,9 +3,19 @@ import { getSettings } from "@/lib/settings";
 import { Mail, Phone, MapPin, Clock, Building2, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Contact" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/contact",
+    title: t("contactTitle"),
+    description: t("contactDescription"),
+  });
+}
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

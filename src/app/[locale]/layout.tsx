@@ -8,7 +8,12 @@ import { Header, type HeaderFeatured } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { getFeaturedProducts, getBestsellers } from "@/lib/queries";
+import { getSettings } from "@/lib/settings";
 import { t as tc } from "@/lib/i18n-content";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { GoogleAnalytics, GA_MEASUREMENT_ID } from "@/components/analytics/GoogleAnalytics";
+import { ConsentBanner } from "@/components/analytics/ConsentBanner";
+import { organizationJsonLd, siteOrigin, webSiteJsonLd } from "@/lib/seo";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -25,6 +30,17 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  // Organization/WebSite nodes on every page. Contact details come from the
+  // effective settings (admin overrides over defaults), never from a hard-coded
+  // copy, so what search engines see is what the contact page shows.
+  const settings = await getSettings();
+  const origin = siteOrigin();
+  const organization = organizationJsonLd({
+    origin,
+    contact: settings.contact,
+    sameAs: Object.values(settings.social),
+  });
+
   // One product for the mega-menu "Featured now" tile.
   const [featured] = await getFeaturedProducts(1);
   const pick = featured ?? (await getBestsellers(1))[0];
@@ -39,6 +55,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider>
+      <JsonLd data={[organization, webSiteJsonLd({ origin, locale })]} />
       <CartProvider>
         <div className="flex min-h-screen flex-col">
           <a href="#main-content" className="skip-link">{locale === "fr" ? "Aller au contenu" : "Skip to content"}</a>
@@ -48,6 +65,9 @@ export default async function LocaleLayout({
         </div>
         <CartDrawer />
         <ScrollToTop />
+        {/* Storefront only: the admin panel is not measured. */}
+        <GoogleAnalytics />
+        {GA_MEASUREMENT_ID && <ConsentBanner />}
       </CartProvider>
     </NextIntlClientProvider>
   );

@@ -3,32 +3,34 @@ import { getLocale } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fontVars } from "@/lib/fonts";
+import { BRAND, DEFAULT_OG_IMAGE, siteOrigin } from "@/lib/seo";
 import "./globals.css";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-
+/**
+ * Site-wide defaults only. Every storefront page sets its own title,
+ * description, canonical, hreflang and Open Graph through `pageMetadata()` in
+ * src/lib/seo.ts; what is here is the template and the fallbacks for routes
+ * that do not (admin, root 404). Meta keywords are not emitted: Google has
+ * ignored them for years and they only advertise the target terms.
+ */
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteOrigin()),
   title: {
-    default: "Velvea — Premium Gift Baskets Delivered Across Ontario",
-    template: "%s · Velvea",
+    default: `${BRAND} — Premium Gift Baskets Delivered Across Ontario`,
+    template: `%s · ${BRAND}`,
   },
   description:
     "Premium gift baskets, hand-packed in Mississauga and delivered across Ontario. Same-day delivery in the GTA on eligible orders.",
-  keywords: [
-    "gift baskets Ontario",
-    "gift baskets Mississauga",
-    "gourmet gift baskets",
-    "corporate gifts Ontario",
-    "same-day gift delivery GTA",
-  ],
   openGraph: {
     type: "website",
-    siteName: "Velvea",
-    title: "Velvea — Premium Gift Baskets Delivered Across Ontario",
-    description:
-      "Beautiful, hand-packed gift baskets for every occasion, delivered across Ontario.",
-    images: ["/brand/velvea-og.png?v=6"],
+    siteName: BRAND,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  // Ownership tokens for Search Console / Bing Webmaster (meta-tag method).
+  // Only emitted when the env var is set, so nothing is claimed by accident.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
   },
 };
 

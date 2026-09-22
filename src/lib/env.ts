@@ -1,4 +1,5 @@
 import "server-only";
+import { siteOrigin } from "@/lib/seo";
 
 /**
  * Fail-fast environment checks.
@@ -61,6 +62,19 @@ export function assertStartupEnv(): void {
     }
     if (!process.env.NEXT_PUBLIC_SITE_URL) {
       problems.push("NEXT_PUBLIC_SITE_URL is not set (used for Stripe redirects and email links).");
+    } else {
+      // A localhost or http origin here would become every canonical URL,
+      // sitemap entry and Open Graph URL on the live site.
+      try {
+        siteOrigin();
+      } catch (err) {
+        problems.push((err as Error).message);
+      }
+    }
+    if (!process.env.SITE_INDEXING) {
+      // Not an error: the closed default is deliberate. Logged so nobody
+      // wonders why Google is not indexing the site after launch.
+      console.warn("[env] SITE_INDEXING is unset — every storefront page is noindex. Set SITE_INDEXING=all to launch.");
     }
     if (offlineOrdersAllowed() && process.env.STRIPE_SECRET_KEY) {
       problems.push(

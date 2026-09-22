@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { ChevronDown, Loader2, Save, Plus, Trash2, ImageIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Save, Plus, Trash2, ImageIcon } from "lucide-react";
 import { Card, Badge } from "./ui";
 import { Field, TextInput, LocalizedInput, Toggle, Select } from "./form";
 import { ImageUploader, type UploadedImage } from "./ImageUploader";
-import { upsertCollection, deleteCollection } from "@/lib/actions/admin";
+import { upsertCollection, deleteCollection, reorderCollections } from "@/lib/actions/admin";
 import { cn } from "@/lib/utils";
 
 type CollectionRow = {
@@ -19,21 +19,36 @@ type CollectionRow = {
   imagePublicId: string | null;
   featured: boolean;
   position: number;
+  seoTitle: { en: string; fr: string };
+  seoDescription: { en: string; fr: string };
   count: number;
 };
 
 export function CollectionsManager({ initial }: { initial: CollectionRow[] }) {
   const [open, setOpen] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [reordering, start] = useTransition();
 
   const groups = (["OCCASION", "RECIPIENT", "CATEGORY", "THEME"] as const).map((type) => ({
     type,
     rows: initial.filter((c) => c.type === type),
   }));
 
+  /** Swap a row with its neighbour and persist every position in that type
+   *  group — the storefront orders within a type, and rows that were never
+   *  ordered all sit at 0, so the whole group is rewritten each time. */
+  function move(rows: CollectionRow[], index: number, dir: -1 | 1) {
+    const target = index + dir;
+    if (target < 0 || target >= rows.length) return;
+    const next = [...rows];
+    [next[index], next[target]] = [next[target], next[index]];
+    start(() => reorderCollections(next.map((r, i) => ({ id: r.id, position: i }))));
+  }
+
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-3">
+        {reordering && <span className="text-xs text-muted">Saving order…</span>}
         <button onClick={() => setCreating((c) => !c)} className="flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-charcoal">
           <Plus className="h-4 w-4" /> New collection
         </button>
@@ -41,7 +56,7 @@ export function CollectionsManager({ initial }: { initial: CollectionRow[] }) {
 
       {creating && (
         <Editor
-          row={{ id: "", type: "OCCASION", slug: "", name: { en: "", fr: "" }, description: { en: "", fr: "" }, imageUrl: null, imagePublicId: null, featured: false, position: 0, count: 0 }}
+          row={{ id: "", type: "OCCASION", slug: "", name: { en: "", fr: "" }, description: { en: "", fr: "" }, imageUrl: null, imagePublicId: null, featured: false, position: 0, seoTitle: { en: "", fr: "" }, seoDescription: { en: "", fr: "" }, count: 0 }}
           onDone={() => setCreating(false)}
           isNew
         />
@@ -52,23 +67,30 @@ export function CollectionsManager({ initial }: { initial: CollectionRow[] }) {
           <div key={g.type}>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">{g.type.toLowerCase()}</h2>
             <div className="space-y-2">
-              {g.rows.map((row) => (
+              {g.rows.map((row, i) => (
                 <Card key={row.id} className="!p-0 overflow-hidden">
-                  <button onClick={() => setOpen(open === row.id ? null : row.id)} className="flex w-full items-center gap-4 p-4 text-left">
-                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-cream">
-                      {row.imageUrl ? (
-                        <Image src={row.imageUrl} alt="" fill sizes="48px" className="object-cover" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center"><ImageIcon className="h-4 w-4 text-line-strong" /></div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-ink">{row.name.en}</p>
-                      <p className="text-xs text-muted">/{row.slug} · {row.count} products</p>
-                    </div>
-                    {row.featured && <Badge tone="iris">Featured</Badge>}
-                    <ChevronDown className={cn("h-4 w-4 text-muted transition-transform", open === row.id && "rotate-180")} />
-                  </button>
+                  <div className="flex items-center">
+                    <button onClick={() => setOpen(open === row.id ? null : row.id)} className="flex min-w-0 flex-1 items-center gap-4 p-4 text-left">
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-cream">
+                        {row.imageUrl ? (
+                          <Image src={row.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center"><ImageIcon className="h-4 w-4 text-line-strong" /></div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-ink">{row.name.en}</p>
+                        <p className="truncate text-xs text-muted">/{row.slug} · {row.count} products</p>
+                      </div>
+                      {row.featured && <Badge tone="iris">Featured</Badge>}
+                      <ChevronDown className={cn("h-4 w-4 text-muted transition-transform", open === row.id && "rotate-180")} />
+                    </button>
+                    {/* Up/down sit outside the expand button: a button inside a button is invalid HTML. */}
+                    <span className="flex shrink-0 flex-col border-l border-line px-2">
+                      <button type="button" onClick={() => move(g.rows, i, -1)} disabled={reordering || i === 0} aria-label="Move up" className="p-0.5 text-muted hover:text-ink disabled:opacity-30"><ChevronUp className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => move(g.rows, i, 1)} disabled={reordering || i === g.rows.length - 1} aria-label="Move down" className="p-0.5 text-muted hover:text-ink disabled:opacity-30"><ChevronDown className="h-4 w-4" /></button>
+                    </span>
+                  </div>
                   {open === row.id && (
                     <div className="border-t border-line p-4">
                       <Editor row={row} onDone={() => setOpen(null)} />
@@ -105,6 +127,10 @@ function Editor({ row, onDone, isNew }: { row: CollectionRow; onDone: () => void
         imagePublicId: images[0]?.publicId ?? null,
         featured: d.featured,
         position: d.position,
+        seoTitleEn: d.seoTitle.en,
+        seoTitleFr: d.seoTitle.fr,
+        seoDescriptionEn: d.seoDescription.en,
+        seoDescriptionFr: d.seoDescription.fr,
       });
       onDone();
     });
@@ -128,6 +154,13 @@ function Editor({ row, onDone, isNew }: { row: CollectionRow; onDone: () => void
       <div>
         <p className="label">Image</p>
         <ImageUploader images={images} onChange={setImages} folder="velvea/collections" max={1} />
+      </div>
+      <div className="space-y-3 rounded-xl border border-line bg-shell p-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted">Search listing</p>
+        <LocalizedInput label="SEO title" en={d.seoTitle.en} fr={d.seoTitle.fr} placeholder="Leave blank to use the name"
+          onEn={(v) => setD({ ...d, seoTitle: { ...d.seoTitle, en: v } })} onFr={(v) => setD({ ...d, seoTitle: { ...d.seoTitle, fr: v } })} />
+        <LocalizedInput label="SEO description" en={d.seoDescription.en} fr={d.seoDescription.fr} textarea rows={2} placeholder="About 150 characters; leave blank to use the description"
+          onEn={(v) => setD({ ...d, seoDescription: { ...d.seoDescription, en: v } })} onFr={(v) => setD({ ...d, seoDescription: { ...d.seoDescription, fr: v } })} />
       </div>
       <Toggle checked={d.featured} onChange={(v) => setD({ ...d, featured: v })} label="Featured" description="Show prominently on the homepage." />
       <div className="flex items-center gap-3">

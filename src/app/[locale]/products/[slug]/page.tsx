@@ -5,22 +5,32 @@ import { getSettings } from "@/lib/settings";
 import { ProductReviews } from "@/components/shop/ProductReviews";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
 import { advertisedSameDayCutoff } from "@/lib/zones";
+import { breadcrumbJsonLd, hasFrench, pageMetadata, productJsonLd, siteOrigin } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
   const product = await getProductBySlug(slug);
-  if (!product) return { title: "Gift Basket" };
-  const image = product.images[0]?.url;
-  return {
+  if (!product || product.status === "DRAFT") {
+    return pageMetadata({ locale, path: `/products/${slug}`, title: t("productFallbackTitle"), index: false, alternates: false });
+  }
+  // A product whose French copy is still the English text is not offered as a
+  // French page: no hreflang pair, and the /fr URL itself is noindex.
+  const frReady = hasFrench(product.description) || hasFrench(product.tagline);
+  return pageMetadata({
+    locale,
+    path: `/products/${product.slug}`,
     title: tc(product.seoTitle, locale) || tc(product.name, locale),
-    description: tc(product.seoDescription, locale) || tc(product.tagline, locale),
-    openGraph: image ? { images: [image] } : undefined,
-  };
+    description: tc(product.seoDescription, locale) || tc(product.tagline, locale) || tc(product.description, locale)?.slice(0, 160),
+    image: product.images[0]?.url,
+    alternates: frReady,
+  });
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
@@ -63,41 +73,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const related = (await getBestsellers(6)).filter((p) => p.id !== product.id).slice(0, 5);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: view.name,
-    description: view.description || view.tagline,
-    image: view.images.map((i) => i.url),
-    brand: { "@type": "Brand", name: "Velvéa" },
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "CAD",
-      price: (view.priceCents / 100).toFixed(2),
-      availability: "https://schema.org/InStock",
-    },
-    ...(view.reviewCount > 0
-      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: view.rating.toFixed(1), reviewCount: view.reviewCount } }
-      : {}),
-  };
+  const breadcrumb = [
+    { label: t("home"), href: "/" },
+    { label: t("baskets"), href: "/baskets" },
+    { label: view.name, href: `/products/${view.slug}` },
+  ];
+  const origin = siteOrigin();
 
   return (
     <>
-      {/* JSON.stringify does not escape "<", so a product description containing
-          "</script>" would break out of this tag. Escaping "<" keeps the JSON valid. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-      />
+      {/* Availability and per-variant prices come from the same fields the page
+          renders, so the structured data cannot say "in stock" over a sold-out button. */}
+      <JsonLd data={[productJsonLd(product, { locale, origin }), breadcrumbJsonLd(breadcrumb, { locale, origin })]} />
 
       <div className="container-x pt-5">
-        <Breadcrumb
-          items={[
-            { label: t("home"), href: "/" },
-            { label: t("baskets"), href: "/baskets" },
-            { label: view.name, href: `/products/${view.slug}` },
-          ]}
-        />
+        <Breadcrumb items={breadcrumb} />
       </div>
 
       <ProductDetail

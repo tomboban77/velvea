@@ -26,6 +26,8 @@ export default async function CollectionsPage() {
       imagePublicId: c.imagePublicId,
       featured: c.featured,
       position: c.position,
+      seoTitle: asL(c.seoTitle),
+      seoDescription: asL(c.seoDescription),
       count: c._count.products,
     }));
   } catch {

@@ -1,11 +1,21 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Star, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { t as tc } from "@/lib/i18n-content";
 import { formatDate } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Customer Reviews" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/reviews",
+    title: t("reviewsTitle"),
+    description: t("reviewsDescription"),
+  });
+}
 
 export default async function ReviewsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

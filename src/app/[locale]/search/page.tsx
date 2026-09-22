@@ -1,13 +1,26 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getAllProducts } from "@/lib/queries";
 import { toProductView } from "@/lib/view";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { EmptyBaskets } from "@/components/shop/EmptyBaskets";
 import { Search as SearchIcon } from "lucide-react";
 import { t as tc } from "@/lib/i18n-content";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Search" };
+// Internal search results are never indexed; robots.txt leaves the route
+// crawlable so this noindex can actually be read.
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/search",
+    title: t("searchTitle"),
+    index: false,
+    alternates: false,
+  });
+}
 
 export default async function SearchPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string }> }) {
   const { locale } = await params;

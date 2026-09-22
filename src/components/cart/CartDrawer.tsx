@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { X, Plus, Minus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
@@ -10,6 +10,8 @@ import { formatMoney, cn } from "@/lib/utils";
 
 export function CartDrawer() {
   const t = useTranslations();
+  const locale = useLocale();
+  const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA");
   const { items, isOpen, closeCart, updateQty, removeItem, subtotalCents } = useCart();
 
   useEffect(() => {
@@ -113,7 +115,7 @@ export function CartDrawer() {
                       {item.premiumCard && (
                         <p className="mt-1 text-[0.7rem] text-violet">
                           {t("cart.premiumCard")}
-                          {item.cardFeeCents ? ` · +${formatMoney(item.cardFeeCents)}` : ""}
+                          {item.cardFeeCents ? ` · +${money(item.cardFeeCents)}` : ""}
                         </p>
                       )}
                       <div className="mt-auto flex items-center justify-between pt-2">
@@ -137,7 +139,7 @@ export function CartDrawer() {
                           </button>
                         </div>
                         <span className="text-sm font-semibold text-ink">
-                          {formatMoney(lineUnitCents(item) * item.quantity)}
+                          {money(lineUnitCents(item) * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -149,7 +151,7 @@ export function CartDrawer() {
             <footer className="border-t border-line px-6 py-5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted">{t("common.subtotal")}</span>
-                <span className="font-display text-2xl">{formatMoney(subtotalCents)}</span>
+                <span className="font-display text-2xl">{money(subtotalCents)}</span>
               </div>
               <p className="mt-1 text-xs text-muted">
                 {t("cart.footerNote")}

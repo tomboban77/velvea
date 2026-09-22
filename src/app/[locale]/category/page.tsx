@@ -1,9 +1,19 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { CollectionIndex } from "@/components/shop/CollectionIndex";
 import { CATEGORIES } from "@/lib/nav";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Shop by Category" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/category",
+    title: t("categoryIndexTitle"),
+    description: t("categoryIndexDescription"),
+  });
+}
 
 export default async function CategoryIndex({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

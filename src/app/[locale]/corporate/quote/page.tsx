@@ -2,8 +2,18 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { CorporateQuoteForm } from "@/components/corporate/CorporateQuoteForm";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Check, Clock } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Request a Corporate Quote" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return pageMetadata({
+    locale,
+    path: "/corporate/quote",
+    title: t("corporateQuoteTitle"),
+    description: t("corporateQuoteDescription"),
+  });
+}
 
 export default async function CorporateQuotePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

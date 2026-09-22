@@ -230,7 +230,14 @@
   "guides": {
     "eyebrow": "The journal",
     "title": "Guides & gifting notes",
-    "lede": "Advice on corporate gifting, sympathy, seasonal ideas and finding the right tone for every recipient."
+    "lede": "Advice on corporate gifting, sympathy, seasonal ideas and finding the right tone for every recipient.",
+    "readMinutes": "{count} min read",
+    "ctaTitle": "Find the perfect gift",
+    "ctaBody": "Browse hand-packed baskets for every occasion.",
+    "ctaButton": "Shop gift baskets",
+    "all": "All",
+    "readGuide": "Read guide",
+    "comingSoon": "Guides are coming soon."
   },
   "faq": {
     "eyebrow": "Good to know",
@@ -398,7 +405,12 @@
     "showing": "Showing {count} of {total}",
     "all": "All",
     "search": "Search baskets",
-    "searchPlaceholder": "Search by name…"
+    "searchPlaceholder": "Search by name…",
+    "pagination": "Pagination",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page {page}",
+    "pageOf": "Page {page} of {total}"
   },
   "custom": {
     "eyebrow": "Build your own",
@@ -406,5 +418,44 @@
     "lede": "Choose a vessel, add your favourites and we hand-pack it with care.",
     "emptyTitle": "The builder is being prepared",
     "emptyLede": "In the meantime, explore our ready-made baskets."
+  },
+  "meta": {
+    "homeTitle": "Velvéa — Premium Gift Baskets Delivered Across Ontario",
+    "homeDescription": "Premium gift baskets, hand-packed in Mississauga and delivered across Ontario. Same-day delivery in the GTA on eligible orders.",
+    "basketsTitle": "All gift baskets",
+    "basketsDescription": "Browse every Velvéa gift basket: gourmet, chocolate, spa, coffee and tea, hand-composed in Mississauga and delivered across Ontario.",
+    "pageSuffix": "{title} — page {page}",
+    "collectionTitle": "{name} gift baskets",
+    "recipientTitle": "Gift baskets {name}",
+    "occasionDescription": "Thoughtful gift baskets for {name}, composed by hand in Mississauga and delivered across Ontario.",
+    "recipientDescription": "The right gift {name}, hand-packed in Mississauga and delivered across Ontario.",
+    "categoryDescription": "{name} gift baskets, hand-composed in Mississauga and delivered across Ontario.",
+    "occasionsTitle": "Gift baskets by occasion",
+    "occasionsDescription": "Birthday, thank-you, sympathy, new baby and more: find a hand-packed gift basket for every moment, delivered across Ontario.",
+    "recipientsTitle": "Gift baskets by recipient",
+    "recipientsDescription": "Gift baskets for him, for her, new parents, clients and employees, composed by hand in Mississauga.",
+    "categoryIndexTitle": "Shop gift baskets by category",
+    "categoryIndexDescription": "Gourmet, chocolate, spa and wellness, coffee and tea, fresh fruit and vegan gift baskets, delivered across Ontario.",
+    "customTitle": "Build your own gift basket",
+    "customDescription": "Choose a vessel, pick your favourites and we hand-pack a custom gift basket in Mississauga for delivery across Ontario.",
+    "corporateTitle": "Corporate gift baskets in Ontario",
+    "corporateDescription": "Client appreciation, employee milestones and holiday programmes: volume pricing, branded cards and multi-address delivery across Ontario.",
+    "corporateQuoteTitle": "Request a corporate quote",
+    "corporateQuoteDescription": "Tell us about your corporate gifting project and receive a tailored proposal within one business day.",
+    "aboutTitle": "Our story",
+    "aboutDescription": "Velvéa is a small gift atelier in Mississauga, Ontario, composing every basket by hand with products we would give ourselves.",
+    "guidesTitle": "Gift guides and gifting advice",
+    "guidesDescription": "Advice on corporate gifting, sympathy baskets, seasonal ideas and finding the right tone for every recipient.",
+    "guideFallbackTitle": "Gift guide",
+    "reviewsTitle": "Customer reviews",
+    "reviewsDescription": "What customers across Ontario say about their Velvéa gift baskets.",
+    "faqTitle": "Frequently asked questions",
+    "faqDescription": "Delivery areas, same-day cutoffs, gift messages, allergens and everything else you might want to know before ordering.",
+    "contactTitle": "Contact Velvéa",
+    "contactDescription": "Questions about an order, an occasion or a corporate project? Reach the Velvéa studio in Mississauga. We reply within one business day.",
+    "searchTitle": "Search",
+    "giftCardsTitle": "Gift cards",
+    "giftCardsDescription": "Give the gift of choice with a Velvéa gift card, redeemable on any basket.",
+    "productFallbackTitle": "Gift basket"
   }
 }
