@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { pageMetadata } from "@/lib/seo";
+import { Link } from "@/i18n/routing";
 import { ProsePage } from "@/components/ui/ProsePage";
 import { getSettings } from "@/lib/settings";
 import { getZonesForDisplay } from "@/lib/zones";
@@ -131,6 +132,9 @@ export default async function ShippingPage({ params }: { params: Promise<{ local
       <h2>{c.whereH}</h2>
       <p>{c.whereP1}</p>
       <p>{c.whereP2}</p>
+      <p>
+        <Link href="/delivery">{locale === "fr" ? "Voir les zones de livraison ville par ville" : "See delivery areas city by city"}</Link>
+      </p>
 
       {pickup && (
         <>

@@ -16,11 +16,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin()),
   title: {
-    default: `${BRAND} — Premium Gift Baskets Delivered Across Ontario`,
+    default: `${BRAND} — Gift Baskets & Hampers Delivered Across Ontario`,
     template: `%s · ${BRAND}`,
   },
   description:
-    "Premium gift baskets, hand-packed in Mississauga and delivered across Ontario. Same-day delivery in the GTA on eligible orders.",
+    "Online gift shop for premium gift baskets, hampers and gift boxes, hand-packed in Mississauga and delivered across Ontario. Same-day delivery in the GTA on eligible orders.",
   openGraph: {
     type: "website",
     siteName: BRAND,

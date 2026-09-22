@@ -89,6 +89,7 @@ export async function Footer() {
         <FooterCol title={t("footer.support")}>
           <FooterLink href="/contact">{t("footer.contact")}</FooterLink>
           <FooterLink href="/shipping">{t("footer.shipping")}</FooterLink>
+          <FooterLink href="/delivery">{t("footer.deliveryAreas")}</FooterLink>
           <FooterLink href="/faq">{t("footer.faq")}</FooterLink>
           <FooterLink href="/corporate/quote">{t("nav.corporateQuote")}</FooterLink>
           <FooterLink href="/about">{t("footer.about")}</FooterLink>

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getSitemapArticles, getSitemapCollections, getSitemapProducts } from "@/lib/queries";
 import { GIFT_CARDS_ENABLED } from "@/lib/features";
 import { buildSitemap, indexingMode, siteOrigin } from "@/lib/seo";
+import { CITY_PAGES } from "@/lib/cities";
 
 /**
  * Regenerate hourly rather than only at build time, so a basket added in admin
@@ -27,5 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getSitemapCollections(),
   ]);
 
-  return buildSitemap({ origin, mode, products, articles, collections, giftCardsEnabled: GIFT_CARDS_ENABLED });
+  return buildSitemap({
+    origin,
+    mode,
+    products,
+    articles,
+    collections,
+    giftCardsEnabled: GIFT_CARDS_ENABLED,
+    extraPaths: CITY_PAGES.map((c) => `/delivery/${c.slug}`),
+  });
 }

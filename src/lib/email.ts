@@ -276,6 +276,17 @@ function deliveryBlock(data: OrderEmailData): string {
       methodLabel(data.deliveryMethod, data.locale)
     )}`,
   ];
+  if (data.deliveryMethod === "PICKUP") {
+    // Pickups are by appointment, not walk-in: the address is a home studio.
+    meta.push(
+      escapeHtml(
+        L(
+          "We'll message you to arrange a pickup time as soon as your basket is ready.",
+          "Nous vous écrirons pour convenir d'une heure de ramassage dès que votre panier sera prêt."
+        )
+      )
+    );
+  }
   if (data.deliveryDate) {
     meta.push(
       `<strong>${L("Preferred date", "Date souhaitée")}:</strong> ${escapeHtml(

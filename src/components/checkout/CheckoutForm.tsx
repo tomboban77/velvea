@@ -396,6 +396,13 @@ export function CheckoutForm({
                 <p className="mt-0.5 text-muted">
                   {studio.addressLine}, {studio.city}, {studio.province} {studio.postalCode}
                 </p>
+                {/* Pickups are by appointment: the studio is a home address, so a time is
+                    arranged by message once the basket is ready rather than walk-in. */}
+                <p className="mt-2 text-muted">
+                  {fr
+                    ? "Nous vous écrirons pour convenir d'une heure de ramassage dès que votre panier sera prêt."
+                    : "We'll message you to arrange a pickup time as soon as your basket is ready."}
+                </p>
               </div>
             ) : (
               <>

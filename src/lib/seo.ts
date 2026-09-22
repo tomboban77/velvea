@@ -507,6 +507,7 @@ export const STATIC_PATHS = [
   "/reviews",
   "/faq",
   "/shipping",
+  "/delivery",
   "/contact",
   "/privacy",
   "/terms",
@@ -531,6 +532,8 @@ export function buildSitemap(input: {
   articles: SitemapArticle[];
   collections: SitemapCollection[];
   giftCardsEnabled?: boolean;
+  /** Extra bilingual static paths, e.g. the city delivery pages. */
+  extraPaths?: string[];
 }): MetadataRoute.Sitemap {
   const { origin, mode } = input;
   if (mode === "off") return [];
@@ -558,6 +561,7 @@ export function buildSitemap(input: {
 
   for (const path of STATIC_PATHS) if (path !== "/") add(path, {});
   if (input.giftCardsEnabled) add("/gift-cards", {});
+  for (const path of input.extraPaths ?? []) add(path, {});
 
   // Empty collections are noindex placeholders, so they stay out of the map.
   for (const c of input.collections) {
