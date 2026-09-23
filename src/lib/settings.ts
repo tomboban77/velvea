@@ -64,7 +64,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     city: "Mississauga",
     province: "ON",
     postalCode: "L4Z 0C9",
-    hours: "Mon–Fri, 9am–6pm ET",
+    hours: "Mon–Sun, 8am–6pm ET",
   },
   social: {
     instagram: "https://instagram.com/velvea",

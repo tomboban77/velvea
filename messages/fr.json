@@ -3,6 +3,10 @@
     "name": "Velvéa",
     "tagline": "L'art du cadeau réfléchi."
   },
+  "splash": {
+    "greeting": "Bienvenue chez Velvéa",
+    "line": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga."
+  },
   "announcement": {
     "one": "Une carte manuscrite avec chaque cadeau",
     "two": "Jour même dans le Grand Toronto · Commandez avant l’heure limite",

@@ -3,6 +3,10 @@
     "name": "Velvéa",
     "tagline": "The art of the considered gift."
   },
+  "splash": {
+    "greeting": "Welcome to Velvea",
+    "line": "Gift baskets composed by hand in our Mississauga atelier."
+  },
   "announcement": {
     "one": "A handwritten card with every gift",
     "two": "Same-day in the GTA · Order before the cutoff",

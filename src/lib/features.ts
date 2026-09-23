@@ -13,3 +13,11 @@ export const GIFT_CARD_SLUG = "velvea-gift-card";
 
 /** Product slugs hidden from listings, search, sitemap and checkout. */
 export const HIDDEN_PRODUCT_SLUGS: string[] = GIFT_CARDS_ENABLED ? [] : [GIFT_CARD_SLUG];
+
+/**
+ * First-load welcome (src/components/brand/Splash.tsx). Off switch for the
+ * owner: a full-screen overlay is the one thing on the storefront that can
+ * hold up the largest paint, so if Core Web Vitals in Search Console turn, set
+ * this to false and the pre-paint script stops arming it.
+ */
+export const SPLASH_ENABLED = true;

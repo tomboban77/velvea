@@ -6,6 +6,7 @@ import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Header, type HeaderFeatured } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Splash } from "@/components/brand/Splash";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { getFeaturedProducts, getBestsellers } from "@/lib/queries";
 import { getSettings } from "@/lib/settings";
@@ -14,6 +15,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { GoogleAnalytics, GA_MEASUREMENT_ID } from "@/components/analytics/GoogleAnalytics";
 import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { organizationJsonLd, siteOrigin, webSiteJsonLd } from "@/lib/seo";
+import { SPLASH_ENABLED } from "@/lib/features";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -56,6 +58,10 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider>
       <JsonLd data={[organization, webSiteJsonLd({ origin, locale })]} />
+      {/* Storefront only, once per session, and decided pre-paint — see the
+          inline script in the root layout. First in the body so the welcome is
+          already in the first chunk while the rest of the page streams. */}
+      {SPLASH_ENABLED && <Splash />}
       <CartProvider>
         <div className="flex min-h-screen flex-col">
           <a href="#main-content" className="skip-link">{locale === "fr" ? "Aller au contenu" : "Skip to content"}</a>

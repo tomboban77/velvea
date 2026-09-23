@@ -1148,3 +1148,209 @@ select.field {
   font-family: var(--font-sans);
 }
 .prose-velvea :is(h1, h2, h3) { font-family: var(--font-display); font-weight: 500; }
+
+/* ============================================================
+   Splash — the first-load welcome
+   ============================================================
+   The mark on the house plate, a greeting and one line — no button, and none
+   of the home page's copy. It holds for about three seconds and lifts.
+
+   It is shown once per browsing session, and only because the pre-paint script
+   in src/app/layout.tsx put data-splash on <html> before the first frame. Until
+   then .splash is display:none — which is also why every image below is a CSS
+   background rather than an <img>: browsers skip the backgrounds of an element
+   with no box, so a returning visitor and every internal navigation fetch none
+   of this.
+
+   Three states, all driven by that one attribute:
+     "1"    holding — the whole welcome, hold and lift included, plays from here
+     "out"  dismissed early — tap, key or scroll; the same lift, without the wait
+     absent gone — <Splash> cleared it once the lift reported finished
+
+   This file owns the clock. The "1" state carries its own delayed exit, so the
+   sequence is one timeline anchored to first paint and <Splash> never races it
+   with a timer of its own (see the note there). It also means a session where
+   the JS never runs still ends up on the shop rather than behind a curtain.
+
+   The "auto" keyframes are duplicates of the dismissed ones under a second name
+   on purpose: changing only the delay of a *running* animation does not restart
+   it, it re-times it, so sharing one name would make an early dismiss snap to
+   its end frame instead of fading.
+   ============================================================ */
+.splash { display: none; }
+
+html[data-splash] .splash {
+  position: fixed;
+  inset: 0;
+  z-index: 90; /* over the header (50) and the cart drawer (70) */
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-lilac);
+}
+
+/* --- ground: the watercolour plate, breathing in very slightly ------------ */
+html[data-splash] .splash-plate {
+  position: absolute;
+  /* bled past the frame so the scale never uncovers an edge */
+  inset: -3%;
+  z-index: 0;
+  background: var(--color-lilac) url("/images/bg.webp") center top / cover no-repeat;
+  animation: velvea-splash-breath 6s var(--ease-out-soft) both;
+}
+@media (max-width: 767px) {
+  /* the portrait plate draws an arch of foliage around an open centre — the
+     mark sits in that opening, so `cover` is exactly right here */
+  html[data-splash] .splash-plate { background-image: url("/images/bg_mobile.webp"); background-position: center; }
+}
+
+/* Light swelling behind the mark, so it reads as emerging rather than placed. */
+html[data-splash] .splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(52% 34% at 50% 50%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.5) 46%, transparent 76%);
+  animation: velvea-splash-bloom 1.8s var(--ease-out-soft) both;
+}
+/* A breath of violet in the corners, to close the frame. */
+html[data-splash] .splash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: radial-gradient(118% 88% at 50% 46%, transparent 56%, rgba(46, 7, 64, 0.1) 100%);
+  pointer-events: none;
+}
+
+/* --- the mark ------------------------------------------------------------- */
+html[data-splash] .splash-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+html[data-splash] .splash-mark-wrap {
+  position: relative;
+  width: min(68vw, 29rem);
+  /* the sheen blends with the mark and nothing behind it */
+  isolation: isolate;
+}
+html[data-splash] .splash-mark {
+  aspect-ratio: 641 / 177;
+  background: url("/brand/velvea-lockup.png") center / contain no-repeat;
+  /* resolves out of soft focus — watercolour, not a slide-in */
+  animation: velvea-splash-focus 1.2s var(--ease-out-soft) 0.1s both;
+}
+
+/* One pass of light across the foil. The mask is the lockup's own alpha, so the
+   highlight travels the letterforms and the petals and touches nothing else. */
+html[data-splash] .splash-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mix-blend-mode: screen;
+  -webkit-mask: url("/brand/velvea-lockup.png") center / contain no-repeat;
+  mask: url("/brand/velvea-lockup.png") center / contain no-repeat;
+}
+html[data-splash] .splash-sheen::before {
+  content: "";
+  position: absolute;
+  inset: -40% -100%;
+  background: linear-gradient(
+    100deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(255, 246, 228, 0.95) 50%,
+    rgba(255, 255, 255, 0.12) 55%,
+    transparent 60%
+  );
+  animation: velvea-splash-sheen 1.3s var(--ease-in-out-soft) 1.3s both;
+}
+/* Without mask support the band would wash over the whole box, so it sits out. */
+@supports not ((-webkit-mask-image: url("/brand/velvea-lockup.png")) or (mask-image: url("/brand/velvea-lockup.png"))) {
+  html[data-splash] .splash-sheen { display: none; }
+}
+
+/* --- greeting and line ----------------------------------------------------- */
+html[data-splash] .splash-rule {
+  margin-top: 2.1rem;
+  height: 1px;
+  width: clamp(3.5rem, 12vw, 6rem);
+  background: linear-gradient(90deg, transparent, var(--color-gold-soft), transparent);
+  animation: velvea-splash-rule 0.7s var(--ease-out-soft) 1.05s both;
+}
+html[data-splash] .splash-greeting {
+  margin-top: 1.45rem;
+  font-family: var(--font-caps);
+  font-size: clamp(0.66rem, 0.6rem + 0.22vw, 0.78rem);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  /* the trailing letter-space would otherwise push the line off centre */
+  text-indent: 0.26em;
+  color: var(--color-violet);
+  animation: velvea-rise 0.7s var(--ease-out-soft) 1.3s both;
+}
+html[data-splash] .splash-line {
+  margin-top: 0.7rem;
+  max-width: 26ch;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.05rem, 0.85rem + 0.95vw, 1.5rem);
+  line-height: 1.35;
+  text-wrap: balance;
+  color: var(--color-violet-ink);
+  animation: velvea-rise 0.8s var(--ease-out-soft) 1.5s both;
+}
+
+/* --- the lift ------------------------------------------------------------- */
+html[data-splash="out"] .splash { animation: velvea-splash-out 0.6s var(--ease-out-soft) forwards; }
+html[data-splash="out"] .splash-inner { animation: velvea-splash-rise-away 0.6s var(--ease-out-soft) forwards; }
+html[data-splash="1"] .splash { animation: velvea-splash-out-auto 0.65s var(--ease-out-soft) 2.95s forwards; }
+html[data-splash="1"] .splash-inner { animation: velvea-splash-rise-away-auto 0.65s var(--ease-out-soft) 2.95s forwards; }
+
+@keyframes velvea-splash-breath {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
+@keyframes velvea-splash-bloom {
+  from { opacity: 0.3; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes velvea-splash-focus {
+  from { opacity: 0; filter: blur(12px); transform: scale(1.05); }
+  40% { opacity: 1; }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+@keyframes velvea-splash-rule {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+@keyframes velvea-splash-sheen {
+  from { transform: translateX(-34%); opacity: 0; }
+  14% { opacity: 1; }
+  86% { opacity: 1; }
+  to { transform: translateX(34%); opacity: 0; }
+}
+/* The mark leaves a touch faster than the ground, which gives the lift depth.
+   Both exit names start velvea-splash-out — <Splash> matches on that prefix. */
+@keyframes velvea-splash-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.05); visibility: hidden; }
+}
+@keyframes velvea-splash-rise-away {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1.4rem); }
+}
+@keyframes velvea-splash-out-auto {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.05); visibility: hidden; }
+}
+@keyframes velvea-splash-rise-away-auto {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1.4rem); }
+}

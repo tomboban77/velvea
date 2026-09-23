@@ -3,6 +3,7 @@ import { getLocale } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fontVars } from "@/lib/fonts";
+import { SPLASH_ENABLED } from "@/lib/features";
 import { BRAND, DEFAULT_OG_IMAGE, siteOrigin } from "@/lib/seo";
 import "./globals.css";
 
@@ -38,6 +39,12 @@ export const viewport: Viewport = {
   themeColor: "#6d288f",
 };
 
+const PREPAINT = `(function(){var d=document.documentElement;d.classList.add('js');${
+  SPLASH_ENABLED
+    ? `try{var p=location.pathname;if(p!=='/admin'&&p.indexOf('/admin/')!==0&&!sessionStorage.getItem('velvea_splash')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.setAttribute('data-splash','1')}}catch(e){}`
+    : ""
+}})()`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -45,9 +52,16 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={fontVars} suppressHydrationWarning>
       <head>
+        {/* Pre-paint, and it has to stay that way. The `js` class gates the
+            scroll reveals; data-splash decides the first-load welcome (see
+            src/components/brand/Splash.tsx). Deciding after hydration would
+            mean painting the page, then covering it — so the decision happens
+            here, in the first frame, and <Splash> only ever ends it.
+            Skipped for the admin panel, for anyone who has already been
+            greeted this session, and for prefers-reduced-motion. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: "document.documentElement.classList.add('js')",
+            __html: PREPAINT,
           }}
         />
       </head>
