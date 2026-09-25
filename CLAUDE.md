@@ -19,6 +19,11 @@ Resend (email) · Cloudinary (images) · Upstash Redis (rate limiting, REST) · 
   any catalogue change (`scripts/audit-alcohol.ts`; `-- --fix` takes flagged items off sale).
 - Gift cards are built but **paused** behind `GIFT_CARDS_ENABLED = false` in `src/lib/features.ts`
   (no issuance/redemption exists yet). Don't re-enable without implementing both.
+- The **custom basket builder is paused** behind `CUSTOM_BUILDER_ENABLED = false` (same file): every
+  container and add-on in the database is still seeded demo data with no images and English-only
+  French names. The flag hides the nav entries, the home section, the hero CTA, the sitemap entry
+  and `llms.txt`, 404s `/custom`, and makes checkout refuse a custom line from a stale cart.
+  Re-enabling is a content job (real items + photography in `/admin/builder`), then flip the flag.
 - **Search indexing is switched off by default.** `SITE_INDEXING` (unset/`off` · `home` · `all`) in
   `src/lib/seo.ts` drives noindex on every storefront page, the `X-Robots-Tag` header in
   `src/middleware.ts` and the sitemap contents. Production launches by setting `SITE_INDEXING=all`

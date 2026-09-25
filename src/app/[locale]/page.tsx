@@ -6,6 +6,7 @@ import { OccasionsRail } from "@/components/home/OccasionsRail";
 import { Collection } from "@/components/home/Collection";
 import type { CollectionTab } from "@/components/home/CollectionTabs";
 import { BuildYourOwn } from "@/components/home/BuildYourOwn";
+import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 import { TheWay } from "@/components/home/TheWay";
 import { Corporate } from "@/components/home/Corporate";
 import { Atelier } from "@/components/home/Atelier";
@@ -97,7 +98,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <OccasionsRail />
       <GiftFinderBar />
       <Collection tabs={tabs} />
-      <BuildYourOwn />
+      {CUSTOM_BUILDER_ENABLED && <BuildYourOwn />}
       <TheWay />
       <Corporate />
       <Atelier />

@@ -98,6 +98,14 @@ Consent Mode v2 and URL-param redaction.
 
 ## 6. Code — deferred by decision, not forgotten
 
+- [ ] **Custom basket builder — paused 24 Sept, needs real inventory.** Hidden behind
+      `CUSTOM_BUILDER_ENABLED = false`. The builder code is sound (checkout re-prices every custom
+      basket from the database and enforces capacity, availability and shippability server-side);
+      what is missing is the catalogue behind it. Currently 3 containers and 15 add-ons, all seeded
+      demo data: no images on any of them, and every French name is a copy of the English. To
+      re-enable, add real containers and add-ons with photography, real prices and real French names
+      in `/admin/builder`, then flip the flag. Note the `Handwritten card — $5.00` add-on should go
+      or be renamed, since cards are now printed and the free card is free.
 - [ ] **Gift card issuance and redemption.** Paused behind `GIFT_CARDS_ENABLED = false` and correctly
       hidden from listings, search, sitemap, checkout, nav and admin. Nothing issues, emails or
       redeems a code. Decision 24 Sept: stays paused through launch. The flag is not enough on its

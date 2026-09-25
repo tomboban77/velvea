@@ -7,7 +7,7 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 import { getSettings } from "@/lib/settings";
 import { OCCASIONS, RECIPIENTS, labelFor } from "@/lib/nav";
 import { InstagramIcon, FacebookIcon } from "@/components/brand/SocialIcons";
-import { GIFT_CARDS_ENABLED } from "@/lib/features";
+import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export async function Footer() {
   const t = await getTranslations();
@@ -69,7 +69,7 @@ export async function Footer() {
           <FooterLink href="/occasions">{t("nav.occasions")}</FooterLink>
           <FooterLink href="/recipients">{t("nav.recipients")}</FooterLink>
           <FooterLink href="/category">{t("nav.category")}</FooterLink>
-          <FooterLink href="/custom">{t("footer.custom")}</FooterLink>
+          {CUSTOM_BUILDER_ENABLED && <FooterLink href="/custom">{t("footer.custom")}</FooterLink>}
           <FooterLink href="/corporate">{t("footer.corporate")}</FooterLink>
           {GIFT_CARDS_ENABLED && <FooterLink href="/gift-cards">{t("footer.giftCards")}</FooterLink>}
         </FooterCol>

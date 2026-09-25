@@ -6,6 +6,8 @@ import { t as tc } from "@/lib/i18n-content";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { pageMetadata } from "@/lib/seo";
+import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function CustomPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  // Paused: a direct URL must not reach a page the nav no longer offers.
+  if (!CUSTOM_BUILDER_ENABLED) notFound();
   const t = await getTranslations();
   const { containers, categories } = await getBuilderData();
 

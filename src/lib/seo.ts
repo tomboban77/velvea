@@ -1,6 +1,7 @@
 import type { Metadata, MetadataRoute } from "next";
 import { LOCALES, DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
 import { t as tc } from "@/lib/i18n-content";
+import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 /**
  * Everything search engines see in one place: the production origin, the
@@ -496,7 +497,7 @@ export type SitemapCollection = { type: string; slug: string; updatedAt: Date; p
 export const STATIC_PATHS = [
   "/",
   "/baskets",
-  "/custom",
+  ...(CUSTOM_BUILDER_ENABLED ? ["/custom"] : []),
   "/corporate",
   "/corporate/quote",
   "/occasions",

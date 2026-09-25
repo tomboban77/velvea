@@ -11,7 +11,7 @@ import { generateOrderNumber, formatMoney } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { offlineOrdersAllowed, siteUrl } from "@/lib/env";
 import { rateLimitBoth, rateLimitByIp, rateLimitMessage } from "@/lib/rate-limit";
-import { HIDDEN_PRODUCT_SLUGS } from "@/lib/features";
+import { HIDDEN_PRODUCT_SLUGS, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 import { reserveDiscount, releaseDiscount, customerRedemptions } from "@/lib/discounts";
 import { signOrderToken } from "@/lib/tokens";
 import { parseStoreDate, storeYmd, storeMinutesOfDay, cutoffMinutes, addStoreDays } from "@/lib/dates";
@@ -134,6 +134,21 @@ async function resolveCustomLine(
   locale: string,
   changes: CartChange[]
 ): Promise<LineItem | null> {
+  // Paused builder: a cart saved before the switch must not still be orderable.
+  // The nav and the /custom route are gone, but localStorage carts outlive both.
+  if (!CUSTOM_BUILDER_ENABLED) {
+    changes.push({
+      kind: "builder-unavailable",
+      subject: say(locale, "Custom Basket", "Panier personnalisé"),
+      message: say(
+        locale,
+        "Build-your-own baskets are unavailable right now. Please choose from our ready baskets.",
+        "Les paniers personnalisés ne sont pas disponibles pour le moment. Veuillez choisir parmi nos paniers prêts."
+      ),
+    });
+    return null;
+  }
+
   const parsed = customConfigSchema.safeParse(item.customConfig);
   if (!parsed.success) {
     changes.push({

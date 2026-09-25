@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
 import { advertisedSameDayCutoff } from "@/lib/zones";
 import { formatMoney, cn } from "@/lib/utils";
+import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export type HeroProduct = { slug: string; name: string; image: string | null; priceCents: number; badge?: string | null };
 
@@ -55,9 +56,11 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
             <Link href="/baskets" className="btn btn-primary btn-lg">
               {t("shopNow")} <ArrowRight />
             </Link>
-            <Link href="/custom" className="btn btn-outline btn-lg">
-              {t("ctaSecondary")}
-            </Link>
+            {CUSTOM_BUILDER_ENABLED && (
+              <Link href="/custom" className="btn btn-outline btn-lg">
+                {t("ctaSecondary")}
+              </Link>
+            )}
           </div>
           {cutoff && (
             <div className="hero-note">

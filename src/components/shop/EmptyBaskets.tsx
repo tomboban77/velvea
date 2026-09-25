@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, Gift } from "lucide-react";
+import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export async function EmptyBaskets() {
   const t = await getTranslations();
@@ -15,9 +16,11 @@ export async function EmptyBaskets() {
         <Link href="/baskets" className="btn btn-primary">
           {t("nav.allBaskets")} <ArrowRight />
         </Link>
-        <Link href="/custom" className="btn btn-outline">
-          {t("common.buildCustom")}
-        </Link>
+        {CUSTOM_BUILDER_ENABLED && (
+          <Link href="/custom" className="btn btn-outline">
+            {t("common.buildCustom")}
+          </Link>
+        )}
       </div>
     </div>
   );

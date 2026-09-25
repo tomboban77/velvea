@@ -11,7 +11,7 @@ import { MobileMenu } from "./MobileMenu";
 import { useCart } from "@/components/cart/CartProvider";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
 import { formatMoney, cn } from "@/lib/utils";
-import { GIFT_CARDS_ENABLED } from "@/lib/features";
+import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export type HeaderFeatured = {
   slug: string;
@@ -95,7 +95,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
 
   const plain: { href: string; label: string }[] = [
     { href: "/baskets", label: t("nav.allBaskets") },
-    { href: "/custom", label: t("nav.build") },
+    ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
     { href: "/corporate", label: t("nav.corporate") },
   ];
 
@@ -131,7 +131,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
               </button>
               <nav className="hidden items-center gap-7 lg:flex" aria-label="Utility">
                 <Link href="/corporate" className="util-link">{t("footer.corporate")}</Link>
-                <Link href="/custom" className="util-link">{t("nav.build")}</Link>
+                {CUSTOM_BUILDER_ENABLED && <Link href="/custom" className="util-link">{t("nav.build")}</Link>}
                 <Link href="/guides" className="util-link">{t("nav.guides")}</Link>
               </nav>
             </div>

@@ -8,7 +8,7 @@ import { Logo } from "@/components/brand/Logo";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { GIFT_CARDS_ENABLED } from "@/lib/features";
+import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -111,7 +111,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
 
           <div className="px-5 py-3">
             {[
-              { href: "/custom", label: t("nav.build") },
+              ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
               { href: "/corporate", label: t("nav.corporate") },
               ...(GIFT_CARDS_ENABLED ? [{ href: "/gift-cards", label: t("nav.giftCards") }] : []),
               { href: "/guides", label: t("nav.guides") },

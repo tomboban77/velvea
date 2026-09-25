@@ -295,6 +295,15 @@ describe("buildSitemap", () => {
     expect(home.map((e) => e.url)).toEqual([`${ORIGIN}/`, `${ORIGIN}/fr`]);
   });
 
+  it("omits the custom builder while it is paused, in both locales", () => {
+    // The /custom route 404s when CUSTOM_BUILDER_ENABLED is false. A sitemap
+    // that still advertised it would be handing search engines a dead URL, so
+    // the flag has to gate STATIC_PATHS and not just the navigation.
+    const urls = buildSitemap({ origin: ORIGIN, mode: "all", products, articles, collections }).map((e) => e.url);
+    expect(urls).not.toContain(`${ORIGIN}/custom`);
+    expect(urls).not.toContain(`${ORIGIN}/fr/custom`);
+  });
+
   it("lists both locales per path with language alternates, and no priority or changefreq", () => {
     const map = buildSitemap({ origin: ORIGIN, mode: "all", products, articles, collections });
     const urls = map.map((e) => e.url);
