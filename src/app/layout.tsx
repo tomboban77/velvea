@@ -41,7 +41,7 @@ export const viewport: Viewport = {
 
 const PREPAINT = `(function(){var d=document.documentElement;d.classList.add('js');${
   SPLASH_ENABLED
-    ? `try{var p=location.pathname;if(p!=='/admin'&&p.indexOf('/admin/')!==0&&!sessionStorage.getItem('velvea_splash')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.setAttribute('data-splash','1')}}catch(e){}`
+    ? `try{var p=location.pathname;if(p!=='/admin'&&p.indexOf('/admin/')!==0&&!localStorage.getItem('velvea_splash')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.setAttribute('data-splash','1')}}catch(e){}`
     : ""
 }})()`;
 
@@ -58,7 +58,9 @@ export default async function RootLayout({
             mean painting the page, then covering it — so the decision happens
             here, in the first frame, and <Splash> only ever ends it.
             Skipped for the admin panel, for anyone who has already been
-            greeted this session, and for prefers-reduced-motion. */}
+            greeted (localStorage, so once per browser rather than once per
+            tab — a reload, a new tab or a restart must not greet them again),
+            and for prefers-reduced-motion. */}
         <script
           dangerouslySetInnerHTML={{
             __html: PREPAINT,

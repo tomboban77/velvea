@@ -3,7 +3,13 @@
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
-/** Marks the session as greeted. Cleared when the browser tab closes. */
+/**
+ * Marks this browser as greeted. localStorage, not sessionStorage: the welcome
+ * is a first-visit moment, so a reload, a second tab or a browser restart must
+ * not replay it. Survives until the visitor clears site data. It is per-browser
+ * and per-device by nature, so the same person on a phone and a laptop is
+ * greeted on each.
+ */
 const KEY = "velvea_splash";
 /** Longest the overlay may survive if its exit animation never reports back. */
 const SAFETY = 6000;
@@ -47,7 +53,7 @@ export function Splash() {
     const el = ref.current;
 
     try {
-      sessionStorage.setItem(KEY, "1");
+      localStorage.setItem(KEY, "1");
     } catch {
       // Private mode or blocked storage: greet again next load, never crash.
     }
