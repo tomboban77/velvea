@@ -304,7 +304,9 @@ model Order {
   refundedCents  Int       @default(0)
 
   shipping Json // { fullName, line1, line2, city, province, postalCode, country, phone }
-  billing  Json?
+  // No billing column: nothing ever wrote one, and Stripe already holds the
+  // billing address on the payment intent. Dropped 2026-09-24 rather than left
+  // as a field other code might assume is populated.
 
   stripeSessionId       String?   @unique
   stripePaymentIntentId String?

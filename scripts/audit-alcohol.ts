@@ -24,8 +24,16 @@ const TERMS = [
   "brandy", "sake", "vermouth", "aperitif", "alcohol",
 ];
 
-/** "non-alcoholic" and friends are the opposite of a problem. */
-const CLEARED = ["non-alcoholic", "non alcoholic", "alcohol-free", "alcohol free", "nonalcoholic", "de-alcoholised", "dealcoholized"];
+/**
+ * "non-alcoholic" and friends are the opposite of a problem. "Champagne Toast"
+ * is a Bath & Body Works candle scent, not a drink; it sits in the Rosé Glow
+ * basket and would otherwise flag on every run.
+ */
+const CLEARED = [
+  "non-alcoholic", "non alcoholic", "alcohol-free", "alcohol free", "nonalcoholic",
+  "de-alcoholised", "dealcoholized",
+  "champagne toast",
+];
 
 function hits(text: string): string[] {
   let scrubbed = text.toLowerCase();

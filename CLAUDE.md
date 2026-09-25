@@ -28,6 +28,8 @@ Resend (email) · Cloudinary (images) · Upstash Redis (rate limiting, REST) · 
 
 ## Outstanding work lists
 
+`docs/LAUNCH-CHECKLIST.md` is the running order: everything between the current build and a live,
+indexed storefront, owner decisions included. It summarises the two detailed records —
 `docs/BACKEND-REVIEW.md` (security/money, correctness, product-completeness findings, with status)
 and `docs/SEO-BRIEF.md` (launch-critical SEO spec + implementation tickets). Check these before
 proposing new work; update them when an item is done.
@@ -107,8 +109,10 @@ tests/                  Vitest suites + helpers (empty.ts aliases "server-only",
 
 ## Testing
 
-`npm test` runs 6 suites (~130 tests) covering pricing, discount reservation, the Stripe webhook,
-email error handling, rate limiting and the SEO layer (`tests/seo.test.ts`: origin, indexing
+`npm test` runs 8 suites (~147 tests) covering pricing, discount reservation, the Stripe webhook,
+email error handling, rate limiting, city/delivery data, message-catalogue integrity
+(`tests/messages.test.ts`: EN/FR key parity, ICU placeholder agreement, checkout copy resolves)
+and the SEO layer (`tests/seo.test.ts`: origin, indexing
 switch, canonical/hreflang metadata, JSON-LD, sitemap and robots builders). Pattern: `vi.hoisted` mocks + `vi.mock("@/lib/prisma", …)`,
 requests built with `new Request(...)` cast to `NextRequest`. Add new tests under `tests/` and keep
 them free of network and database access.

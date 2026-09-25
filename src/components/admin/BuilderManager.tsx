@@ -16,7 +16,7 @@ import {
 } from "@/lib/actions/admin";
 import { cn } from "@/lib/utils";
 
-type Container = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; capacity: number; active: boolean };
+type Container = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; capacity: number; position: number; active: boolean };
 type Item = { id: string; name: { en: string; fr: string }; priceCents: number; imageUrl: string | null; imagePublicId: string | null; position: number; active: boolean; shippable: boolean };
 type Category = { id: string; name: { en: string; fr: string }; position: number; items: Item[] };
 
@@ -27,8 +27,8 @@ export function BuilderManager({ containers, categories }: { containers: Contain
       <section>
         <h2 className="mb-3 font-display text-xl">Containers</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          {containers.map((c) => <ContainerCard key={c.id} container={c} />)}
-          <ContainerCard container={null} />
+          {containers.map((c) => <ContainerCard key={c.id} container={c} nextPosition={containers.length} />)}
+          <ContainerCard container={null} nextPosition={containers.length} />
         </div>
       </section>
 
@@ -47,7 +47,7 @@ export function BuilderManager({ containers, categories }: { containers: Contain
   );
 }
 
-function ContainerCard({ container }: { container: Container | null }) {
+function ContainerCard({ container, nextPosition }: { container: Container | null; nextPosition: number }) {
   const isNew = !container;
   const [nameEn, setNameEn] = useState(container?.name.en ?? "");
   const [nameFr, setNameFr] = useState(container?.name.fr ?? "");
@@ -61,6 +61,9 @@ function ContainerCard({ container }: { container: Container | null }) {
     start(() => upsertBuilderContainer({
       id: container?.id, nameEn, nameFr, priceCents: Math.round(parseFloat(price) * 100) || 0,
       capacity: parseInt(capacity) || 8, active, imageUrl: images[0]?.url ?? null, imagePublicId: images[0]?.publicId ?? null,
+      // Re-sending the stored position keeps an edit from resetting the row to 0
+      // (the zod default), which silently reshuffled the builder's container order.
+      position: container?.position ?? nextPosition,
     }).then(() => { if (isNew) { setNameEn(""); setNameFr(""); setPrice("0"); setImages([]); } }));
   }
 

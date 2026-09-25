@@ -266,7 +266,7 @@ export function ProductDetail({
               </div>
             )}
 
-            {/* handwritten card */}
+            {/* message card */}
             <div className="mt-6 rounded-lg border border-line">
               <button
                 type="button"

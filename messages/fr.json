@@ -8,7 +8,7 @@
     "line": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga."
   },
   "announcement": {
-    "one": "Une carte manuscrite avec chaque cadeau",
+    "one": "Votre message sur une carte avec chaque cadeau",
     "two": "Jour même dans le Grand Toronto · Commandez avant l’heure limite",
     "three": "Livré partout en Ontario"
   },
@@ -107,7 +107,7 @@
     "p1Sub": "Dans notre atelier de Mississauga",
     "p2": "Jour même dans le Grand Toronto",
     "p2Sub": "Commandez avant l’heure limite · Livraison partout en Ontario",
-    "p3": "Carte manuscrite incluse",
+    "p3": "Carte-message incluse",
     "p3Sub": "Aucun prix sur le bordereau"
   },
   "finder": {
@@ -151,18 +151,18 @@
     "tabUnder": "Moins de {amount}",
     "tabFeatured": "En vedette",
     "seeAll": "Voir tout : {label}",
-    "lede2": "Chaque panier est composé après votre commande, fini à la main et livré avec une carte manuscrite."
+    "lede2": "Chaque panier est composé après votre commande, fini à la main et livré avec votre message sur une carte."
   },
   "build": {
     "eyebrow": "Composer un panier",
     "title": "Composez un panier qui leur ressemble",
-    "lede": "Choisissez le contenant, sélectionnez chaque article, ajoutez un mot manuscrit. Nous l'arrangeons et le finissons à la main.",
+    "lede": "Choisissez le contenant, sélectionnez chaque article, ajoutez un mot. Nous l'arrangeons et le finissons à la main.",
     "s1": "Choisissez le contenant",
     "s1Sub": "Paniers tressés, coffrets et plateaux",
     "s2": "Sélectionnez chaque article",
     "s2Sub": "Gourmet, chocolat, café, bien-être et plus",
     "s3": "Ajoutez vos mots",
-    "s3Sub": "Une carte manuscrite, glissée à l'intérieur",
+    "s3Sub": "Votre message sur une carte, glissée à l'intérieur",
     "cta": "Commencer à composer",
     "previewTitle": "Votre panier",
     "previewVessel": "Coffret souvenir",
@@ -184,7 +184,7 @@
     "f1Sub": "Jour même · Commandez avant l’heure limite",
     "f2": "Partout en Ontario",
     "f2Sub": "Livraison suivie à toute adresse ontarienne",
-    "f3": "Ramassage à l’atelier",
+    "f3": "Ramassage à l’atelier sur rendez-vous",
     "f3Sub": "À Mississauga, sans frais",
     "link": "Détails de livraison",
     "stepsEyebrow": "Comment ça marche"
@@ -251,11 +251,11 @@
     "items": [
       {
         "q": "Où livrez-vous ?",
-        "a": "Partout en Ontario. Nous livrons nous-mêmes à Mississauga et dans le Grand Toronto, y compris le jour même pour les commandes admissibles, et nous expédions avec suivi partout ailleurs dans la province. Le ramassage à notre atelier de Mississauga est gratuit."
+        "a": "Partout en Ontario. Nous livrons nous-mêmes à Mississauga et dans le Grand Toronto, y compris le jour même pour les commandes admissibles, et nous expédions avec suivi partout ailleurs dans la province. Le ramassage à notre atelier de Mississauga est gratuit, sur rendez-vous."
       },
       {
         "q": "Un message cadeau est-il inclus ?",
-        "a": "Toujours. Ajoutez votre message sur la page du produit ou à la caisse et nous l'écrivons à la main sur une carte Velvéa, glissée dans le panier, sans frais. Pour de modestes frais fixes, vous pouvez opter pour une carte de vœux grand format adaptée à l'occasion. Les prix ne sont jamais inclus."
+        "a": "Toujours. Ajoutez votre message sur la page du produit ou à la caisse et nous l'imprimons sur une carte Velvéa, glissée dans le panier, sans frais. Pour de modestes frais fixes, vous pouvez opter pour une carte de vœux grand format adaptée à l'occasion. Les prix ne sont jamais inclus."
       },
       {
         "q": "Les paniers sont-ils préfabriqués ou préparés à la commande ?",
@@ -275,9 +275,58 @@
       }
     ]
   },
+  "checkoutForm": {
+    "emptyTitle": "Votre sac est vide",
+    "secure": "Paiement sécurisé · CAD",
+    "email": "Courriel",
+    "phone": "Téléphone (pour la livraison)",
+    "sectionCollecting": "Qui vient chercher la commande",
+    "sectionDelivery": "Adresse de livraison",
+    "savedAddress": "Adresse enregistrée",
+    "enterDifferent": "Entrer une autre adresse",
+    "defaultSuffix": " (par défaut)",
+    "recipientName": "Nom complet du destinataire",
+    "pickupTitle": "À récupérer à notre atelier",
+    "pickupNote": "Nous vous écrirons pour convenir d'une heure de ramassage dès que votre panier sera prêt.",
+    "streetAddress": "Adresse",
+    "apartment": "Appartement, bureau (facultatif)",
+    "city": "Ville",
+    "postalCode": "Code postal",
+    "sectionMethod": "Mode de livraison",
+    "postalForOptions": "Code postal (pour les options de livraison)",
+    "checkingAddress": "Vérification de votre adresse…",
+    "enterPostalPrompt": "Entrez un code postal pour voir les options et les tarifs de livraison.",
+    "deliveringTo": "Livraison vers",
+    "updating": " · mise à jour…",
+    "perishable": "{items} {count, plural, one {est trop périssable pour être expédié} other {sont trop périssables pour être expédiés}}. Choisissez la livraison locale ou le ramassage.",
+    "sectionGift": "Options cadeau",
+    "giftKeepNote": "Les paniers qui ont déjà leur propre message le conservent. Celui-ci s'applique aux autres.",
+    "giftPlaceholder": "Ajoutez un message-cadeau (imprimé sur une carte)…",
+    "giftLabel": "Message-cadeau",
+    "preferredDate": "Date de livraison souhaitée",
+    "deliveryNotes": "Consignes de livraison",
+    "deliveryNotesPlaceholder": "Code d'interphone, laisser à la porte…",
+    "summaryTitle": "Résumé de la commande",
+    "premiumCard": "Carte de vœux premium",
+    "discountCode": "Code promo",
+    "apply": "Appliquer",
+    "notApplied": "Non appliqué",
+    "codeNotValid": "Code non valide",
+    "subtotal": "Sous-total",
+    "discount": "Rabais",
+    "pickup": "Ramassage",
+    "delivery": "Livraison",
+    "free": "Gratuit",
+    "tax": "Taxes ({rate} %)",
+    "processing": "Traitement…",
+    "enterPostal": "Entrez un code postal",
+    "chooseLocal": "Choisissez la livraison locale ou le ramassage",
+    "pay": "Payer {amount}",
+    "finalNote": "Les taxes et la livraison sont finalisées sur cette page. Vous pouvez tout vérifier avant de payer."
+  },
   "cart": {
     "premiumCard": "Carte de vœux premium",
-    "footerNote": "Livraison et taxes calculées à la caisse. Carte manuscrite incluse · aucun prix sur le bordereau."
+    "footerNote": "Livraison et taxes calculées à la caisse. Carte-message incluse · aucun prix sur le bordereau."
   },
   "newsletter": {
     "title": "Quelques notes, à l'occasion",
@@ -343,10 +392,10 @@
     "localOnly": "Livraison locale et ramassage seulement",
     "deliveryAtCheckout": "Les frais de livraison sont calculés selon le code postal au paiement",
     "leadTime": "Expédié en {days, plural, one {# jour ouvrable} other {# jours ouvrables}}",
-    "card": "Carte manuscrite incluse",
+    "card": "Carte-message incluse",
     "noPrices": "Aucun prix sur le bordereau",
     "packed": "Préparé à la commande",
-    "shippingPickup": "Ramassage gratuit à notre atelier de Mississauga.",
+    "shippingPickup": "Ramassage gratuit à notre atelier de Mississauga, sur rendez-vous.",
     "shippingLocalOnly": "Trop périssable pour l’expédition — livraison locale ou ramassage seulement.",
     "shippingLocal": "Jour même à Mississauga et dans le Grand Toronto pour les commandes admissibles passées avant l’heure limite.",
     "shippingOntario": "Livraison suivie partout en Ontario, généralement de 2 à 5 jours ouvrables.",
@@ -355,7 +404,7 @@
     "arrivesLede": "La présentation fait partie du cadeau. Chaque panier quitte l'atelier fini et protégé.",
     "a1": "Arrangé et fini à la main",
     "a1Sub": "Papier de soie, ruban et boîte extérieure protectrice.",
-    "a2": "Votre carte, écrite à la main",
+    "a2": "Votre message, sur une carte",
     "a2Sub": "Ajoutez votre message à la caisse. Les prix ne sont jamais inclus.",
     "a3": "Suivi jusqu'à la porte",
     "a3Sub": "Jour même dans le Grand Toronto avant l’heure limite. Livraison suivie partout en Ontario.",
@@ -368,15 +417,15 @@
     "prevImage": "Image précédente",
     "nextImage": "Image suivante",
     "itemsInside": "{count, plural, one {# article inclus} other {# articles inclus}}",
-    "giftCardTitle": "Ajouter une carte manuscrite",
-    "giftCardHint": "Facultatif — écrite à la main et glissée à l'intérieur",
+    "giftCardTitle": "Ajouter une carte",
+    "giftCardHint": "Facultatif — imprimée sur une carte et glissée à l'intérieur",
     "giftCardPlaceholder": "Joyeux anniversaire, papa. Savoure chaque bouchée. — Tom",
-    "giftCardNote": "Écrite à la main. Les prix ne sont jamais inclus.",
+    "giftCardNote": "Imprimée sur une carte Velvéa. Les prix ne sont jamais inclus.",
     "giftCardTypeLegend": "Type de carte",
     "giftCardFree": "Carte Velvéa",
-    "giftCardFreeSub": "Notre carte signature, écrite à la main et glissée à l'intérieur.",
+    "giftCardFreeSub": "Notre carte signature, imprimée et glissée à l'intérieur.",
     "giftCardPremium": "Carte de vœux premium",
-    "giftCardPremiumSub": "Une carte de vœux grand format adaptée à l'occasion, votre message écrit à la main à l'intérieur.",
+    "giftCardPremiumSub": "Une carte de vœux grand format adaptée à l'occasion, avec votre message à l'intérieur.",
     "giftCardNoCharge": "Gratuit",
     "deliveryTitle": "Livraison",
     "giftingTitle": "Détails du cadeau",
@@ -463,7 +512,7 @@
     "giftCardsDescription": "Offrez le choix avec une carte-cadeau Velvéa, échangeable sur n'importe quel panier.",
     "productFallbackTitle": "Panier-cadeau",
     "deliveryTitle": "Livraison de paniers-cadeaux à Mississauga, Toronto et dans le Grand Toronto",
-    "deliveryDescription": "Livraison le jour même de paniers-cadeaux à Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham et dans tout le Grand Toronto. Expédition avec suivi partout ailleurs en Ontario. Ramassage gratuit à Mississauga.",
+    "deliveryDescription": "Livraison le jour même de paniers-cadeaux à Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham et dans tout le Grand Toronto. Expédition avec suivi partout ailleurs en Ontario. Ramassage gratuit à Mississauga, sur rendez-vous.",
     "cityTitle": "Paniers-cadeaux et coffrets livrés à {city}",
     "cityDescriptionSameDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario. Commandez avant {time} pour une livraison le jour même dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionNextDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario, par notre équipe dès le lendemain, à partir de {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
@@ -479,7 +528,7 @@
     "nextDayLede": "Un peu plus loin, livré par notre équipe le prochain jour disponible.",
     "shippingH": "Partout ailleurs en Ontario",
     "shippingLede": "Livraison par transporteur avec suivi à toute adresse en Ontario. Les paniers frais et réfrigérés sont réservés à la livraison locale.",
-    "pickupNote": "Vous préférez venir chercher ? Le ramassage à notre atelier de Mississauga est toujours gratuit ; nous vous écrivons pour convenir d'une heure dès que votre panier est prêt.",
+    "pickupNote": "Vous préférez venir chercher ? Le ramassage à notre atelier de Mississauga est toujours gratuit et sur rendez-vous ; nous vous écrivons pour convenir d'une heure dès que votre panier est prêt.",
     "seePolicy": "Coûts et politique de livraison en détail",
     "cardSameDay": "Le jour même avant {time}",
     "cardFee": "dès {fee}",

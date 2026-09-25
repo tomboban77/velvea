@@ -47,7 +47,7 @@ export type SiteSettings = {
   gifting: {
     /**
      * Flat fee, in cents, for upgrading the free Velvéa card to a full-size
-     * store-bought greeting card with the message handwritten inside. Charged
+     * store-bought greeting card with the message inside. Charged
      * per basket. The free card stays free.
      */
     premiumCardFeeCents: number;
@@ -99,7 +99,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     default: 0,
   },
   // GTA florists charge $5.75 to $7.99 for a retail card; $6.99 sits at the median
-  // and covers the card plus the time to write it.
+  // and covers the card plus the handling.
   gifting: {
     premiumCardFeeCents: 699,
   },

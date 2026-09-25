@@ -28,6 +28,23 @@ function productOrder(sort?: string): Prisma.ProductOrderByWithRelationInput[] {
 }
 
 /**
+ * The same sort options as productOrder, expressed from the join row. With no
+ * explicit sort the collection's curated position leads; the remaining keys are
+ * the usual tie-breakers so pagination stays stable.
+ */
+function collectionProductOrder(sort?: string): Prisma.ProductCollectionOrderByWithRelationInput[] {
+  const primary: Prisma.ProductCollectionOrderByWithRelationInput =
+    sort === "price-asc"
+      ? { product: { priceCents: "asc" } }
+      : sort === "price-desc"
+      ? { product: { priceCents: "desc" } }
+      : sort === "rating"
+      ? { product: { avgRating: "desc" } }
+      : { position: "asc" };
+  return [primary, { product: { featured: "desc" } }, { product: { createdAt: "desc" } }, { product: { id: "asc" } }];
+}
+
+/**
  * Products that exist in the database but must not be sold yet — currently the
  * gift card, whose codes are never issued or redeemed. Excluded here so every
  * listing, search, collection, sitemap entry and PDP hides it in one place.
@@ -104,26 +121,30 @@ export async function getProductsByCollection(
     if (!collection || collection.type !== type)
       return { collection: null, products: [] as ProductCard[], total: 0 };
 
-    const orderBy = productOrder(opts?.sort);
-
-    const where: Prisma.ProductWhereInput = {
-      status: "ACTIVE",
-      ...notHidden,
-      collections: { some: { collectionId: collection.id } },
-      priceCents: { gte: opts?.min, lte: opts?.max },
-      ...(opts?.recipient ? { AND: [{ collections: { some: { collection: { slug: opts.recipient, type: "RECIPIENT" } } } }] } : {}),
+    // Read through the join row, not the product, so the collection's own
+    // hand-set order (ProductCollection.position, set in admin) can drive the
+    // default listing. Prisma cannot order a product by a to-many relation's
+    // field, so the pivot is the queryable side. An explicit ?sort= still wins.
+    const where: Prisma.ProductCollectionWhereInput = {
+      collectionId: collection.id,
+      product: {
+        status: "ACTIVE",
+        ...notHidden,
+        priceCents: { gte: opts?.min, lte: opts?.max },
+        ...(opts?.recipient ? { collections: { some: { collection: { slug: opts.recipient, type: "RECIPIENT" } } } } : {}),
+      },
     };
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
+    const [rows, total] = await Promise.all([
+      prisma.productCollection.findMany({
         where,
-        include: productInclude,
-        orderBy,
+        orderBy: collectionProductOrder(opts?.sort),
         skip: opts?.skip ?? 0,
         take: opts?.take ?? 24,
+        include: { product: { include: productInclude } },
       }),
-      prisma.product.count({ where }),
+      prisma.productCollection.count({ where }),
     ]);
-    return { collection, products, total };
+    return { collection, products: rows.map((r) => r.product), total };
   } catch {
     return { collection: null, products: [] as ProductCard[], total: 0 };
   }

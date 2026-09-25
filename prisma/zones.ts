@@ -87,7 +87,10 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "local-b-west",
-    name: L("Local B — Brampton, Oakville, Milton", "Local B — Brampton, Oakville, Milton"),
+    name: L(
+      "Local B — Brampton, Oakville, Milton, Burlington, Georgetown, Bolton",
+      "Local B — Brampton, Oakville, Milton, Burlington, Georgetown, Bolton"
+    ),
     kind: "LOCAL",
     fsaPrefixes: [
       // Brampton
@@ -96,6 +99,14 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
       "L6H", "L6J", "L6K", "L6L", "L6M",
       // Milton
       "L9E", "L9T",
+      // Moved up from local-c on 24 Sept 2026 (owner decision): these now get
+      // the Local B fee, the 13:00 same-day cutoff and 0-1 day lead times.
+      // Burlington is the whole city; Georgetown is L7G only (L7J is Acton)
+      // and Bolton is L7E only (L7C / L7K are elsewhere in Caledon), so the
+      // rest of Halton Hills and Caledon stay on the slower Local C rate.
+      "L7L", "L7M", "L7N", "L7P", "L7R", "L7S", "L7T",
+      "L7G",
+      "L7E",
     ],
     provinces: ["ON"],
     baseFeeCents: 1499,
@@ -131,17 +142,17 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "local-c",
-    name: L("Local C — Durham, Burlington, north GTA", "Local C — Durham, Burlington, nord du RGT"),
+    name: L("Local C — Durham, north GTA", "Local C — Durham, nord du RGT"),
     kind: "LOCAL",
     fsaPrefixes: [
       // Durham: Pickering, Ajax, Whitby, Oshawa, Clarington
       "L1V", "L1W", "L1X", "L1Y", "L1S", "L1T", "L1Z",
       "L1M", "L1N", "L1P", "L1R", "L1G", "L1H", "L1J", "L1K", "L1L",
       "L1B", "L1C", "L1E",
-      // Burlington
-      "L7L", "L7M", "L7N", "L7P", "L7R", "L7S", "L7T",
-      // Halton Hills, Caledon, Newmarket, Aurora, Stouffville, King
-      "L7G", "L7J", "L7C", "L7E", "L7K", "L3X", "L3Y", "L4G", "L4A", "L7B",
+      // Acton, Caledon, Newmarket, Aurora, Stouffville, King. Burlington,
+      // Georgetown (L7G) and Bolton (L7E) moved to local-b-west on
+      // 24 Sept 2026; what is left here is genuinely further out.
+      "L7J", "L7C", "L7K", "L3X", "L3Y", "L4G", "L4A", "L7B",
     ],
     provinces: ["ON"],
     baseFeeCents: 1999,

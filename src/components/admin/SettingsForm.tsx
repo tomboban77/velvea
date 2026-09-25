@@ -132,7 +132,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           </Field>
         </div>
         <p className="text-xs text-muted">
-          The handwritten Velvéa card is always free. This fee only applies to the optional
+          The Velvéa message card is always free. This fee only applies to the optional
           upgrade offered on each product page, and it shows on the packing slip so the packer
           knows to use a store card.
         </p>

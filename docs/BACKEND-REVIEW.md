@@ -3,16 +3,21 @@
 Scope: payments, orders, auth, admin operations, emails, data model, i18n. Findings verified in source.
 Status legend: **Fix before launch** · **Fix soon after launch** · **Improve** · **Nice to have**.
 
-## Status — verified against source 21 Sept 2026
+## Status — verified against source 24 Sept 2026
 
 **Numbered findings 1–25: all resolved** except as noted. Verified item by item in code (`npm test`
-130 passing, `tsc` clean).
+147 passing, `tsc` clean).
 
 - **#4 gift cards — mitigated, not built.** Paused behind `GIFT_CARDS_ENABLED = false`
   (`src/lib/features.ts`); hidden from listings, search, sitemap, checkout, nav and admin. Issuance,
-  emailing and redemption still do not exist. Re-enable only after implementing both.
-- **#20 — minor residual.** Order create and `stripeSessionId` update are two writes, not one
-  transaction. No double-charge path (idempotency keys on session and coupon are in place).
+  emailing and redemption still do not exist. Owner decision 24 Sept: stay paused through launch.
+  Re-enable only after implementing both.
+- **#20 — closed 24 Sept, differently than proposed.** Order create and the `stripeSessionId`
+  write cannot be one transaction: the Stripe call sits between them. The real defect was that a
+  failed `stripeSessionId` write fell into the catch that cancels the order and releases the
+  discount — while a payable Checkout session was already live, so a customer could still pay a
+  cancelled order. That write is now non-fatal and logged. Nothing else reads the column except
+  abandoned-session expiry.
 
 **Improve list:** done — account profile/password/addresses + checkout prefill, seasonal collections
 seeded, review verification/dedupe, discounts edit, customers list, staff/role screen, DB-level admin
@@ -20,13 +25,25 @@ product search, `publishedAt` preserved, indexes, `Order.locale/shippedAt/delive
 builder item image/active/reorder + category rename with real FR name; collections reorder + SEO
 title/description fields in admin; `fr-CA` money formatting in cart drawer and checkout.
 
+**Done 24 Sept 2026**
+- Per-collection product ordering: `listCollectionProducts` / `reorderCollectionProducts` actions,
+  an expandable "Product order" panel in the collections admin, and `getProductsByCollection` now
+  reads through the join row so `ProductCollection.position` drives the default listing order. An
+  explicit `?sort=` still wins.
+- `ContainerCard` sends its stored `position`, so saving a container no longer resets the order.
+- Checkout copy moved off 42 inline `fr ?` ternaries onto a `checkoutForm` namespace in
+  `messages/*.json`. Only the two `fr ? "fr-CA" : "en-CA"` money-format selectors remain, which are
+  locale choices rather than copy. `tests/messages.test.ts` guards EN/FR key parity, empty FR
+  strings, ICU placeholder agreement, and that every `tc("…")` call site resolves — a missing key
+  throws in next-intl, so this is a crash guard on the one page that takes money.
+- `Order.billing` dropped (owner decision: Stripe already holds the billing address on the payment
+  intent). Migration `20260924000000_drop_order_billing` is **written but not applied** — run
+  `npx prisma migrate deploy` against production when ready.
+
 **Still open**
-- Per-collection product ordering (`ProductCollection.position`) has no admin UI and nothing in
-  `queries.ts` orders by it.
-- `Order.billing` is declared in the schema and never written — populate or drop (schema change).
-- Checkout copy is bilingual but through ~46 inline `fr ?` ternaries rather than the message catalogue.
-- `ContainerCard` in the builder admin omits `position` on save, so saving a container resets it to 0
-  (invisible today because every container is at 0).
+- Gift card issuance and redemption (#4), deferred by decision.
+- Redirects for renamed/removed product slugs need slug-history storage. Deferred 24 Sept: nothing
+  is indexed yet, so there is no link equity to lose. Revisit once products rank.
 
 ## Fix before launch (security / money)
 

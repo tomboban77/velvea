@@ -24,7 +24,7 @@ export type CartItem = {
   customConfig?: unknown;
   maxQty?: number;
   /**
-   * The handwritten card that goes with *this* basket. Two of the same basket
+   * The message card that goes with *this* basket. Two of the same basket
    * with different messages are two lines, not one — see `giftLineId`.
    */
   giftMessage?: string;

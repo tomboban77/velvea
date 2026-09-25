@@ -8,7 +8,7 @@
     "line": "Gift baskets composed by hand in our Mississauga atelier."
   },
   "announcement": {
-    "one": "A handwritten card with every gift",
+    "one": "Your message on a card with every gift",
     "two": "Same-day in the GTA · Order before the cutoff",
     "three": "Delivered across Ontario"
   },
@@ -107,7 +107,7 @@
     "p1Sub": "In our Mississauga atelier",
     "p2": "Same-day in the GTA",
     "p2Sub": "Order before the cutoff · Delivery across Ontario",
-    "p3": "Handwritten card included",
+    "p3": "Message card included",
     "p3Sub": "No prices on the packing slip"
   },
   "finder": {
@@ -151,18 +151,18 @@
     "tabUnder": "Under {amount}",
     "tabFeatured": "Featured",
     "seeAll": "See all {label}",
-    "lede2": "Every basket is composed after you order, finished by hand and delivered with a handwritten card."
+    "lede2": "Every basket is composed after you order, finished by hand and delivered with your message on a card."
   },
   "build": {
     "eyebrow": "Build your own",
     "title": "Compose a basket that is entirely theirs",
-    "lede": "Choose the vessel, pick every item, add a handwritten note. We arrange and finish it by hand.",
+    "lede": "Choose the vessel, pick every item, add a note. We arrange and finish it by hand.",
     "s1": "Choose the vessel",
     "s1Sub": "Woven baskets, keepsake boxes and trays",
     "s2": "Pick every item",
     "s2Sub": "Gourmet, chocolate, coffee, wellness and more",
     "s3": "Add your words",
-    "s3Sub": "A handwritten card, tucked inside",
+    "s3Sub": "Your message on a card, tucked inside",
     "cta": "Start composing",
     "previewTitle": "Your basket",
     "previewVessel": "Keepsake box",
@@ -184,7 +184,7 @@
     "f1Sub": "Same-day · Order before the daily cutoff",
     "f2": "Across Ontario",
     "f2Sub": "Tracked delivery to every Ontario address",
-    "f3": "Studio pickup",
+    "f3": "Studio pickup by appointment",
     "f3Sub": "Collect from Mississauga, free",
     "link": "Shipping details",
     "stepsEyebrow": "How it works"
@@ -251,11 +251,11 @@
     "items": [
       {
         "q": "Where do you deliver?",
-        "a": "Across Ontario. We deliver ourselves throughout Mississauga and the GTA, including same-day on eligible orders, and ship with tracking anywhere else in the province. Pickup from our Mississauga studio is free."
+        "a": "Across Ontario. We deliver ourselves throughout Mississauga and the GTA, including same-day on eligible orders, and ship with tracking anywhere else in the province. Pickup from our Mississauga studio is free, by appointment."
       },
       {
         "q": "Is a gift message included?",
-        "a": "Always. Add your message on the product page or at checkout and we write it by hand on a Velvéa card, tucked inside the basket, at no charge. For a small flat fee you can upgrade to a full-size store greeting card for the occasion. Prices are never included with the gift."
+        "a": "Always. Add your message on the product page or at checkout and we print it on a Velvéa card, tucked inside the basket, at no charge. For a small flat fee you can upgrade to a full-size store greeting card for the occasion. Prices are never included with the gift."
       },
       {
         "q": "Are baskets pre-made or packed to order?",
@@ -275,9 +275,58 @@
       }
     ]
   },
+  "checkoutForm": {
+    "emptyTitle": "Your bag is empty",
+    "secure": "Secure checkout · CAD",
+    "email": "Email",
+    "phone": "Phone (for delivery)",
+    "sectionCollecting": "Who is collecting",
+    "sectionDelivery": "Delivery address",
+    "savedAddress": "Saved address",
+    "enterDifferent": "Enter a different address",
+    "defaultSuffix": " (default)",
+    "recipientName": "Recipient full name",
+    "pickupTitle": "Collect from our studio",
+    "pickupNote": "We'll message you to arrange a pickup time as soon as your basket is ready.",
+    "streetAddress": "Street address",
+    "apartment": "Apartment, suite (optional)",
+    "city": "City",
+    "postalCode": "Postal code",
+    "sectionMethod": "Delivery method",
+    "postalForOptions": "Postal code (for delivery options)",
+    "checkingAddress": "Checking your address…",
+    "enterPostalPrompt": "Enter a postal code to see delivery options and pricing.",
+    "deliveringTo": "Delivering to",
+    "updating": " · updating…",
+    "perishable": "{items} {count, plural, one {is} other {are}} too perishable to ship. Choose local delivery or pickup.",
+    "sectionGift": "Gift options",
+    "giftKeepNote": "Baskets with their own card message keep it. This one covers anything without.",
+    "giftPlaceholder": "Add a gift message (printed on a card)…",
+    "giftLabel": "Gift message",
+    "preferredDate": "Preferred delivery date",
+    "deliveryNotes": "Delivery notes",
+    "deliveryNotesPlaceholder": "Buzz code, leave at door…",
+    "summaryTitle": "Order summary",
+    "premiumCard": "Premium greeting card",
+    "discountCode": "Discount code",
+    "apply": "Apply",
+    "notApplied": "Not applied",
+    "codeNotValid": "Code not valid",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "free": "Free",
+    "tax": "Tax ({rate}%)",
+    "processing": "Processing…",
+    "enterPostal": "Enter a postal code",
+    "chooseLocal": "Choose local delivery or pickup",
+    "pay": "Pay {amount}",
+    "finalNote": "Taxes and delivery are finalized on this page. You can review everything before paying."
+  },
   "cart": {
     "premiumCard": "Premium greeting card",
-    "footerNote": "Shipping & taxes calculated at checkout. Handwritten card included · no prices on the slip."
+    "footerNote": "Shipping & taxes calculated at checkout. Message card included · no prices on the slip."
   },
   "newsletter": {
     "title": "Notes, on occasion",
@@ -343,10 +392,10 @@
     "localOnly": "Local delivery and pickup only",
     "deliveryAtCheckout": "Delivery is priced from your postal code at checkout",
     "leadTime": "Ships in {days, plural, one {# business day} other {# business days}}",
-    "card": "Handwritten card included",
+    "card": "Message card included",
     "noPrices": "No prices on the slip",
     "packed": "Packed to order",
-    "shippingPickup": "Free pickup from our Mississauga studio.",
+    "shippingPickup": "Free pickup from our Mississauga studio, by appointment.",
     "shippingLocalOnly": "Too perishable to ship — local delivery or studio pickup only.",
     "shippingLocal": "Same-day in Mississauga and the GTA on eligible orders placed before the daily cutoff.",
     "shippingOntario": "Tracked delivery anywhere in Ontario, typically 2 to 5 business days.",
@@ -355,7 +404,7 @@
     "arrivesLede": "Presentation is part of the gift. Every basket leaves the atelier finished and protected.",
     "a1": "Arranged and finished by hand",
     "a1Sub": "Tissue, ribbon and a protective outer box.",
-    "a2": "Your card, handwritten",
+    "a2": "Your message, on a card",
     "a2Sub": "Add your message at checkout. Prices are never included.",
     "a3": "Tracked to the door",
     "a3Sub": "Same-day in the GTA before the daily cutoff. Tracked delivery across Ontario.",
@@ -368,15 +417,15 @@
     "prevImage": "Previous image",
     "nextImage": "Next image",
     "itemsInside": "{count, plural, one {# item inside} other {# items inside}}",
-    "giftCardTitle": "Add a handwritten card",
-    "giftCardHint": "Optional — written by hand and tucked inside",
+    "giftCardTitle": "Add a card",
+    "giftCardHint": "Optional — printed on a card and tucked inside",
     "giftCardPlaceholder": "Happy birthday, Dad. Enjoy every bite. — Love, Tom",
-    "giftCardNote": "Written by hand. Prices are never included.",
+    "giftCardNote": "Printed on a Velvéa card. Prices are never included.",
     "giftCardTypeLegend": "Card type",
     "giftCardFree": "Velvéa card",
-    "giftCardFreeSub": "Our signature card, handwritten and tucked inside.",
+    "giftCardFreeSub": "Our signature card, printed and tucked inside.",
     "giftCardPremium": "Premium greeting card",
-    "giftCardPremiumSub": "A full-size store greeting card for the occasion, your message handwritten inside.",
+    "giftCardPremiumSub": "A full-size store greeting card for the occasion, with your message inside.",
     "giftCardNoCharge": "Free",
     "deliveryTitle": "Delivery",
     "giftingTitle": "Gifting details",
@@ -463,7 +512,7 @@
     "giftCardsDescription": "Give the gift of choice with a Velvéa gift card, redeemable on any basket.",
     "productFallbackTitle": "Gift basket",
     "deliveryTitle": "Gift basket delivery in Mississauga, Toronto and the GTA",
-    "deliveryDescription": "Same-day gift basket and hamper delivery in Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham and across the GTA. Tracked shipping everywhere else in Ontario. Free pickup in Mississauga.",
+    "deliveryDescription": "Same-day gift basket and hamper delivery in Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham and across the GTA. Tracked shipping everywhere else in Ontario. Free pickup in Mississauga, by appointment.",
     "cityTitle": "Gift baskets and hampers delivered in {city}",
     "cityDescriptionSameDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario. Order by {time} for same-day delivery from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionNextDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario by our own team, next-day from {fee}. Birthday, thank-you, sympathy, corporate and more.",
@@ -479,7 +528,7 @@
     "nextDayLede": "A little further out, delivered by our team the next available day.",
     "shippingH": "Everywhere else in Ontario",
     "shippingLede": "Tracked courier delivery to any Ontario address. Fresh and chilled baskets are local-only.",
-    "pickupNote": "Prefer to collect? Pickup from our Mississauga studio is always free; we message you a time once your basket is ready.",
+    "pickupNote": "Prefer to collect? Pickup from our Mississauga studio is always free and by appointment; we message you a time once your basket is ready.",
     "seePolicy": "Delivery costs and policy in full",
     "cardSameDay": "Same-day by {time}",
     "cardFee": "from {fee}",

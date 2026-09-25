@@ -400,6 +400,55 @@ export async function reorderCollections(order: { id: string; position: number }
   revalidatePath("/", "layout");
 }
 
+/**
+ * Products inside one collection, in the order the storefront shows them.
+ * Loaded on demand when a collection is expanded rather than with the list:
+ * every collection's products at once would be a needless fan-out.
+ */
+export async function listCollectionProducts(collectionId: string) {
+  await guard("collections:write");
+  const d = parse(z.object({ id }), { id: collectionId });
+  const rows = await prisma.productCollection.findMany({
+    where: { collectionId: d.id },
+    orderBy: [{ position: "asc" }, { product: { createdAt: "desc" } }, { product: { id: "asc" } }],
+    include: { product: { select: { id: true, name: true, slug: true, status: true, images: { take: 1, orderBy: { position: "asc" }, select: { url: true } } } } },
+  });
+  return rows.map((r) => ({
+    productId: r.productId,
+    position: r.position,
+    name: ((r.product.name ?? {}) as Record<string, string>).en ?? r.product.slug,
+    slug: r.product.slug,
+    status: r.product.status,
+    imageUrl: r.product.images[0]?.url ?? null,
+  }));
+}
+
+/** Reorder products within one collection. Positions are rewritten in full so
+ *  rows that were never ordered (all at the 0 default) get a real sequence. */
+export async function reorderCollectionProducts(
+  collectionId: string,
+  order: { productId: string; position: number }[]
+) {
+  await guard("collections:write");
+  const d = parse(
+    z.object({
+      collectionId: id,
+      order: z.array(z.object({ productId: id, position: z.number().int().min(0).max(9999) })).max(500),
+    }),
+    { collectionId, order }
+  );
+  await prisma.$transaction(
+    d.order.map((r) =>
+      prisma.productCollection.update({
+        where: { productId_collectionId: { productId: r.productId, collectionId: d.collectionId } },
+        data: { position: r.position },
+      })
+    )
+  );
+  revalidatePath("/admin/collections");
+  revalidatePath("/", "layout");
+}
+
 export async function deleteCollection(collectionId: string) {
   await guard("collections:delete");
   const d = parse(z.object({ id }), { id: collectionId });

@@ -57,7 +57,7 @@ const EN = {
 
   giftH: "Gift messages and content you provide",
   giftP:
-    "We write your gift message by hand. We may decline to reproduce a message that is abusive, discriminatory or otherwise inappropriate, and will contact you to agree an alternative. You confirm that you have the recipient's permission to share their name, address and phone number with us for delivery.",
+    "We print your gift message on a card. We may decline to reproduce a message that is abusive, discriminatory or otherwise inappropriate, and will contact you to agree an alternative. You confirm that you have the recipient's permission to share their name, address and phone number with us for delivery.",
 
   accountsH: "Accounts",
   accountsP:
@@ -139,7 +139,7 @@ const FR: typeof EN = {
 
   giftH: "Messages-cadeaux et contenu que vous fournissez",
   giftP:
-    "Nous écrivons votre message-cadeau à la main. Nous pouvons refuser de reproduire un message abusif, discriminatoire ou autrement inapproprié, et nous communiquerons avec vous pour convenir d'une solution de rechange. Vous confirmez avoir la permission du destinataire de nous communiquer son nom, son adresse et son numéro de téléphone aux fins de la livraison.",
+    "Nous imprimons votre message-cadeau sur une carte. Nous pouvons refuser de reproduire un message abusif, discriminatoire ou autrement inapproprié, et nous communiquerons avec vous pour convenir d'une solution de rechange. Vous confirmez avoir la permission du destinataire de nous communiquer son nom, son adresse et son numéro de téléphone aux fins de la livraison.",
 
   accountsH: "Comptes",
   accountsP:

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Image from "next/image";
 import { ChevronDown, ChevronUp, Loader2, Save, Plus, Trash2, ImageIcon } from "lucide-react";
 import { Card, Badge } from "./ui";
 import { Field, TextInput, LocalizedInput, Toggle, Select } from "./form";
 import { ImageUploader, type UploadedImage } from "./ImageUploader";
-import { upsertCollection, deleteCollection, reorderCollections } from "@/lib/actions/admin";
+import { upsertCollection, deleteCollection, reorderCollections, listCollectionProducts, reorderCollectionProducts } from "@/lib/actions/admin";
 import { cn } from "@/lib/utils";
 
 type CollectionRow = {
@@ -92,8 +92,9 @@ export function CollectionsManager({ initial }: { initial: CollectionRow[] }) {
                     </span>
                   </div>
                   {open === row.id && (
-                    <div className="border-t border-line p-4">
+                    <div className="space-y-6 border-t border-line p-4">
                       <Editor row={row} onDone={() => setOpen(null)} />
+                      <ProductOrder collectionId={row.id} />
                     </div>
                   )}
                 </Card>
@@ -172,6 +173,80 @@ function Editor({ row, onDone, isNew }: { row: CollectionRow; onDone: () => void
             <Trash2 className="h-3.5 w-3.5" /> Delete
           </button>
         )}
+      </div>
+    </div>
+  );
+}
+
+type OrderRow = Awaited<ReturnType<typeof listCollectionProducts>>[number];
+
+/**
+ * Hand-sorts the products inside one collection. The list is fetched when the
+ * collection is expanded rather than with the page, and every position in the
+ * collection is rewritten on each move so rows still sitting at the 0 default
+ * get a real sequence. Storefront listings use this order unless the shopper
+ * picks an explicit sort.
+ */
+function ProductOrder({ collectionId }: { collectionId: string }) {
+  const [rows, setRows] = useState<OrderRow[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [pending, start] = useTransition();
+
+  useEffect(() => {
+    let live = true;
+    listCollectionProducts(collectionId)
+      .then((r) => live && setRows(r))
+      .catch(() => live && setFailed(true));
+    return () => {
+      live = false;
+    };
+  }, [collectionId]);
+
+  function move(index: number, dir: -1 | 1) {
+    if (!rows) return;
+    const target = index + dir;
+    if (target < 0 || target >= rows.length) return;
+    const next = [...rows];
+    [next[index], next[target]] = [next[target], next[index]];
+    setRows(next); // optimistic: the arrows stay responsive while the write lands
+    start(() =>
+      reorderCollectionProducts(
+        collectionId,
+        next.map((r, i) => ({ productId: r.productId, position: i }))
+      )
+    );
+  }
+
+  if (failed) return <p className="text-sm text-danger">Could not load this collection's products.</p>;
+  if (!rows) return <p className="text-sm text-muted">Loading products…</p>;
+  if (!rows.length) return <p className="text-sm text-muted">No products in this collection yet.</p>;
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-ink">Product order</h3>
+        {pending && <span className="text-xs text-muted">Saving order…</span>}
+      </div>
+      <p className="mb-3 text-xs text-muted">The order shoppers see on this collection page, unless they choose a sort.</p>
+      <div className="space-y-1.5">
+        {rows.map((r, i) => (
+          <div key={r.productId} className="flex items-center gap-3 rounded-lg border border-line bg-white px-3 py-2">
+            <span className="w-5 shrink-0 text-xs tabular-nums text-muted">{i + 1}</span>
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded bg-cream">
+              {r.imageUrl ? (
+                <Image src={r.imageUrl} alt="" fill sizes="36px" className="object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center"><ImageIcon className="h-3.5 w-3.5 text-line-strong" /></div>
+              )}
+            </div>
+            <p className="min-w-0 flex-1 truncate text-sm text-ink">{r.name}</p>
+            {r.status !== "ACTIVE" && <Badge tone="gray">{r.status.toLowerCase()}</Badge>}
+            <span className="flex shrink-0 flex-col">
+              <button type="button" onClick={() => move(i, -1)} disabled={pending || i === 0} aria-label="Move up" className="p-0.5 text-muted hover:text-ink disabled:opacity-30"><ChevronUp className="h-4 w-4" /></button>
+              <button type="button" onClick={() => move(i, 1)} disabled={pending || i === rows.length - 1} aria-label="Move down" className="p-0.5 text-muted hover:text-ink disabled:opacity-30"><ChevronDown className="h-4 w-4" /></button>
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

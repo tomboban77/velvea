@@ -27,7 +27,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const cards = [
     { icon: Mail, label: fr ? "Courriel" : "Email", value: s.contact.email, href: `mailto:${s.contact.email}` },
     { icon: Phone, label: fr ? "Téléphone" : "Phone", value: s.contact.phone, href: `tel:${s.contact.phone}` },
-    { icon: MapPin, label: fr ? "Atelier" : "Studio", value: `${s.contact.addressLine}, ${s.contact.city}, ${s.contact.province}` },
+    // The studio is a workroom, not a shop floor: collection is by appointment only,
+    // so the label says so wherever the address is published (Business Profile matches).
+    { icon: MapPin, label: fr ? "Atelier (sur rendez-vous)" : "Studio (by appointment)", value: `${s.contact.addressLine}, ${s.contact.city}, ${s.contact.province}` },
     { icon: Clock, label: fr ? "Heures" : "Hours", value: s.contact.hours },
   ];
 

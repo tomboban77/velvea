@@ -50,7 +50,7 @@ const itemSchema = z.object({
   isCustom: z.boolean().optional(),
   customConfig: z.unknown().optional(),
   image: z.string().max(500).optional(),
-  /** Per-basket handwritten card. Falls back to the order-level message. */
+  /** Per-basket message card. Falls back to the order-level message. */
   giftMessage: z.string().max(300).optional(),
   /** Upgrade to a full-size store greeting card; the fee is re-read from settings. */
   premiumCard: z.boolean().optional(),
@@ -968,10 +968,15 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         { idempotencyKey: `checkout_${order.id}` }
       );
 
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { stripeSessionId: checkout.id },
-      });
+      // Past this point the session is live and the customer is about to be sent
+      // to it, so a failed write must never reach the catch below: that would
+      // cancel the order and release the discount while a payable session still
+      // exists. The webhook keys off metadata.orderId, not this column, which is
+      // only used to expire an abandoned session (actions/orders.ts), so losing
+      // it costs housekeeping and nothing else.
+      await prisma.order
+        .update({ where: { id: order.id }, data: { stripeSessionId: checkout.id } })
+        .catch((err) => console.error("[checkout] could not record stripeSessionId:", err));
 
       return { ok: true, mode: "stripe", url: checkout.url! };
     } catch (err) {
