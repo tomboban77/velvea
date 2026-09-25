@@ -39,6 +39,19 @@ export async function orderUrl(orderNumber: string, siteUrl: string): Promise<st
   return `${siteUrl}/order/${encodeURIComponent(orderNumber)}?t=${encodeURIComponent(token)}`;
 }
 
+/**
+ * Absolute URL that opts an address out of non-transactional email. Reuses the
+ * signed order token rather than storing another one: the link already proves
+ * the holder owns that order, and the route reads the address from it.
+ */
+export async function optOutUrl(orderNumber: string): Promise<string> {
+  const token = await signOrderToken(orderNumber);
+  const { siteUrl } = await import("./env");
+  return `${siteUrl()}/api/email/opt-out?order=${encodeURIComponent(
+    orderNumber
+  )}&t=${encodeURIComponent(token)}`;
+}
+
 // --- Single-use database tokens --------------------------------------------
 // Password reset and email verification. Only the hash is stored, so a database
 // leak does not hand over working reset links.

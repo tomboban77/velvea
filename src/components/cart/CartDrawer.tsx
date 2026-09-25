@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
@@ -14,12 +14,51 @@ export function CartDrawer() {
   const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA");
   const { items, isOpen, closeCart, updateQty, removeItem, subtotalCents } = useCart();
 
+  const panelRef = useRef<HTMLElement>(null);
+  const titleId = useId();
+
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // Keyboard parity with MobileMenu, which already did all of this. The drawer
+  // is a modal surface: Escape closes it, Tab cycles inside it rather than
+  // wandering onto the page behind, and focus returns to whatever opened it.
+  // Without the restore, dismissing the cart drops focus back to <body> and a
+  // keyboard user starts again from the top of the document.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeCart();
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(
+        panelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), select, input, [tabindex="0"]'
+        ) ?? []
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      previous?.focus();
+    };
+  }, [isOpen, closeCart]);
 
   return (
     <div
@@ -28,6 +67,7 @@ export function CartDrawer() {
         isOpen ? "pointer-events-auto" : "pointer-events-none"
       )}
       aria-hidden={!isOpen}
+      inert={!isOpen}
     >
       <div
         className={cn(
@@ -37,14 +77,18 @@ export function CartDrawer() {
         onClick={closeCart}
       />
       <aside
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className={cn(
           "absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-canvas shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <header className="flex items-center justify-between border-b border-line px-6 py-5">
-          <h2 className="font-display text-xl">{t("nav.cart")}</h2>
-          <button onClick={closeCart} className="btn-ghost p-2" aria-label="Close">
+          <h2 id={titleId} className="font-display text-xl">{t("nav.cart")}</h2>
+          <button onClick={closeCart} className="btn-ghost p-2" aria-label={t("nav.close")}>
             <X className="h-5 w-5" />
           </button>
         </header>
@@ -54,10 +98,8 @@ export function CartDrawer() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-cream">
               <ShoppingBag className="h-7 w-7 text-muted" />
             </div>
-            <p className="font-display text-2xl">Your bag is empty</p>
-            <p className="max-w-xs text-sm text-muted">
-              Discover beautifully hand-packed baskets for every occasion.
-            </p>
+            <p className="font-display text-2xl">{t("cart.emptyTitle")}</p>
+            <p className="max-w-xs text-sm text-muted">{t("cart.emptyLede")}</p>
             <Link href="/baskets" onClick={closeCart} className="btn btn-primary mt-2">
               {t("common.shopGiftBaskets")}
             </Link>
@@ -96,7 +138,7 @@ export function CartDrawer() {
                         <button
                           onClick={() => removeItem(item.id)}
                           className="text-muted transition-colors hover:text-danger"
-                          aria-label="Remove"
+                          aria-label={t("cart.remove")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -123,7 +165,7 @@ export function CartDrawer() {
                           <button
                             onClick={() => updateQty(item.id, item.quantity - 1)}
                             className="p-1.5 text-ink-soft hover:text-ink"
-                            aria-label="Decrease"
+                            aria-label={t("cart.decrease")}
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
@@ -133,7 +175,7 @@ export function CartDrawer() {
                           <button
                             onClick={() => updateQty(item.id, item.quantity + 1)}
                             className="p-1.5 text-ink-soft hover:text-ink"
-                            aria-label="Increase"
+                            aria-label={t("cart.increase")}
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </button>

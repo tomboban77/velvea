@@ -251,13 +251,44 @@ export type OrgContact = {
   postalCode?: string;
 };
 
+/**
+ * A social profile URL as the profile itself, with any tracking or sharing
+ * junk removed.
+ *
+ * `sameAs` is Google's "this is the same entity elsewhere" signal, so it has to
+ * be the canonical profile URL. Social apps hand out share links carrying
+ * per-account tokens — Instagram's QR share adds `?stkn=...&utm_source=qr` —
+ * and pasting one into the admin settings published that token in the
+ * homepage's structured data. Query strings and fragments are never part of a
+ * profile's identity, so both are dropped.
+ */
+export function canonicalSocialUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    u.search = "";
+    u.hash = "";
+    // A trailing slash on a profile is noise; "/velvea_gifts" is the identity.
+    if (u.pathname.length > 1 && u.pathname.endsWith("/")) u.pathname = u.pathname.slice(0, -1);
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
+
 export function organizationJsonLd(opts: {
   origin: string;
   contact: OrgContact;
   sameAs?: string[];
 }): JsonLdValue {
   const { origin, contact } = opts;
-  const sameAs = (opts.sameAs ?? []).filter((u) => /^https?:\/\//.test(u));
+  const sameAs = [
+    ...new Set(
+      (opts.sameAs ?? [])
+        .map((u) => canonicalSocialUrl(u))
+        .filter((u): u is string => Boolean(u))
+    ),
+  ];
   return {
     "@context": "https://schema.org",
     "@type": "Organization",

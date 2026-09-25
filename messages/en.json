@@ -325,6 +325,11 @@
     "finalNote": "Taxes and delivery are finalized on this page. You can review everything before paying."
   },
   "cart": {
+    "remove": "Remove",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "emptyTitle": "Your bag is empty",
+    "emptyLede": "Discover beautifully hand-packed baskets for every occasion.",
     "premiumCard": "Premium greeting card",
     "footerNote": "Shipping & taxes calculated at checkout. Message card included · no prices on the slip."
   },

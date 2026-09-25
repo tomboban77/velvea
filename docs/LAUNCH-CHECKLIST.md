@@ -75,6 +75,25 @@ verification in Google's hands (up to 5 days, no promised date).
 
 ## 4. Search and analytics
 
+- [ ] **Set `CRON_SECRET` in two places** — Vercel (Production) and the GitHub repository secrets.
+      The same value in both. Abandoned-cart recovery refuses to run until it exists: an endpoint
+      that emails customers is not left open. Redeploy after adding it to Vercel; env vars only
+      reach a new deployment.
+      **Why two places:** the Vercel account is on the Hobby plan, which runs cron at most once a
+      day. That is useless here — the reminder has to land inside a 90-minute-to-20-hour window,
+      and a daily run would miss most carts. `.github/workflows/abandoned-carts.yml` drives it
+      hourly instead; `vercel.json` keeps a daily run as a backstop. Both firing is harmless
+      because the endpoint stamps before sending.
+- [ ] **Apply the abandoned-cart migration:** `npx prisma migrate deploy`
+      (`20260924100000_abandoned_cart` — adds `Order.abandonedEmailAt` and the `EmailOptOut` table).
+- [ ] **Move DMARC from `p=none` to `p=quarantine`** once a couple of weeks of reports look clean.
+      Today you are monitoring spoofing rather than blocking it.
+- [ ] **Decide the real opening hours.** The site says Mon–Sat 9am–6pm ET; the Google Business
+      Profile says Mon–Sun 8am–6pm. A NAP mismatch is a genuine local-SEO drag.
+- [ ] **Decide whether to track inventory.** All 15 active products are `inventory = null`
+      (unlimited), so the "Only N left" and sold-out UI — which is built and correct — never
+      appears. Set numbers only where stock is genuinely limited.
+
 Search Console and Bing are verified, sitemap submitted, GA4 stream G-G4WZGMMQH5 receiving data with
 Consent Mode v2 and URL-param redaction.
 
@@ -131,6 +150,24 @@ Note that the Vercel build does **not** run migrations. Any future migration has
 ---
 
 ## Done 24 Sept 2026
+
+- **Abandoned checkout recovery.** Hourly Vercel Cron (`vercel.json`) hits
+  `/api/cron/abandoned-carts`, which finds `PENDING` orders between 90 minutes and 20 hours old
+  (after the customer has really gone, before Stripe expires the session) and sends one reminder.
+  CASL: business identification already in the email footer, a plain statement of why it arrived,
+  a working opt-out (`/api/email/opt-out`, signed order token, `List-Unsubscribe` header) and an
+  `EmailOptOut` table the cron checks. One email per order, ever — `Order.abandonedEmailAt` is
+  stamped *before* sending, so a crash costs one reminder rather than sending two. 11 tests.
+  **Needs `CRON_SECRET` set in Vercel** — the route returns 503 until it is.
+- **Cart drawer accessibility.** It had no `role="dialog"`, no `aria-modal`, no Escape key, no focus
+  trap and no focus restoration — all of which `MobileMenu` already did correctly. Now matched.
+  It also stayed in the tab order while closed (`aria-hidden` hides from screen readers but leaves
+  controls focusable), so a keyboard user tabbed into an invisible cart; `inert` fixes that.
+  Hardcoded English in the drawer ("Your bag is empty", "Close", "Remove", "Decrease", "Increase")
+  moved to the catalogue.
+- **Social URLs sanitised.** `canonicalSocialUrl()` strips query strings and fragments, and
+  `getSettings()` normalises on read, so an Instagram QR share token can never again be published
+  in the homepage's `sameAs`.
 
 - **Applied to production:** the `local-c` zone rename, and the `drop_order_billing` migration
   (schema verified in sync afterwards, client regenerated, tests green).

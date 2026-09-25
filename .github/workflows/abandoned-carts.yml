@@ -1,0 +1,39 @@
+# Hourly trigger for the abandoned-checkout reminder.
+#
+# Vercel's Hobby plan runs cron jobs at most once a day, which is useless for
+# this job: the reminder has to land inside a 90-minute-to-20-hour window, after
+# the customer has really gone but before Stripe expires the Checkout Session
+# and the link in the email dies. A daily run would miss most carts entirely.
+#
+# So the schedule lives here instead. vercel.json keeps a once-daily run as a
+# backstop in case this workflow is ever disabled; the endpoint is idempotent
+# (it stamps Order.abandonedEmailAt before sending), so both firing is harmless.
+#
+# Setup: add CRON_SECRET to the repository secrets, matching the value set in
+# Vercel. Settings -> Secrets and variables -> Actions -> New repository secret.
+name: Abandoned cart reminders
+
+on:
+  schedule:
+    # Hourly. GitHub may delay scheduled runs under load; the window is wide
+    # enough that a late run still catches the cart.
+    - cron: "0 * * * *"
+  workflow_dispatch: # lets you run it by hand from the Actions tab
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger abandoned-cart run
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET repository secret is not set."
+            exit 1
+          fi
+          # --fail-with-body so a 401/503 shows the reason and fails the run.
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://www.velvea.ca/api/cron/abandoned-carts
+          echo

@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { canonicalSocialUrl } from "./seo";
 
 export type SiteSettings = {
   contact: {
@@ -111,6 +112,24 @@ let cache: { value: SiteSettings; at: number } | null = null;
 const TTL = 30_000;
 
 /** Deep-merge stored overrides over defaults; resilient if the DB is offline. */
+/**
+ * Social links are pasted in by hand, and the share links social apps hand out
+ * carry per-account tokens (Instagram's QR share appends `?stkn=...`). One of
+ * those reached production and was published in the homepage's Organization
+ * `sameAs`. Normalising on read means every consumer — the footer links and the
+ * structured data alike — gets the profile URL rather than whatever was pasted,
+ * without needing the stored value to be corrected first.
+ */
+function normalizeSocial(social: SiteSettings["social"]): SiteSettings["social"] {
+  const clean = (v: string) => (v ? canonicalSocialUrl(v) ?? "" : "");
+  return {
+    instagram: clean(social.instagram),
+    facebook: clean(social.facebook),
+    pinterest: clean(social.pinterest),
+    tiktok: clean(social.tiktok),
+  };
+}
+
 export async function getSettings(): Promise<SiteSettings> {
   if (cache && Date.now() - cache.at < TTL) return cache.value;
   try {
@@ -118,7 +137,7 @@ export async function getSettings(): Promise<SiteSettings> {
     const stored = (row?.value as Partial<SiteSettings>) ?? {};
     const merged: SiteSettings = {
       contact: { ...DEFAULT_SETTINGS.contact, ...stored.contact },
-      social: { ...DEFAULT_SETTINGS.social, ...stored.social },
+      social: normalizeSocial({ ...DEFAULT_SETTINGS.social, ...stored.social }),
       delivery: { ...DEFAULT_SETTINGS.delivery, ...stored.delivery },
       home: { ...DEFAULT_SETTINGS.home, ...stored.home },
       tax: {

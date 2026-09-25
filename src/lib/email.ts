@@ -4,7 +4,7 @@ import { formatMoney } from "./utils";
 import { escapeHtml, escapeHtmlMultiline } from "./html";
 import { formatStoreDate } from "./dates";
 import { siteUrl } from "./env";
-import { orderUrl } from "./tokens";
+import { orderUrl, optOutUrl } from "./tokens";
 import { getSettings, type SiteSettings } from "./settings";
 
 const FROM = process.env.EMAIL_FROM || "Velvea <hello@velvea.ca>";
@@ -556,6 +556,71 @@ export async function sendOrderRefunded(data: {
 // ---------------------------------------------------------------------------
 // Corporate inquiries
 // ---------------------------------------------------------------------------
+
+/**
+ * The one reminder sent to somebody who reached checkout and did not pay.
+ *
+ * This is the only marketing email the application sends to a non-subscriber,
+ * and CASL governs it: consent here is implied by the enquiry, not express, so
+ * it must identify the business (shell() already does, via FOOTER_TOKEN),
+ * say plainly why it arrived, and offer a working unsubscribe. One email per
+ * order, ever — the caller stamps `abandonedEmailAt` so there is no sequence.
+ *
+ * `List-Unsubscribe` lets Gmail and Outlook show their own unsubscribe control,
+ * which is both good manners and good for deliverability.
+ */
+export async function sendAbandonedCart(data: {
+  orderNumber: string;
+  email: string;
+  locale?: string | null;
+  totalCents: number;
+  itemNames: string[];
+}): Promise<boolean> {
+  const L = (en: string, fr: string) => pick(data.locale, en, fr);
+  const link = await orderUrl(data.orderNumber, SITE);
+  const optOut = await optOutUrl(data.orderNumber);
+
+  const items = data.itemNames.length
+    ? `<p style="margin:16px 0 4px;color:#514a40">${data.itemNames
+        .map((n) => escapeHtml(n))
+        .join("<br>")}</p>`
+    : "";
+
+  const body = `
+    <p style="color:#514a40">${escapeHtml(
+      L(
+        "You picked something out and did not quite finish. Your basket is still held \u2014 nothing has been charged.",
+        "Vous avez choisi un panier sans terminer votre commande. Il est toujours r\u00e9serv\u00e9 \u2014 rien n'a \u00e9t\u00e9 factur\u00e9."
+      )
+    )}</p>
+    ${items}
+    <p style="margin:16px 0 4px"><strong>${escapeHtml(L("Total", "Total"))} ${escapeHtml(
+      formatMoney(data.totalCents, isFr(data.locale) ? "fr-CA" : "en-CA")
+    )}</strong></p>
+    ${button(link, L("Finish your order", "Terminer ma commande"))}
+    <p style="margin-top:18px;font-size:13px;color:#8a8072">${escapeHtml(
+      L(
+        "If you have changed your mind, no reply is needed \u2014 the basket is released on its own.",
+        "Si vous avez chang\u00e9 d'avis, rien \u00e0 faire \u2014 le panier se lib\u00e8re tout seul."
+      )
+    )}</p>`;
+
+  const footerExtra = `<p style="margin:10px 0 0;font-size:12px;color:#8a8072">${escapeHtml(
+    L(
+      "You are receiving this once because you started an order on velvea.ca.",
+      "Vous recevez ce message une seule fois parce qu'une commande a \u00e9t\u00e9 commenc\u00e9e sur velvea.ca."
+    )
+  )} <a href="${escapeHtml(optOut)}" style="color:#8a8072">${escapeHtml(
+    L("Unsubscribe", "Se d\u00e9sabonner")
+  )}</a></p>`;
+
+  return send(
+    data.email,
+    L("Your Velvea basket is still waiting", "Votre panier Velvea vous attend"),
+    shell(L("Still here", "Toujours l\u00e0"), body, data.locale, footerExtra),
+    { "List-Unsubscribe": `<${optOut}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" }
+  );
+}
 
 export async function sendCorporateInquiryNotice(inq: {
   company: string;

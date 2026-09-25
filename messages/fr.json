@@ -325,6 +325,11 @@
     "finalNote": "Les taxes et la livraison sont finalisées sur cette page. Vous pouvez tout vérifier avant de payer."
   },
   "cart": {
+    "remove": "Retirer",
+    "decrease": "Diminuer la quantité",
+    "increase": "Augmenter la quantité",
+    "emptyTitle": "Votre sac est vide",
+    "emptyLede": "Découvrez des paniers composés à la main pour chaque occasion.",
     "premiumCard": "Carte de vœux premium",
     "footerNote": "Livraison et taxes calculées à la caisse. Carte-message incluse · aucun prix sur le bordereau."
   },

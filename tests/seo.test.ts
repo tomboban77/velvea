@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildRobots,
   buildSitemap,
+  canonicalSocialUrl,
   hasFrench,
   indexingMode,
   jsonLdString,
@@ -274,6 +275,32 @@ describe("listing URL policy", () => {
     expect(listingPolicy({ page: 2, filtered: false, empty: false })).toEqual({ index: true, query: { page: 2 } });
     expect(listingPolicy({ page: 1, filtered: true, empty: false }).index).toBe(false);
     expect(listingPolicy({ page: 1, filtered: false, empty: true }).index).toBe(false);
+  });
+});
+
+describe("canonicalSocialUrl", () => {
+  it("strips share tokens and tracking params", () => {
+    // Real value that reached production: Instagram's QR share link, pasted
+    // into admin settings, published the account's share token in the
+    // homepage's Organization sameAs.
+    expect(
+      canonicalSocialUrl("https://www.instagram.com/velvea_gifts?stkn=MWl2c2I5Yng2M2R5OQ%3D%3D&utm_source=qr")
+    ).toBe("https://www.instagram.com/velvea_gifts");
+  });
+
+  it("strips fragments and a trailing slash, and keeps a clean url unchanged", () => {
+    expect(canonicalSocialUrl("https://www.instagram.com/velvea_gifts/#posts")).toBe(
+      "https://www.instagram.com/velvea_gifts"
+    );
+    expect(canonicalSocialUrl("https://www.instagram.com/velvea_gifts")).toBe(
+      "https://www.instagram.com/velvea_gifts"
+    );
+  });
+
+  it("rejects anything that is not an http(s) url", () => {
+    for (const bad of ["", "velvea_gifts", "javascript:alert(1)", "mailto:a@b.c"]) {
+      expect(canonicalSocialUrl(bad)).toBeNull();
+    }
   });
 });
 

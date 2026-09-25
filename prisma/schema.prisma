@@ -312,6 +312,11 @@ model Order {
   stripePaymentIntentId String?
   paidAt                DateTime?
 
+  /// When the single abandoned-checkout reminder was sent. Null means never.
+  /// Stamped even when the send fails, so one bad address is never retried in
+  /// a loop and nobody can receive this twice.
+  abandonedEmailAt DateTime?
+
   timeline   OrderEvent[]
   adminNotes String?
 
@@ -499,6 +504,18 @@ model NewsletterSubscriber {
   createdAt      DateTime  @default(now())
 
   @@index([confirmedAt])
+}
+
+/// Addresses that asked not to receive non-transactional email.
+///
+/// CASL requires a working unsubscribe on any commercial electronic message,
+/// and an abandoned-checkout reminder is one — it goes to somebody who gave us
+/// their address to buy something, not to be marketed to. Order confirmations,
+/// shipping notices and password resets are transactional and are never
+/// suppressed by this list.
+model EmailOptOut {
+  email     String   @id
+  createdAt DateTime @default(now())
 }
 
 // Key/value site settings edited in admin (contact info, cutoff time, shipping rates, tax, hero copy...)
