@@ -50,6 +50,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           <Field label="Facebook"><TextInput value={s.social.facebook} onChange={(v) => setS({ ...s, social: { ...s.social, facebook: v } })} /></Field>
           <Field label="Pinterest"><TextInput value={s.social.pinterest} onChange={(v) => setS({ ...s, social: { ...s.social, pinterest: v } })} /></Field>
           <Field label="TikTok"><TextInput value={s.social.tiktok} onChange={(v) => setS({ ...s, social: { ...s.social, tiktok: v } })} /></Field>
+          <Field label="Google Business Profile"><TextInput value={s.social.googleBusiness} onChange={(v) => setS({ ...s, social: { ...s.social, googleBusiness: v } })} /></Field>
         </div>
       </Card>
 

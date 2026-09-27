@@ -16,6 +16,15 @@ export type SiteSettings = {
     facebook: string;
     pinterest: string;
     tiktok: string;
+    /**
+     * The verified Google Business Profile's public Maps URL. Not a social
+     * network and it gets no footer button — it lives here because everything
+     * in this object feeds the Organization `sameAs`, and a link to the
+     * verified profile is the strongest "this website is that business" signal
+     * available for telling this Velvéa apart from the unrelated brands sharing
+     * the name.
+     */
+    googleBusiness: string;
   };
   delivery: {
     /**
@@ -67,11 +76,19 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     postalCode: "L4Z 0C9",
     hours: "Mon–Sun, 8am–6pm ET",
   },
+  // Empty, not placeholder handles. These defaults publish twice: as the
+  // footer's social buttons and as the homepage Organization `sameAs`, which is
+  // the signal Google uses to tell this Velvéa apart from the unrelated brands
+  // sharing the name. A guessed URL sends customers to an account we do not own
+  // and points that signal at a profile that never links back, which is worse
+  // than saying nothing. An account only appears once its real URL is entered
+  // in Admin -> Settings.
   social: {
-    instagram: "https://instagram.com/velvea",
-    facebook: "https://facebook.com/velvea",
-    pinterest: "https://pinterest.com/velvea",
-    tiktok: "https://tiktok.com/@velvea",
+    instagram: "",
+    facebook: "",
+    pinterest: "",
+    tiktok: "",
+    googleBusiness: "",
   },
   delivery: {
     orderCutoff: "16:00",
@@ -127,6 +144,7 @@ function normalizeSocial(social: SiteSettings["social"]): SiteSettings["social"]
     facebook: clean(social.facebook),
     pinterest: clean(social.pinterest),
     tiktok: clean(social.tiktok),
+    googleBusiness: clean(social.googleBusiness),
   };
 }
 

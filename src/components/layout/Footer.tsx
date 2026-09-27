@@ -6,7 +6,7 @@ import { Newsletter } from "./Newsletter";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { getSettings } from "@/lib/settings";
 import { OCCASIONS, RECIPIENTS, labelFor } from "@/lib/nav";
-import { InstagramIcon, FacebookIcon } from "@/components/brand/SocialIcons";
+import { InstagramIcon, FacebookIcon, PinterestIcon, TiktokIcon } from "@/components/brand/SocialIcons";
 import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export async function Footer() {
@@ -14,6 +14,17 @@ export async function Footer() {
   const locale = await getLocale();
   const s = await getSettings();
   const fr = locale === "fr";
+
+  // Only the accounts that actually exist. An unconfigured network is an empty
+  // string (see DEFAULT_SETTINGS.social), and linking a guessed profile sends
+  // customers to somebody else's account, so the button is left out entirely
+  // and the row disappears when nothing is set up.
+  const socials = [
+    { href: s.social.instagram, label: "Instagram", Icon: InstagramIcon },
+    { href: s.social.facebook, label: "Facebook", Icon: FacebookIcon },
+    { href: s.social.pinterest, label: "Pinterest", Icon: PinterestIcon },
+    { href: s.social.tiktok, label: "TikTok", Icon: TiktokIcon },
+  ].filter((x) => x.href);
 
   return (
     <footer className="store-footer">
@@ -54,14 +65,15 @@ export async function Footer() {
               </span>
             </li>
           </ul>
-          <div className="mt-6 flex gap-2">
-            <a href={s.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong text-ink-soft transition-colors hover:border-violet-deep hover:bg-violet-deep hover:text-white">
-              <InstagramIcon className="h-4 w-4" />
-            </a>
-            <a href={s.social.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong text-ink-soft transition-colors hover:border-violet-deep hover:bg-violet-deep hover:text-white">
-              <FacebookIcon className="h-4 w-4" />
-            </a>
-          </div>
+          {socials.length > 0 && (
+            <div className="mt-6 flex gap-2">
+              {socials.map(({ href, label, Icon }) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong text-ink-soft transition-colors hover:border-violet-deep hover:bg-violet-deep hover:text-white">
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         <FooterCol title={t("footer.shop")}>

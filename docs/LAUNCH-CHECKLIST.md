@@ -67,8 +67,20 @@ Created 22 Sept under giftsvelvea@gmail.com, service-area listing with the addre
 verification in Google's hands (up to 5 days, no promised date).
 
 - [ ] Finish the profile: description, secondary category, attributes, photos, products.
-- [ ] Once the Maps URL is public, add it to `settings.social` so it feeds `sameAs` in the
-      Organization markup.
+- [ ] **Paste the Maps URL into Admin -> Settings -> Google Business Profile.** Verification
+      completed 26 Sept 2026 ("You manage this Business Profile"), so the profile is public. The
+      field exists now (`settings.social.googleBusiness`) and feeds `sameAs` in the Organization
+      markup; it deliberately gets no footer button. Use the profile's Share link
+      (`maps.app.goo.gl/...`) — `canonicalSocialUrl()` strips the tracking query either way.
+- [x] **Placeholder social URLs removed (26 Sept 2026).** Instagram (`velvea_gifts`) is the
+      only account that exists. `DEFAULT_SETTINGS.social` used to ship guessed handles
+      (`facebook.com/velvea`, `pinterest.com/velvea`, `tiktok.com/@velvea`), which the footer
+      linked and the Organization `sameAs` published — sending customers to accounts Velvéa does
+      not own and pointing Google's entity signal at profiles that never link back. The defaults
+      are now empty strings, the footer renders only configured networks, and
+      `tests/settings.test.ts` guards against reintroducing a guess. Admin -> Settings confirmed
+      the database never stored the placeholders, so no settings edit was needed — deploying is
+      what takes effect.
 - [ ] **Correct the "no premises" answer.** Studio pickup is real and by appointment (settled
       24 Sept), and free pickup is the qualifying in-person contact. The site copy now says "by
       appointment" everywhere; the profile should match.
