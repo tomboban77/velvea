@@ -21,6 +21,11 @@ export const HIDDEN_PRODUCT_SLUGS: string[] = GIFT_CARDS_ENABLED ? [] : [GIFT_CA
  * names identical to the English. Selling from it would be selling inventory
  * that does not exist.
  *
+ * While it is false the FAQ answers "Can I build my own basket?" with the
+ * bespoke-by-email route instead of the builder — see `src/lib/faq.ts`. The
+ * builder answer lives in the catalogue as `aBuilder` and comes back on its
+ * own when this flips.
+ *
  * Turning this back on is a content job, not a code one: add real containers
  * and add-ons with photography, real prices and real French names in
  * /admin/builder, then flip this to true. The builder itself works — checkout

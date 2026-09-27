@@ -263,7 +263,8 @@
       },
       {
         "q": "Can I build my own basket?",
-        "a": "Yes. Choose a vessel and hand-pick every item in our builder, or contact us for a fully bespoke order."
+        "a": "Yes. Tell us what you have in mind and we will compose it for you — write to us with the occasion, a budget, and anything the recipient loves or avoids. We will put the basket together and confirm it with you before you pay.",
+        "aBuilder": "Yes. Choose a vessel and hand-pick every item in our builder, or contact us for a fully bespoke order."
       },
       {
         "q": "Do you work with businesses?",

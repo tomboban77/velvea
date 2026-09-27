@@ -2,7 +2,6 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, StatCard, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { formatMoney, formatDate } from "@/lib/utils";
-import { t } from "@/lib/i18n-content";
 import { Package, ShoppingCart, Star, Building2, ArrowRight } from "lucide-react";
 
 async function getDashboard() {

@@ -61,7 +61,31 @@ more now, not less.
       `scripts/sync-zone-names.ts` reports clean. Re-run it (report mode is free) after any admin
       zone edit — it is what caught this.
 
-## 3. Google Business Profile
+## 3. Guides (content)
+
+Four guides written and **published live 26 Sept 2026** via `npm run seed:guides -- --write
+--publish` (report-only without `--write`; DRAFT without `--publish`). Sources live in
+`scripts/guides/`; the seeder sanitises each body with the same allow-list the admin uses and
+refuses to run if a guide cross-links a slug that does not exist. Verified live: all four on
+/guides, Article + BreadcrumbList JSON-LD, en-CA/fr-CA/x-default hreflang pairs (so `hasFrench`
+sees real translations, not copied English), no noindex. They enter the sitemap on its next
+hourly revalidate.
+
+Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (EN) and 1 per 963
+(FR) from roughly 1 per 85, and repeated crutch words ("rather than" 10x, "actually" 8x,
+"réellement" 7x and others) varied down. Re-run that audit on any new guide.
+
+- [ ] **Read the corporate guide.** It states CRA rules (the $500 non-cash employee limit, the
+      near-cash gift-card trap, and food gifts being 50% deductible under s. 67.1) under the Velvéa
+      name. It carries a "not tax advice, confirm with your accountant" footer, and it is live —
+      if any claim does not sit right, unpublish it in Admin -> Articles.
+- [ ] Guides link only to collections that hold products. Before publishing, re-check the sitemap —
+      `new-parents`, `vegan`, `fresh-fruit`, `baby`, `sympathy`, `new-baby` and `wedding` were empty
+      (and therefore noindex) when these were written, so they are named in the copy but not linked.
+- [ ] Cover images: every guide has `coverImage` null. They render without one; add photography when
+      there is some.
+
+## 4. Google Business Profile
 
 Created 22 Sept under giftsvelvea@gmail.com, service-area listing with the address hidden,
 verification in Google's hands (up to 5 days, no promised date).
@@ -87,7 +111,7 @@ verification in Google's hands (up to 5 days, no promised date).
       24 Sept), and free pickup is the qualifying in-person contact. The site copy now says "by
       appointment" everywhere; the profile should match.
 
-## 4. Search and analytics
+## 5. Search and analytics
 
 - [ ] **Set `CRON_SECRET` in two places** — Vercel (Production) and the GitHub repository secrets.
       The same value in both. Abandoned-cart recovery refuses to run until it exists: an endpoint
@@ -121,7 +145,7 @@ Consent Mode v2 and URL-param redaction.
       the product claims above are settled.
 - [ ] **Performance baseline** — never measured. Take one before optimizing anything.
 
-## 5. Content
+## 6. Content
 
 - [ ] **Guides have routes but no published articles.** The content plan in SEO-BRIEF §V-12 cannot
       start until something is published. Article bodies are sanitized on save. Owner decision
@@ -129,7 +153,7 @@ Consent Mode v2 and URL-param redaction.
       **Waiting on the topic list.**
 - [ ] Review the FAQ and delivery copy against the confirmed delivery rules from §1.
 
-## 6. Code — deferred by decision, not forgotten
+## 7. Code — deferred by decision, not forgotten
 
 - [ ] **Custom basket builder — paused 24 Sept, needs real inventory.** Hidden behind
       `CUSTOM_BUILDER_ENABLED = false`. The builder code is sound (checkout re-prices every custom
@@ -150,7 +174,7 @@ Consent Mode v2 and URL-param redaction.
       a product slug from now on produces a hard 404 on a URL search engines know about. The cost of
       waiting is no longer zero. Either build it, or treat product slugs as frozen.
 
-## 7. Migrations — all applied
+## 8. Migrations — all applied
 
 `prisma/migrations/20260924000000_drop_order_billing` (drops the never-written `Order.billing`
 column) was applied to production on 24 Sept 2026. `npx prisma migrate status` reports
@@ -162,6 +186,24 @@ Note that the Vercel build does **not** run migrations. Any future migration has
 `npx prisma migrate deploy` by hand, as this one was.
 
 ---
+
+## Done 26 Sept 2026
+
+- **The FAQ was advertising a paused feature.** "Can I build my own basket?" answered "hand-pick
+  every item in our builder" for the whole time `CUSTOM_BUILDER_ENABLED` was false, so the answer
+  pointed at a page that 404s — and the /faq page builds its `FAQPage` JSON-LD from the same list,
+  so search engines were told the same thing. The builder answer now lives in the catalogue as
+  `aBuilder` and is selected by `resolveFaqItems()` (`src/lib/faq.ts`), which both the component
+  and the JSON-LD resolve through so they cannot drift. The flag-off answer describes the real
+  bespoke-by-email route. 5 tests in `tests/faq.test.ts`.
+- **llms.txt described a FAQ that does not exist.** It told AI crawlers the FAQ covered "allergens,
+  substitutions"; it covers neither. Now lists what is actually there.
+- **Social defaults.** `DEFAULT_SETTINGS.social` shipped guessed handles
+  (`facebook.com/velvea` and two more) that the footer linked and the Organization `sameAs`
+  published. Emptied; the footer renders only configured networks and now supports all four icons.
+  A `googleBusiness` field was added and carries the verified profile into `sameAs`.
+- **Four guides written** and loaded as DRAFT — see section 3.
+- Unused `t` import removed from the admin dashboard; `npm run lint` is clean.
 
 ## Done 24 Sept 2026
 

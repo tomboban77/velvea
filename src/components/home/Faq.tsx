@@ -5,10 +5,11 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Plus, Minus, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { resolveFaqItems, type FaqItem } from "@/lib/faq";
 
 export function Faq({ standalone = false }: { standalone?: boolean }) {
   const t = useTranslations("faq");
-  const items = t.raw("items") as { q: string; a: string }[];
+  const items = resolveFaqItems(t.raw("items") as FaqItem[]);
   const [open, setOpen] = useState(0);
 
   return (

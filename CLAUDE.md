@@ -22,7 +22,9 @@ Resend (email) · Cloudinary (images) · Upstash Redis (rate limiting, REST) · 
 - The **custom basket builder is paused** behind `CUSTOM_BUILDER_ENABLED = false` (same file): every
   container and add-on in the database is still seeded demo data with no images and English-only
   French names. The flag hides the nav entries, the home section, the hero CTA, the sitemap entry
-  and `llms.txt`, 404s `/custom`, and makes checkout refuse a custom line from a stale cart.
+  and `llms.txt`, swaps the FAQ answer (`src/lib/faq.ts`, resolved once for both the
+  component and its JSON-LD), 404s `/custom`, and makes checkout refuse a custom line
+  from a stale cart.
   Re-enabling is a content job (real items + photography in `/admin/builder`), then flip the flag.
 - **Search indexing is switched off by default.** `SITE_INDEXING` (unset/`off` · `home` · `all`) in
   `src/lib/seo.ts` drives noindex on every storefront page, the `X-Robots-Tag` header in

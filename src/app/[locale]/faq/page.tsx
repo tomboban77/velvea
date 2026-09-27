@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Faq } from "@/components/home/Faq";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqJsonLd, pageMetadata } from "@/lib/seo";
+import { resolveFaqItems, type FaqItem } from "@/lib/faq";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -12,9 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function FaqPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  // Same message items the <Faq> component renders, so markup and page agree.
+  // Resolved through the same helper the <Faq> component uses, so the markup
+  // and the rendered answers cannot drift apart.
   const t = await getTranslations("faq");
-  const items = t.raw("items") as { q: string; a: string }[];
+  const items = resolveFaqItems(t.raw("items") as FaqItem[]);
   return (
     <>
       <JsonLd data={faqJsonLd(items)} />

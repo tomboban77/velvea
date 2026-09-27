@@ -26,7 +26,7 @@ export async function GET() {
 - [Corporate gifting](${url("/corporate")}): volume pricing, branded cards, multi-address delivery; [request a quote](${url("/corporate/quote")})
 - [Delivery areas](${url("/delivery")}): which cities get same-day, next-day or courier delivery, with fees and cutoffs
 - [Delivery policy](${url("/shipping")}): costs, cutoffs, pickup and what cannot be shipped
-- [FAQ](${url("/faq")}): delivery, gift messages, allergens, substitutions
+- [FAQ](${url("/faq")}): delivery, gift messages, how baskets are packed, bespoke and corporate orders, and why all sales are final
 - [Our story](${url("/about")})
 - [Contact](${url("/contact")}): ${contact.email}
 

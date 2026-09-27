@@ -263,7 +263,8 @@
       },
       {
         "q": "Puis-je composer mon propre panier ?",
-        "a": "Oui. Choisissez un contenant et sélectionnez chaque article dans notre outil, ou contactez-nous pour une commande entièrement sur mesure."
+        "a": "Oui. Dites-nous ce que vous avez en tête et nous le composerons pour vous — écrivez-nous en précisant l’occasion, un budget et ce que la personne adore ou évite. Nous assemblerons le panier et vous le confirmerons avant tout paiement.",
+        "aBuilder": "Oui. Choisissez un contenant et sélectionnez chaque article dans notre outil, ou contactez-nous pour une commande entièrement sur mesure."
       },
       {
         "q": "Travaillez-vous avec les entreprises ?",
