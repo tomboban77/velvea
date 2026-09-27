@@ -67,7 +67,9 @@ Created 22 Sept under giftsvelvea@gmail.com, service-area listing with the addre
 verification in Google's hands (up to 5 days, no promised date).
 
 - [ ] Finish the profile: description, secondary category, attributes, photos, products.
-- [ ] **Paste the Maps URL into Admin -> Settings -> Google Business Profile.** Verification
+- [x] **Maps URL published (26 Sept 2026).** Verified live: the homepage `sameAs` carries
+      `instagram.com/velvea_gifts` and `maps.app.goo.gl/c5iCqHs1jYxqjhgf6`, and the footer renders
+      the Instagram button only. Verification
       completed 26 Sept 2026 ("You manage this Business Profile"), so the profile is public. The
       field exists now (`settings.social.googleBusiness`) and feeds `sameAs` in the Organization
       markup; it deliberately gets no footer button. Use the profile's Share link
