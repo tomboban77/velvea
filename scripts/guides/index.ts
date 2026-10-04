@@ -3,6 +3,9 @@ import { corporateGifting } from "./corporate-gifting";
 import { ontarioGiftingCalendar } from "./ontario-gifting-calendar";
 import { giftMessage } from "./gift-message";
 import { choosingABasket } from "./choosing-a-basket";
+import { diwaliGiftHampers } from "./diwali-gift-hampers";
+import { realtorClosingGifts } from "./realtor-closing-gifts";
+import { corporateGiftHampers } from "./corporate-gift-hampers";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -14,6 +17,9 @@ export const GUIDES: GuideSeed[] = [
   ontarioGiftingCalendar,
   giftMessage,
   choosingABasket,
+  diwaliGiftHampers,
+  realtorClosingGifts,
+  corporateGiftHampers,
 ];
 
 export type { GuideSeed };

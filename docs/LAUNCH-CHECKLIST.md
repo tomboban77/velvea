@@ -82,6 +82,13 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
 - [ ] Guides link only to collections that hold products. Before publishing, re-check the sitemap —
       `new-parents`, `vegan`, `fresh-fruit`, `baby`, `sympathy`, `new-baby` and `wedding` were empty
       (and therefore noindex) when these were written, so they are named in the copy but not linked.
+- [x] **Three more guides published live 4 Oct 2026:** `diwali-gift-hampers-gta`,
+      `real-estate-closing-gifts-gta`, `corporate-gift-hampers-how-to-choose`. Same editorial pass
+      (no emoji, no em dashes, crutch phrases cut). Verified 200 in EN and FR, listed on /guides,
+      no noindex.
+- [ ] The Diwali guide hard-codes the 2026 date (Sun 8 Nov), its delivery windows and the
+      "order by mid-October" line: update them every autumn in both locales, then re-run with
+      `--write --force`.
 - [ ] Cover images: every guide has `coverImage` null. They render without one; add photography when
       there is some.
 
