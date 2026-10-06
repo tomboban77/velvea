@@ -6,6 +6,7 @@ import { OccasionsRail } from "@/components/home/OccasionsRail";
 import { Collection } from "@/components/home/Collection";
 import type { CollectionTab } from "@/components/home/CollectionTabs";
 import { BuildYourOwn } from "@/components/home/BuildYourOwn";
+import { CustomRequest } from "@/components/home/CustomRequest";
 import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 import { TheWay } from "@/components/home/TheWay";
 import { Corporate } from "@/components/home/Corporate";
@@ -98,7 +99,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <OccasionsRail />
       <GiftFinderBar />
       <Collection tabs={tabs} />
-      {CUSTOM_BUILDER_ENABLED && <BuildYourOwn />}
+      {/* One plum split band here, not two with the same photograph: the request
+          form stands in while the builder is paused. */}
+      {CUSTOM_BUILDER_ENABLED ? <BuildYourOwn /> : <CustomRequest />}
       <TheWay />
       <Corporate />
       <Atelier />

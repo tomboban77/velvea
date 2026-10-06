@@ -45,7 +45,8 @@
     "byCategory": "By category",
     "shopAll": "Shop all baskets",
     "searchShort": "Search",
-    "browseAll": "Browse all"
+    "browseAll": "Browse all",
+    "customRequest": "Custom basket"
   },
   "common": {
     "shopGiftBaskets": "Shop gift baskets",
@@ -263,7 +264,7 @@
       },
       {
         "q": "Can I build my own basket?",
-        "a": "Yes. Tell us what you have in mind and we will compose it for you — write to us with the occasion, a budget, and anything the recipient loves or avoids. We will put the basket together and confirm it with you before you pay.",
+        "a": "Yes. Fill in our custom basket request with the products you'd like, plus the occasion, budget and date if you know them, and leave an email or mobile number. We will reply with a final price, and nothing is charged until you approve it.",
         "aBuilder": "Yes. Choose a vessel and hand-pick every item in our builder, or contact us for a fully bespoke order."
       },
       {
@@ -522,7 +523,9 @@
     "cityTitle": "Gift baskets and hampers delivered in {city}",
     "cityDescriptionSameDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario. Order by {time} for same-day delivery from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionNextDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario by our own team, next-day from {fee}. Birthday, thank-you, sympathy, corporate and more.",
-    "cityDescriptionShipping": "Hand-composed gift baskets and hampers shipped to {city}, Ontario by tracked courier from {fee}. Birthday, thank-you, sympathy, corporate and more."
+    "cityDescriptionShipping": "Hand-composed gift baskets and hampers shipped to {city}, Ontario by tracked courier from {fee}. Birthday, thank-you, sympathy, corporate and more.",
+    "customRequestTitle": "Custom gift basket request",
+    "customRequestDescription": "Tell us the products you'd like in a gift basket and Velvéa will send you a final price. Hand-packed in Mississauga, delivered across the GTA and Ontario."
   },
   "delivery": {
     "eyebrow": "Delivery areas",
@@ -572,5 +575,66 @@
     "faqA3Local": "Our own team, by hand. Baskets in our local zones never go through a courier, and you receive an email when the basket is delivered.",
     "faqA3Shipping": "A tracked courier. You receive the tracking number by email when it ships and a confirmation when it is delivered.",
     "otherCities": "Other delivery areas"
+  },
+  "customRequest": {
+    "eyebrow": "Custom basket",
+    "title": "Tell us what you'd like in your basket",
+    "lede": "Describe the basket you have in mind: any products, brands or treats. We'll work out a final price and send it to you.",
+    "howTitle": "How it works",
+    "s1": "Tell us what to include",
+    "s1Sub": "Products, brands, flavours or sizes. As much or as little detail as you have.",
+    "s2": "We send you a quote",
+    "s2Sub": "A final price for the basket you described, by email or phone.",
+    "s3": "You decide",
+    "s3Sub": "Nothing is charged until you approve the quote.",
+    "noPayment": "No payment is needed to send a request.",
+    "sectionBasket": "What should go in the basket?",
+    "productsLabel": "Products you'd like",
+    "productsHint": "List the items, brands or treats you want, and anything to avoid, such as allergies or dislikes.",
+    "productsPlaceholder": "e.g. Lindt dark chocolate, ground coffee, a ceramic mug and a scented candle. No nuts, please.",
+    "charCount": "{count} / {max}",
+    "sectionGift": "About the gift",
+    "optional": "optional",
+    "occasionLabel": "Occasion",
+    "occasionPlaceholder": "e.g. Birthday, thank you",
+    "budgetLabel": "Budget",
+    "budgetPlaceholder": "e.g. around $150",
+    "neededByLabel": "Needed by",
+    "neededByHint": "The date the basket should arrive.",
+    "deliveryAreaLabel": "Delivery area or postal code",
+    "deliveryAreaPlaceholder": "e.g. Mississauga or L5B 1M2",
+    "sectionContact": "How can we reach you?",
+    "contactHint": "Give us at least one: an email or a mobile number.",
+    "nameLabel": "Your name",
+    "emailLabel": "Email",
+    "phoneLabel": "Mobile number",
+    "phonePlaceholder": "e.g. 416 555 0199",
+    "required": "required",
+    "submit": "Send my request",
+    "sending": "Sending…",
+    "errorSummary": "Please check the highlighted fields.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorVerification": "We couldn't complete the security check. Please try again.",
+    "doneTitle": "Thank you, we've got your request",
+    "doneBodyEmail": "We'll review it and send your quote to {email}.",
+    "doneBodyPhone": "We'll review it and contact you at {phone} with your quote.",
+    "doneBodyBoth": "We'll review it and contact you at {email} or {phone} with your quote.",
+    "doneNote": "Nothing is charged until you approve the quote.",
+    "doneBrowse": "Browse our baskets",
+    "doneAnother": "Send another request",
+    "homeEyebrow": "Custom basket",
+    "homeTitle": "Have something specific in mind?",
+    "homeLede": "Tell us the products you'd like and we'll send you a price for a basket made just for them.",
+    "homeCta": "Request a custom basket",
+    "errors": {
+      "required": "This field is required.",
+      "tooLong": "This is too long.",
+      "invalidEmail": "Enter a valid email address.",
+      "invalidPhone": "Enter a phone number with 10 to 15 digits.",
+      "contactRequired": "Enter an email or a mobile number.",
+      "datePast": "Choose today or a later date.",
+      "dateTooFar": "Choose a date within the next year.",
+      "invalidDate": "Enter a valid date."
+    }
   }
 }

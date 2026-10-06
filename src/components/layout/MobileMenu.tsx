@@ -112,6 +112,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="px-5 py-3">
             {[
               ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
+              { href: "/custom-basket", label: t("nav.customRequest") },
               { href: "/corporate", label: t("nav.corporate") },
               ...(GIFT_CARDS_ENABLED ? [{ href: "/gift-cards", label: t("nav.giftCards") }] : []),
               { href: "/guides", label: t("nav.guides") },

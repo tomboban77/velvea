@@ -269,6 +269,18 @@ export async function updateInquiryStatus(input: z.input<typeof inquirySchema>) 
   revalidatePath("/admin/inquiries");
 }
 
+/** Custom basket requests share the inquiry pipeline and its permission. */
+export async function updateCustomRequestStatus(input: z.input<typeof inquirySchema>) {
+  await guard("inquiries:write");
+  const data = parse(inquirySchema, input);
+  await prisma.customBasketRequest.update({
+    where: { id: data.id },
+    data: { status: data.status },
+  });
+  revalidatePath("/admin/custom-requests");
+  revalidatePath("/admin");
+}
+
 // ---------------------------------------------------------------------------
 // Settings
 // ---------------------------------------------------------------------------

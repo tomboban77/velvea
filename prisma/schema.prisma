@@ -430,6 +430,28 @@ model CorporateInquiry {
   @@index([status])
 }
 
+/// A customer describes the basket they want in their own words and we reply
+/// with a price. Deliberately no product picker: the request is free text, and
+/// the quote is sent by hand from the email or phone given here.
+model CustomBasketRequest {
+  id           String        @id @default(cuid())
+  name         String
+  /// At least one of email / phone is present (enforced by the form and API).
+  email        String?
+  phone        String?
+  products     String
+  occasion     String?
+  budget       String?
+  /// Toronto calendar day, stored as local noon (see src/lib/dates.ts).
+  neededBy     DateTime?
+  deliveryArea String?
+  locale       String        @default("en")
+  status       InquiryStatus @default(NEW)
+  createdAt    DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
 // ============================================================
 // Content: gift guides / blog
 // ============================================================

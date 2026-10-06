@@ -45,7 +45,8 @@
     "byCategory": "Par catégorie",
     "shopAll": "Tous les paniers",
     "searchShort": "Rechercher",
-    "browseAll": "Tout parcourir"
+    "browseAll": "Tout parcourir",
+    "customRequest": "Panier sur mesure"
   },
   "common": {
     "shopGiftBaskets": "Voir les paniers",
@@ -263,7 +264,7 @@
       },
       {
         "q": "Puis-je composer mon propre panier ?",
-        "a": "Oui. Dites-nous ce que vous avez en tête et nous le composerons pour vous — écrivez-nous en précisant l’occasion, un budget et ce que la personne adore ou évite. Nous assemblerons le panier et vous le confirmerons avant tout paiement.",
+        "a": "Oui. Remplissez notre demande de panier sur mesure en indiquant les produits souhaités, ainsi que l’occasion, le budget et la date si vous les connaissez, et laissez un courriel ou un numéro de cellulaire. Nous vous répondrons avec un prix final, et rien n’est facturé avant que vous l’approuviez.",
         "aBuilder": "Oui. Choisissez un contenant et sélectionnez chaque article dans notre outil, ou contactez-nous pour une commande entièrement sur mesure."
       },
       {
@@ -522,7 +523,9 @@
     "cityTitle": "Paniers-cadeaux et coffrets livrés à {city}",
     "cityDescriptionSameDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario. Commandez avant {time} pour une livraison le jour même dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionNextDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario, par notre équipe dès le lendemain, à partir de {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
-    "cityDescriptionShipping": "Paniers-cadeaux composés à la main et expédiés à {city}, en Ontario, par transporteur avec suivi dès {fee}. Anniversaire, merci, sympathie, entreprise et plus."
+    "cityDescriptionShipping": "Paniers-cadeaux composés à la main et expédiés à {city}, en Ontario, par transporteur avec suivi dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
+    "customRequestTitle": "Demande de panier cadeau sur mesure",
+    "customRequestDescription": "Dites-nous quels produits vous souhaitez dans un panier cadeau et Velvéa vous enverra un prix final. Emballé à la main à Mississauga, livré dans la RGT et en Ontario."
   },
   "delivery": {
     "eyebrow": "Zones de livraison",
@@ -572,5 +575,66 @@
     "faqA3Local": "Notre propre équipe, en main propre. Dans nos zones locales, les paniers ne passent jamais par un transporteur, et vous recevez un courriel dès que le panier est livré.",
     "faqA3Shipping": "Un transporteur avec suivi. Vous recevez le numéro de suivi par courriel à l'expédition et une confirmation à la livraison.",
     "otherCities": "Autres zones de livraison"
+  },
+  "customRequest": {
+    "eyebrow": "Panier sur mesure",
+    "title": "Dites-nous ce que vous aimeriez dans votre panier",
+    "lede": "Décrivez le panier que vous imaginez : produits, marques ou gourmandises. Nous établirons un prix final et vous l’enverrons.",
+    "howTitle": "Comment ça fonctionne",
+    "s1": "Dites-nous quoi inclure",
+    "s1Sub": "Produits, marques, saveurs ou formats. Autant ou aussi peu de détails que vous le souhaitez.",
+    "s2": "Nous vous envoyons un devis",
+    "s2Sub": "Un prix final pour le panier décrit, par courriel ou par téléphone.",
+    "s3": "Vous décidez",
+    "s3Sub": "Rien n’est facturé avant que vous approuviez le devis.",
+    "noPayment": "Aucun paiement n’est requis pour envoyer une demande.",
+    "sectionBasket": "Que doit contenir le panier ?",
+    "productsLabel": "Produits souhaités",
+    "productsHint": "Indiquez les articles, marques ou gourmandises souhaités, et ce qu’il faut éviter, comme les allergies ou ce que la personne n’aime pas.",
+    "productsPlaceholder": "ex. chocolat noir Lindt, café moulu, une tasse en céramique et une bougie parfumée. Sans noix, s’il vous plaît.",
+    "charCount": "{count} / {max}",
+    "sectionGift": "À propos du cadeau",
+    "optional": "facultatif",
+    "occasionLabel": "Occasion",
+    "occasionPlaceholder": "ex. Anniversaire, remerciement",
+    "budgetLabel": "Budget",
+    "budgetPlaceholder": "ex. environ 150 $",
+    "neededByLabel": "Date souhaitée",
+    "neededByHint": "La date à laquelle le panier doit arriver.",
+    "deliveryAreaLabel": "Zone de livraison ou code postal",
+    "deliveryAreaPlaceholder": "ex. Mississauga ou L5B 1M2",
+    "sectionContact": "Comment pouvons-nous vous joindre ?",
+    "contactHint": "Indiquez-en au moins un : un courriel ou un numéro de cellulaire.",
+    "nameLabel": "Votre nom",
+    "emailLabel": "Courriel",
+    "phoneLabel": "Numéro de cellulaire",
+    "phonePlaceholder": "ex. 416 555 0199",
+    "required": "obligatoire",
+    "submit": "Envoyer ma demande",
+    "sending": "Envoi…",
+    "errorSummary": "Veuillez vérifier les champs en surbrillance.",
+    "errorGeneric": "Une erreur est survenue. Veuillez réessayer.",
+    "errorVerification": "La vérification de sécurité n’a pas pu être complétée. Veuillez réessayer.",
+    "doneTitle": "Merci, nous avons bien reçu votre demande",
+    "doneBodyEmail": "Nous allons l’étudier et vous envoyer votre devis à {email}.",
+    "doneBodyPhone": "Nous allons l’étudier et vous joindre au {phone} avec votre devis.",
+    "doneBodyBoth": "Nous allons l’étudier et vous joindre à {email} ou au {phone} avec votre devis.",
+    "doneNote": "Rien n’est facturé avant que vous approuviez le devis.",
+    "doneBrowse": "Voir nos paniers",
+    "doneAnother": "Envoyer une autre demande",
+    "homeEyebrow": "Panier sur mesure",
+    "homeTitle": "Vous avez une idée précise en tête ?",
+    "homeLede": "Dites-nous quels produits vous souhaitez et nous vous enverrons un prix pour un panier composé rien que pour la personne.",
+    "homeCta": "Demander un panier sur mesure",
+    "errors": {
+      "required": "Ce champ est obligatoire.",
+      "tooLong": "Ce texte est trop long.",
+      "invalidEmail": "Entrez une adresse courriel valide.",
+      "invalidPhone": "Entrez un numéro de téléphone de 10 à 15 chiffres.",
+      "contactRequired": "Entrez un courriel ou un numéro de cellulaire.",
+      "datePast": "Choisissez aujourd’hui ou une date ultérieure.",
+      "dateTooFar": "Choisissez une date dans la prochaine année.",
+      "invalidDate": "Entrez une date valide."
+    }
   }
 }

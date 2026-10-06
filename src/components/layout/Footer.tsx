@@ -82,6 +82,7 @@ export async function Footer() {
           <FooterLink href="/recipients">{t("nav.recipients")}</FooterLink>
           <FooterLink href="/category">{t("nav.category")}</FooterLink>
           {CUSTOM_BUILDER_ENABLED && <FooterLink href="/custom">{t("footer.custom")}</FooterLink>}
+          <FooterLink href="/custom-basket">{t("nav.customRequest")}</FooterLink>
           <FooterLink href="/corporate">{t("footer.corporate")}</FooterLink>
           {GIFT_CARDS_ENABLED && <FooterLink href="/gift-cards">{t("footer.giftCards")}</FooterLink>}
         </FooterCol>

@@ -529,6 +529,7 @@ export const STATIC_PATHS = [
   "/",
   "/baskets",
   ...(CUSTOM_BUILDER_ENABLED ? ["/custom"] : []),
+  "/custom-basket",
   "/corporate",
   "/corporate/quote",
   "/occasions",

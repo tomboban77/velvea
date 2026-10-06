@@ -60,7 +60,8 @@ proposing new work; update them when an item is done.
 src/app/[locale]/       storefront; EN at "/", FR at "/fr" (next-intl, localePrefix "as-needed")
 src/app/admin/          login/forgot/reset + (panel)/ route group: orders, products, discounts,
                         delivery-zones, settings, staff, reviews, inquiries, newsletter, articles…
-src/app/api/            stripe/webhook, newsletter(+confirm/unsubscribe), reviews, corporate, admin/upload
+src/app/api/            stripe/webhook, newsletter(+confirm/unsubscribe), reviews, corporate, custom-basket
+                        (free-text basket requests -> /admin/custom-requests; NOT the paused builder), admin/upload
 src/app/globals.css     design system; component classes in @layer components (.btn, .eyebrow…)
 src/components/         brand, layout, home, shop, cart, checkout, custom (basket builder),
                         corporate, account, admin, ui

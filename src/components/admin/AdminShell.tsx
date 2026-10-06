@@ -13,6 +13,7 @@ import {
   Ticket,
   Gift,
   Building2,
+  MessageSquareText,
   Newspaper,
   Settings,
   ShieldCheck,
@@ -54,6 +55,7 @@ const NAV: {
     ? [{ href: "/admin/gift-cards", label: "Gift Cards", icon: Gift }]
     : []),
   { href: "/admin/customers", label: "Customers", icon: Users, permission: "customers:read" },
+  { href: "/admin/custom-requests", label: "Custom requests", icon: MessageSquareText },
   { href: "/admin/inquiries", label: "Corporate", icon: Building2 },
   { href: "/admin/articles", label: "Gift Guides", icon: Newspaper },
   { href: "/admin/newsletter", label: "Newsletter", icon: Mail },

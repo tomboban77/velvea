@@ -96,6 +96,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
   const plain: { href: string; label: string }[] = [
     { href: "/baskets", label: t("nav.allBaskets") },
     ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
+    { href: "/custom-basket", label: t("nav.customRequest") },
     { href: "/corporate", label: t("nav.corporate") },
   ];
 

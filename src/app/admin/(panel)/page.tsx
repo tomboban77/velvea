@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, StatCard, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { formatMoney, formatDate } from "@/lib/utils";
-import { Package, ShoppingCart, Star, Building2, ArrowRight } from "lucide-react";
+import { Package, ShoppingCart, Star, Building2, MessageSquareText, ArrowRight } from "lucide-react";
 
 async function getDashboard() {
   try {
@@ -12,6 +12,7 @@ async function getDashboard() {
       orderCount,
       pendingReviews,
       newInquiries,
+      newCustomRequests,
       paidAgg,
       recentOrders,
     ] = await Promise.all([
@@ -20,6 +21,7 @@ async function getDashboard() {
       prisma.order.count(),
       prisma.review.count({ where: { status: "PENDING" } }),
       prisma.corporateInquiry.count({ where: { status: "NEW" } }),
+      prisma.customBasketRequest.count({ where: { status: "NEW" } }),
       prisma.order.aggregate({
         where: { status: { in: ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"] } },
         _sum: { totalCents: true },
@@ -44,6 +46,7 @@ async function getDashboard() {
       orderCount,
       pendingReviews,
       newInquiries,
+      newCustomRequests,
       revenue: paidAgg._sum.totalCents ?? 0,
       recentOrders,
     };
@@ -153,6 +156,11 @@ export default async function AdminDashboard() {
               href="/admin/reviews"
               icon={Star}
               label={`Moderate reviews${data.pendingReviews ? ` (${data.pendingReviews})` : ""}`}
+            />
+            <QuickLink
+              href="/admin/custom-requests"
+              icon={MessageSquareText}
+              label={`Custom basket requests${data.newCustomRequests ? ` (${data.newCustomRequests})` : ""}`}
             />
             <QuickLink
               href="/admin/inquiries"

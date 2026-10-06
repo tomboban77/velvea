@@ -40,6 +40,7 @@ export const RATE_LIMITS = {
   review: { limit: 5, windowSeconds: 60 * 60 },
   newsletter: { limit: 5, windowSeconds: 60 * 60 },
   corporate: { limit: 5, windowSeconds: 60 * 60 },
+  customBasket: { limit: 5, windowSeconds: 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitName = keyof typeof RATE_LIMITS;

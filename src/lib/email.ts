@@ -2,7 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import { formatMoney } from "./utils";
 import { escapeHtml, escapeHtmlMultiline } from "./html";
-import { formatStoreDate } from "./dates";
+import { formatStoreDate, parseStoreDate } from "./dates";
 import { siteUrl } from "./env";
 import { orderUrl, optOutUrl } from "./tokens";
 import { getSettings, type SiteSettings } from "./settings";
@@ -677,6 +677,74 @@ export async function sendCorporateInquiryAck(inq: {
     inq.email,
     L("We received your Velvea enquiry", "Nous avons reçu votre demande Velvea"),
     shell(L("Thank you", "Merci"), body, inq.locale)
+  );
+}
+
+export type CustomBasketEmailData = {
+  name: string;
+  email: string;
+  phone: string;
+  products: string;
+  occasion: string;
+  budget: string;
+  /** "YYYY-MM-DD" Toronto day, or "". */
+  neededBy: string;
+  deliveryArea: string;
+  locale: string;
+};
+
+/**
+ * New custom basket request, to the owner. Carries everything needed to price
+ * it and reply without opening admin, and states which contact the customer
+ * gave, since only one of email / phone is required.
+ */
+export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
+  const to = adminRecipient();
+  if (!to) return;
+  const line = (label: string, value: string) =>
+    value
+      ? `<p style="margin:2px 0;font-size:13px"><span style="color:#8a8072">${label}:</span> ${value}</p>`
+      : "";
+  const email = req.email
+    ? `<a href="mailto:${escapeHtml(req.email)}">${escapeHtml(req.email)}</a>`
+    : "";
+  const phone = req.phone
+    ? `<a href="tel:${escapeHtml(req.phone.replace(/[^\d+]/g, ""))}">${escapeHtml(req.phone)}</a>`
+    : "";
+  const body = `<p>New custom basket request from <strong>${escapeHtml(req.name)}</strong></p>
+    ${line("Email", email || "<em>not given</em>")}
+    ${line("Mobile", phone || "<em>not given</em>")}
+    ${line("Occasion", escapeHtml(req.occasion))}
+    ${line("Budget", escapeHtml(req.budget))}
+    ${line("Needed by", req.neededBy ? escapeHtml(formatStoreDate(parseStoreDate(req.neededBy) ?? req.neededBy)) : "")}
+    ${line("Delivery area", escapeHtml(req.deliveryArea))}
+    ${line("Language", req.locale === "fr" ? "French" : "English")}
+    <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">What they'd like in the basket:</p>
+    <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>
+    <p><a href="${SITE}/admin/custom-requests">Open in admin</a></p>`;
+  await send(to, `Custom basket request — ${req.name}`, shell("Custom basket request", body, "en"));
+}
+
+/**
+ * Receipt to the customer, when they gave an email. It repeats what they asked
+ * for so they have a record, and promises no turnaround time: the owner has not
+ * committed to one.
+ */
+export async function sendCustomBasketAck(req: CustomBasketEmailData) {
+  if (!req.email) return;
+  const L = (en: string, fr: string) => pick(req.locale, en, fr);
+  const body = `<p style="color:#514a40">${escapeHtml(
+    L(
+      `Thank you, ${req.name}. We've received your custom basket request. We'll review it and get back to you with a final price. Nothing is charged until you approve the quote.`,
+      `Merci, ${req.name}. Nous avons bien reçu votre demande de panier sur mesure. Nous allons l'étudier et vous revenir avec un prix final. Rien n'est facturé avant que vous approuviez le devis.`
+    )
+  )}</p>
+  <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">${escapeHtml(L("Your request:", "Votre demande :"))}</p>
+  <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>`;
+  await send(
+    req.email,
+    L("We received your custom basket request", "Nous avons reçu votre demande de panier sur mesure"),
+    shell(L("Thank you", "Merci"), body, req.locale)
   );
 }
 

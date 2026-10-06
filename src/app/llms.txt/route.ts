@@ -23,6 +23,7 @@ export async function GET() {
 ## Key pages
 
 - [All gift baskets](${url("/baskets")}): the full catalogue with prices in Canadian dollars
+- [Custom basket request](${url("/custom-basket")}): describe the products you want in a basket and receive a final price by email or phone; nothing is charged until the quote is approved
 - [Corporate gifting](${url("/corporate")}): volume pricing, branded cards, multi-address delivery; [request a quote](${url("/corporate/quote")})
 - [Delivery areas](${url("/delivery")}): which cities get same-day, next-day or courier delivery, with fees and cutoffs
 - [Delivery policy](${url("/shipping")}): costs, cutoffs, pickup and what cannot be shipped

@@ -2,12 +2,22 @@
 
 import { useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
-import { updateInquiryStatus } from "@/lib/actions/admin";
+import { updateInquiryStatus, updateCustomRequestStatus } from "@/lib/actions/admin";
 import type { InquiryStatus } from "@prisma/client";
 
 const STATUSES: InquiryStatus[] = ["NEW", "CONTACTED", "QUOTED", "WON", "LOST"];
 
-export function InquiryStatusControl({ id, current }: { id: string; current: InquiryStatus }) {
+export function InquiryStatusControl({
+  id,
+  current,
+  kind = "corporate",
+}: {
+  id: string;
+  current: InquiryStatus;
+  /** Which inbox the row belongs to. Both share the same status pipeline. */
+  kind?: "corporate" | "custom";
+}) {
+  const update = kind === "custom" ? updateCustomRequestStatus : updateInquiryStatus;
   const [status, setStatus] = useState(current);
   const [pending, start] = useTransition();
   return (
@@ -17,7 +27,7 @@ export function InquiryStatusControl({ id, current }: { id: string; current: Inq
         onChange={(e) => {
           const next = e.target.value as InquiryStatus;
           setStatus(next);
-          start(() => updateInquiryStatus({ id, status: next }));
+          start(() => update({ id, status: next }));
         }}
         className="field w-40"
         disabled={pending}
