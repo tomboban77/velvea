@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import { formatMoney } from "@/lib/utils";
 import { Honeypot } from "@/components/ui/Honeypot";
 import { Turnstile, TURNSTILE_ENABLED } from "@/components/ui/Turnstile";
 import { OCCASIONS, HOLIDAYS, labelFor } from "@/lib/nav";
@@ -42,9 +44,32 @@ const ORDER: CustomRequestField[] = [
   "phone",
 ];
 
-export function CustomBasketRequestForm() {
+/** The basket a request is about, when the customer came from its page. */
+export type RequestProduct = {
+  slug: string;
+  name: string;
+  priceCents: number;
+  image: { url: string; alt: string } | null;
+};
+
+export function CustomBasketRequestForm({ product = null }: { product?: RequestProduct | null }) {
   const t = useTranslations("customRequest");
   const locale = useLocale();
+  // About a specific basket, the free-text box holds changes or questions
+  // rather than a full wish list; same field, different words.
+  const copy = product
+    ? {
+        section: t("basket.section"),
+        label: t("basket.label"),
+        hint: t("basket.hint"),
+        placeholder: t("basket.placeholder"),
+      }
+    : {
+        section: t("sectionBasket"),
+        label: t("productsLabel"),
+        hint: t("productsHint"),
+        placeholder: t("productsPlaceholder"),
+      };
   const [f, setF] = useState<Fields>(EMPTY);
   const [website, setWebsite] = useState(""); // honeypot
   const [errors, setErrors] = useState<Errors>({});
@@ -102,7 +127,7 @@ export function CustomBasketRequestForm() {
       const r = await fetch("/api/custom-basket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, locale, website, turnstileToken }),
+        body: JSON.stringify({ ...f, locale, website, turnstileToken, product: product?.slug }),
       });
       if (r.ok) {
         setSent({ email: res.data.email, phone: res.data.phone });
@@ -196,17 +221,40 @@ export function CustomBasketRequestForm() {
     <form ref={formRef} onSubmit={submit} noValidate className="relative rounded-lg border border-line bg-white p-6 sm:p-8">
       <Honeypot name="website" value={website} onChange={setWebsite} />
 
+      {product && (
+        <div className="mb-7 rounded-lg border border-line bg-cream/60 p-4">
+          <p className="caps text-[0.7rem]">{t("basket.cardLabel")}</p>
+          <div className="mt-3 flex items-center gap-4">
+            {product.image && (
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-white">
+                <Image src={product.image.url} alt={product.image.alt} fill sizes="64px" className="object-cover" />
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-ink">{product.name}</p>
+              <p className="text-sm text-ink-soft">{formatMoney(product.priceCents, locale === "fr" ? "fr-CA" : "en-CA")}</p>
+            </div>
+            <Link href={`/products/${product.slug}`} className="link-draw shrink-0 text-sm">
+              {t("basket.viewBasket")}
+            </Link>
+          </div>
+          <Link href="/custom-basket" className="mt-3 inline-block text-sm text-muted underline-offset-2 hover:underline">
+            {t("basket.general")}
+          </Link>
+        </div>
+      )}
+
       {/* 1 · What goes in */}
       <fieldset>
-        <legend className="font-display text-xl text-ink">{t("sectionBasket")}</legend>
+        <legend className="font-display text-xl text-ink">{copy.section}</legend>
         <div className="mt-4">
           <label htmlFor="cr-products" className="label">
-            {t("productsLabel")}
+            {copy.label}
             {required}
             <span className="sr-only"> ({t("required")})</span>
           </label>
           <p id="cr-products-hint" className="-mt-1 mb-2 text-sm text-ink-soft">
-            {t("productsHint")}
+            {copy.hint}
           </p>
           <textarea
             {...a11y("products", "cr-products-hint")}
@@ -214,7 +262,7 @@ export function CustomBasketRequestForm() {
             rows={6}
             maxLength={CUSTOM_REQUEST_LIMITS.products}
             className="field resize-y"
-            placeholder={t("productsPlaceholder")}
+            placeholder={copy.placeholder}
             value={f.products}
             onChange={(e) => set("products", e.target.value)}
           />

@@ -3,6 +3,8 @@ import { CustomBasketRequestForm } from "@/components/custom-request/CustomBaske
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ShieldCheck } from "lucide-react";
 import { pageMetadata } from "@/lib/seo";
+import { getRequestableProduct } from "@/lib/queries";
+import { t as tc } from "@/lib/i18n-content";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -19,11 +21,35 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  * Custom basket request. Not the paused builder at /custom: there is no product
  * picker here on purpose. The customer describes the basket in their own words,
  * we price it by hand and reply by email or phone.
+ *
+ * `?product=<slug>` comes from a basket's page ("Message us about this
+ * basket"): the same form, framed as changes or questions about that basket.
+ * The canonical stays the clean /custom-basket URL (pageMetadata), so the
+ * per-basket variants are never indexed as separate pages.
  */
-export default async function CustomBasketPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function CustomBasketPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ product?: string | string[] }>;
+}) {
   const { locale } = await params;
+  const { product: slugParam } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
+  const found = await getRequestableProduct(typeof slugParam === "string" ? slugParam : null);
+  const product = found
+    ? {
+        slug: found.slug,
+        name: tc(found.name, locale),
+        priceCents: found.priceCents,
+        image: found.images[0] ? { url: found.images[0].url, alt: found.images[0].alt ?? "" } : null,
+      }
+    : null;
+  const head = product
+    ? { eyebrow: t("customRequest.basket.eyebrow"), title: t("customRequest.basket.title"), lede: t("customRequest.basket.lede") }
+    : { eyebrow: t("customRequest.eyebrow"), title: t("customRequest.title"), lede: t("customRequest.lede") };
   const steps = [
     { title: t("customRequest.s1"), sub: t("customRequest.s1Sub") },
     { title: t("customRequest.s2"), sub: t("customRequest.s2Sub") },
@@ -33,9 +59,9 @@ export default async function CustomBasketPage({ params }: { params: Promise<{ l
   return (
     <div>
       <PageHeader
-        eyebrow={t("customRequest.eyebrow")}
-        title={t("customRequest.title")}
-        lede={t("customRequest.lede")}
+        eyebrow={head.eyebrow}
+        title={head.title}
+        lede={head.lede}
         breadcrumb={[
           { label: t("pdp.home"), href: "/" },
           { label: t("nav.customRequest"), href: "/custom-basket" },
@@ -63,7 +89,8 @@ export default async function CustomBasketPage({ params }: { params: Promise<{ l
           </div>
         </aside>
         <div className="lg:col-span-8">
-          <CustomBasketRequestForm />
+          {/* Keyed so moving between baskets starts a fresh form. */}
+          <CustomBasketRequestForm key={product?.slug ?? "general"} product={product} />
         </div>
       </div>
     </div>

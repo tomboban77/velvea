@@ -443,7 +443,10 @@
     "selectSize": "Choisir une taille",
     "qtyLabel": "Quantité",
     "youSave": "Vous économisez {amount}",
-    "sku": "Article"
+    "sku": "Article",
+    "askTitle": "Envie de changer quelque chose ?",
+    "askBody": "Remplacez ou retirez un article, ou posez-nous une question sur ce panier. Nous vous répondrons avec le prix final avant toute facturation.",
+    "askCta": "Nous écrire au sujet de ce panier"
   },
   "listing": {
     "price": "Prix",
@@ -635,6 +638,18 @@
       "datePast": "Choisissez aujourd’hui ou une date ultérieure.",
       "dateTooFar": "Choisissez une date dans la prochaine année.",
       "invalidDate": "Entrez une date valide."
+    },
+    "basket": {
+      "eyebrow": "Question sur un panier",
+      "title": "Modifier ce panier ou poser une question",
+      "lede": "Dites-nous ce que vous aimeriez remplacer, retirer ou ajouter, ou posez-nous toute question à son sujet. Si un changement modifie le prix, nous vous enverrons le prix final avant toute facturation.",
+      "cardLabel": "Votre message concerne",
+      "section": "Votre message",
+      "label": "Que souhaitez-vous modifier ou demander ?",
+      "hint": "Par exemple : remplacer un article, en retirer un, ajouter un favori, ou poser une question sur les ingrédients ou la livraison.",
+      "placeholder": "ex. Pourriez-vous remplacer la bougie par plus de chocolat ? Et sans noix, s’il vous plaît.",
+      "general": "Pas ce panier ? Envoyez une demande générale",
+      "viewBasket": "Voir le panier"
     }
   }
 }

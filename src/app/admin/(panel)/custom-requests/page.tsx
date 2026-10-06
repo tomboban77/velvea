@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatMoney } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
-import { Mail, Phone, MessageSquareText } from "lucide-react";
+import { Mail, Phone, MessageSquareText, ShoppingBag } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,11 @@ const dialable = (phone: string) => phone.replace(/[^\d+]/g, "");
 export default async function CustomRequestsPage() {
   let requests;
   try {
-    requests = await prisma.customBasketRequest.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
+    requests = await prisma.customBasketRequest.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      include: { product: { select: { slug: true, priceCents: true } } },
+    });
   } catch {
     requests = null;
   }
@@ -41,6 +45,24 @@ export default async function CustomRequestsPage() {
                   <Badge tone={tone[r.status]}>{r.status}</Badge>
                   {r.locale === "fr" && <Badge tone="gray">FR</Badge>}
                 </div>
+                {r.productName && (
+                  <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-ink-soft">
+                    <ShoppingBag className="h-3.5 w-3.5 text-violet" />
+                    About basket:
+                    {r.product ? (
+                      <a href={`/products/${r.product.slug}`} target="_blank" rel="noreferrer" className="font-semibold text-ink hover:text-violet">
+                        {r.productName}
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-ink">{r.productName}</span>
+                    )}
+                    {r.productPriceCents !== null && <span>({formatMoney(r.productPriceCents)} when asked)</span>}
+                    {r.product && r.productPriceCents !== null && r.product.priceCents !== r.productPriceCents && (
+                      <span className="text-xs text-muted">· now {formatMoney(r.product.priceCents)}</span>
+                    )}
+                    {!r.product && <span className="text-xs text-muted">· no longer in the catalogue</span>}
+                  </p>
+                )}
                 <div className="mt-2 flex flex-wrap gap-4 text-xs text-muted">
                   {r.email && (
                     <a href={`mailto:${r.email}`} className="flex items-center gap-1 hover:text-violet">

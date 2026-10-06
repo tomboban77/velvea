@@ -111,6 +111,32 @@ export async function getProductBySlug(slug: string) {
   });
 }
 
+/**
+ * The basket a custom request is about ("change or ask about this basket").
+ * Only live baskets qualify: the page a customer came from must have been one
+ * they could buy. Unlike getProductBySlug this swallows errors on purpose, a
+ * lookup failure must never stop someone from sending us a message; the
+ * request simply arrives without the basket attached.
+ */
+export async function getRequestableProduct(slug: string | null | undefined) {
+  if (!slug || slug.length > 200 || HIDDEN_PRODUCT_SLUGS.includes(slug)) return null;
+  try {
+    return await prisma.product.findFirst({
+      where: { slug, status: "ACTIVE" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        priceCents: true,
+        images: { orderBy: { position: "asc" }, take: 1, select: { url: true, alt: true } },
+      },
+    });
+  } catch (err) {
+    console.error("[queries] getRequestableProduct failed:", err);
+    return null;
+  }
+}
+
 export async function getProductsByCollection(
   type: "OCCASION" | "RECIPIENT" | "CATEGORY" | "THEME",
   slug: string,

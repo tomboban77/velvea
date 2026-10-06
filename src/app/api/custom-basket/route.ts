@@ -6,6 +6,8 @@ import { rateLimitBoth, rateLimitMessage } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { parseStoreDate } from "@/lib/dates";
 import { validateCustomRequest } from "@/lib/custom-request";
+import { getRequestableProduct } from "@/lib/queries";
+import { t as tc } from "@/lib/i18n-content";
 
 /** Transport fields that are not part of the request itself. */
 const envelope = z.object({
@@ -13,6 +15,8 @@ const envelope = z.object({
   /** Honeypot — must stay empty. */
   website: z.string().max(200).optional().default(""),
   turnstileToken: z.string().max(2048).optional(),
+  /** Slug of the basket the customer was viewing, when sent from its page. */
+  product: z.string().max(200).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -25,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   const meta = envelope.safeParse(body);
   if (!meta.success) return NextResponse.json({ error: "invalid" }, { status: 400 });
-  const { locale, website, turnstileToken } = meta.data;
+  const { locale, website, turnstileToken, product: productSlug } = meta.data;
   const fr = locale === "fr";
 
   // A bot filled the hidden field: report success so it learns nothing.
@@ -52,6 +56,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "verification" }, { status: 400 });
   }
 
+  // An unknown or retired slug is dropped, not refused: the message itself is
+  // what matters, and it still reaches us as a general request.
+  const product = await getRequestableProduct(productSlug);
+  const productNameEn = product ? tc(product.name, "en") : null;
+
   try {
     await prisma.customBasketRequest.create({
       data: {
@@ -63,6 +72,9 @@ export async function POST(req: NextRequest) {
         budget: data.budget || null,
         neededBy: data.neededBy ? parseStoreDate(data.neededBy) : null,
         deliveryArea: data.deliveryArea || null,
+        productId: product?.id ?? null,
+        productName: productNameEn,
+        productPriceCents: product?.priceCents ?? null,
         locale,
       },
     });
@@ -74,7 +86,18 @@ export async function POST(req: NextRequest) {
   // The request is saved and visible in admin. Emails are best-effort on top:
   // send() logs and returns false rather than throwing, so a mail outage can
   // never turn a stored request into an error the customer retries.
-  const mail = { ...data, locale };
+  const mail = {
+    ...data,
+    locale,
+    product: product
+      ? {
+          slug: product.slug,
+          priceCents: product.priceCents,
+          nameEn: productNameEn ?? "",
+          nameLocal: tc(product.name, locale),
+        }
+      : null,
+  };
   await sendCustomBasketNotice(mail);
   await sendCustomBasketAck(mail);
 

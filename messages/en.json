@@ -443,7 +443,10 @@
     "selectSize": "Choose a size",
     "qtyLabel": "Quantity",
     "youSave": "You save {amount}",
-    "sku": "Item"
+    "sku": "Item",
+    "askTitle": "Want to change something?",
+    "askBody": "Swap or remove an item, or ask us a question about this basket. We'll reply with the final price before anything is charged.",
+    "askCta": "Message us about this basket"
   },
   "listing": {
     "price": "Price",
@@ -635,6 +638,18 @@
       "datePast": "Choose today or a later date.",
       "dateTooFar": "Choose a date within the next year.",
       "invalidDate": "Enter a valid date."
+    },
+    "basket": {
+      "eyebrow": "Ask about a basket",
+      "title": "Change or ask about this basket",
+      "lede": "Tell us what you'd like to swap, remove or add, or ask us anything about it. If a change affects the price, we'll send you the final price before anything is charged.",
+      "cardLabel": "Your message is about",
+      "section": "Your message",
+      "label": "What would you like to change or ask?",
+      "hint": "For example: swap an item, remove something, add a favourite, or ask about ingredients or delivery.",
+      "placeholder": "e.g. Could you replace the candle with extra chocolate? And no nuts, please.",
+      "general": "Not this basket? Send a general request",
+      "viewBasket": "View basket"
     }
   }
 }

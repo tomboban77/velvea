@@ -691,6 +691,8 @@ export type CustomBasketEmailData = {
   neededBy: string;
   deliveryArea: string;
   locale: string;
+  /** The basket the request is about, when sent from its page. */
+  product?: { slug: string; priceCents: number; nameEn: string; nameLocal: string } | null;
 };
 
 /**
@@ -711,7 +713,14 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
   const phone = req.phone
     ? `<a href="tel:${escapeHtml(req.phone.replace(/[^\d+]/g, ""))}">${escapeHtml(req.phone)}</a>`
     : "";
-  const body = `<p>New custom basket request from <strong>${escapeHtml(req.name)}</strong></p>
+  const basket = req.product
+    ? `<a href="${SITE}/products/${encodeURIComponent(req.product.slug)}">${escapeHtml(req.product.nameEn)}</a> (${escapeHtml(
+        formatMoney(req.product.priceCents)
+      )})`
+    : "";
+  const kind = req.product ? "Request about a basket" : "New custom basket request";
+  const body = `<p>${kind} from <strong>${escapeHtml(req.name)}</strong></p>
+    ${line("Basket", basket)}
     ${line("Email", email || "<em>not given</em>")}
     ${line("Mobile", phone || "<em>not given</em>")}
     ${line("Occasion", escapeHtml(req.occasion))}
@@ -719,10 +728,15 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
     ${line("Needed by", req.neededBy ? escapeHtml(formatStoreDate(parseStoreDate(req.neededBy) ?? req.neededBy)) : "")}
     ${line("Delivery area", escapeHtml(req.deliveryArea))}
     ${line("Language", req.locale === "fr" ? "French" : "English")}
-    <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">What they'd like in the basket:</p>
+    <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">${
+      req.product ? "Their changes or question:" : "What they'd like in the basket:"
+    }</p>
     <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>
     <p><a href="${SITE}/admin/custom-requests">Open in admin</a></p>`;
-  await send(to, `Custom basket request — ${req.name}`, shell("Custom basket request", body, "en"));
+  const subject = req.product
+    ? `Basket request — ${req.product.nameEn} — ${req.name}`
+    : `Custom basket request — ${req.name}`;
+  await send(to, subject, shell(kind, body, "en"));
 }
 
 /**
@@ -733,17 +747,24 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
 export async function sendCustomBasketAck(req: CustomBasketEmailData) {
   if (!req.email) return;
   const L = (en: string, fr: string) => pick(req.locale, en, fr);
-  const body = `<p style="color:#514a40">${escapeHtml(
-    L(
-      `Thank you, ${req.name}. We've received your custom basket request. We'll review it and get back to you with a final price. Nothing is charged until you approve the quote.`,
-      `Merci, ${req.name}. Nous avons bien reçu votre demande de panier sur mesure. Nous allons l'étudier et vous revenir avec un prix final. Rien n'est facturé avant que vous approuviez le devis.`
-    )
-  )}</p>
+  const p = req.product;
+  const intro = p
+    ? L(
+        `Thank you, ${req.name}. We've received your message about the ${p.nameLocal}. We'll review it and get back to you; if anything changes the price, we'll send you the final price first. Nothing is charged until you approve it.`,
+        `Merci, ${req.name}. Nous avons bien reçu votre message au sujet du panier « ${p.nameLocal} ». Nous allons l'étudier et vous revenir; si cela modifie le prix, nous vous enverrons d'abord le prix final. Rien n'est facturé avant que vous l'approuviez.`
+      )
+    : L(
+        `Thank you, ${req.name}. We've received your custom basket request. We'll review it and get back to you with a final price. Nothing is charged until you approve the quote.`,
+        `Merci, ${req.name}. Nous avons bien reçu votre demande de panier sur mesure. Nous allons l'étudier et vous revenir avec un prix final. Rien n'est facturé avant que vous approuviez le devis.`
+      );
+  const body = `<p style="color:#514a40">${escapeHtml(intro)}</p>
   <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">${escapeHtml(L("Your request:", "Votre demande :"))}</p>
   <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>`;
   await send(
     req.email,
-    L("We received your custom basket request", "Nous avons reçu votre demande de panier sur mesure"),
+    p
+      ? L("We received your message about a Velvea basket", "Nous avons reçu votre message au sujet d'un panier Velvea")
+      : L("We received your custom basket request", "Nous avons reçu votre demande de panier sur mesure"),
     shell(L("Thank you", "Merci"), body, req.locale)
   );
 }

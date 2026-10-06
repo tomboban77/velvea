@@ -5,10 +5,11 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   Star, Plus, Minus, Check, Truck, ChevronDown, PenLine, Package, ShieldCheck,
-  Expand, X, ChevronLeft, ChevronRight, Gift, BadgePercent,
+  Expand, X, ChevronLeft, ChevronRight, Gift, BadgePercent, MessageCircle,
 } from "lucide-react";
 import { useCart, giftLineId } from "@/components/cart/CartProvider";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
+import { Link } from "@/i18n/routing";
 import { formatMoney, cn, truncate } from "@/lib/utils";
 
 export type ProductDetailView = {
@@ -378,6 +379,22 @@ export function ProductDetail({
                 {t("viewBag")}
               </button>
             )}
+
+            {/* Changes are quoted by hand rather than sold at the listed price:
+                a swap can move the basket's cost well past its margin. */}
+            <div className="mt-6 flex items-start gap-3 rounded-lg border border-line p-4">
+              <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-violet-deep" strokeWidth={1.6} />
+              <div className="min-w-0">
+                <p className="font-semibold text-ink">{t("askTitle")}</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink-soft">{t("askBody")}</p>
+                <Link
+                  href={{ pathname: "/custom-basket", query: { product: product.slug } }}
+                  className="link-draw mt-2 inline-flex text-sm font-semibold"
+                >
+                  {t("askCta")}
+                </Link>
+              </div>
+            </div>
 
             {/* delivery */}
             <div className="mt-6 space-y-3 rounded-lg bg-cream p-5">

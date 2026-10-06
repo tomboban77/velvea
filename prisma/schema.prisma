@@ -91,8 +91,8 @@ enum ProductStatus {
 }
 
 model Product {
-  id             String              @id @default(cuid())
-  slug           String              @unique
+  id             String                @id @default(cuid())
+  slug           String                @unique
   name           Json // { en, fr }
   tagline        Json? // short one-liner { en, fr }
   description    Json? // long, rich { en, fr }
@@ -100,28 +100,29 @@ model Product {
   care           Json? // notes { en, fr }
   priceCents     Int
   compareAtCents Int?
-  currency       String              @default("CAD")
-  sku            String?             @unique
-  status         ProductStatus       @default(DRAFT)
-  featured       Boolean             @default(false)
-  bestseller     Boolean             @default(false)
-  badges         String[]            @default([]) // e.g. "new", "limited"
-  leadTimeDays   Int                 @default(1)
+  currency       String                @default("CAD")
+  sku            String?               @unique
+  status         ProductStatus         @default(DRAFT)
+  featured       Boolean               @default(false)
+  bestseller     Boolean               @default(false)
+  badges         String[]              @default([]) // e.g. "new", "limited"
+  leadTimeDays   Int                   @default(1)
   weightGrams    Int?
   /// False for anything that cannot survive a carrier: fresh, chilled or
   /// chocolate-heavy baskets are local-delivery and pickup only.
-  shippable      Boolean             @default(true)
+  shippable      Boolean               @default(true)
   inventory      Int? // null = unlimited
-  avgRating      Float               @default(0)
-  reviewCount    Int                 @default(0)
+  avgRating      Float                 @default(0)
+  reviewCount    Int                   @default(0)
   images         ProductImage[]
   variants       ProductVariant[]
   collections    ProductCollection[]
   reviews        Review[]
+  customRequests CustomBasketRequest[]
   seoTitle       Json?
   seoDescription Json?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 
   @@index([status, featured])
   @@index([status, bestseller])
@@ -434,20 +435,28 @@ model CorporateInquiry {
 /// with a price. Deliberately no product picker: the request is free text, and
 /// the quote is sent by hand from the email or phone given here.
 model CustomBasketRequest {
-  id           String        @id @default(cuid())
-  name         String
+  id                String        @id @default(cuid())
+  name              String
   /// At least one of email / phone is present (enforced by the form and API).
-  email        String?
-  phone        String?
-  products     String
-  occasion     String?
-  budget       String?
+  email             String?
+  phone             String?
+  products          String
+  occasion          String?
+  budget            String?
   /// Toronto calendar day, stored as local noon (see src/lib/dates.ts).
-  neededBy     DateTime?
-  deliveryArea String?
-  locale       String        @default("en")
-  status       InquiryStatus @default(NEW)
-  createdAt    DateTime      @default(now())
+  neededBy          DateTime?
+  deliveryArea      String?
+  /// Set when the request was sent from a basket's page ("change or ask about
+  /// this basket"). Name and price are copied at request time: the quote is
+  /// against what the customer saw, even if the basket is later renamed,
+  /// repriced or deleted (the link then goes null, the copy stays).
+  productId         String?
+  product           Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName       String?
+  productPriceCents Int?
+  locale            String        @default("en")
+  status            InquiryStatus @default(NEW)
+  createdAt         DateTime      @default(now())
 
   @@index([status, createdAt])
 }

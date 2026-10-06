@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   ack: vi.fn(),
   rateLimitBoth: vi.fn(),
   verifyTurnstile: vi.fn(),
+  getRequestableProduct: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({ prisma: { customBasketRequest: { create: mocks.create } } }));
@@ -17,6 +18,7 @@ vi.mock("@/lib/rate-limit", () => ({
   rateLimitMessage: () => "Too many requests.",
 }));
 vi.mock("@/lib/turnstile", () => ({ verifyTurnstile: mocks.verifyTurnstile }));
+vi.mock("@/lib/queries", () => ({ getRequestableProduct: mocks.getRequestableProduct }));
 
 import { POST } from "@/app/api/custom-basket/route";
 
@@ -102,6 +104,42 @@ describe("POST /api/custom-basket", () => {
     mocks.rateLimitBoth.mockResolvedValue({ ok: true });
     mocks.verifyTurnstile.mockResolvedValue(true);
     mocks.create.mockResolvedValue({ id: "r1" });
+    mocks.getRequestableProduct.mockResolvedValue(null);
+  });
+
+  it("attaches the basket it was sent from, with the name and price seen", async () => {
+    mocks.getRequestableProduct.mockResolvedValue({
+      id: "p1",
+      slug: "coffee-comfort-basket",
+      name: { en: "Coffee Comfort Basket", fr: "Panier Douceur café" },
+      priceCents: 13999,
+      images: [],
+    });
+    const res = await post({ ...base, product: "coffee-comfort-basket", locale: "fr" });
+    expect(res.status).toBe(200);
+    expect(mocks.getRequestableProduct).toHaveBeenCalledWith("coffee-comfort-basket");
+    expect(mocks.create.mock.calls[0][0].data).toMatchObject({
+      productId: "p1",
+      productName: "Coffee Comfort Basket",
+      productPriceCents: 13999,
+    });
+    expect(mocks.ack.mock.calls[0][0].product).toEqual({
+      slug: "coffee-comfort-basket",
+      priceCents: 13999,
+      nameEn: "Coffee Comfort Basket",
+      nameLocal: "Panier Douceur café",
+    });
+  });
+
+  it("still delivers the message when the basket is unknown or retired", async () => {
+    const res = await post({ ...base, product: "no-such-basket" });
+    expect(res.status).toBe(200);
+    expect(mocks.create.mock.calls[0][0].data).toMatchObject({
+      productId: null,
+      productName: null,
+      productPriceCents: null,
+    });
+    expect(mocks.notice.mock.calls[0][0].product).toBeNull();
   });
 
   it("stores the request, lowercases the email and sends both emails", async () => {
