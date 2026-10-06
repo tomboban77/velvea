@@ -12,7 +12,13 @@ import { t } from "@/lib/i18n-content";
 import { offlineOrdersAllowed, siteUrl } from "@/lib/env";
 import { rateLimitBoth, rateLimitByIp, rateLimitMessage } from "@/lib/rate-limit";
 import { HIDDEN_PRODUCT_SLUGS, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
-import { reserveDiscount, releaseDiscount, customerRedemptions } from "@/lib/discounts";
+import {
+  reserveDiscount,
+  releaseDiscount,
+  customerRedemptions,
+  FIRST_ORDER_CODES,
+  hasPriorOrder,
+} from "@/lib/discounts";
 import { signOrderToken } from "@/lib/tokens";
 import { parseStoreDate, storeYmd, storeMinutesOfDay, cutoffMinutes, addStoreDays } from "@/lib/dates";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
@@ -755,6 +761,23 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
           ],
         };
       }
+    }
+    if (FIRST_ORDER_CODES.has(code) && (await hasPriorOrder(input.email, session?.sub))) {
+      return {
+        ok: false,
+        error: say(
+          locale,
+          "This code is for first orders only.",
+          "Ce code est réservé à une première commande."
+        ),
+        changes: [
+          {
+            kind: "discount",
+            subject: code,
+            message: say(locale, "First orders only.", "Première commande seulement."),
+          },
+        ],
+      };
     }
     discountReserved = await reserveDiscount(code);
     if (!discountReserved) {

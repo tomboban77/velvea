@@ -43,6 +43,27 @@ export async function releaseDiscount(code: string): Promise<void> {
     .catch((err) => console.error("[discounts] release failed:", err));
 }
 
+/**
+ * Codes that only a customer's first order may use. A per-customer limit of 1
+ * is not the same thing: it still lets a returning customer, who simply never
+ * used the code before, claim a welcome discount on order number five.
+ */
+export const FIRST_ORDER_CODES: ReadonlySet<string> = new Set(["WELCOME10"]);
+
+/**
+ * Whether this email or account has ever completed an order. Refunded orders
+ * count: the customer still bought from us, so they are not new.
+ */
+export async function hasPriorOrder(email: string, userId?: string | null): Promise<boolean> {
+  const count = await prisma.order.count({
+    where: {
+      status: { in: ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED", "REFUNDED"] },
+      OR: [{ email: email.toLowerCase() }, ...(userId ? [{ userId }] : [])],
+    },
+  });
+  return count > 0;
+}
+
 /** How many paid orders this customer has already placed with the code. */
 export async function customerRedemptions(
   code: string,

@@ -13,7 +13,13 @@ const prisma = vi.hoisted(() => ({
 
 vi.mock("@/lib/prisma", () => ({ prisma }));
 
-import { customerRedemptions, releaseDiscount, reserveDiscount } from "@/lib/discounts";
+import {
+  customerRedemptions,
+  FIRST_ORDER_CODES,
+  hasPriorOrder,
+  releaseDiscount,
+  reserveDiscount,
+} from "@/lib/discounts";
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -130,6 +136,34 @@ describe("customerRedemptions", () => {
     await customerRedemptions("VIP", "anna@example.com", "user_1");
 
     const where = prisma.order.count.mock.calls[0]![0].where;
+    expect(where.OR).toEqual([{ email: "anna@example.com" }, { userId: "user_1" }]);
+  });
+});
+
+describe("hasPriorOrder", () => {
+  it("treats WELCOME10 as a first-order-only code", () => {
+    expect(FIRST_ORDER_CODES.has("WELCOME10")).toBe(true);
+  });
+
+  it("is false for a customer with no completed orders", async () => {
+    prisma.order.count.mockResolvedValue(0);
+
+    await expect(hasPriorOrder("New@Example.com")).resolves.toBe(false);
+
+    const where = prisma.order.count.mock.calls[0][0].where;
+    expect(where.OR).toEqual([{ email: "new@example.com" }]);
+  });
+
+  it("counts any completed order, with or without a code, refunds included", async () => {
+    prisma.order.count.mockResolvedValue(1);
+
+    await expect(hasPriorOrder("anna@example.com", "user_1")).resolves.toBe(true);
+
+    const where = prisma.order.count.mock.calls[0][0].where;
+    expect(where.discountCode).toBeUndefined();
+    expect(where.status.in).toContain("REFUNDED");
+    expect(where.status.in).not.toContain("PENDING");
+    expect(where.status.in).not.toContain("CANCELLED");
     expect(where.OR).toEqual([{ email: "anna@example.com" }, { userId: "user_1" }]);
   });
 });
