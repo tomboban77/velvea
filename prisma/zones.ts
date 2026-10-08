@@ -9,7 +9,8 @@ const L = (en: string, fr: string) => ({ en, fr });
  * Ontario and nothing else, so the letter-rule zones below reach every Ontario
  * address that exists — including the cities nobody thought to list — with no
  * maintenance. A destination outside those letters matches nothing and is
- * refused, which is the intent while we serve one province.
+ * refused, which is the intent while we serve one province. The national
+ * zones at the bottom are seeded inactive for the day that changes.
  *
  * The per-municipality FSA lists were checked against the published Canada
  * Post assignments rather than written from memory. Two corrections came out
@@ -174,10 +175,13 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // several hundred smaller places nobody would have remembered to list.
     fsaLetters: ["K", "L", "N"],
     provinces: ["ON"],
-    baseFeeCents: 1999,
-    extraItemCents: 1200, // a second basket is a second parcel
+    // From the ShipTime survey (npm run survey:shipping, Oct 2026): the
+    // dearest town, Kingston/Ottawa, is $25.80 tax-included by Canada Post
+    // Regular, plus ~$3 packing. The old $19.99 lost ~$9 on every parcel.
+    baseFeeCents: 2899,
+    extraItemCents: 1599, // a second basket is a second parcel
     minLeadDays: 2,
-    maxLeadDays: 3,
+    maxLeadDays: 4,
     position: 100,
     active: true,
   },
@@ -191,9 +195,13 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // volume justifies splitting it.
     fsaLetters: ["P"],
     provinces: ["ON"],
-    baseFeeCents: 2999,
-    extraItemCents: 1500,
-    minLeadDays: 3,
+    //
+    // Priced to Thunder Bay ($33.96 + packing), not Kenora ($40.56): pricing
+    // the whole zone to its far corner would overcharge Sudbury and North Bay
+    // ($28) by $13 to cover a handful of Kenora orders that lose ~$7 each.
+    baseFeeCents: 3699,
+    extraItemCents: 1699,
+    minLeadDays: 2,
     maxLeadDays: 5,
     position: 110,
     active: true,
@@ -228,5 +236,106 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     maxLeadDays: 14,
     position: 90, // ahead of on-north, though an exact match wins regardless
     active: true,
+  },
+
+  // --- Shipped: beyond Ontario ------------------------------------------------
+  //
+  // Seeded INACTIVE. Every page, email and checkout message still says
+  // "Ontario only", so switching these on is a launch, not a rate change: the
+  // copy goes first, then all of these activate together — the remote
+  // carve-out below included, or fly-in addresses would be sold a road rate.
+  //
+  // Fees come from the ShipTime survey (npm run survey:shipping, Oct 2026,
+  // 40x30x30 cm / 4 kg box): the dearest sampled town in each zone, tax
+  // included — we are not HST-registered, so label tax is a real cost — plus
+  // ~$3 packing, rounded up to .99. Lead days add one for packing/handover.
+  {
+    key: "ca-remote",
+    name: L("Remote communities", "Communautés éloignées"),
+    kind: "QUOTE",
+    // Fly-in and ferry-dependent FSAs inside the letter rules below, quoted
+    // by hand for the same reason as on-fly-in:
+    //   J0M — Nunavik (northern Quebec)
+    //   A0P — coastal Labrador
+    //   R0B — northern Manitoba (Churchill, most fly-in First Nations)
+    //   V0T — Haida Gwaii and the central BC coast
+    // Confirm against ShipTime's remote-area surcharge list as orders arrive.
+    fsaPrefixes: ["J0M", "A0P", "R0B", "V0T"],
+    baseFeeCents: 0,
+    minLeadDays: 5,
+    maxLeadDays: 14,
+    position: 95,
+    active: false,
+  },
+  {
+    key: "qc-ground",
+    name: L("Quebec", "Québec"),
+    kind: "SHIPPING",
+    // Montréal/Québec/Sherbrooke $25.46 by Canada Post Regular, 3-4 days.
+    fsaLetters: ["G", "H", "J"],
+    provinces: ["QC"],
+    baseFeeCents: 2899,
+    extraItemCents: 1499,
+    minLeadDays: 3,
+    maxLeadDays: 5,
+    position: 120,
+    active: false,
+  },
+  {
+    key: "atlantic",
+    name: L("Atlantic Canada", "Provinces de l'Atlantique"),
+    kind: "SHIPPING",
+    // St. John's sets it: $39.43 by GLS, 5 days. Halifax is $33.31.
+    fsaLetters: ["A", "B", "C", "E"],
+    provinces: ["NL", "NS", "PE", "NB"],
+    baseFeeCents: 4299,
+    extraItemCents: 2499,
+    minLeadDays: 3,
+    maxLeadDays: 6,
+    position: 130,
+    active: false,
+  },
+  {
+    key: "prairies",
+    name: L("Prairies", "Prairies"),
+    kind: "SHIPPING",
+    // Calgary/Edmonton $34.42 by Canpar, 3 days. Winnipeg is $31.54.
+    fsaLetters: ["R", "S", "T"],
+    provinces: ["MB", "SK", "AB"],
+    baseFeeCents: 3799,
+    extraItemCents: 2199,
+    minLeadDays: 3,
+    maxLeadDays: 5,
+    position: 140,
+    active: false,
+  },
+  {
+    key: "bc",
+    name: L("British Columbia", "Colombie-Britannique"),
+    kind: "SHIPPING",
+    // Prince George $38.70 by Canpar, 5 days. Vancouver is $35.14 in 4.
+    // Five days in a truck: only baskets marked shippable should reach here.
+    fsaLetters: ["V"],
+    provinces: ["BC"],
+    baseFeeCents: 4199,
+    extraItemCents: 2299,
+    minLeadDays: 4,
+    maxLeadDays: 6,
+    position: 150,
+    active: false,
+  },
+  {
+    key: "yukon",
+    name: L("Yukon", "Yukon"),
+    kind: "QUOTE",
+    // Only Canada Post Expedited reaches Whitehorse: $56.96 and 7 days, too
+    // slow for food to sell at a fixed rate. NT and NU (X) stay unserved.
+    fsaLetters: ["Y"],
+    provinces: ["YT"],
+    baseFeeCents: 0,
+    minLeadDays: 7,
+    maxLeadDays: 14,
+    position: 160,
+    active: false,
   },
 ];
