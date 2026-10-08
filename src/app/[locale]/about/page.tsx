@@ -78,6 +78,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                 {fr ? "Cadeaux d'entreprise" : "Corporate gifting"}
               </Link>
             </div>
+            <p className="mt-8 border-t border-line pt-6 text-[0.95rem] text-ink-soft">
+              {fr ? "Vous êtes un artisan ou une marque canadienne ? " : "Are you a Canadian maker or brand? "}
+              <Link href="/partners" className="font-semibold text-violet-deep underline-offset-4 hover:underline">
+                {fr ? "Nous aimerions avoir de vos nouvelles" : "We'd love to hear from you"} →
+              </Link>
+            </p>
           </div>
         </div>
       </section>

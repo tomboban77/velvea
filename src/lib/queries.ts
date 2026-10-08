@@ -82,13 +82,17 @@ export async function getBestsellers(limit = 8): Promise<ProductCard[]> {
       orderBy: { reviewCount: "desc" },
       take: limit,
     });
-    if (rows.length) return rows;
-    return await prisma.product.findMany({
-      where: { status: "ACTIVE", ...notHidden },
+    if (rows.length >= limit) return rows;
+    // Top up with the newest products. Returning only the flagged ones left the
+    // city pages and every product page's related rail with two cards (two
+    // bestsellers flagged, Oct 2026): thin pages and almost no product-to-product links.
+    const fill = await prisma.product.findMany({
+      where: { status: "ACTIVE", ...notHidden, id: { notIn: rows.map((r) => r.id) } },
       include: productInclude,
       orderBy: { createdAt: "desc" },
-      take: limit,
+      take: limit - rows.length,
     });
+    return [...rows, ...fill];
   } catch {
     return [];
   }

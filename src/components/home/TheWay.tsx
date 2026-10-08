@@ -1,4 +1,5 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { CITY_PAGES } from "@/lib/cities";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, MapPin, Truck, BadgePercent } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -6,6 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 /** How it works (three numbered steps) plus delivery facts, in one calm section. */
 export async function TheWay() {
   const t = await getTranslations("way");
+  const fr = (await getLocale()) === "fr";
   const steps = [
     { title: t("s1"), sub: t("s1Sub") },
     { title: t("s2"), sub: t("s2Sub") },
@@ -46,7 +48,26 @@ export async function TheWay() {
           ))}
         </div>
 
-        <p className="mt-6 text-sm text-muted">
+        {/* Crawlable links to every city page: without them the homepage, the
+            site's strongest page, passed nothing to the local landing pages. */}
+        <nav aria-label={fr ? "Livraison par ville" : "Delivery by city"} className="mt-6 text-sm text-ink-soft">
+          <span className="font-semibold text-ink">{fr ? "Nous livrons à " : "We deliver to "}</span>
+          {CITY_PAGES.map((c, i) => (
+            <span key={c.slug}>
+              <Link href={`/delivery/${c.slug}`} className="underline-offset-4 hover:text-violet-deep hover:underline">
+                {fr ? c.name.fr : c.name.en}
+              </Link>
+              {i < CITY_PAGES.length - 1 ? " · " : ""}
+            </span>
+          ))}
+          <span>{fr ? " et partout en Ontario." : " and across Ontario."}</span>
+        </nav>
+
+        <p className="mt-4 text-sm text-muted">
+          <Link href="/delivery" className="link-draw">
+            {fr ? "Toutes les zones de livraison" : "All delivery areas"} <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+          <span className="mx-3">·</span>
           <Link href="/shipping" className="link-draw">
             {t("link")} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
