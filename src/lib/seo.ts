@@ -532,6 +532,7 @@ export const STATIC_PATHS = [
   "/custom-basket",
   "/corporate",
   "/corporate/quote",
+  "/partners",
   "/occasions",
   "/recipients",
   "/category",

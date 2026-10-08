@@ -281,6 +281,17 @@ export async function updateCustomRequestStatus(input: z.input<typeof inquirySch
   revalidatePath("/admin");
 }
 
+/** Brand partner enquiries share the inquiry pipeline and its permission. */
+export async function updateBrandPartnerStatus(input: z.input<typeof inquirySchema>) {
+  await guard("inquiries:write");
+  const data = parse(inquirySchema, input);
+  await prisma.brandPartnerInquiry.update({
+    where: { id: data.id },
+    data: { status: data.status },
+  });
+  revalidatePath("/admin/partners");
+}
+
 // ---------------------------------------------------------------------------
 // Settings
 // ---------------------------------------------------------------------------

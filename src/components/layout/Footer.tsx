@@ -105,6 +105,7 @@ export async function Footer() {
           <FooterLink href="/delivery">{t("footer.deliveryAreas")}</FooterLink>
           <FooterLink href="/faq">{t("footer.faq")}</FooterLink>
           <FooterLink href="/corporate/quote">{t("nav.corporateQuote")}</FooterLink>
+          <FooterLink href="/partners">{t("footer.partners")}</FooterLink>
           <FooterLink href="/about">{t("footer.about")}</FooterLink>
           <FooterLink href="/guides">{t("footer.guidesLink")}</FooterLink>
           <FooterLink href="/reviews">{t("footer.reviews")}</FooterLink>

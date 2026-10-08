@@ -680,6 +680,78 @@ export async function sendCorporateInquiryAck(inq: {
   );
 }
 
+export type BrandPartnerEmailData = {
+  brand: string;
+  contactName: string;
+  email: string;
+  phone?: string | null;
+  website?: string | null;
+  category?: string | null;
+  location?: string | null;
+  pricing?: string | null;
+  message?: string | null;
+  locale?: string | null;
+};
+
+/** New brand / maker partnership enquiry, to the owner (also listed in /admin/partners). */
+export async function sendBrandPartnerNotice(inq: BrandPartnerEmailData): Promise<boolean> {
+  const to = adminRecipient();
+  if (!to) {
+    console.error(`[partner enquiry not sent - no ORDER_NOTIFY_EMAIL] ${inq.brand} <${inq.email}>`);
+    return false;
+  }
+  const line = (label: string, value?: string | null) =>
+    value
+      ? `<p style="margin:2px 0;font-size:13px"><span style="color:#8a8072">${label}:</span> ${escapeHtml(
+          value
+        )}</p>`
+      : "";
+  const message = inq.message
+    ? `<p style="color:#514a40;margin-top:10px">${escapeHtmlMultiline(inq.message)}</p>`
+    : "";
+  const body = `<p>New brand partnership enquiry from <strong>${escapeHtml(inq.brand)}</strong></p>
+    <p>${escapeHtml(inq.contactName)} · <a href="mailto:${escapeHtml(inq.email)}">${escapeHtml(
+      inq.email
+    )}</a></p>
+    ${line("Phone", inq.phone)}
+    ${line("Website / shop", inq.website)}
+    ${line("Products", inq.category)}
+    ${line("Based in", inq.location)}
+    ${line("Wholesale pricing", inq.pricing)}
+    ${line("Form language", isFr(inq.locale) ? "French" : "English")}
+    ${message}
+    <p><a href="${SITE}/admin/partners">Open in admin</a></p>
+    <p style="font-size:12px;color:#8a8072;margin-top:16px">Before listing: no alcohol (no AGCO licence), bilingual CFIA-compliant labels on food, allergens and shelf life checked.</p>`;
+  return send(to, `Brand partnership — ${inq.brand}`, shell("Brand partnership enquiry", body, "en"));
+}
+
+/** Acknowledgement to the brand that submitted the partnership form. */
+export async function sendBrandPartnerAck(inq: {
+  contactName: string;
+  email: string;
+  brand: string;
+  locale?: string | null;
+}) {
+  const L = (en: string, fr: string) => pick(inq.locale, en, fr);
+  const body = `<p style="color:#514a40">${escapeHtml(
+    L(
+      `Thank you, ${inq.contactName}. We've received your note about ${inq.brand}. We read every submission and will be in touch within a week if your products are a fit for our baskets.`,
+      `Merci, ${inq.contactName}. Nous avons bien reçu votre message au sujet de ${inq.brand}. Nous lisons chaque proposition et vous écrirons d'ici une semaine si vos produits conviennent à nos paniers.`
+    )
+  )}</p>
+  <p style="color:#514a40">${escapeHtml(
+    L(
+      "Samples, line sheets and photos are welcome as a reply to this email.",
+      "Vous pouvez répondre à ce courriel avec vos échantillons, fiches produits et photos."
+    )
+  )}</p>`;
+  await send(
+    inq.email,
+    L("We received your Velvea partnership note", "Nous avons reçu votre proposition Velvea"),
+    shell(L("Thank you", "Merci"), body, inq.locale)
+  );
+}
+
 export type CustomBasketEmailData = {
   name: string;
   email: string;

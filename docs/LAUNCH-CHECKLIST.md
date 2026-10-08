@@ -60,6 +60,18 @@ more now, not less.
       north GTA" in both locales; Burlington no longer appears in a zone it is not in.
       `scripts/sync-zone-names.ts` reports clean. Re-run it (report mode is free) after any admin
       zone edit — it is what caught this.
+- [x] **Courier rates repriced from real quotes** (ShipTime, Oct 2026 — `npm run survey:shipping`).
+      ON ground $19.99 → $28.99 (+$15.99/extra basket), Northern ON $29.99 → $36.99 (+$16.99): the
+      old fees lost ~$9 a parcel once label tax (not HST-registered) and packing were counted.
+      Applied to production 7 Oct with `npm run zones:shipping -- --apply`; seed matches.
+- [ ] **Canada-wide shipping** — Quebec $28.99, Atlantic $42.99, Prairies $37.99, BC $41.99, Yukon
+      and fly-in FSAs (J0M, A0P, R0B, V0T) by quote. Created INACTIVE in production 7 Oct.
+      Before `npm run zones:shipping -- --apply --activate`: (1) replace the "across Ontario / Ontario only" copy — page
+      titles and descriptions in `src/app/layout.tsx`, shipping page, FAQ, `messages/*.json`,
+      occasion/recipient/corporate/gift-card/about/reviews pages, the shipping email label in
+      `email.ts`, and the unserved messages in `actions/checkout.ts` + `actions/delivery.ts` (still
+      true for NT/NU); (2) untick `shippable` on anything that can't survive 4–6 days in transit
+      (chocolate in summer, fresh items, fragile glass).
 
 ## 3. Guides (content)
 
@@ -180,8 +192,15 @@ Consent Mode v2 and URL-param redaction.
       sitemap advertises 136 URLs, so Google is already crawling product pages. Renaming or deleting
       a product slug from now on produces a hard 404 on a URL search engines know about. The cost of
       waiting is no longer zero. Either build it, or treat product slugs as frozen.
+- [ ] **"Brands we carry" on `/partners` — owner content (added 7 Oct 2026).** The page (EN/FR,
+      footer "Sell with Velvéa") and its `/admin/partners` inbox are live; showing a few real
+      signed brands would make it far more persuasive to the next one. Build once brands exist.
 
 ## 8. Migrations — all applied
+
+`20261007000000_brand_partner_inquiry` (adds the `BrandPartnerInquiry` table, additive only) was
+applied to production on 7 Oct 2026 with `npx prisma migrate deploy`, after `migrate diff` against
+the live database showed that table as the only difference.
 
 `prisma/migrations/20260924000000_drop_order_billing` (drops the never-written `Order.billing`
 column) was applied to production on 24 Sept 2026. `npx prisma migrate status` reports
