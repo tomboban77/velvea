@@ -17,6 +17,7 @@
     "db:reset": "prisma migrate reset",
     "audit:alcohol": "tsx scripts/audit-alcohol.ts",
     "seed:guides": "tsx scripts/seed-guides.ts",
+    "diwali:collection": "tsx scripts/diwali-collection.ts",
     "check:stripe": "tsx --env-file=.env scripts/check-stripe.ts",
     "survey:shipping": "tsx --env-file=.env scripts/shipping-survey.ts",
     "zones:shipping": "tsx --env-file=.env scripts/apply-shipping-zones.ts"

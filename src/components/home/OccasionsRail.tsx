@@ -1,10 +1,10 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Cake, Heart, Feather, Flower2, Moon, Leaf, Sparkles, KeyRound, Gift } from "lucide-react";
+import { Cake, Heart, Feather, Flower2, Moon, Leaf, Sparkles, KeyRound, Gift, Flame } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCollections } from "@/lib/queries";
-import { OCCASIONS, labelFor } from "@/lib/nav";
+import { OCCASIONS, HOLIDAYS, SEASONAL, labelFor, type NavLink } from "@/lib/nav";
 import { t as tc } from "@/lib/i18n-content";
 
 /* Keyed by slug rather than by position, so reordering OCCASIONS cannot
@@ -19,6 +19,7 @@ const ICONS: Record<string, typeof Gift> = {
   "get-well": Leaf,
   congratulations: Sparkles,
   housewarming: KeyRound,
+  diwali: Flame, // the diya
 };
 
 /** The eight most-shopped occasions as round-icon tiles; scrolls on mobile, grid on desktop. */
@@ -27,7 +28,13 @@ export async function OccasionsRail() {
   const locale = await getLocale();
   const db = await getCollections("OCCASION");
   const bySlug = new Map(db.map((c) => [c.slug, c]));
-  const shown = OCCASIONS.slice(0, 8);
+  // A seasonal tile needs a collection with products behind it: until then it
+  // would link to an empty, noindexed page.
+  const now = Date.now();
+  const seasonal = SEASONAL.filter((s) => now < Date.parse(s.until) && (bySlug.get(s.slug)?._count.products ?? 0) > 0)
+    .map((s) => HOLIDAYS.find((h) => h.slug === s.slug))
+    .filter((h): h is NavLink => Boolean(h));
+  const shown = [...seasonal, ...OCCASIONS].slice(0, 8);
 
   return (
     <section className="section-sm">

@@ -44,13 +44,28 @@ export const CATEGORIES: NavLink[] = [
   { slug: "baby", en: "Baby", fr: "Bébé" },
 ];
 
+// Diwali is listed by its own name in French too: "fête des lumières" is used
+// for several festivals, and the search term people type is "Diwali".
+// Needs a matching OCCASION collection with products in /admin/collections,
+// or the menu links to an empty (noindex) page.
 export const HOLIDAYS: NavLink[] = [
+  { slug: "diwali", en: "Diwali", fr: "Diwali" },
   { slug: "christmas", en: "Christmas", fr: "Noël" },
   { slug: "holiday", en: "Holiday Season", fr: "Temps des fêtes" },
   { slug: "valentines", en: "Valentine's Day", fr: "Saint-Valentin" },
   { slug: "mothers-day", en: "Mother's Day", fr: "Fête des Mères" },
   { slug: "fathers-day", en: "Father's Day", fr: "Fête des Pères" },
   { slug: "thanksgiving", en: "Thanksgiving", fr: "Action de grâce" },
+];
+
+/**
+ * Holidays promoted to the front of the homepage occasions rail while they are
+ * close. `until` is the moment the tile disappears (Toronto midnight). The home
+ * page is statically rendered, so the cut-off is evaluated on the next deploy or
+ * admin save after that moment, not to the minute.
+ */
+export const SEASONAL: { slug: string; until: string }[] = [
+  { slug: "diwali", until: "2026-11-09T00:00:00-05:00" },
 ];
 
 export function labelFor(link: NavLink, locale: string): string {

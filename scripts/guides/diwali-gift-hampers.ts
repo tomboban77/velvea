@@ -11,6 +11,9 @@ import type { GuideSeed } from "./types";
  * hedged where practice varies (the exact date, Jain dietary rules), because a
  * gift shop lecturing people about their own festival reads badly.
  *
+ * The closing call-to-action points at /occasions/diwali, which only has
+ * products once that collection is filled in /admin/collections.
+ *
  * Diwali 2026 falls on Sunday 8 November (Lakshmi Puja). The date moves every
  * year with the lunar calendar: update the "this year" sentence each autumn,
  * in both locales.
@@ -118,7 +121,7 @@ export const diwaliGiftHampers: GuideSeed = {
 
 <h2>To sum up</h2>
 
-<p>Choose something shareable and shelf-stable, check it against the household's dietary rules, and have it arrive in the days before Diwali rather than on the night. Start with <a href="/recipients/family">baskets for the family</a> or browse <a href="/baskets">all gift baskets</a>.</p>`,
+<p>Choose something shareable and shelf-stable, check it against the household's dietary rules, and have it arrive in the days before Diwali rather than on the night. Start with our <a href="/occasions/diwali">Diwali gift baskets</a>, or browse <a href="/baskets">all gift baskets</a>.</p>`,
 
     fr: `<p>Les cadeaux de Diwali ont leur propre rythme. Les maisons se remplissent de visiteurs pendant des jours, les boîtes de sucreries passent de porte en porte, et les cadeaux les plus appréciés sont ceux qu'on peut ouvrir, partager et faire circuler dans un salon plein. Le panier qui convient à un anniversaire tranquille n'est pas toujours celui qui convient à Diwali.</p>
 
@@ -197,6 +200,6 @@ export const diwaliGiftHampers: GuideSeed = {
 
 <h2>En résumé</h2>
 
-<p>Choisissez quelque chose à partager et de longue conservation, vérifiez-le selon les règles alimentaires du foyer, et faites-le arriver dans les jours qui précèdent Diwali plutôt que le soir même. Commencez par les <a href="/fr/recipients/family">paniers pour la famille</a> ou parcourez <a href="/fr/baskets">tous les paniers-cadeaux</a>.</p>`,
+<p>Choisissez quelque chose à partager et de longue conservation, vérifiez-le selon les règles alimentaires du foyer, et faites-le arriver dans les jours qui précèdent Diwali plutôt que le soir même. Commencez par nos <a href="/fr/occasions/diwali">paniers-cadeaux de Diwali</a>, ou parcourez <a href="/fr/baskets">tous les paniers-cadeaux</a>.</p>`,
   },
 };
