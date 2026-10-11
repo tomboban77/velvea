@@ -283,9 +283,9 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
                 <p className="mega-heading">{t("nav.featuredNow")}</p>
                 {featured ? (
                   <Link href={`/products/${featured.slug}`} className="group block">
-                    <div className="relative aspect-square overflow-hidden rounded-lg bg-cream">
+                    <div className="relative aspect-square overflow-hidden rounded-lg bg-white">
                       {featured.image ? (
-                        <Image src={featured.image} alt={featured.name} fill sizes="280px" className="zoom-img object-cover" />
+                        <Image src={featured.image} alt={featured.name} fill sizes="280px" className="zoom-img object-contain" />
                       ) : (
                         <div className="flex h-full items-center justify-center">
                           <span className="font-display text-2xl text-line-strong">Velvéa</span>

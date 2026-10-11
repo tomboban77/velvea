@@ -154,7 +154,7 @@ export function ProductDetail({
         <div className="pdp-grid">
           {/* ---------- gallery ---------- */}
           <div className="lg:sticky lg:top-[72px] lg:self-start">
-            <figure className="relative aspect-square overflow-hidden rounded-lg bg-cream">
+            <figure className="relative aspect-square overflow-hidden rounded-lg bg-white">
               {product.images[activeImg] ? (
                 <button
                   type="button"
@@ -169,7 +169,7 @@ export function ProductDetail({
                     fill
                     priority
                     sizes="(max-width:1023px) 100vw, 55vw"
-                    className="anim-fade object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                    className="anim-fade object-contain transition-transform duration-700 group-hover:scale-[1.02]"
                   />
                   <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
                     <Expand className="h-4 w-4" strokeWidth={1.7} />

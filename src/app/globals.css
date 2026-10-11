@@ -776,10 +776,13 @@ select.field {
 .hero-tile figure {
   position: relative;
   aspect-ratio: 1 / 1;
-  background: var(--color-cream);
+  background: #fff;
   overflow: hidden;
 }
-.hero-tile figure img { object-fit: cover; }
+/* Product shots arrive in mixed shapes (landscape boxes, tall baskets) on white
+   grounds; cover cropped handles and box ends off, so they are shown whole on
+   a white tile instead. */
+.hero-tile figure img { object-fit: contain; }
 .hero-tile-name {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1014,7 +1017,7 @@ select.field {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--color-cream);
+  background: #fff; /* photos are shown whole (contain) on their white grounds */
 }
 .product-badge { position: absolute; left: 0.75rem; top: 0.75rem; z-index: 2; }
 .product-quick-add {

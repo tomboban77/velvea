@@ -89,7 +89,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
                       fill
                       priority={pos === "lead"}
                       sizes={pos === "lead" ? "(max-width:1023px) 72vw, 34vw" : pos === "edge" ? "(max-width:1023px) 72vw, 14vw" : "(max-width:1023px) 72vw, 24vw"}
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      className="object-contain transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                     {label && <span className={cn("badge absolute left-3 top-3", p!.badge === "bestseller" ? "badge-plum" : "badge-gold")}>{label}</span>}
                   </figure>

@@ -57,10 +57,10 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
                 fill
                 priority={priority}
                 sizes="(max-width:767px) 50vw, (max-width:1279px) 33vw, (max-width:1791px) 25vw, 20vw"
-                className={cn("zoom-img object-cover transition-opacity duration-700", product.secondImage && "group-hover:opacity-0")}
+                className={cn("zoom-img object-contain transition-opacity duration-700", product.secondImage && "group-hover:opacity-0")}
               />
               {product.secondImage && (
-                <Image src={product.secondImage} alt="" fill sizes="(max-width:767px) 50vw, 25vw" className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+                <Image src={product.secondImage} alt="" fill sizes="(max-width:767px) 50vw, 25vw" className="object-contain opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
               )}
             </>
           ) : (
