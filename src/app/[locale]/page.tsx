@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const ordered = [...picked, ...featured, ...all].filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
   const leadIdx = home.heroLeadId ? ordered.findIndex((p) => p.id === home.heroLeadId) : -1;
   if (leadIdx > 0) ordered.unshift(...ordered.splice(leadIdx, 1));
-  const heroRows = ordered.slice(0, 5);
+  const heroRows = ordered.slice(0, 7);
   const heroProducts: HeroProduct[] = heroRows.map((p) => ({
     slug: p.slug,
     name: tc(p.name, locale),

@@ -13,7 +13,7 @@ export type HeroProduct = { slug: string; name: string; image: string | null; pr
  * Product-led hero. The statement sits centred on a lilac band; beneath it the
  * baskets themselves are set out on a shelf — square photographs shown whole,
  * the featured basket largest in the middle. Three tiles on laptops, five on
- * wide screens, a swipeable row on phones.
+ * desktops, seven across the full width on wide screens, a swipeable row on phones.
  */
 export async function Hero({ products }: { products: HeroProduct[] }) {
   const t = await getTranslations("hero");
@@ -25,15 +25,17 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
 
   const withImage = products.filter((p) => p.image);
   const [lead, ...rest] = withImage;
-  // Shelf order: [4th, 2nd, lead, 3rd, 5th] so the lead is centred and the
-  // outer pair only appears on wide screens.
+  // Shelf order: [6th, 4th, 2nd, lead, 3rd, 5th, 7th] so the lead is centred;
+  // the outer pair appears on desktops and the edge pair only on wide screens.
   const shelf = lead
     ? [
+        { p: rest[4], pos: "edge" as const },
         { p: rest[2], pos: "outer" as const },
         { p: rest[0], pos: "inner" as const },
         { p: lead, pos: "lead" as const },
         { p: rest[1], pos: "inner" as const },
         { p: rest[3], pos: "outer" as const },
+        { p: rest[5], pos: "edge" as const },
       ].filter((s) => s.p)
     : [];
 
@@ -77,7 +79,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
                 <Link
                   key={p!.slug}
                   href={`/products/${p!.slug}`}
-                  className={cn("hero-tile group", pos === "lead" && "is-lead", pos === "outer" && "is-outer")}
+                  className={cn("hero-tile group", pos === "lead" && "is-lead", pos === "outer" && "is-outer", pos === "edge" && "is-edge")}
                   style={{ animationDelay: `${i * 70}ms` }}
                 >
                   <figure>
@@ -86,7 +88,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
                       alt={p!.name}
                       fill
                       priority={pos === "lead"}
-                      sizes={pos === "lead" ? "(max-width:1023px) 72vw, 34vw" : "(max-width:1023px) 72vw, 24vw"}
+                      sizes={pos === "lead" ? "(max-width:1023px) 72vw, 34vw" : pos === "edge" ? "(max-width:1023px) 72vw, 14vw" : "(max-width:1023px) 72vw, 24vw"}
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                     {label && <span className={cn("badge absolute left-3 top-3", p!.badge === "bestseller" ? "badge-plum" : "badge-gold")}>{label}</span>}

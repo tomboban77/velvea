@@ -822,7 +822,7 @@ select.field {
   .hero-tile { flex: none; max-width: none; width: auto; }
   .hero-tile figure { aspect-ratio: auto; width: var(--lead); height: var(--lead); }
   .hero-tile:not(.is-lead) figure { width: calc(var(--lead) * 0.82); height: calc(var(--lead) * 0.82); }
-  .hero-tile.is-outer { display: none; }
+  .hero-tile.is-outer, .hero-tile.is-edge { display: none; }
   .hero-shelf.is-short { --lead: min(calc(100cqh - var(--caption)), 30rem); }
   .hero-shelf[data-count="2"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - var(--gap)) / 1.82)); }
 }
@@ -835,6 +835,19 @@ select.field {
   .hero-tile.is-outer figure { width: calc(var(--lead) * 0.68); height: calc(var(--lead) * 0.68); }
   .hero-shelf[data-count="3"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 2 * var(--gap)) / 2.64)); }
   .hero-shelf[data-count="4"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 3 * var(--gap)) / 3.5)); }
+}
+/* Wide screens: the lead is capped by the height left under the copy, so five
+   tiles left wide margins either side. A smaller edge pair fills the row out to
+   the full width. */
+@media (min-width: 1536px) {
+  .hero-shelf {
+    /* seven tiles: 1 + 2×0.82 + 2×0.68 + 2×0.56 lead-widths plus six gaps */
+    --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 6 * var(--gap)) / 5.12));
+  }
+  .hero-tile.is-edge { display: block; }
+  .hero-tile.is-edge figure { width: calc(var(--lead) * 0.56); height: calc(var(--lead) * 0.56); }
+  .hero-shelf[data-count="5"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 4 * var(--gap)) / 4)); }
+  .hero-shelf[data-count="6"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 5 * var(--gap)) / 4.56)); }
 }
 /* shorter desktop viewports: tighten the copy so the shelf keeps its size */
 @media (min-width: 768px) and (max-height: 960px) {

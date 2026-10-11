@@ -19,16 +19,16 @@ export type PickableProduct = {
 
 type HomeSettings = SiteSettings["home"];
 
-const SLOTS = 5;
+const SLOTS = 7;
 const AUTO = "";
 
 /**
- * Admin -> Homepage. Five hero slots, each a product or "Automatic"; the lead
+ * Admin -> Homepage. Seven hero slots, each a product or "Automatic"; the lead
  * is chosen among the picked ones and sits in the centre, largest. Slots left
  * on Automatic are filled by the homepage from featured, then newest baskets.
  */
 export function HomepageForm({ initial, products }: { initial: HomeSettings; products: PickableProduct[] }) {
-  // Pad the stored ids out to five slots so every select has a value.
+  // Pad the stored ids out to seven slots so every select has a value.
   const [slots, setSlots] = useState<string[]>(
     Array.from({ length: SLOTS }, (_, i) => initial.heroProductIds[i] ?? AUTO)
   );
@@ -103,10 +103,11 @@ export function HomepageForm({ initial, products }: { initial: HomeSettings; pro
       <Card>
         <h2 className="font-display text-lg">Hero shelf</h2>
         <p className="mt-1 text-sm text-muted">
-          Five baskets sit on the shelf at the top of the homepage. The lead is shown largest in the
-          middle; the others fan out either side. Only baskets with a photo appear.
+          Seven baskets sit on the shelf at the top of the homepage. The lead is shown largest in the
+          middle; the others fan out either side in slot order (slots 6 and 7 sit at the far ends and
+          only show on wide screens; laptops show three, desktops five). Only baskets with a photo appear.
         </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-5 grid gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
           {slots.map((id, i) => {
             const p = id !== AUTO ? byId.get(id) : undefined;
             return (

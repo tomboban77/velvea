@@ -329,7 +329,7 @@ const settingsSchema = z.object({
     .optional(),
   home: z
     .object({
-      heroProductIds: z.array(z.string().min(1).max(64)).max(5),
+      heroProductIds: z.array(z.string().min(1).max(64)).max(7),
       heroLeadId: z.string().min(1).max(64).nullable(),
       collectionLimit: z.number().int().min(4).max(24),
     })

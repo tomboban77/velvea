@@ -40,7 +40,7 @@ export type SiteSettings = {
   };
   home: {
     /**
-     * Baskets on the homepage hero shelf, in slot order. Up to five. Empty
+     * Baskets on the homepage hero shelf, in slot order. Up to seven. Empty
      * slots are filled automatically (featured first, then newest).
      */
     heroProductIds: string[];

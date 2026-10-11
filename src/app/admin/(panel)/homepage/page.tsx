@@ -40,7 +40,7 @@ export default async function HomepageAdminPage() {
     <>
       <PageHeader
         title="Homepage"
-        subtitle="Choose the five baskets on the hero shelf, which one takes the centre, and how many baskets the collection section shows."
+        subtitle="Choose the seven baskets on the hero shelf, which one takes the centre, and how many baskets the collection section shows."
       />
       <HomepageForm initial={settings.home} products={products} />
     </>
