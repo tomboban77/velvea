@@ -13,7 +13,8 @@ export type HeroProduct = { slug: string; name: string; image: string | null; pr
  * Product-led hero. The statement sits centred on a lilac band; beneath it the
  * baskets themselves are set out on a shelf — square photographs shown whole,
  * the featured basket largest in the middle. Three tiles on laptops, five on
- * desktops, seven across the full width on wide screens, a swipeable row on phones.
+ * desktops, seven across the full screen width on wide screens, a swipeable
+ * row on phones.
  */
 export async function Hero({ products }: { products: HeroProduct[] }) {
   const t = await getTranslations("hero");

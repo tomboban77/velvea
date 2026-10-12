@@ -737,7 +737,7 @@ select.field {
 }
 .hero-title em { font-style: italic; font-weight: 400; color: var(--color-violet-deep); }
 .hero-lede {
-  margin: 1.1rem auto 0;
+  margin: 1rem auto 0;
   max-width: 38rem;
   font-size: clamp(1rem, 0.95rem + 0.15vw, 1.1rem);
   line-height: 1.65;
@@ -839,24 +839,37 @@ select.field {
   .hero-shelf[data-count="3"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 2 * var(--gap)) / 2.64)); }
   .hero-shelf[data-count="4"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 3 * var(--gap)) / 3.5)); }
 }
-/* Wide screens: the lead is capped by the height left under the copy, so five
-   tiles left wide margins either side. A smaller edge pair fills the row out to
-   the full width. */
+/* Wide screens: a smaller edge pair fills the row out to seven tiles. The row
+   is width-bound here (the container stops at 2200px while the copy above it
+   leaves height to spare), so the shelf breaks out of the container and runs
+   edge to edge, minus the page gutter, to give every photograph more room. The
+   gutter is well over a scrollbar's width, so 100vw cannot cause overflow. */
 @media (min-width: 1536px) {
   .hero-shelf {
-    /* seven tiles: 1 + 2×0.82 + 2×0.68 + 2×0.56 lead-widths plus six gaps */
-    --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 6 * var(--gap)) / 5.12));
+    width: calc(100vw - 2 * var(--gutter));
+    margin-inline: calc(50% - 50vw + var(--gutter));
+    /* Width-bound rows leave height to spare under the copy; centring the
+       tiles in that height splits the slack above and below instead of leaving
+       a void above them. This must be align-items, not align-self: the shelf is
+       a size container and its tile sizes come from its own height, so it has
+       to keep stretching to the full row. */
+    align-items: center;
+    /* seven tiles, stepping down more steeply than on desktops so the centre
+       baskets get the width: 1 + 2×0.78 + 2×0.6 + 2×0.46 lead-widths plus six gaps */
+    --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 6 * var(--gap)) / 4.68));
   }
+  .hero-tile:not(.is-lead) figure { width: calc(var(--lead) * 0.78); height: calc(var(--lead) * 0.78); }
+  .hero-tile.is-outer figure { width: calc(var(--lead) * 0.6); height: calc(var(--lead) * 0.6); }
   .hero-tile.is-edge { display: block; }
-  .hero-tile.is-edge figure { width: calc(var(--lead) * 0.56); height: calc(var(--lead) * 0.56); }
-  .hero-shelf[data-count="5"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 4 * var(--gap)) / 4)); }
-  .hero-shelf[data-count="6"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 5 * var(--gap)) / 4.56)); }
+  .hero-tile.is-edge figure { width: calc(var(--lead) * 0.46); height: calc(var(--lead) * 0.46); }
+  .hero-shelf[data-count="5"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 4 * var(--gap)) / 3.76)); }
+  .hero-shelf[data-count="6"] { --lead: min(calc(100cqh - var(--caption)), calc((100cqw - 5 * var(--gap)) / 4.22)); }
 }
 /* shorter desktop viewports: tighten the copy so the shelf keeps its size */
 @media (min-width: 768px) and (max-height: 960px) {
   .hero-stage { padding-block: 1.5rem 1.5rem; }
   .hero-title { margin-top: 1rem; font-size: clamp(2.2rem, 1.3rem + 1.8vw, 3.2rem); }
-  .hero-lede { margin-top: 0.8rem; font-size: 1rem; line-height: 1.55; }
+  .hero-lede { margin-top: 0.7rem; font-size: 1rem; line-height: 1.5; }
   .hero-actions { margin-top: 1.2rem; }
   .hero-actions .btn-lg { min-height: 50px; padding-block: 0.85rem; }
   .hero-note { margin-top: 0.9rem; }
