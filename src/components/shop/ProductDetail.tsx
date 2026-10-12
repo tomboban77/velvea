@@ -92,6 +92,7 @@ export function ProductDetail({
   const unavailable = soldOut || variantSoldOut;
 
   const price = activeVariant?.priceCents ?? product.priceCents;
+  const uniformVariantPrice = product.variants.every((v) => v.priceCents === product.variants[0].priceCents);
   const compareAt = activeVariant?.compareAtCents ?? product.compareAtCents;
   const onSale = !!compareAt && compareAt > price;
   const savingsCents = onSale ? compareAt! - price : 0;
@@ -250,6 +251,8 @@ export function ProductDetail({
             {/* variants */}
             {product.variants.length > 0 && (
               <div className="mt-6">
+                {/* Size-only variants (baby boxes) all cost the same; repeating the
+                    price on every chip reads as noise, so it only shows when it differs. */}
                 <p className="label">{t("selectSize")}</p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((v) => (
@@ -260,7 +263,8 @@ export function ProductDetail({
                       className={cn("chip !rounded-[4px]", variantId === v.id && "is-active", !v.inStock && "cursor-not-allowed opacity-40 line-through")}
                       aria-pressed={variantId === v.id}
                     >
-                      {v.label} · {money(v.priceCents)}
+                      {v.label}
+                      {uniformVariantPrice ? "" : ` · ${money(v.priceCents)}`}
                     </button>
                   ))}
                 </div>
