@@ -6,6 +6,10 @@ import { choosingABasket } from "./choosing-a-basket";
 import { diwaliGiftHampers } from "./diwali-gift-hampers";
 import { realtorClosingGifts } from "./realtor-closing-gifts";
 import { corporateGiftHampers } from "./corporate-gift-hampers";
+import { birthdayGiftBaskets } from "./birthday-gift-baskets";
+import { anniversaryGifts } from "./anniversary-gifts";
+import { christmasGiftBaskets } from "./christmas-gift-baskets";
+import { diwaliVisitEtiquette } from "./diwali-visit-etiquette";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -20,6 +24,10 @@ export const GUIDES: GuideSeed[] = [
   diwaliGiftHampers,
   realtorClosingGifts,
   corporateGiftHampers,
+  birthdayGiftBaskets,
+  anniversaryGifts,
+  christmasGiftBaskets,
+  diwaliVisitEtiquette,
 ];
 
 export type { GuideSeed };

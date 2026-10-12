@@ -6,7 +6,7 @@ import { Newsletter } from "./Newsletter";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { getSettings } from "@/lib/settings";
 import { OCCASIONS, RECIPIENTS, labelFor } from "@/lib/nav";
-import { InstagramIcon, FacebookIcon, PinterestIcon, TiktokIcon } from "@/components/brand/SocialIcons";
+import { InstagramIcon, FacebookIcon, PinterestIcon, TiktokIcon, YoutubeIcon } from "@/components/brand/SocialIcons";
 import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
 export async function Footer() {
@@ -24,6 +24,7 @@ export async function Footer() {
     { href: s.social.facebook, label: "Facebook", Icon: FacebookIcon },
     { href: s.social.pinterest, label: "Pinterest", Icon: PinterestIcon },
     { href: s.social.tiktok, label: "TikTok", Icon: TiktokIcon },
+    { href: s.social.youtube, label: "YouTube", Icon: YoutubeIcon },
   ].filter((x) => x.href);
 
   return (

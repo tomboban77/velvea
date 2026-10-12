@@ -22,8 +22,8 @@ export const giftMessage: GuideSeed = {
     fr: "Quoi écrire sur une carte-cadeau",
   },
   excerpt: {
-    en: "A gift card is three lines long and most people freeze at the first one. A simple structure that works for any occasion, the four mistakes worth avoiding, and worked examples for the moments people actually send gifts for.",
-    fr: "Une carte-cadeau fait trois lignes et la plupart des gens bloquent dès la première. Une structure simple qui fonctionne pour toute occasion, les quatre erreurs à éviter et des exemples concrets.",
+    en: "A gift card is three lines long and most people freeze at the first one. A simple structure that works for any occasion, the four mistakes worth avoiding, and examples for the moments people actually send gifts for.",
+    fr: "Une carte-cadeau fait trois lignes et la plupart des gens bloquent dès la première. Une structure simple qui convient à toute occasion, les quatre erreurs à éviter et des exemples concrets.",
   },
   seoTitle: {
     en: "What to Write in a Gift Message: Examples for Every Occasion",
@@ -36,7 +36,7 @@ export const giftMessage: GuideSeed = {
   body: {
     en: `<p>The gift is chosen, the address is entered, and then there is a small empty box asking what you would like the card to say. This is where most people stall, and then write something they are vaguely embarrassed by, because the pressure of the blank box makes everyone sound like a greeting card.</p>
 
-<p>It helps to know that the card is short by design. You are not writing a letter. Three lines, sometimes four, is the whole job.</p>
+<p>It helps to remember that the card is meant to be short. You are not writing a letter. Three lines, sometimes four, and you are done.</p>
 
 <h2>The structure that works for anything</h2>
 
@@ -44,11 +44,11 @@ export const giftMessage: GuideSeed = {
 
 <ol>
 <li><strong>Name the moment.</strong> One short line about why today is today.</li>
-<li><strong>Say something only you would say.</strong> One specific detail — a thing they did, a thing you noticed, a thing between you.</li>
+<li><strong>Say something only you would say.</strong> One specific detail: something they did, something you noticed, something between the two of you.</li>
 <li><strong>Sign off warmly.</strong> Short. Your name.</li>
 </ol>
 
-<p>The second line does the work. Lines one and three are scaffolding, and everybody writes them fine. What separates a card someone keeps from a card someone recycles is whether line two could have been written by anyone else about anyone else.</p>
+<p>The second line does the work. Lines one and three are scaffolding, and everybody manages those. Whether a card gets kept or recycled comes down to one question: could line two have been written by anyone else, about anyone else?</p>
 
 <p>Compare:</p>
 
@@ -70,7 +70,7 @@ export const giftMessage: GuideSeed = {
 
 <h3>Writing to the occasion instead of the person</h3>
 
-<p>Generic warmth reads as effort that stopped early. One specific detail beats three general sentiments every time.</p>
+<p>Generic warmth reads as effort that stopped early. One specific detail will beat three general sentiments.</p>
 
 <h3>Overreaching on tone</h3>
 
@@ -83,7 +83,7 @@ export const giftMessage: GuideSeed = {
 <ul>
 <li>"Happy birthday. You've had a year, and you handled it better than most people would have. Here's to a gentler one."</li>
 <li>"Another year of you being the person everyone calls first. Happy birthday."</li>
-<li>"Happy birthday — eat the whole box yourself, I won't tell anyone."</li>
+<li>"Happy birthday. Eat the whole box yourself, I won't tell anyone."</li>
 </ul>
 
 <p>See <a href="/occasions/birthday">birthday baskets</a>.</p>
@@ -112,9 +112,7 @@ export const giftMessage: GuideSeed = {
 
 <p>This is the card people most want to get right and most fear getting wrong. The rules are simpler than the fear suggests.</p>
 
-<p><strong>Do:</strong> use the person's name if you knew them. Acknowledge the loss plainly. Offer something specific if you mean it.</p>
-
-<p><strong>Do not:</strong> explain the loss, look for a silver lining, or say "let me know if you need anything", which puts the work of asking onto the person least able to do it.</p>
+<p>Use the person's name if you knew them. Acknowledge the loss plainly, and offer something specific if you mean it. What to leave out: any explanation of the loss, any silver lining, and "let me know if you need anything", which puts the work of asking onto the person least able to do it.</p>
 
 <ul>
 <li>"I'm so sorry about your mother. I keep thinking about how she used to greet everyone at the door. Thinking of you all week."</li>
@@ -165,14 +163,14 @@ export const giftMessage: GuideSeed = {
 
 <ul>
 <li>"Congratulations on the new place. May the boxes be unpacked by spring."</li>
-<li>"Happy housewarming — something for the first morning in the new kitchen."</li>
+<li>"Happy housewarming. Something for the first morning in the new kitchen."</li>
 </ul>
 
 <p>See <a href="/occasions/housewarming">housewarming baskets</a>.</p>
 
 <h3>Just because</h3>
 
-<p>The easiest card to write, because there is no occasion to perform.</p>
+<p>The easiest card of all, since there is no occasion to live up to.</p>
 
 <ul>
 <li>"No reason. I was thinking about you."</li>
@@ -185,30 +183,27 @@ export const giftMessage: GuideSeed = {
 
 <p>The failure mode for corporate cards is sounding like marketing. A gift that arrives with a sales message attached stops being a gift.</p>
 
-<p>Three rules. <strong>Sign with a person's name</strong>, not just the company. "From everyone at Northfield" is warmer than "Northfield Inc." <strong>Mention the year or the work</strong>, not the account. <strong>Never include a call to action.</strong> No links, no "looking forward to discussing Q1".</p>
+<p>Sign with a person's name, not just the company: "From everyone at Northfield" is warmer than "Northfield Inc." Mention the year or the work rather than the account. And never include a call to action. No links, no "looking forward to discussing Q1".</p>
 
 <ul>
-<li>"Thank you for a genuinely good year of working together. From everyone at Northfield."</li>
+<li>"Thank you for a really good year of working together. From everyone at Northfield."</li>
 <li>"We know this year asked a lot of your team. Thank you for including us in it."</li>
 <li>"Congratulations on the opening. Delighted to have had a small part in it."</li>
 </ul>
 
 <p>For volume orders we can print one message across a whole run or a different message for each recipient. See the <a href="/guides/corporate-gifting-ontario-cra-rules-budgets-timing">corporate gifting guide</a>.</p>
 
-<h2>Practical notes</h2>
+<h2>A few practical notes</h2>
 
-<ul>
-<li><strong>Every Velvéa gift includes a printed message card at no charge.</strong> Add your message on the product page or at checkout.</li>
-<li><strong>Prices are never included with a gift.</strong> The recipient sees the gift, not the invoice.</li>
-<li><strong>A full-size greeting card is available</strong> for a small flat fee, if the occasion calls for something more than a tucked-in card.</li>
-<li><strong>Write it in the language they speak.</strong> Obvious, and still the most common mistake on bilingual orders.</li>
-</ul>
+<p>Every Velvéa gift includes a printed message card at no charge, and you can add your message on the product page or at checkout. Prices are never included, so the recipient sees the gift, not the invoice. If the occasion calls for more than a tucked-in card, a full-size greeting card is available for a small flat fee.</p>
+
+<p>One last thing, obvious and still the most common mistake on bilingual orders: write the message in the language they speak.</p>
 
 <p>If you are still choosing the gift itself, start with <a href="/baskets">all gift baskets</a>.</p>`,
 
     fr: `<p>Le cadeau est choisi, l'adresse est saisie, puis apparaît une petite case vide qui demande ce que la carte devrait dire. C'est là que la plupart des gens se figent, avant d'écrire quelque chose qui les gêne un peu, parce que la pression de la case vide fait sonner tout le monde comme une carte de souhaits.</p>
 
-<p>Il est utile de savoir que la carte est courte par conception. Vous n'écrivez pas une lettre. Trois lignes, parfois quatre, et c'est tout.</p>
+<p>Rappelez-vous que la carte est faite pour être courte. Vous n'écrivez pas une lettre. Trois lignes, parfois quatre, et c'est terminé.</p>
 
 <h2>La structure qui fonctionne pour tout</h2>
 
@@ -216,11 +211,11 @@ export const giftMessage: GuideSeed = {
 
 <ol>
 <li><strong>Nommez le moment.</strong> Une courte ligne sur ce qui fait d'aujourd'hui aujourd'hui.</li>
-<li><strong>Dites quelque chose que vous seul diriez.</strong> Un détail précis — une chose qu'elle a faite, une chose que vous avez remarquée, une chose entre vous.</li>
+<li><strong>Dites quelque chose que vous seul diriez.</strong> Un détail précis : une chose qu'elle a faite, une chose que vous avez remarquée, une chose qui n'appartient qu'à vous deux.</li>
 <li><strong>Terminez chaleureusement.</strong> Court. Votre nom.</li>
 </ol>
 
-<p>La deuxième ligne <em>est</em> le message. Les lignes une et trois sont l'échafaudage, et tout le monde les réussit. Ce qui distingue une carte qu'on garde d'une carte qu'on recycle, c'est de savoir si la deuxième ligne aurait pu être écrite par n'importe qui à propos de n'importe qui.</p>
+<p>C'est la deuxième ligne qui fait le travail. Les lignes une et trois sont l'échafaudage, et tout le monde s'en tire bien. Qu'une carte soit gardée ou recyclée tient à une seule question : la deuxième ligne aurait-elle pu être écrite par n'importe qui, à propos de n'importe qui ?</p>
 
 <p>Comparez :</p>
 
@@ -242,7 +237,7 @@ export const giftMessage: GuideSeed = {
 
 <h3>Écrire à l'occasion plutôt qu'à la personne</h3>
 
-<p>La chaleur générique se lit comme un effort interrompu trop tôt. Un détail précis vaut mieux que trois formules générales, chaque fois.</p>
+<p>La chaleur générique se lit comme un effort interrompu trop tôt. Un détail précis l'emportera sur trois formules générales.</p>
 
 <h3>Forcer le ton</h3>
 
@@ -255,7 +250,7 @@ export const giftMessage: GuideSeed = {
 <ul>
 <li>« Bon anniversaire. Tu as eu toute une année, et tu l'as traversée mieux que la plupart des gens l'auraient fait. À une année plus douce. »</li>
 <li>« Une année de plus à être la personne que tout le monde appelle en premier. Bon anniversaire. »</li>
-<li>« Bon anniversaire — mange toute la boîte toute seule, je ne dirai rien. »</li>
+<li>« Bon anniversaire. Mange toute la boîte toute seule, je ne dirai rien. »</li>
 </ul>
 
 <p>Voir les <a href="/fr/occasions/birthday">paniers d'anniversaire</a>.</p>
@@ -284,9 +279,7 @@ export const giftMessage: GuideSeed = {
 
 <p>C'est la carte que l'on veut le plus réussir et que l'on craint le plus de rater. Les règles sont plus simples que la crainte ne le laisse croire.</p>
 
-<p><strong>À faire :</strong> nommez la personne si vous la connaissiez. Reconnaissez la perte simplement. Offrez quelque chose de précis si vous le pensez vraiment.</p>
-
-<p><strong>À éviter :</strong> expliquer la perte, chercher une consolation, ou dire « fais-moi signe si tu as besoin de quoi que ce soit », ce qui confie le travail de demander à la personne la moins en mesure de le faire.</p>
+<p>Nommez la personne si vous la connaissiez. Reconnaissez la perte simplement, et offrez quelque chose de précis si vous le pensez vraiment. Ce qu'il vaut mieux laisser de côté : toute explication de la perte, toute recherche de consolation, et le « fais-moi signe si tu as besoin de quoi que ce soit », qui confie le travail de demander à la personne la moins en mesure de le faire.</p>
 
 <ul>
 <li>« Je suis vraiment désolée pour ta mère. Je repense sans cesse à sa façon d'accueillir tout le monde à la porte. Je pense à vous toute la semaine. »</li>
@@ -337,14 +330,14 @@ export const giftMessage: GuideSeed = {
 
 <ul>
 <li>« Félicitations pour le nouveau chez-vous. Que les boîtes soient vidées d'ici le printemps. »</li>
-<li>« Bonne crémaillère — de quoi réussir le premier matin dans la nouvelle cuisine. »</li>
+<li>« Bonne crémaillère. De quoi réussir le premier matin dans la nouvelle cuisine. »</li>
 </ul>
 
 <p>Voir les <a href="/fr/occasions/housewarming">paniers de crémaillère</a>.</p>
 
 <h3>Juste comme ça</h3>
 
-<p>La carte la plus facile à écrire, parce qu'il n'y a aucune occasion à honorer.</p>
+<p>La carte la plus facile de toutes, puisqu'aucune occasion ne vous oblige à être à la hauteur.</p>
 
 <ul>
 <li>« Aucune raison. Je pensais à toi. »</li>
@@ -357,24 +350,21 @@ export const giftMessage: GuideSeed = {
 
 <p>Le piège des cartes d'entreprise est de sonner comme du marketing. Un cadeau accompagné d'un message de vente cesse d'être un cadeau.</p>
 
-<p>Trois règles. <strong>Signez d'un nom de personne</strong>, pas seulement de l'entreprise. « De toute l'équipe de Northfield » est plus chaleureux que « Northfield inc. ». <strong>Mentionnez l'année ou le travail</strong>, pas le compte. <strong>N'incluez jamais d'appel à l'action.</strong> Aucun lien, aucun « au plaisir d'en discuter au premier trimestre ».</p>
+<p>Signez d'un nom de personne, pas seulement de l'entreprise : « De toute l'équipe de Northfield » est plus chaleureux que « Northfield inc. ». Mentionnez l'année ou le travail plutôt que le compte. Et n'incluez jamais d'appel à l'action. Aucun lien, aucun « au plaisir d'en discuter au premier trimestre ».</p>
 
 <ul>
-<li>« Merci pour une année de collaboration véritablement agréable. De toute l'équipe de Northfield. »</li>
+<li>« Merci pour une année de collaboration vraiment agréable. De toute l'équipe de Northfield. »</li>
 <li>« Nous savons que cette année a beaucoup demandé à votre équipe. Merci de nous y avoir inclus. »</li>
 <li>« Félicitations pour l'ouverture. Ravis d'y avoir joué un petit rôle. »</li>
 </ul>
 
 <p>Pour les commandes en volume, nous pouvons imprimer un seul message sur toute une série ou un message différent pour chaque destinataire. Voir le <a href="/fr/guides/corporate-gifting-ontario-cra-rules-budgets-timing">guide des cadeaux d'affaires</a>.</p>
 
-<h2>Notes pratiques</h2>
+<h2>Quelques notes pratiques</h2>
 
-<ul>
-<li><strong>Chaque cadeau Velvéa comprend une carte-message imprimée sans frais.</strong> Ajoutez votre message sur la fiche produit ou à la caisse.</li>
-<li><strong>Les prix ne sont jamais joints au cadeau.</strong> Le destinataire voit le cadeau, pas la facture.</li>
-<li><strong>Une carte de souhaits pleine grandeur est offerte</strong> moyennant un petit montant fixe, si l'occasion appelle plus qu'une carte glissée à l'intérieur.</li>
-<li><strong>Écrivez dans la langue de la personne.</strong> Évident, et pourtant l'erreur la plus fréquente sur les commandes bilingues.</li>
-</ul>
+<p>Chaque cadeau Velvéa comprend une carte-message imprimée sans frais, et vous pouvez ajouter votre message sur la fiche produit ou à la caisse. Les prix ne sont jamais joints : le destinataire voit le cadeau, pas la facture. Si l'occasion appelle plus qu'une carte glissée à l'intérieur, une carte de souhaits pleine grandeur est offerte moyennant un petit montant fixe.</p>
+
+<p>Un dernier point, évident et pourtant l'erreur la plus fréquente sur les commandes bilingues : écrivez le message dans la langue de la personne.</p>
 
 <p>Si le cadeau lui-même reste à choisir, commencez par <a href="/fr/baskets">tous les paniers-cadeaux</a>.</p>`,
   },

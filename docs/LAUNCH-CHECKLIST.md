@@ -101,6 +101,19 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
 - [ ] The Diwali guide hard-codes the 2026 date (Sun 8 Nov), its delivery windows and the
       "order by mid-October" line: update them every autumn in both locales, then re-run with
       `--write --force`.
+- [x] **Four more guides published live 12 Oct 2026:** `birthday-gift-basket-ideas`,
+      `anniversary-gift-ideas-by-year`, `christmas-gift-baskets-gta` and
+      `what-to-bring-to-a-diwali-celebration` (a guest-etiquette angle, so it does not compete with
+      the Diwali hamper guide). Same editorial pass; links resolve, sanitiser changed nothing.
+      Verified 200 in EN and FR, no noindex.
+- [x] **Editorial pass on all 11 guides, 12 Oct 2026**, re-published with `--write --force` (no
+      admin edits existed to overwrite; every live body matched its source first). Removed the
+      "To sum up" / "En résumé" closings, the remaining body em dashes, stock words (truly,
+      thoughtful, indulge, meaningful…), and cut bold-lead bullet lists to one per guide, with the
+      rest turned into prose. Facts and links unchanged. For future guides, the same rules apply.
+- [ ] The Christmas guide hard-codes the 2026 calendar (Friday 25 Dec, the 14–18 Dec office week,
+      the "order by" table) and the Diwali etiquette guide the 8 Nov date: update every autumn in
+      both locales with the Diwali hamper guide, then re-run with `--write --force`.
 - [ ] Cover images: every guide has `coverImage` null. They render without one; add photography when
       there is some.
 

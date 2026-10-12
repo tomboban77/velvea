@@ -317,6 +317,7 @@ const settingsSchema = z.object({
       facebook: z.string().max(300),
       pinterest: z.string().max(300),
       tiktok: z.string().max(300),
+      youtube: z.string().max(300),
       googleBusiness: z.string().max(300),
     })
     .partial()

@@ -22,8 +22,8 @@ export const corporateGifting: GuideSeed = {
     fr: "Cadeaux d'affaires en Ontario : les règles de l'ARC, les budgets réels et quand commander",
   },
   excerpt: {
-    en: "Client gifts and employee gifts are taxed under two completely different rules, and a gift basket containing food is not treated the way most people assume. Here is what actually applies in Canada, what to budget, and how late you can leave it.",
-    fr: "Les cadeaux aux clients et ceux aux employés relèvent de deux règles fiscales entièrement différentes, et un panier contenant des aliments n'est pas traité comme on le croit. Voici ce qui s'applique réellement au Canada, quoi budgéter et jusqu'à quand attendre.",
+    en: "Client gifts and employee gifts are taxed under two completely different rules, and a gift basket containing food is not treated the way most people assume. What applies in Canada, what to budget, and how late you can leave it.",
+    fr: "Les cadeaux aux clients et ceux aux employés relèvent de deux règles fiscales entièrement différentes, et un panier contenant des aliments n'est pas traité comme on le croit. Ce qui s'applique au Canada, quoi budgéter et jusqu'à quand attendre.",
   },
   seoTitle: {
     en: "Corporate Gifting in Ontario: CRA Rules, Budgets and Timing",
@@ -34,11 +34,11 @@ export const corporateGifting: GuideSeed = {
     fr: "Comment les entreprises canadiennes doivent gérer les cadeaux aux clients et aux employés : la règle de 500 $, pourquoi les paniers alimentaires ne sont déductibles qu'à 50 %, les budgets et les délais.",
   },
   body: {
-    en: `<p>Most guides to corporate gifting are written by people who have never had to answer the question a finance department actually asks: <em>what does this do to our books?</em> It is a fair question, and the answer is genuinely counterintuitive. A gift basket full of food is not deductible the way a branded jacket is, and a gift card is not the safe, flexible choice it appears to be.</p>
+    en: `<p>Most guides to corporate gifting are written by people who have never had to answer the question a finance department actually asks: <em>what does this do to our books?</em> It is a fair question, and the answer runs against intuition. A gift basket full of food is not deductible the way a branded jacket is, and a gift card is not the safe, flexible choice it appears to be.</p>
 
 <p>This guide covers the tax treatment, what to spend, and how late you can leave an order. We are a gift company, not an accounting firm, so treat the tax section as a map of the territory rather than advice for your specific situation.</p>
 
-<h2>Start here: you are asking two different questions</h2>
+<h2>Client gifts and employee gifts are two separate questions</h2>
 
 <p>Almost every mistake in corporate gifting comes from treating client gifts and employee gifts as one topic. In Canada they sit under separate rules that have nothing to do with each other.</p>
 
@@ -47,37 +47,37 @@ export const corporateGifting: GuideSeed = {
 <li><strong>Client gifts</strong> raise the question <em>how much of this can the business deduct?</em></li>
 </ul>
 
-<p>These have different thresholds, different traps, and different answers. Work out which one you are asking before anything else.</p>
+<p>The thresholds differ, and so do the traps. Work out which question you are asking before anything else.</p>
 
 <h2>Gifts to employees: the $500 rule, and the trap inside it</h2>
 
 <p>Under the Canada Revenue Agency's administrative policy, an arm's-length employee can receive an unlimited number of <strong>non-cash</strong> gifts and awards in a year with a combined fair market value of <strong>$500 or less, including taxes</strong>, without any of it becoming a taxable benefit. Go over $500 and the excess, not the whole amount, becomes taxable.</p>
 
-<p>Three details that matter more than the headline number:</p>
+<p>Three details matter more than the headline number.</p>
 
-<h3>1. Small items do not count against the limit</h3>
+<h3>Small items do not count against the limit</h3>
 
-<p>The CRA excludes items of trivial value — coffee and tea, T-shirts, mugs, plaques, trophies — from the $500 calculation. Your branded water bottles in March do not eat into December's budget.</p>
+<p>The CRA excludes items of trivial value (coffee and tea, T-shirts, mugs, plaques, trophies) from the $500 calculation. Your branded water bottles in March do not eat into December's budget.</p>
 
-<h3>2. Long-service awards get their own $500</h3>
+<h3>Long-service awards get their own $500</h3>
 
 <p>A non-cash long-service or anniversary award is tracked separately from the general limit, with its own threshold and its own conditions around minimum years of service and how often it can be given.</p>
 
-<h3>3. Cash and "near-cash" are always taxable, and this is where gift cards go wrong</h3>
+<h3>Cash and "near-cash" are always taxable, which is where gift cards go wrong</h3>
 
-<p>This is the trap. Cash and near-cash gifts are taxable in full, regardless of amount. Near-cash includes securities, precious metals and, critically, most gift cards.</p>
+<p>This is the trap. Cash and near-cash gifts are taxable in full, whatever the amount. Near-cash includes securities, precious metals and, the one that catches people out, most gift cards.</p>
 
 <p>A gift card counts as non-cash only if <strong>all</strong> of these hold: it is usable only at a single retailer or an identified group of retailers named on the card; its terms state the balance cannot be converted to cash; and the employer keeps a log recording the recipient, the date, the reason, the card type, the amount and the retailer.</p>
 
-<p>A prepaid Visa or Mastercard fails this immediately. So the "easy, flexible" option a lot of companies reach for is the one that quietly creates a taxable benefit and a payroll entry for every recipient, while a physical gift of the same value does not.</p>
+<p>A prepaid Visa or Mastercard fails this immediately. The "easy, flexible" option a lot of companies reach for is therefore the one that quietly creates a taxable benefit and a payroll entry for every recipient, while a physical gift of the same value does not.</p>
 
-<p>This is the practical case for giving something real. A $150 basket delivered to an employee's home is straightforwardly non-cash, sits inside the $500 room, and creates no payroll work.</p>
+<p>Which is the practical case for giving something real. A $150 basket delivered to an employee's home is straightforwardly non-cash, sits inside the $500 room, and creates no payroll work.</p>
 
 <h2>Gifts to clients: why a food basket is 50% deductible</h2>
 
 <p>The client side is where the surprise lives. Under section 67.1 of the Income Tax Act, expenses for food, beverages and entertainment are deductible at <strong>50%</strong>. That rule is usually discussed in the context of restaurant bills, but it follows the food wherever it goes.</p>
 
-<p>So the general treatment breaks down roughly like this:</p>
+<p>In general, the treatment breaks down roughly like this:</p>
 
 <table>
 <thead>
@@ -90,9 +90,9 @@ export const corporateGifting: GuideSeed = {
 </tbody>
 </table>
 
-<p>Nobody is doing anything wrong by sending food. It is useful to know before the invoice reaches your accountant, because a $200 gourmet basket and a $200 branded jacket land differently on the return even though they cost the same.</p>
+<p>Nobody is doing anything wrong by sending food. It is just worth knowing before the invoice reaches your accountant, because a $200 gourmet basket and a $200 branded jacket land differently on the return even though they cost the same.</p>
 
-<p>One more thing the CRA cares about: <strong>keep a recipient log</strong>. Date, recipient, amount, business purpose. Without it, a reviewer can disallow the deduction entirely: not reduce it, disallow it. A single spreadsheet maintained through the year is enough, and it is far easier than reconstructing December from memory in April.</p>
+<p>The CRA also cares about records, so <strong>keep a recipient log</strong>: date, recipient, amount, business purpose. Without one, a reviewer can disallow the deduction entirely. Not reduce it. Disallow it. A single spreadsheet kept up through the year is enough, and far easier than reconstructing December from memory in April.</p>
 
 <h3>The mixed-basket question</h3>
 
@@ -100,7 +100,7 @@ export const corporateGifting: GuideSeed = {
 
 <h2>How much to spend</h2>
 
-<p>Budget questions get answered badly because people look for a single number. The useful frame is the relationship, not the recipient's title.</p>
+<p>Budget questions get answered badly because people look for a single number. Think about the relationship, not the recipient's title.</p>
 
 <table>
 <thead>
@@ -113,25 +113,21 @@ export const corporateGifting: GuideSeed = {
 </tbody>
 </table>
 
-<p>Two pieces of advice that will save you more than the numbers will. First, <strong>one good gift beats three forgettable ones</strong>. Splitting a budget across more recipients almost always produces something nobody remembers. Second, <strong>keep the tier consistent within a group</strong>. People compare. A team where three people received something noticeably better is worse than a team where everyone received the same modest thing.</p>
+<p>Two pieces of advice will save you more than the numbers. One good gift beats three forgettable ones; spreading a budget across more recipients almost always produces something nobody remembers. And keep the tier consistent within a group, because people compare. A team where three people received something noticeably better is worse off than a team where everyone received the same modest thing.</p>
 
 <h2>Why we do not send alcohol, and why that helps you</h2>
 
-<p>Velvéa holds no AGCO licence, so we sell no alcohol at all. For corporate buyers this turns out to be a feature rather than a limitation.</p>
+<p>Velvéa holds no AGCO licence, so we sell no alcohol at all. For corporate buyers this turns out to be an advantage rather than a limitation.</p>
 
-<ul>
-<li><strong>Nothing needs to be signed for by an adult</strong>, so a gift can be left at a reception desk or a door without a failed delivery.</li>
-<li><strong>No recipient is put in an awkward position.</strong> For reasons of religion, health, recovery or simple preference, a bottle of wine is the one common corporate gift with a real chance of landing badly.</li>
-<li><strong>No workplace policy conflict.</strong> A growing number of organisations will not accept alcohol as a gift at all, and you rarely find out which ones until after you have sent it.</li>
-</ul>
+<p>Nothing needs to be signed for by an adult, so a gift can be left at a reception desk or a door without a failed delivery. Nobody is put in an awkward position either. For reasons of religion, health, recovery or simple preference, a bottle of wine is the one common corporate gift with a real chance of landing badly. And a growing number of organisations will not accept alcohol as a gift at all, which you rarely find out until after you have sent it.</p>
 
-<p>If you have sent wine to a client list before, you have almost certainly had at least one basket go to waste.</p>
+<p>If you have sent wine to a client list before, at least one of those baskets almost certainly went to waste.</p>
 
 <h2>When to order</h2>
 
 <p>The promotional-products industry tells you to start in July. That advice exists because branded merchandise needs artwork approval, sampling and a production run. Hand-packed baskets do not work that way, and you should not plan as if they do.</p>
 
-<p>Our real constraint is not production time, it is capacity in December. Every basket is assembled by hand after the order is placed, which means quality holds up beautifully at normal volumes and the calendar gets tight in the last three weeks of the year.</p>
+<p>What limits us is capacity in December, not production time. Every basket is assembled by hand after the order is placed. At normal volumes that keeps the quality high; in the last three weeks of the year it makes the calendar tight.</p>
 
 <table>
 <thead>
@@ -147,15 +143,15 @@ export const corporateGifting: GuideSeed = {
 
 <p>For a single basket to a single address, none of this applies. <a href="/delivery">Same-day delivery</a> is available across much of the GTA on orders placed before the daily cutoff. The planning advice is for volume.</p>
 
-<h2>The logistics that actually trip people up</h2>
+<h2>The logistics that trip people up</h2>
 
 <h3>Multi-address delivery</h3>
 
-<p>Sending fifty baskets to fifty home addresses is a different job from sending fifty to one office, and it is the one most likely to go wrong. Collect addresses earlier than you think you need to. Chasing the last four addresses in the third week of December is the single most common reason a corporate gift arrives late. Send us the list and we handle the routing.</p>
+<p>Sending fifty baskets to fifty home addresses is a different job from sending fifty to one office, and it is the one most likely to go wrong. Collect addresses earlier than you think you need to: chasing the last four in the third week of December is the single most common reason a corporate gift arrives late. Send us the list and we handle the routing.</p>
 
 <h3>Remote and hybrid teams</h3>
 
-<p>Home delivery has become the default, and it changes what to send. A basket going to someone's kitchen can be more personal than one going to a shared office table. It also means delivery windows matter less: nobody is waiting at a reception desk at 4:55pm.</p>
+<p>Home delivery has become the default, and that changes what to send. A basket going to someone's kitchen can be more personal than one bound for a shared office table. Delivery windows matter less, too. Nobody is waiting at a reception desk at 4:55pm.</p>
 
 <h3>Cards</h3>
 
@@ -173,11 +169,11 @@ export const corporateGifting: GuideSeed = {
 
 <p><em>This guide describes general Canadian tax rules as published by the CRA and is not tax advice. Thresholds and administrative policies change, and how they apply depends on your circumstances. Confirm the treatment of any specific expense with your accountant before you file.</em></p>`,
 
-    fr: `<p>La plupart des guides sur les cadeaux d'affaires sont écrits par des gens qui n'ont jamais eu à répondre à la question que pose réellement un service des finances : <em>quel est l'effet sur nos livres ?</em> La question est légitime, et la réponse est véritablement contre-intuitive. Un panier rempli d'aliments n'est pas déductible de la même façon qu'un vêtement promotionnel, et une carte-cadeau n'est pas le choix souple et sécuritaire qu'elle semble être.</p>
+    fr: `<p>La plupart des guides sur les cadeaux d'affaires sont écrits par des gens qui n'ont jamais eu à répondre à la question que pose réellement un service des finances : <em>quel est l'effet sur nos livres ?</em> La question est légitime, et la réponse va à l'encontre de l'intuition. Un panier rempli d'aliments n'est pas déductible de la même façon qu'un vêtement promotionnel, et une carte-cadeau n'est pas le choix souple et sécuritaire qu'elle semble être.</p>
 
 <p>Ce guide couvre le traitement fiscal, les montants à prévoir et jusqu'à quand il est raisonnable d'attendre. Nous sommes une maison de cadeaux, pas un cabinet comptable : considérez la section fiscale comme une carte du territoire, non comme un conseil adapté à votre situation.</p>
 
-<h2>D'abord : vous posez deux questions différentes</h2>
+<h2>Cadeaux aux clients et cadeaux aux employés : deux questions distinctes</h2>
 
 <p>Presque toutes les erreurs en matière de cadeaux d'affaires viennent du fait de traiter les cadeaux aux clients et ceux aux employés comme un seul sujet. Au Canada, ils relèvent de règles distinctes qui n'ont rien à voir entre elles.</p>
 
@@ -186,7 +182,7 @@ export const corporateGifting: GuideSeed = {
 <li><strong>Les cadeaux aux clients</strong> posent la question : <em>quelle part l'entreprise peut-elle déduire ?</em></li>
 </ul>
 
-<p>Seuils différents, pièges différents, réponses différentes. Déterminez laquelle vous posez avant toute chose.</p>
+<p>Les seuils diffèrent, les pièges aussi. Déterminez quelle question vous posez avant toute chose.</p>
 
 <h2>Cadeaux aux employés : la règle de 500 $ et le piège qu'elle contient</h2>
 
@@ -194,29 +190,29 @@ export const corporateGifting: GuideSeed = {
 
 <p>Trois précisions comptent davantage que le chiffre lui-même.</p>
 
-<h3>1. Les articles de valeur minime ne comptent pas</h3>
+<h3>Les articles de valeur minime ne comptent pas</h3>
 
 <p>L'ARC exclut du calcul les articles de valeur symbolique : café et thé, t-shirts, tasses, plaques, trophées. Vos bouteilles d'eau promotionnelles de mars n'entament pas le budget de décembre.</p>
 
-<h3>2. Les récompenses pour années de service ont leur propre limite de 500 $</h3>
+<h3>Les récompenses pour années de service ont leur propre limite de 500 $</h3>
 
 <p>Une récompense d'ancienneté autre qu'en espèces est suivie séparément de la limite générale, avec son propre seuil et ses propres conditions quant au nombre minimal d'années de service et à la fréquence.</p>
 
-<h3>3. Les espèces et « quasi-espèces » sont toujours imposables, et c'est là que les cartes-cadeaux dérapent</h3>
+<h3>Les espèces et « quasi-espèces » sont toujours imposables, et c'est là que les cartes-cadeaux dérapent</h3>
 
-<p>Voici le piège. Les cadeaux en espèces ou quasi-espèces sont imposables en totalité, quel que soit le montant. Les quasi-espèces comprennent les titres, les métaux précieux et, surtout, la plupart des cartes-cadeaux.</p>
+<p>Voici le piège. Les cadeaux en espèces ou quasi-espèces sont imposables en totalité, quel que soit le montant. Les quasi-espèces comprennent les titres, les métaux précieux et, c'est là que bien des gens se font prendre, la plupart des cartes-cadeaux.</p>
 
 <p>Une carte-cadeau n'est considérée comme autre qu'en espèces que si <strong>toutes</strong> ces conditions sont remplies : elle n'est utilisable que chez un seul détaillant ou un groupe de détaillants nommés sur la carte ; ses conditions précisent que le solde ne peut être converti en argent ; et l'employeur tient un registre du bénéficiaire, de la date, du motif, du type de carte, du montant et du détaillant.</p>
 
 <p>Une carte Visa ou Mastercard prépayée échoue d'emblée. L'option « simple et souple » vers laquelle se tournent beaucoup d'entreprises est donc précisément celle qui crée discrètement un avantage imposable et une écriture de paie pour chaque bénéficiaire, alors qu'un cadeau matériel de même valeur n'en crée aucune.</p>
 
-<p>C'est l'argument pratique en faveur d'un cadeau réel. Un panier de 150 $ livré au domicile d'un employé est sans ambiguïté un cadeau autre qu'en espèces, s'inscrit dans la marge de 500 $ et n'entraîne aucun travail de paie.</p>
+<p>D'où l'argument pratique en faveur d'un cadeau réel. Un panier de 150 $ livré au domicile d'un employé est sans ambiguïté un cadeau autre qu'en espèces, s'inscrit dans la marge de 500 $ et n'entraîne aucun travail de paie.</p>
 
 <h2>Cadeaux aux clients : pourquoi un panier alimentaire n'est déductible qu'à 50 %</h2>
 
 <p>C'est du côté des clients que se cache la surprise. En vertu de l'article 67.1 de la Loi de l'impôt sur le revenu, les frais de nourriture, de boissons et de divertissement sont déductibles à <strong>50 %</strong>. On discute habituellement de cette règle à propos des additions de restaurant, mais elle suit les aliments où qu'ils aillent.</p>
 
-<p>Le traitement général se résume donc à peu près ainsi :</p>
+<p>En général, le traitement se résume à peu près ainsi :</p>
 
 <table>
 <thead>
@@ -231,7 +227,7 @@ export const corporateGifting: GuideSeed = {
 
 <p>Envoyer des aliments n'a rien de fautif. Il vaut simplement la peine de le savoir avant que la facture n'arrive chez votre comptable, car un panier gourmand de 200 $ et un vêtement promotionnel de 200 $ n'atterrissent pas au même endroit dans la déclaration, même à coût égal.</p>
 
-<p>Autre point auquel l'ARC tient : <strong>tenez un registre des bénéficiaires</strong>. Date, bénéficiaire, montant, raison d'affaires. Sans ce registre, un vérificateur peut refuser la déduction entièrement : pas la réduire, la refuser. Un simple tableur tenu à jour toute l'année suffit, et c'est bien plus facile que de reconstituer décembre de mémoire en avril.</p>
+<p>L'ARC tient aussi aux pièces justificatives : <strong>tenez un registre des bénéficiaires</strong> (date, bénéficiaire, montant, raison d'affaires). Sans registre, un vérificateur peut refuser la déduction entièrement. Pas la réduire. La refuser. Un simple tableur tenu à jour toute l'année suffit, et c'est bien plus facile que de reconstituer décembre de mémoire en avril.</p>
 
 <h3>La question des paniers mixtes</h3>
 
@@ -239,7 +235,7 @@ export const corporateGifting: GuideSeed = {
 
 <h2>Combien dépenser</h2>
 
-<p>Les questions de budget reçoivent de mauvaises réponses parce qu'on cherche un chiffre unique. Le bon cadre, c'est la relation, pas le titre du bénéficiaire.</p>
+<p>Les questions de budget reçoivent de mauvaises réponses parce qu'on cherche un chiffre unique. Pensez à la relation, pas au titre du bénéficiaire.</p>
 
 <table>
 <thead>
@@ -252,25 +248,21 @@ export const corporateGifting: GuideSeed = {
 </tbody>
 </table>
 
-<p>Deux conseils vous serviront davantage que les chiffres. D'abord, <strong>un bon cadeau vaut mieux que trois oubliables</strong>. Répartir un budget sur plus de bénéficiaires produit presque toujours quelque chose dont personne ne se souvient. Ensuite, <strong>gardez le même palier à l'intérieur d'un groupe</strong>. Les gens comparent. Une équipe où trois personnes ont reçu nettement mieux est pire qu'une équipe où tout le monde a reçu la même chose, plus modeste.</p>
+<p>Deux conseils vous serviront davantage que les chiffres. Un bon cadeau vaut mieux que trois oubliables ; répartir un budget sur plus de bénéficiaires produit presque toujours quelque chose dont personne ne se souvient. Et gardez le même palier à l'intérieur d'un groupe, parce que les gens comparent. Une équipe où trois personnes ont reçu nettement mieux s'en porte plus mal qu'une équipe où tout le monde a reçu la même chose, plus modeste.</p>
 
 <h2>Pourquoi nous n'envoyons pas d'alcool, et en quoi cela vous sert</h2>
 
 <p>Velvéa ne détient aucun permis de l'AGCO et ne vend donc aucun alcool. Pour les acheteurs d'entreprise, cela s'avère un avantage plutôt qu'une limite.</p>
 
-<ul>
-<li><strong>Aucune signature d'adulte n'est requise</strong> : un cadeau peut être laissé à une réception ou à une porte sans échec de livraison.</li>
-<li><strong>Aucun bénéficiaire n'est mis dans une position délicate.</strong> Pour des raisons de religion, de santé, de rétablissement ou de simple préférence, la bouteille de vin est le cadeau d'affaires courant le plus susceptible de mal tomber.</li>
-<li><strong>Aucun conflit avec les politiques internes.</strong> De plus en plus d'organisations refusent l'alcool en cadeau, et on découvre rarement lesquelles avant de l'avoir envoyé.</li>
-</ul>
+<p>Aucune signature d'adulte n'est requise : un cadeau peut être laissé à une réception ou à une porte sans échec de livraison. Personne n'est mis dans une position délicate non plus. Pour des raisons de religion, de santé, de rétablissement ou de simple préférence, la bouteille de vin est le cadeau d'affaires courant le plus susceptible de mal tomber. Enfin, de plus en plus d'organisations refusent l'alcool en cadeau, et on découvre rarement lesquelles avant de l'avoir envoyé.</p>
 
-<p>Si vous avez déjà envoyé du vin à une liste de clients, au moins un panier s'est très probablement perdu en silence.</p>
+<p>Si vous avez déjà envoyé du vin à une liste de clients, au moins un de ces paniers s'est très probablement perdu en silence.</p>
 
 <h2>Quand commander</h2>
 
 <p>L'industrie des articles promotionnels vous dira de commencer en juillet. Ce conseil existe parce que la marchandise personnalisée exige une approbation graphique, un échantillonnage et une production. Les paniers assemblés à la main ne fonctionnent pas ainsi, et il ne faut pas planifier comme si c'était le cas.</p>
 
-<p>Notre véritable contrainte n'est pas le temps de production, mais la capacité en décembre. Chaque panier est assemblé à la main après la commande : la qualité se maintient parfaitement à volume normal, et le calendrier se resserre dans les trois dernières semaines de l'année.</p>
+<p>Ce qui nous limite, c'est la capacité en décembre, pas le temps de production. Chaque panier est assemblé à la main après la commande. À volume normal, cela garantit la qualité ; dans les trois dernières semaines de l'année, cela resserre le calendrier.</p>
 
 <table>
 <thead>
@@ -286,15 +278,15 @@ export const corporateGifting: GuideSeed = {
 
 <p>Pour un seul panier à une seule adresse, rien de tout cela ne s'applique. La <a href="/fr/delivery">livraison le jour même</a> est offerte dans une bonne partie du Grand Toronto pour les commandes passées avant l'heure limite quotidienne. Ces conseils de planification visent le volume.</p>
 
-<h2>La logistique qui fait réellement trébucher</h2>
+<h2>La logistique qui fait trébucher</h2>
 
 <h3>Livraison multi-adresses</h3>
 
-<p>Envoyer cinquante paniers à cinquante domiciles est un tout autre travail que d'en envoyer cinquante à un seul bureau, et c'est celui qui risque le plus de mal tourner. Recueillez les adresses plus tôt que vous ne le croyez nécessaire : courir après les quatre dernières adresses dans la troisième semaine de décembre est la cause la plus fréquente d'un cadeau d'affaires livré en retard. Envoyez-nous la liste et nous nous occupons du routage.</p>
+<p>Envoyer cinquante paniers à cinquante domiciles est un tout autre travail que d'en envoyer cinquante à un seul bureau, et c'est celui qui risque le plus de mal tourner. Recueillez les adresses plus tôt que vous ne le croyez nécessaire : courir après les quatre dernières adresses dans la troisième semaine de décembre est la cause la plus fréquente d'un cadeau d'affaires livré en retard. Envoyez-nous la liste et nous nous occupons des itinéraires.</p>
 
 <h3>Équipes à distance et hybrides</h3>
 
-<p>La livraison à domicile est devenue la norme, et cela change ce qu'il convient d'envoyer. Un panier qui arrive dans la cuisine de quelqu'un peut être plus personnel qu'un panier posé sur une table de bureau partagée. Les fenêtres de livraison comptent aussi moins : personne n'attend à la réception à 16 h 55.</p>
+<p>La livraison à domicile est devenue la norme, et cela change ce qu'il convient d'envoyer. Un panier qui arrive dans la cuisine de quelqu'un peut être plus personnel qu'un panier posé sur une table de bureau partagée. Les plages de livraison comptent moins, aussi. Personne n'attend à la réception à 16 h 55.</p>
 
 <h3>Les cartes</h3>
 

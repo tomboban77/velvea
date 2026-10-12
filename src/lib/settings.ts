@@ -16,6 +16,7 @@ export type SiteSettings = {
     facebook: string;
     pinterest: string;
     tiktok: string;
+    youtube: string;
     /**
      * The verified Google Business Profile's public Maps URL. Not a social
      * network and it gets no footer button — it lives here because everything
@@ -88,6 +89,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     facebook: "",
     pinterest: "",
     tiktok: "",
+    youtube: "",
     googleBusiness: "",
   },
   delivery: {
@@ -144,6 +146,7 @@ function normalizeSocial(social: SiteSettings["social"]): SiteSettings["social"]
     facebook: clean(social.facebook),
     pinterest: clean(social.pinterest),
     tiktok: clean(social.tiktok),
+    youtube: clean(social.youtube),
     googleBusiness: clean(social.googleBusiness),
   };
 }
