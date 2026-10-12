@@ -209,7 +209,10 @@
     "h2Sub": "Des options choisies avec prix, en un jour ouvrable.",
     "h3": "Nous emballons et livrons",
     "h3Sub": "À chaque adresse, avec suivi, votre carte à l'intérieur.",
-    "pageTitle": "Paniers-cadeaux d'entreprise pour clients, équipes et partenaires"
+    "pageTitle": "Paniers-cadeaux d'entreprise pour clients, équipes et partenaires",
+    "readyEyebrow": "Prêts à commander",
+    "readyTitle": "Coffrets d'entreprise, prêts à envoyer",
+    "readyLede": "Deux coffrets à prix fixe, pour quand il vous en faut un aujourd'hui. Prix de volume et programmes sur mesure sur demande."
   },
   "atelier": {
     "eyebrow": "Notre histoire",

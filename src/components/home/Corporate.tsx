@@ -1,9 +1,21 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
+import Image from "next/image";
 import { ArrowRight, Check } from "lucide-react";
+import { getCorporateProducts } from "@/lib/queries";
+import { t as tc } from "@/lib/i18n-content";
+import { formatMoney } from "@/lib/utils";
 
 export async function Corporate() {
   const t = await getTranslations("corporate");
+  const locale = await getLocale();
+  // The ready-to-order boxes, so a buyer sees a price before asking for a quote.
+  const boxes = (await getCorporateProducts(2)).map((p) => ({
+    slug: p.slug,
+    name: tc(p.name, locale),
+    image: p.images[0]?.url ?? null,
+    price: formatMoney(p.priceCents, locale === "fr" ? "fr-CA" : "en-CA"),
+  }));
   const features = [t("f1"), t("f2"), t("f3"), t("f4"), t("f5")];
   const how = [
     { title: t("h1"), sub: t("h1Sub") },
@@ -37,6 +49,30 @@ export async function Corporate() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-white/50">{t("note")}</p>
+
+          {boxes.length > 0 && (
+            <div className="mt-10">
+              <p className="caps text-gold-pale">{t("readyEyebrow")}</p>
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {boxes.map((b) => (
+                  <li key={b.slug}>
+                    <Link
+                      href={`/products/${b.slug}`}
+                      className="group flex items-center gap-4 rounded-lg border border-white/12 bg-white/[0.05] p-3 transition-colors hover:bg-white/[0.09]"
+                    >
+                      <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-white/10">
+                        {b.image && <Image src={b.image} alt="" fill sizes="80px" className="object-cover" />}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-display text-[1.05rem] leading-tight text-white group-hover:underline">{b.name}</span>
+                        <span className="mt-1 block text-sm text-gold-pale">{b.price}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="lg:col-span-5 lg:col-start-8">

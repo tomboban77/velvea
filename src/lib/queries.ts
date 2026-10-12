@@ -181,6 +181,18 @@ export async function getProductsByCollection(
 }
 
 /**
+ * The ready-to-order corporate boxes. They live in a THEME collection with the
+ * slug "corporate": themes have no public URL, so it is purely a curation list
+ * the admin edits under Collections. Falls back to the "clients" recipient when
+ * that list is empty so the corporate page never shows a blank rail.
+ */
+export async function getCorporateProducts(take = 4): Promise<ProductCard[]> {
+  const { products } = await getProductsByCollection("THEME", "corporate", { take });
+  if (products.length) return products;
+  return (await getProductsByCollection("RECIPIENT", "clients", { take })).products;
+}
+
+/**
  * Active products for a hand-picked list (the homepage hero), returned in the
  * order the ids were given. Ids that are inactive, hidden or deleted drop out.
  */

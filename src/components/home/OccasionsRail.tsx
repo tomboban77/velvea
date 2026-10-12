@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Cake, Heart, Feather, Flower2, Moon, Leaf, Sparkles, KeyRound, Gift, Flame } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCollections } from "@/lib/queries";
-import { OCCASIONS, HOLIDAYS, SEASONAL, labelFor, type NavLink } from "@/lib/nav";
+import { OCCASIONS, HOLIDAYS, activeSeasonal, labelFor, type NavLink } from "@/lib/nav";
 import { t as tc } from "@/lib/i18n-content";
 
 /* Keyed by slug rather than by position, so reordering OCCASIONS cannot
@@ -30,8 +30,8 @@ export async function OccasionsRail() {
   const bySlug = new Map(db.map((c) => [c.slug, c]));
   // A seasonal tile needs a collection with products behind it: until then it
   // would link to an empty, noindexed page.
-  const now = Date.now();
-  const seasonal = SEASONAL.filter((s) => now < Date.parse(s.until) && (bySlug.get(s.slug)?._count.products ?? 0) > 0)
+  const seasonal = activeSeasonal()
+    .filter((s) => (bySlug.get(s.slug)?._count.products ?? 0) > 0)
     .map((s) => HOLIDAYS.find((h) => h.slug === s.slug))
     .filter((h): h is NavLink => Boolean(h));
   const shown = [...seasonal, ...OCCASIONS].slice(0, 8);

@@ -23,6 +23,11 @@ import { pageMetadata } from "@/lib/seo";
 
 const UNDER_CENTS = 10000;
 
+// Hourly ISR: the occasions rail promotes holidays on a dated schedule
+// (lib/nav.ts SEASONAL), and a holiday handover should not wait for the next
+// deploy. Admin saves still revalidate on demand.
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });

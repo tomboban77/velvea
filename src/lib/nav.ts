@@ -59,14 +59,29 @@ export const HOLIDAYS: NavLink[] = [
 ];
 
 /**
- * Holidays promoted to the front of the homepage occasions rail while they are
- * close. `until` is the moment the tile disappears (Toronto midnight). The home
- * page is statically rendered, so the cut-off is evaluated on the next deploy or
- * admin save after that moment, not to the minute.
+ * The seasonal calendar. While an entry is live its holiday is promoted to the
+ * front of the homepage occasions rail. `from` is when the promotion starts and
+ * `until` when it ends, both
+ * Toronto midnight; entries are checked in order, so overlapping windows fall
+ * to whichever is listed first. Dates are explicit per year because Diwali
+ * moves with the lunar calendar: extend this list each autumn.
+ *
+ * The homepage revalidates hourly, so a handover (Diwali to Christmas) takes
+ * effect within the hour rather than waiting for a deploy.
  */
-export const SEASONAL: { slug: string; until: string }[] = [
-  { slug: "diwali", until: "2026-11-09T00:00:00-05:00" },
+export const SEASONAL: { slug: string; from?: string; until: string }[] = [
+  { slug: "diwali", from: "2026-10-01T00:00:00-04:00", until: "2026-11-09T00:00:00-05:00" },
+  { slug: "christmas", from: "2026-11-09T00:00:00-05:00", until: "2026-12-26T00:00:00-05:00" },
+  { slug: "valentines", from: "2027-01-25T00:00:00-05:00", until: "2027-02-15T00:00:00-05:00" },
+  { slug: "mothers-day", from: "2027-04-19T00:00:00-04:00", until: "2027-05-10T00:00:00-04:00" },
+  { slug: "fathers-day", from: "2027-05-31T00:00:00-04:00", until: "2027-06-21T00:00:00-04:00" },
+  { slug: "thanksgiving", from: "2027-09-20T00:00:00-04:00", until: "2027-10-12T00:00:00-04:00" },
 ];
+
+/** The seasonal entries live right now, in schedule order. */
+export function activeSeasonal(now = Date.now()): typeof SEASONAL {
+  return SEASONAL.filter((s) => (!s.from || now >= Date.parse(s.from)) && now < Date.parse(s.until));
+}
 
 export function labelFor(link: NavLink, locale: string): string {
   return locale === "fr" ? link.fr : link.en;

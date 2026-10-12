@@ -2,7 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { Check, ArrowRight } from "lucide-react";
 import { ProductRail } from "@/components/shop/ProductRail";
-import { getProductsByCollection } from "@/lib/queries";
+import { getCorporateProducts } from "@/lib/queries";
 import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export default async function CorporatePage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("corporate");
-  const { products } = await getProductsByCollection("RECIPIENT", "clients", { take: 5 });
+  const products = await getCorporateProducts(4);
   const features = [t("f1"), t("f2"), t("f3"), t("f4"), t("f5")];
   const how = [
     { title: t("h1"), sub: t("h1Sub") },
@@ -83,7 +83,7 @@ export default async function CorporatePage({ params }: { params: Promise<{ loca
         </div>
       </section>
 
-      <ProductRail products={products} title={t("shopCorporate")} link="/recipients/clients" linkLabel={t("shopCorporate")} tone="cream" />
+      <ProductRail products={products} eyebrow={t("readyEyebrow")} title={t("readyTitle")} lede={t("readyLede")} link="/recipients/clients" linkLabel={t("shopCorporate")} tone="cream" />
     </div>
   );
 }
