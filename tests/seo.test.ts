@@ -199,6 +199,11 @@ describe("productJsonLd", () => {
       url: `${ORIGIN}/products/plum-basket`,
       price: "85.00",
       availability: "https://schema.org/InStock",
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "CA",
+        returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+      },
     });
     expect(ld.aggregateRating).toEqual({ "@type": "AggregateRating", ratingValue: "4.6", reviewCount: 3 });
   });

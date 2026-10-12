@@ -412,6 +412,17 @@ export function availabilityUrl(inStock: boolean): string {
 }
 
 /**
+ * All sales are final (owner-confirmed, matches the /shipping page): baskets are
+ * perishable, so returns are not accepted. The 48-hour damaged-goods remedy is a
+ * replacement/refund, not a return, so it is not modelled here.
+ */
+export const RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "CA",
+  returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+} as const;
+
+/**
  * One Offer per variant when there are variants (the PDP pre-selects the first
  * variant and shows its price, so a single base-price offer would disagree
  * with the page); a single Offer otherwise. Availability follows the same
@@ -422,7 +433,7 @@ export function productJsonLd(p: ProductForJsonLd, opts: { locale: string; origi
   const url = absoluteUrl(locale, `/products/${p.slug}`, opts.origin);
   const soldOut = productSoldOut(p);
   const money = (cents: number) => (cents / 100).toFixed(2);
-  const offerBase = { "@type": "Offer", priceCurrency: "CAD", url };
+  const offerBase = { "@type": "Offer", priceCurrency: "CAD", url, hasMerchantReturnPolicy: RETURN_POLICY };
 
   const offers =
     p.variants.length > 0
