@@ -10,6 +10,7 @@ import { birthdayGiftBaskets } from "./birthday-gift-baskets";
 import { anniversaryGifts } from "./anniversary-gifts";
 import { christmasGiftBaskets } from "./christmas-gift-baskets";
 import { diwaliVisitEtiquette } from "./diwali-visit-etiquette";
+import { christmasGiftsAtWork } from "./christmas-gifts-at-work";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -28,6 +29,7 @@ export const GUIDES: GuideSeed[] = [
   anniversaryGifts,
   christmasGiftBaskets,
   diwaliVisitEtiquette,
+  christmasGiftsAtWork,
 ];
 
 export type { GuideSeed };

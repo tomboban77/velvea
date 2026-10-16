@@ -114,6 +114,11 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
 - [ ] The Christmas guide hard-codes the 2026 calendar (Friday 25 Dec, the 14–18 Dec office week,
       the "order by" table) and the Diwali etiquette guide the 8 Nov date: update every autumn in
       both locales with the Diwali hamper guide, then re-run with `--write --force`.
+- [ ] **New guide written 16 Oct 2026, not yet seeded:** `christmas-gifts-for-clients-employees-coworkers`
+      (workplace Christmas: company list, client gift policies, staff, coworkers, the boss, Secret
+      Santa, 2026 office-shutdown timeline). The Christmas guide now links to it, so seed with
+      `npm run seed:guides -- --write --publish --force`. Same editorial audit passed; sanitiser
+      changed nothing; links resolve. Its 2026 dates join the yearly update below.
 - [ ] Cover images: every guide has `coverImage` null. They render without one; add photography when
       there is some.
 

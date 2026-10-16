@@ -73,7 +73,7 @@ export const christmasGiftBaskets: GuideSeed = {
 
 <h3>Clients and staff</h3>
 
-<p>Business gifts follow their own rules on timing and tone, and they have specific tax treatment. Our <a href="/guides/corporate-gifting-ontario-cra-rules-budgets-timing">corporate gifting guide</a> covers the CRA rules and budgets, and <a href="/guides/corporate-gift-hampers-how-to-choose">how to choose corporate gift hampers</a> covers what to send. If your list includes people who do not celebrate Christmas, a gift from our <a href="/occasions/holiday">holiday collection</a> with "Happy holidays" on the card includes everyone. For a list of any size, <a href="/corporate/quote">request a corporate quote</a>.</p>
+<p>Business gifts follow their own rules on timing and tone, and they have specific tax treatment. Our <a href="/guides/corporate-gifting-ontario-cra-rules-budgets-timing">corporate gifting guide</a> covers the CRA rules and budgets, and <a href="/guides/corporate-gift-hampers-how-to-choose">how to choose corporate gift hampers</a> covers what to send. For the office side of December (coworkers, the boss, Secret Santa and the shutdown), see <a href="/guides/christmas-gifts-for-clients-employees-coworkers">Christmas gifts at work</a>. If your list includes people who do not celebrate Christmas, a gift from our <a href="/occasions/holiday">holiday collection</a> with "Happy holidays" on the card includes everyone. For a list of any size, <a href="/corporate/quote">request a corporate quote</a>.</p>
 
 <h2>What travels and what stays local</h2>
 
@@ -151,7 +151,7 @@ export const christmasGiftBaskets: GuideSeed = {
 
 <h3>Clients et personnel</h3>
 
-<p>Les cadeaux d'entreprise suivent leurs propres règles de calendrier et de ton, et ils ont un traitement fiscal particulier. Notre <a href="/fr/guides/corporate-gifting-ontario-cra-rules-budgets-timing">guide des cadeaux d'affaires</a> couvre les règles de l'ARC et les budgets, et <a href="/fr/guides/corporate-gift-hampers-how-to-choose">comment choisir des paniers-cadeaux d'entreprise</a> couvre quoi offrir. Si votre liste comprend des personnes qui ne fêtent pas Noël, un cadeau de notre <a href="/fr/occasions/holiday">collection des Fêtes</a> avec « Joyeuses Fêtes » sur la carte inclut tout le monde. Pour une liste de toute taille, <a href="/fr/corporate/quote">demandez une soumission d'entreprise</a>.</p>
+<p>Les cadeaux d'entreprise suivent leurs propres règles de calendrier et de ton, et ils ont un traitement fiscal particulier. Notre <a href="/fr/guides/corporate-gifting-ontario-cra-rules-budgets-timing">guide des cadeaux d'affaires</a> couvre les règles de l'ARC et les budgets, et <a href="/fr/guides/corporate-gift-hampers-how-to-choose">comment choisir des paniers-cadeaux d'entreprise</a> couvre quoi offrir. Pour le volet bureau de décembre (collègues, patron, échange de cadeaux et fermeture des Fêtes), consultez <a href="/fr/guides/christmas-gifts-for-clients-employees-coworkers">les cadeaux de Noël au travail</a>. Si votre liste comprend des personnes qui ne fêtent pas Noël, un cadeau de notre <a href="/fr/occasions/holiday">collection des Fêtes</a> avec « Joyeuses Fêtes » sur la carte inclut tout le monde. Pour une liste de toute taille, <a href="/fr/corporate/quote">demandez une soumission d'entreprise</a>.</p>
 
 <h2>Ce qui voyage et ce qui reste local</h2>
 
