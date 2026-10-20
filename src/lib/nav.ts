@@ -39,6 +39,7 @@ export const CATEGORIES: NavLink[] = [
   { slug: "chocolate", en: "Chocolate", fr: "Chocolat" },
   { slug: "spa-wellness", en: "Spa & Wellness", fr: "Spa & bien-être" },
   { slug: "coffee-tea", en: "Coffee & Tea", fr: "Café & thé" },
+  { slug: "flowers", en: "Flowers", fr: "Fleurs" },
   { slug: "fresh-fruit", en: "Fresh Fruit", fr: "Fruits frais" },
   { slug: "vegan", en: "Vegan", fr: "Végane" },
   { slug: "baby", en: "Baby", fr: "Bébé" },
