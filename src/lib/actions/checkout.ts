@@ -20,7 +20,17 @@ import {
   hasPriorOrder,
 } from "@/lib/discounts";
 import { signOrderToken } from "@/lib/tokens";
-import { parseStoreDate, storeYmd, storeMinutesOfDay, cutoffMinutes, addStoreDays } from "@/lib/dates";
+import { parseStoreDate, storeYmd, addStoreDays } from "@/lib/dates";
+import {
+  LOCAL_METHODS,
+  bookedLocalDeliveries,
+  bouquetProductIds,
+  earliestScheduledDay,
+  firstOpenDay,
+  isFull,
+  sameDayBlocker,
+  type DeliveryCapacity,
+} from "@/lib/delivery-schedule";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 import { z } from "zod";
 
@@ -430,24 +440,42 @@ async function resolveLineItems(
  *
  * Eligibility is no longer a city-name lookup. The zone was already resolved
  * from the postal code, so this only has to police what that zone permits:
- * the method, the cutoff, and how soon we can realistically be there.
+ * the method, the cutoff, how soon we can realistically be there, and whether
+ * that day still has room on our own route.
+ *
+ * Returns the date the order is booked for. A local order always gets one,
+ * even when the customer left the field blank, because an undated order would
+ * be invisible to the daily capacity count.
  */
 function validateDelivery({
   zone,
   method,
   deliveryDate,
   leadTimeDays,
+  hasBouquet,
   handoffCutoff,
+  booked,
+  capacity,
   locale,
 }: {
   zone: DeliveryZone;
   method: DeliveryMethod;
   deliveryDate: string;
   leadTimeDays: number;
+  hasBouquet: boolean;
   handoffCutoff: string;
+  booked: Map<string, number>;
+  capacity: DeliveryCapacity;
   locale: string;
-}): CartChange[] {
+}): { changes: CartChange[]; date: string } {
   const changes: CartChange[] = [];
+  const done = (date = deliveryDate) => ({ changes, date });
+  const dateSubject = say(locale, "Delivery date", "Date de livraison");
+  const fullyBooked = say(
+    locale,
+    "Local delivery is fully booked for now. Please contact us or choose pickup.",
+    "La livraison locale est complète pour le moment. Veuillez nous contacter ou choisir le ramassage."
+  );
 
   if (!methodAllowedInZone(zone, method)) {
     changes.push({
@@ -459,7 +487,7 @@ function validateDelivery({
         `${t(zone.name, "fr")} n'est pas desservi par ce mode de livraison. Veuillez choisir une autre option.`
       ),
     });
-    return changes;
+    return done();
   }
 
   const today = storeYmd();
@@ -473,40 +501,60 @@ function validateDelivery({
         message: say(locale, "That date has passed.", "Cette date est passée."),
       });
     }
-    return changes;
+    return done();
   }
 
   if (method === "LOCAL_SAMEDAY") {
-    // Same-day is a per-zone promise now: the far tiers carry no cutoff at
-    // all, because we cannot drive an hour out and back the same afternoon.
-    if (!zone.sameDayCutoff) {
+    // Same-day is a per-zone promise: the far tiers carry no cutoff at all,
+    // because we cannot drive an hour out and back the same afternoon. The
+    // cutoff was previously only enforced in the browser.
+    const subject = say(locale, "Same-day delivery", "Livraison le jour même");
+    const blocker = sameDayBlocker({ zone, hasBouquet, booked, cap: capacity });
+    if (blocker === "no-same-day") {
       changes.push({
         kind: "delivery-area",
-        subject: say(locale, "Same-day delivery", "Livraison le jour même"),
+        subject,
         message: say(
           locale,
           `Same-day delivery isn't available in ${t(zone.name, "en")}.`,
           `La livraison le jour même n'est pas offerte dans ${t(zone.name, "fr")}.`
         ),
       });
-      return changes;
-    }
-    // The cutoff was previously only enforced in the browser.
-    if (storeMinutesOfDay() >= cutoffMinutes(zone.sameDayCutoff)) {
+    } else if (blocker === "past-cutoff") {
       changes.push({
         kind: "delivery-date",
-        subject: say(locale, "Same-day delivery", "Livraison le jour même"),
+        subject,
         message: say(
           locale,
           `Same-day orders for this area close at ${zone.sameDayCutoff} ET. Please choose another delivery method.`,
           `Les commandes du jour même pour ce secteur ferment à ${zone.sameDayCutoff} HE. Veuillez choisir un autre mode de livraison.`
         ),
       });
+    } else if (blocker === "bouquet") {
+      changes.push({
+        kind: "delivery-date",
+        subject,
+        message: say(
+          locale,
+          "Bouquets are made to order and delivered from the next day. Please choose local delivery.",
+          "Les bouquets sont faits sur commande et livrés à partir du lendemain. Veuillez choisir la livraison locale."
+        ),
+      });
+    } else if (blocker === "full") {
+      changes.push({
+        kind: "delivery-date",
+        subject,
+        message: say(
+          locale,
+          "Today's same-day deliveries are fully booked. Please choose local delivery for the next open day.",
+          "Les livraisons du jour même sont complètes pour aujourd'hui. Veuillez choisir la livraison locale pour la prochaine journée disponible."
+        ),
+      });
     }
     if (deliveryDate && deliveryDate !== today) {
       changes.push({
         kind: "delivery-date",
-        subject: say(locale, "Delivery date", "Date de livraison"),
+        subject: dateSubject,
         message: say(
           locale,
           "Same-day delivery must be for today.",
@@ -514,51 +562,86 @@ function validateDelivery({
         ),
       });
     }
-    return changes;
+    return done(today);
   }
 
-  if (!deliveryDate) return changes;
-
-  const parsed = parseStoreDate(deliveryDate);
-  if (!parsed) {
+  if (deliveryDate && !parseStoreDate(deliveryDate)) {
     changes.push({
       kind: "delivery-date",
-      subject: say(locale, "Delivery date", "Date de livraison"),
+      subject: dateSubject,
       message: say(locale, "That date isn't valid.", "Cette date n'est pas valide."),
     });
-    return changes;
-  }
-
-  // Two things have to happen before it arrives: we assemble it (the product
-  // lead time) and it travels (the zone's minimum). Anything ordered after the
-  // daily handoff starts that clock tomorrow.
-  const pastCutoff = storeMinutesOfDay() >= cutoffMinutes(handoffCutoff);
-  const totalDays = Math.max(leadTimeDays, zone.minLeadDays) + (pastCutoff ? 1 : 0);
-  const earliest = addStoreDays(today, totalDays);
-  if (deliveryDate < earliest) {
-    changes.push({
-      kind: "delivery-date",
-      subject: say(locale, "Delivery date", "Date de livraison"),
-      message: say(
-        locale,
-        `The earliest we can deliver this basket to ${t(zone.name, "en")} is ${earliest}.`,
-        `La date la plus proche pour ce panier vers ${t(zone.name, "fr")} est le ${earliest}.`
-      ),
-    });
+    return done();
   }
 
   // A year out is well beyond any real gifting window.
   if (deliveryDate > addStoreDays(today, 365)) {
     changes.push({
       kind: "delivery-date",
-      subject: say(locale, "Delivery date", "Date de livraison"),
+      subject: dateSubject,
       message: say(locale, "That date is too far ahead.", "Cette date est trop éloignée."),
     });
+    return done();
   }
 
-  return changes;
-}
+  const earliest = earliestScheduledDay({
+    zone,
+    leadTimeDays,
+    hasBouquet,
+    handoffCutoff,
+    local: method === "LOCAL_STANDARD",
+  });
 
+  // Shipping dates are a preference passed to the courier, not a slot on our
+  // own route, so the daily delivery limit does not apply to them.
+  if (method === "SHIPPING") {
+    if (deliveryDate && deliveryDate < earliest) {
+      changes.push({
+        kind: "delivery-date",
+        subject: dateSubject,
+        message: say(
+          locale,
+          `The earliest we can deliver this basket to ${t(zone.name, "en")} is ${earliest}.`,
+          `La date la plus proche pour ce panier vers ${t(zone.name, "fr")} est le ${earliest}.`
+        ),
+      });
+    }
+    return done();
+  }
+
+  // Local delivery: the day must also have room on the route.
+  const next = firstOpenDay(earliest, booked, capacity);
+  if (!deliveryDate) {
+    if (!next) changes.push({ kind: "delivery-date", subject: dateSubject, message: fullyBooked });
+    return done(next ?? "");
+  }
+  if (deliveryDate < earliest) {
+    const shown = next ?? earliest;
+    changes.push({
+      kind: "delivery-date",
+      subject: dateSubject,
+      message: say(
+        locale,
+        `The earliest we can deliver this basket to ${t(zone.name, "en")} is ${shown}.`,
+        `La date la plus proche pour ce panier vers ${t(zone.name, "fr")} est le ${shown}.`
+      ),
+    });
+  } else if (isFull(deliveryDate, booked, capacity)) {
+    const after = firstOpenDay(deliveryDate, booked, capacity);
+    changes.push({
+      kind: "delivery-date",
+      subject: dateSubject,
+      message: after
+        ? say(
+            locale,
+            `${deliveryDate} is fully booked. The next open day is ${after}.`,
+            `Le ${deliveryDate} est complet. La prochaine journée disponible est le ${after}.`
+          )
+        : fullyBooked,
+    });
+  }
+  return done();
+}
 
 // ---------------------------------------------------------------------------
 // createCheckout
@@ -691,12 +774,22 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   }
 
   const leadTimeDays = lines.reduce((max, l) => Math.max(max, l.leadTimeDays), 0);
-  const deliveryChanges = validateDelivery({
+  const [bouquets, booked] = await Promise.all([
+    bouquetProductIds(lines.flatMap((l) => (l.productId ? [l.productId] : []))),
+    LOCAL_METHODS.includes(method)
+      ? // A year ahead, matching the furthest date we accept.
+        bookedLocalDeliveries(storeYmd(), 366)
+      : Promise.resolve(new Map<string, number>()),
+  ]);
+  const { changes: deliveryChanges, date: deliveryDate } = validateDelivery({
     zone,
     method,
     deliveryDate: input.deliveryDate,
     leadTimeDays,
+    hasBouquet: bouquets.size > 0,
     handoffCutoff: settings.delivery.orderCutoff,
+    booked,
+    capacity: settings.delivery,
     locale,
   });
   if (deliveryChanges.length) {
@@ -849,7 +942,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         totalCents: totals.totalCents,
         discountCode: discount?.code ?? null,
         giftMessage: input.giftMessage || null,
-        deliveryDate: input.deliveryDate ? parseStoreDate(input.deliveryDate) : null,
+        deliveryDate: deliveryDate ? parseStoreDate(deliveryDate) : null,
         deliveryNotes: input.deliveryNotes || null,
         shipping: input.shipping,
         items: {

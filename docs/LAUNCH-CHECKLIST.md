@@ -50,6 +50,16 @@ more now, not less.
 
 ## 2. Delivery zones
 
+- [x] **Daily GTA delivery limit and same-day window** (26 Oct 2026, `src/lib/delivery-schedule.ts`).
+      Local deliveries (LOCAL zones only; pickup and courier not counted) are capped at 4 per weekday
+      and 10 per Saturday/Sunday, editable in Admin -> Settings -> Delivery. A full day pushes the
+      next order to the first day with room; same-day disappears once today is full. A blank date on
+      a local order is now booked onto the first open day. Unpaid checkouts hold a slot for 45 min.
+      Same-day copy shows 7 to 11 pm on weekdays and "timed around the day's orders" on weekends.
+- [ ] **Create the `bouquets` collection** (Category type, slug exactly `bouquets`) and put every
+      bouquet in it. Products in it never get same-day and are delivered from the next day at the
+      earliest. Until it exists, no product is treated as a bouquet.
+
 - [x] **Burlington, Georgetown and Bolton moved** into `local-b-west`. Already done in production
       (26 FSAs) — confirmed 24 Sept with `npx tsx scripts/move-delivery-fsas.ts` (dry run).
       Those postal codes now get $14.99, a 13:00 same-day cutoff and 0–1 day lead times.

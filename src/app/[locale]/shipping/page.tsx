@@ -27,7 +27,7 @@ const EN = {
   localSameDay: (cutoff: string) => `, same-day on orders placed before ${cutoff} ET`,
   localNextDay: ", next available day",
   localNote:
-    "Same-day delivery depends on how far we have to travel, so the cutoff is earlier for areas further out. Whichever applies to your address is shown at checkout alongside the price.",
+    "Same-day delivery depends on how far we have to travel, so the cutoff is earlier for areas further out. Whichever applies to your address is shown at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets are made to order and delivered from the next day.",
 
   shipH: "Shipping within Ontario",
   shipArriving: (min: number, max: number) => `, arriving in roughly ${min}–${max} business days`,
@@ -70,7 +70,7 @@ const FR: typeof EN = {
   localSameDay: (cutoff: string) => `, le jour même pour les commandes passées avant ${cutoff} (HE)`,
   localNextDay: ", le prochain jour disponible",
   localNote:
-    "La livraison le jour même dépend de la distance à parcourir, de sorte que l'heure limite est plus tôt pour les secteurs plus éloignés. Celle qui s'applique à votre adresse est indiquée à la caisse, à côté du prix.",
+    "La livraison le jour même dépend de la distance à parcourir, de sorte que l'heure limite est plus tôt pour les secteurs plus éloignés. Celle qui s'applique à votre adresse est indiquée à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets sont faits sur commande et livrés à partir du lendemain.",
 
   shipH: "Expédition en Ontario",
   shipArriving: (min: number, max: number) => `, livraison en environ ${min} à ${max} jours ouvrables`,

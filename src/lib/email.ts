@@ -2,7 +2,8 @@ import "server-only";
 import { Resend } from "resend";
 import { formatMoney } from "./utils";
 import { escapeHtml, escapeHtmlMultiline } from "./html";
-import { formatStoreDate, parseStoreDate } from "./dates";
+import { formatStoreDate, parseStoreDate, storeYmd } from "./dates";
+import { sameDayWindow } from "./delivery-schedule";
 import { siteUrl } from "./env";
 import { orderUrl, optOutUrl } from "./tokens";
 import { getSettings, type SiteSettings } from "./settings";
@@ -287,10 +288,22 @@ function deliveryBlock(data: OrderEmailData): string {
       )
     );
   }
+  // A local date is a booked slot on our route; anywhere else it is only a
+  // preference passed to the courier.
+  const local = data.deliveryMethod === "LOCAL_SAMEDAY" || data.deliveryMethod === "LOCAL_STANDARD";
   if (data.deliveryDate) {
     meta.push(
-      `<strong>${L("Preferred date", "Date souhaitée")}:</strong> ${escapeHtml(
+      `<strong>${
+        local ? L("Delivery date", "Date de livraison") : L("Preferred date", "Date souhaitée")
+      }:</strong> ${escapeHtml(
         formatStoreDate(data.deliveryDate, isFr(data.locale) ? "fr-CA" : "en-CA")
+      )}`
+    );
+  }
+  if (data.deliveryMethod === "LOCAL_SAMEDAY" && data.deliveryDate) {
+    meta.push(
+      `<strong>${L("Delivery window", "Plage de livraison")}:</strong> ${escapeHtml(
+        sameDayWindow(storeYmd(new Date(data.deliveryDate)), isFr(data.locale))
       )}`
     );
   }

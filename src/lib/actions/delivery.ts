@@ -6,7 +6,16 @@ import { computeShipping } from "@/lib/pricing";
 import { getZones, pickupZone, resolveZoneFrom, provinceForFsa, toFsa } from "@/lib/zones";
 import { taxRateForProvince } from "@/lib/settings";
 import { t } from "@/lib/i18n-content";
-import { storeMinutesOfDay, cutoffMinutes } from "@/lib/dates";
+import { STORE_TIMEZONE, parseStoreDate, storeYmd } from "@/lib/dates";
+import {
+  bookedLocalDeliveries,
+  bouquetProductIds,
+  earliestScheduledDay,
+  firstOpenDay,
+  fullDays,
+  sameDayBlocker,
+  sameDayWindow,
+} from "@/lib/delivery-schedule";
 import { rateLimitByIp } from "@/lib/rate-limit";
 import type { DeliveryMethod } from "@prisma/client";
 import { z } from "zod";
@@ -25,6 +34,10 @@ export type DeliveryOption = {
   label: string;
   sub: string;
   feeCents: number;
+  /** Local delivery only: the first day with room on the route, "YYYY-MM-DD". */
+  earliestDate?: string;
+  /** Local delivery only: days in the next month that are already full. */
+  fullDates?: string[];
 };
 
 export type DeliveryQuote =
@@ -135,20 +148,60 @@ export async function quoteDelivery(
   const options: DeliveryOption[] = [...pickupOptions];
 
   if (zone.kind === "LOCAL") {
+    // Same rules the charge runs: bouquets never go same-day, and a day whose
+    // route is full pushes the next order to the first day with room.
+    const today = storeYmd();
+    const [bouquets, booked, leadRows] = await Promise.all([
+      bouquetProductIds(input.productIds),
+      bookedLocalDeliveries(today),
+      input.productIds.length
+        ? prisma.product.findMany({
+            where: { id: { in: input.productIds } },
+            select: { leadTimeDays: true },
+          })
+        : Promise.resolve([]),
+    ]);
+    const hasBouquet = bouquets.size > 0;
+    const leadTimeDays = Math.max(
+      0,
+      ...leadRows.map((r) => r.leadTimeDays),
+      // A custom basket is assembled from scratch; see resolveCustomLine.
+      input.builderItemIds.length ? 2 : 0
+    );
+
     const cutoff = zone.sameDayCutoff;
-    if (cutoff && storeMinutesOfDay() < cutoffMinutes(cutoff)) {
+    if (cutoff && !sameDayBlocker({ zone, hasBouquet, booked, cap: settings.delivery })) {
       options.push({
         method: "LOCAL_SAMEDAY",
         label: say("Same-day delivery", "Livraison le jour même"),
-        sub: say(`Order within today's ${cutoff} ET cutoff`, `Avant ${cutoff} HE aujourd'hui`),
+        sub: say(
+          `Delivered today ${sameDayWindow(today, false)}. Order by ${cutoff} ET`,
+          `Livré aujourd'hui ${sameDayWindow(today, true)}. Commandez avant ${cutoff} HE`
+        ),
         feeCents: feeFor("LOCAL_SAMEDAY"),
       });
     }
+
+    const earliest = firstOpenDay(
+      earliestScheduledDay({
+        zone,
+        leadTimeDays,
+        hasBouquet,
+        handoffCutoff: settings.delivery.orderCutoff,
+        local: true,
+      }),
+      booked,
+      settings.delivery
+    );
     options.push({
       method: "LOCAL_STANDARD",
       label: say("Local delivery", "Livraison locale"),
-      sub: windowLabel(zone.minLeadDays, zone.maxLeadDays, fr),
+      sub: earliest
+        ? say(`Earliest: ${dayLabel(earliest, "en-CA")}`, `Au plus tôt : ${dayLabel(earliest, "fr-CA")}`)
+        : windowLabel(zone.minLeadDays, zone.maxLeadDays, fr),
       feeCents: feeFor("LOCAL_STANDARD"),
+      earliestDate: earliest ?? undefined,
+      fullDates: fullDays(today, booked, settings.delivery),
     });
   }
 
@@ -174,6 +227,18 @@ export async function quoteDelivery(
     options,
     unshippable,
   };
+}
+
+/** "Tuesday, October 27" in the store's time zone. */
+function dayLabel(ymd: string, locale: string): string {
+  const at = parseStoreDate(ymd);
+  if (!at) return ymd;
+  return new Intl.DateTimeFormat(locale, {
+    timeZone: STORE_TIMEZONE,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(at);
 }
 
 function windowLabel(min: number, max: number, fr: boolean): string {

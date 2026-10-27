@@ -270,7 +270,9 @@ export function CheckoutForm({
             phone: f.phone,
           },
           giftMessage: f.giftMessage,
-          deliveryDate: f.deliveryDate,
+          // The date field is hidden for same-day, so a date picked before
+          // switching must not be sent: the server would refuse it.
+          deliveryDate: method === "LOCAL_SAMEDAY" ? "" : f.deliveryDate,
           deliveryNotes: f.deliveryNotes,
           discountCode: discount ? code : "",
           locale: locale === "fr" ? "fr" : "en",
@@ -507,13 +509,24 @@ export function CheckoutForm({
             aria-label={tc("giftLabel")} className="field resize-y"
             value={f.giftMessage} onChange={(e) => set("giftMessage", e.target.value)} />
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="label" htmlFor="checkout-delivery-date">
-                {tc("preferredDate")}
-              </label>
-              <input type="date" id="checkout-delivery-date" className="field"
-                value={f.deliveryDate} onChange={(e) => set("deliveryDate", e.target.value)} />
-            </div>
+            {/* Same-day is always today, so there is nothing to pick. */}
+            {method !== "LOCAL_SAMEDAY" && (
+              <div>
+                <label className="label" htmlFor="checkout-delivery-date">
+                  {tc("preferredDate")}
+                </label>
+                <input type="date" id="checkout-delivery-date" className="field"
+                  min={selected?.earliestDate}
+                  value={f.deliveryDate} onChange={(e) => set("deliveryDate", e.target.value)} />
+                {method === "LOCAL_STANDARD" && (
+                  selected?.fullDates?.includes(f.deliveryDate) ? (
+                    <p className="mt-1 text-xs text-danger">{tc("dateFull")}</p>
+                  ) : !f.deliveryDate ? (
+                    <p className="mt-1 text-xs text-muted">{tc("dateBlankLocal")}</p>
+                  ) : null
+                )}
+              </div>
+            )}
             <div>
               <label className="label" htmlFor="checkout-delivery-notes">
                 {tc("deliveryNotes")}

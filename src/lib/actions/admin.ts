@@ -325,6 +325,8 @@ const settingsSchema = z.object({
   delivery: z
     .object({
       orderCutoff: z.string().regex(/^\d{1,2}:\d{2}$/, "Use HH:MM"),
+      weekdayCapacity: z.number().int().min(0).max(100),
+      weekendCapacity: z.number().int().min(0).max(100),
     })
     .partial()
     .optional(),

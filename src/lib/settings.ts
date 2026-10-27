@@ -38,6 +38,13 @@ export type SiteSettings = {
      * them. See `prisma/zones.ts` and Admin -> Delivery zones.
      */
     orderCutoff: string;
+    /**
+     * GTA deliveries we can drive per day. Once a day is full, the next local
+     * order goes to the next day with room. Weekends hold more because the
+     * route runs all day rather than one evening.
+     */
+    weekdayCapacity: number;
+    weekendCapacity: number;
   };
   home: {
     /**
@@ -94,6 +101,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   delivery: {
     orderCutoff: "16:00",
+    weekdayCapacity: 4,
+    weekendCapacity: 10,
   },
   home: {
     heroProductIds: [],

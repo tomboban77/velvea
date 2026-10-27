@@ -23,27 +23,33 @@ export function SameDayNotice({
   compact?: boolean;
 }) {
   const t = useTranslations("pdp");
-  const [state, setState] = useState<{ before: boolean; label: string } | null>(null);
+  const [state, setState] = useState<{ before: boolean; label: string; weekend: boolean } | null>(
+    null
+  );
 
   useEffect(() => {
     function compute() {
       const parts = new Intl.DateTimeFormat("en-CA", {
         timeZone: "America/Toronto",
+        weekday: "short",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
       }).formatToParts(new Date());
       const h = Number(parts.find((p) => p.type === "hour")?.value ?? 0) % 24;
       const m = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
+      // Weekday runs go out 7 to 11 pm; weekends are spread through the day.
+      const day = parts.find((p) => p.type === "weekday")?.value ?? "";
+      const weekend = day.startsWith("Sat") || day.startsWith("Sun");
       const [ch, cm] = cutoff.split(":").map(Number);
       const minutesLeft = ch * 60 + cm - (h * 60 + m);
       if (minutesLeft > 0) {
         const hh = Math.floor(minutesLeft / 60);
         const mm = minutesLeft % 60;
         const label = hh > 0 ? `${hh}h ${mm.toString().padStart(2, "0")}m` : `${mm}m`;
-        setState({ before: true, label });
+        setState({ before: true, label, weekend });
       } else {
-        setState({ before: false, label: "" });
+        setState({ before: false, label: "", weekend });
       }
     }
     compute();
@@ -60,6 +66,7 @@ export function SameDayNotice({
         {state.before ? (
           t.rich("sameDayLeft", {
             time: state.label,
+            window: t(state.weekend ? "sameDayWeekend" : "sameDayWeekday"),
             b: (chunks) => <strong className="font-semibold text-ink">{chunks}</strong>,
           })
         ) : (

@@ -9,6 +9,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
 import { advertisedSameDayCutoff } from "@/lib/zones";
+import { BOUQUET_COLLECTION_SLUG, bookedLocalDeliveries, isFull } from "@/lib/delivery-schedule";
+import { storeYmd } from "@/lib/dates";
 import { breadcrumbJsonLd, hasFrench, pageMetadata, productJsonLd, siteOrigin } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -38,10 +40,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   setRequestLocale(locale);
   const t = await getTranslations("pdp");
 
-  const [product, sameDayCutoff, settings] = await Promise.all([
+  const [product, sameDayCutoff, settings, booked] = await Promise.all([
     getProductBySlug(slug),
     advertisedSameDayCutoff(),
     getSettings(),
+    // Only drives the same-day countdown, so an outage must not cost the page.
+    bookedLocalDeliveries(storeYmd(), 1).catch(() => new Map<string, number>()),
   ]);
   if (!product || product.status === "DRAFT") notFound();
 
@@ -92,7 +96,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <ProductDetail
         product={view}
-        sameDayCutoff={sameDayCutoff}
+        // Bouquets are made to order and never go out same-day, and a full day
+        // has no same-day left to advertise.
+        sameDayCutoff={
+          product.collections.some((c) => c.collection.slug === BOUQUET_COLLECTION_SLUG) ||
+          isFull(storeYmd(), booked, settings.delivery)
+            ? null
+            : sameDayCutoff
+        }
         premiumCardFeeCents={settings.gifting.premiumCardFeeCents}
       />
 

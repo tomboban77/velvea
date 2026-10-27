@@ -6,7 +6,8 @@ import { settleFromSession } from "@/lib/actions/orders";
 import { getSession, getVerifiedAdmin } from "@/lib/auth";
 import { verifyOrderToken } from "@/lib/tokens";
 import { formatMoney, formatDate } from "@/lib/utils";
-import { formatStoreDate } from "@/lib/dates";
+import { formatStoreDate, storeYmd } from "@/lib/dates";
+import { LOCAL_METHODS, sameDayWindow } from "@/lib/delivery-schedule";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Order confirmation", robots: { index: false, follow: false } };
@@ -223,8 +224,13 @@ export default async function OrderPage({
             </p>
             {order!.deliveryDate && (
               <p className="mt-2 text-xs text-muted">
-                {fr ? "Date souhaitée" : "Preferred date"}:{" "}
+                {LOCAL_METHODS.includes(order!.deliveryMethod)
+                  ? fr ? "Date de livraison" : "Delivery date"
+                  : fr ? "Date souhaitée" : "Preferred date"}
+                :{" "}
                 {formatStoreDate(order!.deliveryDate, fr ? "fr-CA" : "en-CA")}
+                {order!.deliveryMethod === "LOCAL_SAMEDAY" &&
+                  `, ${sameDayWindow(storeYmd(order!.deliveryDate), fr)}`}
               </p>
             )}
           </div>

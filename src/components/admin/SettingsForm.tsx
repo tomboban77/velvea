@@ -67,6 +67,32 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
               onChange={(v) => setS({ ...s, delivery: { ...s.delivery, orderCutoff: v } })}
             />
           </Field>
+          <div />
+          <Field
+            label="GTA deliveries per weekday"
+            hint="Once a day has this many, the next local order moves to the next open day."
+          >
+            <TextInput
+              type="number"
+              min={0}
+              max={100}
+              value={String(s.delivery.weekdayCapacity)}
+              onChange={(v) =>
+                setS({ ...s, delivery: { ...s.delivery, weekdayCapacity: parseInt(v) || 0 } })
+              }
+            />
+          </Field>
+          <Field label="GTA deliveries per Saturday / Sunday">
+            <TextInput
+              type="number"
+              min={0}
+              max={100}
+              value={String(s.delivery.weekendCapacity)}
+              onChange={(v) =>
+                setS({ ...s, delivery: { ...s.delivery, weekendCapacity: parseInt(v) || 0 } })
+              }
+            />
+          </Field>
         </div>
         <p className="text-xs text-muted">
           Delivery fees, same-day cutoffs and the areas we serve now live in{" "}
