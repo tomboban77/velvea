@@ -84,9 +84,10 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       next order to the first day with room; same-day disappears once today is full. A blank date on
       a local order is now booked onto the first open day. Unpaid checkouts hold a slot for 45 min.
       Same-day copy shows 7 to 11 pm on weekdays and "timed around the day's orders" on weekends.
-- [ ] **Create the `bouquets` collection** (Category type, slug exactly `bouquets`) and put every
-      bouquet in it. Products in it never get same-day and are delivered from the next day at the
-      earliest. Until it exists, no product is treated as a bouquet.
+- [x] **Bouquets are next-day only** (26 Oct 2026). The rule keys off the existing `flowers`
+      category (`BOUQUET_COLLECTION_SLUG`), so every product in Flowers never gets same-day and is
+      delivered from the next day at the earliest. Today that is the Crimson & Ivory Rose Bouquet.
+      File any new bouquet under Flowers.
 
 - [x] **Burlington, Georgetown and Bolton moved** into `local-b-west`. Already done in production
       (26 FSAs) — confirmed 24 Sept with `npx tsx scripts/move-delivery-fsas.ts` (dry run).

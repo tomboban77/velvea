@@ -13,8 +13,13 @@ import type { DeliveryMethod, DeliveryZone, OrderStatus, Prisma } from "@prisma/
  * orders are not counted: the courier's capacity is not ours to manage.
  */
 
-/** Products in this collection are made to order and never go out same-day. */
-export const BOUQUET_COLLECTION_SLUG = "bouquets";
+/**
+ * Products in this collection are made to order and never go out same-day.
+ * It is the storefront's Flowers category rather than a separate "bouquets"
+ * collection, so anything filed under Flowers gets the next-day rule without
+ * a second collection to keep in sync.
+ */
+export const BOUQUET_COLLECTION_SLUG = "flowers";
 
 export const LOCAL_METHODS: DeliveryMethod[] = ["LOCAL_SAMEDAY", "LOCAL_STANDARD"];
 
