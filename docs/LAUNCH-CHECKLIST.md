@@ -41,12 +41,40 @@ more now, not less.
       delivery zones; the marketing copy has to agree with it.
 - [ ] **Confirm returns, cancellation, damage and substitution procedures.** The policy pages are
       written and no longer carry template wording, but the promises in them need to be ones you will
-      honour.
+      honour. Substitutions: decided as a reminder only (no opt-out or contact step), shown in the
+      checkout terms box with the same "equal or greater value" wording as `/terms`.
 - [ ] **Decide French scope at launch** and who reviews the UI, product, guide, policy and checkout
       translations. Untranslated FR products and guides already get no hreflang pair and a noindex FR
       page, so partial French is safe — but it should be a decision, not a default.
 - [ ] **Evidence for product claims** (dietary, origin, handmade, certifications) before any Merchant
       Center feed. Feed eligibility turns on these.
+
+### Legal and compliance (review of 26 Oct 2026)
+
+Not legal advice; worth an hour with an Ontario small-business lawyer before launch. The code side
+(CPA disclosures before payment, confirmation email as the agreement copy, CASL double opt-in and
+unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
+
+- [ ] **Register the business name** "Velvea" with Ontario (Business Names Act, about $60 online)
+      unless it is already registered or incorporated under that name.
+- [ ] **Call Peel Public Health** and describe the operation: sealed, third-party products packed into
+      baskets at a home studio. Confirm whether the premises needs notification or inspection.
+      Repacking loose food, or making anything, moves it into a stricter category.
+- [ ] **Stock rules for resold food** (Safe Food for Canadians Regulations): only buy from Canadian
+      suppliers/distributors so labels are bilingual and compliant; keep every item sealed with its
+      label visible and unaltered; no expired or near-expiry stock; no refrigerated items unless
+      they can be kept cold through delivery. Sign up for CFIA recall alerts.
+- [ ] **Sale prices** (Competition Act, ordinary-price rules): only show a crossed-out compare-at
+      price that was genuinely charged for a meaningful period or volume.
+- [ ] **Reviews:** approve honest negative reviews too; no self-written or undisclosed friends and
+      family reviews.
+- [ ] **HST threshold:** keep a running total of sales over the last four quarters. Past $30,000,
+      register within 29 days and set the ON rate in `src/lib/settings.ts`.
+- [ ] **Home address in the footer and emails:** if 5105 Hurontario is a residence, a PO box or
+      virtual mailbox also satisfies CASL.
+- [ ] **Product liability insurance** — not required by law, strongly advised when selling food.
+- [ ] **Before switching on Quebec shipping:** Law 25 (GA would need to be fully off until consent,
+      not cookieless pings), Quebec consumer protection rules, French product labelling.
 
 ## 2. Delivery zones
 

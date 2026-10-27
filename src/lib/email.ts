@@ -343,8 +343,8 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
     ${button(link, L("View your order", "Voir votre commande"))}
     <p style="margin-top:18px;font-size:13px;line-height:1.5;color:#8a8072">${escapeHtml(
       L(
-        "All sales are final. Our baskets are perishable and packed to order, so we cannot accept returns, exchanges or cancellations. If your basket arrives damaged or not as ordered, reply to this email within 48 hours of delivery with a photo and we will make it right.",
-        "Toutes les ventes sont finales. Nos paniers sont périssables et préparés à la commande : nous ne pouvons accepter ni retour, ni échange, ni annulation. Si votre panier arrive endommagé ou ne correspond pas à votre commande, répondez à ce courriel dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
+        "All sales are final. Our baskets are perishable and packed to order, so we cannot accept returns, exchanges or cancellations. If an item is unavailable, we may replace it with one of equal or greater value that keeps the basket's look and theme. If your basket arrives damaged or not as ordered, reply to this email within 48 hours of delivery with a photo and we will make it right.",
+        "Toutes les ventes sont finales. Nos paniers sont périssables et préparés à la commande : nous ne pouvons accepter ni retour, ni échange, ni annulation. Si un article n'est plus disponible, nous pourrons le remplacer par un produit de valeur égale ou supérieure qui respecte le style et le thème du panier. Si votre panier arrive endommagé ou ne correspond pas à votre commande, répondez à ce courriel dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
       )
     )} <a href="${SITE}/terms" style="color:#b0894e">${escapeHtml(
       L("Terms of Service", "Conditions d'utilisation")

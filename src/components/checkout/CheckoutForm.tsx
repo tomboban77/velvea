@@ -647,6 +647,13 @@ export function CheckoutForm({
                 ? "Nos paniers sont périssables et préparés à la commande : aucun retour, échange, annulation ni remboursement pour changement d'avis. Si votre panier arrive endommagé ou ne correspond pas à votre commande, écrivez-nous dans les 48 heures et nous y remédierons."
                 : "Our baskets are perishable and packed to order, so there are no returns, exchanges, cancellations or change-of-mind refunds. If your basket arrives damaged or not as ordered, write to us within 48 hours and we will make it right."}
             </p>
+            {/* Shown before payment so a substitute isn't read as "not as ordered" under the
+                promise above. Same terms as the Substitutions section of /terms. */}
+            <p className="mt-1">
+              {locale === "fr"
+                ? "Si un article n'est plus disponible, nous pourrons le remplacer par un produit de valeur égale ou supérieure qui respecte le style et le thème du panier."
+                : "If an item is unavailable, we may replace it with one of equal or greater value that keeps the basket's look and theme."}
+            </p>
             <p className="mt-2 text-muted">
               {locale === "fr" ? "En passant cette commande, vous acceptez nos " : "By placing this order you agree to our "}
               <Link href="/terms" className="underline hover:text-violet-deep">
