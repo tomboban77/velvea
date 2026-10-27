@@ -18,6 +18,10 @@ Add many products at once, with images, in one command.
    Each image is uploaded to Cloudinary and each product is created.
    Re-running updates products that already exist (matched by name/slug) and replaces their images.
 
+4. **Refresh the storefront**: in the admin, open Settings and click **Refresh storefront**.
+   Product pages show the change straight away, but the homepage is cached for up to an hour
+   and the import runs outside the admin, so it does not clear that cache on its own.
+
 ## Fields (per product)
 
 | Field | Required | Notes |

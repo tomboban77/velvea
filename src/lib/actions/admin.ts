@@ -361,6 +361,20 @@ export async function updateSettings(patch: Partial<SiteSettings>) {
   revalidatePath("/admin/settings");
 }
 
+/**
+ * Drop every cached storefront page (the hourly homepage, sitemap, llms.txt).
+ * Admin saves already do this; the button exists for changes made outside the
+ * admin, such as `npm run import:products` or a direct database fix, which
+ * would otherwise take up to an hour to reach the homepage. It is an admin
+ * button rather than a public API so there is no secret to leak or endpoint
+ * to spam.
+ */
+export async function refreshStorefront() {
+  await guard("products:write");
+  revalidatePath("/", "layout");
+  clearZoneCache();
+}
+
 // ---------------------------------------------------------------------------
 // Collections
 // ---------------------------------------------------------------------------
