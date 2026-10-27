@@ -223,10 +223,12 @@ Consent Mode v2 and URL-param redaction.
 
 ## 6. Content
 
-- [ ] **Guides have routes but no published articles.** The content plan in SEO-BRIEF §V-12 cannot
-      start until something is published. Article bodies are sanitized on save. Owner decision
-      24 Sept: Claude drafts them from owner-supplied topics and facts, owner reviews before publish.
-      **Waiting on the topic list.**
+- [x] **Guides are published.** 13 live as of 26 Oct (corporate, Diwali, Christmas, birthday,
+      anniversary, gift messages, real-estate closing gifts, Ontario gifting calendar and more).
+      Newest: `birthday-gifts-for-someone-who-doesnt-want-anything`, source text in
+      `docs/articles/`, cross-linked with `birthday-gift-basket-ideas` and
+      `what-to-write-in-a-gift-message`. Check the existing list in Admin -> Articles before
+      drafting a new topic so guides don't compete with each other.
 - [ ] Review the FAQ and delivery copy against the confirmed delivery rules from §1.
 
 ## 7. Code — deferred by decision, not forgotten
