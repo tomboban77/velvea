@@ -480,7 +480,9 @@ export function ProductDetail({
                 <h2 className="h-sub mt-3 balance">{product.tagline || product.name}</h2>
               </div>
               <div className="lg:col-span-8">
-                <p className="max-w-3xl text-[1.05rem] leading-[1.75] text-ink-soft pretty">{product.description}</p>
+                {/* pre-line keeps the blank lines between paragraphs that
+                    descriptions are written with; single-paragraph text is unaffected. */}
+                <p className="max-w-3xl whitespace-pre-line text-[1.05rem] leading-[1.75] text-ink-soft pretty">{product.description}</p>
               </div>
             </div>
           </div>

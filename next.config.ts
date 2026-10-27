@@ -58,6 +58,17 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
+  // Renamed products keep their old URLs alive: shared links and anything a
+  // search engine already crawled land on the new page instead of a 404.
+  async redirects() {
+    const renamed: [string, string][] = [
+      ["executive-reserve-corporate-gift-hamper", "golden-hour-coffee-gourmet-gift-box"],
+    ];
+    return renamed.flatMap(([from, to]) => [
+      { source: `/products/${from}`, destination: `/products/${to}`, permanent: true },
+      { source: `/fr/products/${from}`, destination: `/fr/products/${to}`, permanent: true },
+    ]);
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
