@@ -538,7 +538,7 @@
     "cityDescriptionNextDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario by our own team, next-day from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionShipping": "Hand-composed gift baskets and hampers shipped to {city}, Ontario by tracked courier from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "customRequestTitle": "Custom gift basket request",
-    "customRequestDescription": "Tell us the products you'd like in a gift basket and Velvéa will send you a final price. Hand-packed in Mississauga, delivered across the GTA and Ontario."
+    "customRequestDescription": "Send Velvéa a list of the products you'd like and we'll arrange them by hand in our own style, with a final price first. Made in Mississauga, delivered across the GTA and Ontario."
   },
   "delivery": {
     "eyebrow": "Delivery areas",
@@ -592,7 +592,7 @@
   "customRequest": {
     "eyebrow": "Custom basket",
     "title": "Tell us what you'd like in your basket",
-    "lede": "Describe the basket you have in mind: any products, brands or treats. We'll work out a final price and send it to you.",
+    "lede": "Send us a list of the products, brands or treats you'd like. We'll find them, arrange them by hand the way we finish every Velvéa basket, and send you a final price.",
     "howTitle": "How it works",
     "s1": "Tell us what to include",
     "s1Sub": "Products, brands, flavours or sizes. As much or as little detail as you have.",
@@ -637,7 +637,7 @@
     "doneAnother": "Send another request",
     "homeEyebrow": "Custom basket",
     "homeTitle": "Have something specific in mind?",
-    "homeLede": "Tell us the products you'd like and we'll send you a price for a basket made just for them.",
+    "homeLede": "Like the way we put our baskets together? Send us a list of what you'd like inside and we'll arrange it in the same style, with a price before anything is charged.",
     "homeCta": "Request a custom basket",
     "errors": {
       "required": "This field is required.",

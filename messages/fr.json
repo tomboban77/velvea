@@ -538,7 +538,7 @@
     "cityDescriptionNextDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario, par notre équipe dès le lendemain, à partir de {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionShipping": "Paniers-cadeaux composés à la main et expédiés à {city}, en Ontario, par transporteur avec suivi dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "customRequestTitle": "Demande de panier cadeau sur mesure",
-    "customRequestDescription": "Dites-nous quels produits vous souhaitez dans un panier cadeau et Velvéa vous enverra un prix final. Emballé à la main à Mississauga, livré dans la RGT et en Ontario."
+    "customRequestDescription": "Envoyez à Velvéa la liste des produits que vous aimeriez : nous les disposons à la main dans notre style, avec un prix final d’abord. Préparé à Mississauga, livré dans la RGT et en Ontario."
   },
   "delivery": {
     "eyebrow": "Zones de livraison",
@@ -592,7 +592,7 @@
   "customRequest": {
     "eyebrow": "Panier sur mesure",
     "title": "Dites-nous ce que vous aimeriez dans votre panier",
-    "lede": "Décrivez le panier que vous imaginez : produits, marques ou gourmandises. Nous établirons un prix final et vous l’enverrons.",
+    "lede": "Envoyez-nous la liste des produits, marques ou gourmandises que vous aimeriez. Nous les trouvons, les disposons à la main comme chaque panier Velvéa et vous envoyons un prix final.",
     "howTitle": "Comment ça fonctionne",
     "s1": "Dites-nous quoi inclure",
     "s1Sub": "Produits, marques, saveurs ou formats. Autant ou aussi peu de détails que vous le souhaitez.",
@@ -637,7 +637,7 @@
     "doneAnother": "Envoyer une autre demande",
     "homeEyebrow": "Panier sur mesure",
     "homeTitle": "Vous avez une idée précise en tête ?",
-    "homeLede": "Dites-nous quels produits vous souhaitez et nous vous enverrons un prix pour un panier composé rien que pour la personne.",
+    "homeLede": "Vous aimez la façon dont nous composons nos paniers ? Envoyez-nous la liste de ce que vous voulez à l’intérieur : nous le présentons dans le même style, avec un prix avant tout paiement.",
     "homeCta": "Demander un panier sur mesure",
     "errors": {
       "required": "Ce champ est obligatoire.",

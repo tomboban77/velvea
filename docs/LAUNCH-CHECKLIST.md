@@ -223,8 +223,9 @@ Consent Mode v2 and URL-param redaction.
 
 ## 6. Content
 
-- [x] **Guides are published.** 13 live as of 26 Oct (corporate, Diwali, Christmas, birthday,
-      anniversary, gift messages, real-estate closing gifts, Ontario gifting calendar and more).
+- [x] **Guides are published.** 15 live as of 26 Oct (corporate, Diwali, Christmas, birthday,
+      anniversary, new baby, gift messages, real-estate closing gifts, Ontario gifting calendar,
+      the INARA candle partnership and more).
       Newest: `birthday-gifts-for-someone-who-doesnt-want-anything`, source text in
       `docs/articles/`, cross-linked with `birthday-gift-basket-ideas` and
       `what-to-write-in-a-gift-message`. Check the existing list in Admin -> Articles before
