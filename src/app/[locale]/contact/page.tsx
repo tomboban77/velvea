@@ -3,7 +3,9 @@ import { getSettings } from "@/lib/settings";
 import { Mail, Phone, MapPin, Clock, Building2, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { pageMetadata } from "@/lib/seo";
+import { localBusinessJsonLd, pageMetadata, siteOrigin } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { CITY_PAGES } from "@/lib/cities";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -33,8 +35,18 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
     { icon: Clock, label: fr ? "Heures" : "Hours", value: s.contact.hours },
   ];
 
+  const cities = CITY_PAGES.map((c) => ({ slug: c.slug, name: fr ? c.name.fr : c.name.en }));
+
   return (
     <div>
+      <JsonLd
+        data={localBusinessJsonLd({
+          origin: siteOrigin(),
+          contact: s.contact,
+          mapUrl: s.social.googleBusiness,
+          areaServed: cities.map((c) => c.name),
+        })}
+      />
       <PageHeader
         eyebrow="Contact"
         title={fr ? "Parlons cadeaux" : "Let's talk gifts"}
@@ -61,6 +73,49 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <div key={label} className="flex items-center gap-4 rounded-lg border border-line bg-white p-5">{inner}</div>
             );
           })}
+        </div>
+
+        {/* The page search engines and AI tools check to confirm who we are and
+            where we work: the service area and the Business Profile belong here,
+            in the same words as the delivery pages and the profile itself. */}
+        <div className="mt-10 grid gap-8 lg:grid-cols-2">
+          <section>
+            <h2 className="font-display text-[1.4rem] font-medium">{fr ? "Comment commander" : "How ordering works"}</h2>
+            <p className="mt-3 text-muted">
+              {fr
+                ? "Commandez en ligne à toute heure. Dans nos zones locales, une commande passée avant l'heure limite peut être livrée le jour même ; le prix exact et les dates disponibles s'affichent au paiement dès que vous entrez le code postal. Pour modifier un panier ou en composer un sur mesure, envoyez une demande : nous répondons avec un prix final, et rien n'est facturé avant votre accord."
+                : "Order online at any hour. In our local zones, an order placed before the cutoff can arrive the same day; the exact fee and the available dates show at checkout as soon as you enter the postal code. To change a basket or have one made to your list, send a request and we reply with a final price. Nothing is charged until you approve it."}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+              <Link href="/custom-basket" className="underline hover:text-violet-deep">{fr ? "Demande de panier sur mesure" : "Custom basket request"}</Link>
+              <Link href="/faq" className="underline hover:text-violet-deep">{fr ? "Questions fréquentes" : "Frequently asked questions"}</Link>
+              {s.social.googleBusiness && (
+                <a href={s.social.googleBusiness} className="underline hover:text-violet-deep" target="_blank" rel="noopener noreferrer">
+                  {fr ? "Velvéa sur Google" : "Velvéa on Google"}
+                </a>
+              )}
+            </div>
+          </section>
+          <section>
+            <h2 className="font-display text-[1.4rem] font-medium">{fr ? "Où nous livrons" : "Where we deliver"}</h2>
+            <p className="mt-3 text-muted">
+              {fr
+                ? "Notre équipe livre elle-même à Mississauga et dans le Grand Toronto, et les paniers qui voyagent bien sont expédiés par messager avec suivi partout au Canada, sauf au Québec pour l'instant."
+                : "Our own team delivers across Mississauga and the GTA, and baskets that travel well ship by tracked courier across Canada, except Quebec for now."}
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {cities.map((c) => (
+                <li key={c.slug}>
+                  <Link href={`/delivery/${c.slug}`} className="inline-block rounded border border-line bg-white px-3 py-1.5 text-sm hover:border-violet-deep">
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link href="/delivery" className="link-draw mt-4 text-sm">
+              {fr ? "Zones, frais et heures limites" : "Delivery areas, fees and cutoffs"}
+            </Link>
+          </section>
         </div>
 
         <div className="band-ink mt-8 flex flex-col gap-5 rounded-lg p-7 sm:flex-row sm:items-center sm:p-9">

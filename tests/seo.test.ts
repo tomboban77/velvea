@@ -7,13 +7,16 @@ import {
   indexingMode,
   jsonLdString,
   listingPolicy,
+  localBusinessJsonLd,
   localePath,
   organizationJsonLd,
   pageMetadata,
+  parseOpeningHours,
   parsePage,
   pathIndexable,
   productJsonLd,
   productSoldOut,
+  recipientPhrase,
   siteOrigin,
   totalPages,
 } from "@/lib/seo";
@@ -391,5 +394,61 @@ describe("buildRobots", () => {
     expect(rule.disallow).toContain("/account");
     expect(rule.disallow).not.toContain("/search");
     expect(robots.sitemap).toBe(`${ORIGIN}/sitemap.xml`);
+  });
+});
+
+describe("recipient titles", () => {
+  // Menu labels used to go straight into "Gift baskets and hampers {name}",
+  // publishing "Gift baskets and hampers A Friend".
+  it("reads naturally after for / pour", () => {
+    expect(recipientPhrase("For Him", "en")).toBe("him");
+    expect(recipientPhrase("A Friend", "en")).toBe("a friend");
+    expect(recipientPhrase("Clients", "en")).toBe("clients");
+    expect(recipientPhrase("Pour elle", "fr")).toBe("elle");
+    expect(recipientPhrase("Clients", "fr")).toBe("les clients");
+    expect(recipientPhrase("Famille", "fr")).toBe("la famille");
+    expect(recipientPhrase("Un ami", "fr")).toBe("un ami");
+  });
+});
+
+describe("LocalBusiness", () => {
+  it("parses the hours field the contact page shows", () => {
+    expect(parseOpeningHours("Mon–Sun, 8am–6pm ET")).toEqual({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "08:00",
+      closes: "18:00",
+    });
+    expect(parseOpeningHours("Mon-Fri 9:30am - 5pm")).toMatchObject({
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "09:30",
+      closes: "17:00",
+    });
+    expect(parseOpeningHours("12pm–12am")).toBeNull();
+  });
+
+  it("omits hours it cannot read rather than guessing", () => {
+    expect(parseOpeningHours("By appointment")).toBeNull();
+    expect(parseOpeningHours("Sun–Mon, 8am–6pm")).toBeNull();
+    const ld = localBusinessJsonLd({ origin: ORIGIN, contact: { hours: "By appointment" }, areaServed: [] });
+    expect(ld).not.toHaveProperty("openingHoursSpecification");
+  });
+
+  it("matches the Business Profile and points at the Organization", () => {
+    const ld = localBusinessJsonLd({
+      origin: ORIGIN,
+      contact: { phone: "+1 (431) 726-1706", addressLine: "5105 Hurontario Street", city: "Mississauga", province: "ON", postalCode: "L4Z 0C9", hours: "Mon–Sun, 8am–6pm ET" },
+      mapUrl: "https://maps.app.goo.gl/abc?g_st=ic",
+      areaServed: ["Mississauga", "Toronto"],
+    });
+    expect(ld).toMatchObject({
+      "@type": "LocalBusiness",
+      "@id": `${ORIGIN}/#localbusiness`,
+      name: "Velvea",
+      hasMap: "https://maps.app.goo.gl/abc",
+      areaServed: [{ "@type": "City", name: "Mississauga" }, { "@type": "City", name: "Toronto" }],
+      parentOrganization: { "@id": `${ORIGIN}/#organization` },
+    });
+    expect((ld.address as Record<string, string>).postalCode).toBe("L4Z 0C9");
   });
 });

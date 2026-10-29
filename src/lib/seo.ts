@@ -276,6 +276,27 @@ export function canonicalSocialUrl(url: string): string | null {
   }
 }
 
+/**
+ * A recipient collection name as it reads after "for" / "pour". The stored
+ * names are menu labels ("For Him", "A Friend", "Clients"), and dropping them
+ * straight into "Gift baskets and hampers {name}" published titles like
+ * "Gift baskets and hampers A Friend". French also wants an article before a
+ * bare plural noun ("pour les clients", not "pour clients").
+ */
+const FR_RECIPIENT_ARTICLE: Record<string, string> = {
+  famille: "la famille",
+  couples: "les couples",
+  "nouveaux parents": "les nouveaux parents",
+  clients: "les clients",
+  "employés": "les employés",
+};
+
+export function recipientPhrase(name: string, locale: string): string {
+  const fr = locale === "fr";
+  const bare = name.trim().replace(fr ? /^pour\s+/i : /^for\s+/i, "").toLowerCase();
+  return fr ? FR_RECIPIENT_ARTICLE[bare] ?? bare : bare;
+}
+
 export function organizationJsonLd(opts: {
   origin: string;
   contact: OrgContact;
@@ -297,8 +318,8 @@ export function organizationJsonLd(opts: {
     alternateName: "Velvea",
     url: `${origin}/`,
     logo: `${origin}/brand/velvea-logo.png`,
-    // Online-only: there is no shop customers can visit, which is why this is
-    // an Organization with a service area and not a LocalBusiness.
+    // The brand entity. The studio's map listing (pickup by appointment) is
+    // described separately by localBusinessJsonLd on the homepage and /contact.
     areaServed: { "@type": "Country", name: "Canada" },
     ...(contact.email ? { email: contact.email } : {}),
     ...(contact.phone ? { telephone: contact.phone } : {}),
@@ -315,6 +336,87 @@ export function organizationJsonLd(opts: {
         }
       : {}),
     ...(sameAs.length ? { sameAs } : {}),
+  };
+}
+
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+/**
+ * Hours are one free-text admin field ("Mon–Sun, 8am–6pm ET"), shown as typed
+ * on /contact. Structured data needs them as a specification, so the common
+ * "day–day, time–time" shape is parsed and anything else returns null: no
+ * hours in the markup beats hours Google would hold against the Business
+ * Profile as a mismatch.
+ */
+export function parseOpeningHours(hours: string): JsonLdValue | null {
+  const day = "(mon|tue|wed|thu|fri|sat|sun)[a-z]*\\.?";
+  const time = "(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)";
+  const m = new RegExp(`^\\s*${day}\\s*[–-]\\s*${day}\\s*,?\\s*${time}\\s*[–-]\\s*${time}`, "i").exec(hours);
+  if (!m) return null;
+  const dayIndex = (s: string) => DAYS.findIndex((d) => d.toLowerCase().startsWith(s.toLowerCase()));
+  const clock = (h: string, min: string | undefined, ampm: string) => {
+    const hour = (Number(h) % 12) + (ampm.toLowerCase() === "pm" ? 12 : 0);
+    return `${String(hour).padStart(2, "0")}:${min ?? "00"}`;
+  };
+  const from = dayIndex(m[1]);
+  const to = dayIndex(m[2]);
+  if (from < 0 || to < from || Number(m[3]) > 12 || Number(m[6]) > 12) return null;
+  return {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: DAYS.slice(from, to + 1),
+    opens: clock(m[3], m[4], m[5]),
+    closes: clock(m[6], m[7], m[8]),
+  };
+}
+
+/**
+ * The website's side of the Google Business Profile. The profile is a
+ * service-area listing for the Mississauga studio (pickup by appointment), and
+ * this node carries the same name, phone, hours and service area so Google can
+ * tie the site to the map listing. The Organization node stays the brand
+ * entity; this one points back to it.
+ *
+ * Name is "Velvea" because that is how the profile is spelled; the accented
+ * brand rides along as alternateName.
+ */
+export function localBusinessJsonLd(opts: {
+  origin: string;
+  contact: OrgContact & { hours?: string };
+  /** The Business Profile's Maps URL (settings.social.googleBusiness). */
+  mapUrl?: string;
+  /** City names with a delivery page. */
+  areaServed: string[];
+}): JsonLdValue {
+  const { origin, contact } = opts;
+  const hours = contact.hours ? parseOpeningHours(contact.hours) : null;
+  const map = opts.mapUrl ? canonicalSocialUrl(opts.mapUrl) : null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${origin}/#localbusiness`,
+    name: "Velvea",
+    alternateName: BRAND,
+    url: `${origin}/`,
+    image: `${origin}${DEFAULT_OG_IMAGE}`,
+    logo: `${origin}/brand/velvea-logo.png`,
+    ...(contact.email ? { email: contact.email } : {}),
+    ...(contact.phone ? { telephone: contact.phone } : {}),
+    ...(contact.addressLine
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: contact.addressLine,
+            addressLocality: contact.city,
+            addressRegion: contact.province,
+            postalCode: contact.postalCode,
+            addressCountry: "CA",
+          },
+        }
+      : {}),
+    ...(hours ? { openingHoursSpecification: [hours] } : {}),
+    ...(map ? { hasMap: map } : {}),
+    areaServed: opts.areaServed.map((name) => ({ "@type": "City", name })),
+    parentOrganization: { "@id": `${origin}/#organization` },
   };
 }
 

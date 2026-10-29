@@ -1271,7 +1271,7 @@ html[data-splash] .splash-mark-wrap {
 }
 html[data-splash] .splash-mark {
   aspect-ratio: 641 / 177;
-  background: url("/brand/velvea-lockup.png") center / contain no-repeat;
+  background: url("/brand/velvea-lockup.webp") center / contain no-repeat;
   /* resolves out of soft focus — watercolour, not a slide-in */
   animation: velvea-splash-focus 1.2s var(--ease-out-soft) 0.1s both;
 }
@@ -1283,8 +1283,8 @@ html[data-splash] .splash-sheen {
   inset: 0;
   overflow: hidden;
   mix-blend-mode: screen;
-  -webkit-mask: url("/brand/velvea-lockup.png") center / contain no-repeat;
-  mask: url("/brand/velvea-lockup.png") center / contain no-repeat;
+  -webkit-mask: url("/brand/velvea-lockup.webp") center / contain no-repeat;
+  mask: url("/brand/velvea-lockup.webp") center / contain no-repeat;
 }
 html[data-splash] .splash-sheen::before {
   content: "";
@@ -1301,7 +1301,7 @@ html[data-splash] .splash-sheen::before {
   animation: velvea-splash-sheen 1.3s var(--ease-in-out-soft) 1.3s both;
 }
 /* Without mask support the band would wash over the whole box, so it sits out. */
-@supports not ((-webkit-mask-image: url("/brand/velvea-lockup.png")) or (mask-image: url("/brand/velvea-lockup.png"))) {
+@supports not ((-webkit-mask-image: url("/brand/velvea-lockup.webp")) or (mask-image: url("/brand/velvea-lockup.webp"))) {
   html[data-splash] .splash-sheen { display: none; }
 }
 

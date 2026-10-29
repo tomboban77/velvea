@@ -40,6 +40,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           <Field label="Province"><TextInput value={s.contact.province} onChange={(v) => setS({ ...s, contact: { ...s.contact, province: v } })} /></Field>
           <Field label="Postal code"><TextInput value={s.contact.postalCode} onChange={(v) => setS({ ...s, contact: { ...s.contact, postalCode: v } })} /></Field>
           <Field label="Hours"><TextInput value={s.contact.hours} onChange={(v) => setS({ ...s, contact: { ...s.contact, hours: v } })} /></Field>
+          <Field label="Google review link (g.page/r/…)"><TextInput value={s.contact.googleReviewUrl} onChange={(v) => setS({ ...s, contact: { ...s.contact, googleReviewUrl: v } })} /></Field>
         </div>
       </Card>
 

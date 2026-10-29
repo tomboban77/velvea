@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getProductsByCollection } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { labelFor, type NavLink } from "@/lib/nav";
-import { PAGE_SIZE, collectionPageJsonLd, listingPolicy, pageMetadata, parsePage, siteOrigin, totalPages, type JsonLdValue } from "@/lib/seo";
+import { PAGE_SIZE, collectionPageJsonLd, listingPolicy, pageMetadata, parsePage, recipientPhrase, siteOrigin, totalPages, type JsonLdValue } from "@/lib/seo";
 
 /**
  * Shared plumbing for the three collection listings (/occasions, /recipients,
@@ -67,13 +67,15 @@ export async function collectionMetadata(opts: {
   // only the fallback for collections nobody has written copy for yet.
   const storedTitle = tc(data.collection?.seoTitle, locale);
   const storedDescription = tc(data.collection?.seoDescription, locale) || tc(data.collection?.description, locale);
-  const title = storedTitle || (type === "RECIPIENT" ? t("recipientTitle", { name }) : t("collectionTitle", { name }));
+  const title =
+    storedTitle ||
+    (type === "RECIPIENT" ? t("recipientTitle", { name: recipientPhrase(name, locale) }) : t("collectionTitle", { name }));
   const description =
     storedDescription ||
     (type === "OCCASION"
       ? t("occasionDescription", { name: name.toLowerCase() })
       : type === "RECIPIENT"
-      ? t("recipientDescription", { name: name.toLowerCase() })
+      ? t("recipientDescription", { name: recipientPhrase(name, locale) })
       : t("categoryDescription", { name }));
 
   const policy = listingPolicy({ page: current, filtered: data.filtered, empty: data.total === 0 });

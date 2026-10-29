@@ -220,8 +220,13 @@ verification in Google's hands (up to 5 days, no promised date).
       (`20260924100000_abandoned_cart` — adds `Order.abandonedEmailAt` and the `EmailOptOut` table).
 - [ ] **Move DMARC from `p=none` to `p=quarantine`** once a couple of weeks of reports look clean.
       Today you are monitoring spoofing rather than blocking it.
-- [ ] **Decide the real opening hours.** The site says Mon–Sat 9am–6pm ET; the Google Business
-      Profile says Mon–Sun 8am–6pm. A NAP mismatch is a genuine local-SEO drag.
+- [ ] **Opening hours: confirm on the profile.** The live /contact page now says Mon–Sun 8am–6pm ET
+      (checked 29 Oct 2026), which matches what the Business Profile was set to. Tick once the
+      profile is confirmed unchanged.
+- [ ] **Work through [SEO-AUDIT.md](./SEO-AUDIT.md)** (29 Oct 2026). Code and product-copy fixes are
+      done (see its Status section). Open: set the Google review link in Admin -> Settings, set
+      `INDEXNOW_KEY` in Vercel, then the owner-only local work (Business Profile category
+      "Gift basket store", reviews, citations, press, Merchant Center, About/Corporate copy).
 - [ ] **Decide whether to track inventory.** All 15 active products are `inventory = null`
       (unlimited), so the "Only N left" and sold-out UI — which is built and correct — never
       appears. Set numbers only where stock is genuinely limited.

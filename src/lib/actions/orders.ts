@@ -13,6 +13,7 @@ import {
   type OrderEmailItem,
 } from "@/lib/email";
 import { releaseDiscount } from "@/lib/discounts";
+import { getSettings } from "@/lib/settings";
 import type { Order, OrderItem, OrderStatus } from "@prisma/client";
 
 type OrderWithItems = Order & { items: OrderItem[] };
@@ -384,12 +385,14 @@ export async function markOrderDelivered(
   });
 
   if (opts.notify !== false) {
+    const { contact, social } = await getSettings();
     await sendOrderDelivered({
       orderNumber: order.orderNumber,
       email: order.email,
       locale: order.locale,
       deliveryMethod: order.deliveryMethod,
       shipping: shippingOf(order),
+      reviewUrl: contact.googleReviewUrl || social.googleBusiness || null,
     });
   }
 }

@@ -2,6 +2,8 @@ import { getSettings } from "@/lib/settings";
 import { CITY_PAGES } from "@/lib/cities";
 import { OCCASIONS, RECIPIENTS, CATEGORIES } from "@/lib/nav";
 import { siteOrigin } from "@/lib/seo";
+import { getPublishedArticles, getSitemapCollections } from "@/lib/queries";
+import { t as tc } from "@/lib/i18n-content";
 
 export const revalidate = 3600;
 
@@ -15,6 +17,29 @@ export async function GET() {
   const origin = siteOrigin();
   const { contact } = await getSettings();
   const url = (p: string) => `${origin}${p}`;
+
+  // Only collections that hold products: an empty one is noindex on the site,
+  // so pointing an assistant at it sends people to a page with nothing to buy.
+  // If the database is unreachable, list the menus as they are rather than none.
+  const stocked = await getSitemapCollections()
+    .then((rows) => new Set(rows.filter((c) => c.productCount > 0).map((c) => `${c.type}:${c.slug}`)))
+    .catch(() => null);
+  const has = (type: string) => (link: { slug: string }) => !stocked || stocked.has(`${type}:${link.slug}`);
+  const browse = (label: string, type: string, base: string, links: { slug: string; en: string }[]) => {
+    const shown = links.filter(has(type));
+    return shown.length ? `- ${label}: ${shown.map((l) => `[${l.en}](${url(`${base}/${l.slug}`)})`).join(", ")}` : "";
+  };
+  const browseLines = [
+    browse("Occasions", "OCCASION", "/occasions", OCCASIONS),
+    browse("Recipients", "RECIPIENT", "/recipients", RECIPIENTS),
+    browse("Categories", "CATEGORY", "/category", CATEGORIES),
+  ]
+    .filter(Boolean)
+    .join("\n");
+  const guides = await getPublishedArticles({ limit: 100 });
+  const guideSection = guides.length
+    ? `\n## Gift guides\n\n${guides.map((g) => `- [${tc(g.title, "en")}](${url(`/guides/${g.slug}`)})`).join("\n")}\n`
+    : "";
 
   const body = `# Velvéa
 
@@ -38,10 +63,8 @@ ${CITY_PAGES.map((c) => `- [${c.name.en}](${url(`/delivery/${c.slug}`)})`).join(
 
 ## Browse
 
-- Occasions: ${OCCASIONS.map((o) => `[${o.en}](${url(`/occasions/${o.slug}`)})`).join(", ")}
-- Recipients: ${RECIPIENTS.map((r) => `[${r.en}](${url(`/recipients/${r.slug}`)})`).join(", ")}
-- Categories: ${CATEGORIES.map((c) => `[${c.en}](${url(`/category/${c.slug}`)})`).join(", ")}
-
+${browseLines}
+${guideSection}
 ## Optional
 
 - [Sitemap](${url("/sitemap.xml")})

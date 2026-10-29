@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { notifyIndexNow } from "@/lib/indexnow";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getVerifiedAdmin } from "@/lib/auth";
@@ -175,6 +176,7 @@ async function createProductImpl(input: ProductInput): Promise<ActionResult> {
 
   revalidatePath("/admin/products");
   revalidatePath("/", "layout");
+  if (data.status === "ACTIVE") notifyIndexNow([`/products/${slug}`]);
   return { ok: true, id: product.id };
 }
 
@@ -196,6 +198,7 @@ async function updateProductImpl(
   await guard("products:write");
   const data = productSchema.parse(input);
   const slug = data.slug ? await uniqueSlug(data.slug, productId) : undefined;
+  const before = await prisma.product.findUnique({ where: { id: productId }, select: { slug: true } });
 
   const existingVariants = await prisma.productVariant.findMany({
     where: { productId },
@@ -279,6 +282,8 @@ async function updateProductImpl(
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${productId}`);
   revalidatePath("/", "layout");
+  // A rename changes both URLs: the old one now 404s, the new one is new.
+  notifyIndexNow([...new Set([before?.slug, slug].filter((s): s is string => Boolean(s)))].map((s) => `/products/${s}`));
   return { ok: true, id: productId };
 }
 
@@ -296,7 +301,8 @@ async function deleteProductImpl(productId: string): Promise<ActionResult> {
     where: { productId, publicId: { not: null } },
     select: { publicId: true },
   });
-  await prisma.product.delete({ where: { id: productId } });
+  const gone = await prisma.product.delete({ where: { id: productId } });
+  notifyIndexNow([`/products/${gone.slug}`]);
   for (const img of images) if (img.publicId) await deleteImage(img.publicId);
   revalidatePath("/admin/products");
   revalidatePath("/", "layout");
@@ -310,7 +316,8 @@ export async function setProductStatus(
   try {
     await guard("products:write");
     const parsed = z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]).parse(status);
-    await prisma.product.update({ where: { id: productId }, data: { status: parsed } });
+    const updated = await prisma.product.update({ where: { id: productId }, data: { status: parsed } });
+    notifyIndexNow([`/products/${updated.slug}`]);
     revalidatePath("/admin/products");
     revalidatePath("/", "layout");
     return { ok: true, id: productId };

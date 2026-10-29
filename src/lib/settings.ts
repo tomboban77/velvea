@@ -10,6 +10,12 @@ export type SiteSettings = {
     province: string;
     postalCode: string;
     hours: string;
+    /**
+     * The Business Profile's "Ask for reviews" link (g.page/r/...). The
+     * delivered email asks every customer with it; when empty it falls back to
+     * the profile's Maps URL, where the review button is one tap away.
+     */
+    googleReviewUrl: string;
   };
   social: {
     instagram: string;
@@ -83,6 +89,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     province: "ON",
     postalCode: "L4Z 0C9",
     hours: "Mon–Sun, 8am–6pm ET",
+    googleReviewUrl: "",
   },
   // Empty, not placeholder handles. These defaults publish twice: as the
   // footer's social buttons and as the homepage Organization `sameAs`, which is

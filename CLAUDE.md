@@ -110,14 +110,16 @@ tests/                  Vitest suites + helpers (empty.ts aliases "server-only",
   `<JsonLd>` (`src/components/seo/JsonLd.tsx`). Listing pages share `src/lib/collection-page.ts`
   (pagination via `?page=`, sort → canonical to clean URL, price/recipient filters → noindex,
   empty collection → noindex). Untranslated FR products/guides (`hasFrench` false) get no hreflang
-  pair and a noindex FR page.
+  pair and a noindex FR page. `/` and `/contact` also emit a `LocalBusiness` node matching the Google
+  Business Profile (`localBusinessJsonLd`). Product and guide saves ping IndexNow
+  (`src/lib/indexnow.ts`, off unless `INDEXNOW_KEY` is set). Open work: `docs/SEO-AUDIT.md`.
 - Styling: Tailwind utilities + component classes from `globals.css`; plum is the single brand
   colour, 4px radii. Prefer editing existing classes over adding new CSS.
 - Comments in the code explain *why* (past bugs, legal constraints). Keep that habit.
 
 ## Testing
 
-`npm test` runs 8 suites (~147 tests) covering pricing, discount reservation, the Stripe webhook,
+`npm test` runs 15 suites (~217 tests) covering pricing, discount reservation, the Stripe webhook,
 email error handling, rate limiting, city/delivery data, message-catalogue integrity
 (`tests/messages.test.ts`: EN/FR key parity, ICU placeholder agreement, checkout copy resolves)
 and the SEO layer (`tests/seo.test.ts`: origin, indexing

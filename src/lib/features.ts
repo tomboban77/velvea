@@ -40,4 +40,6 @@ export const CUSTOM_BUILDER_ENABLED = false;
  * hold up the largest paint, so if Core Web Vitals in Search Console turn, set
  * this to false and the pre-paint script stops arming it.
  */
-export const SPLASH_ENABLED = true;
+// Off since 29 Oct 2026: Lighthouse mobile measured LCP at 4.5 to 6.2 s with it
+// on, and it greets exactly the visitors search sends (first visits).
+export const SPLASH_ENABLED = false;

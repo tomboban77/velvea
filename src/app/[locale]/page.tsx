@@ -20,7 +20,9 @@ import { getSettings } from "@/lib/settings";
 import { toProductView } from "@/lib/view";
 import { t as tc } from "@/lib/i18n-content";
 import { formatMoney } from "@/lib/utils";
-import { pageMetadata } from "@/lib/seo";
+import { localBusinessJsonLd, pageMetadata, siteOrigin } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { CITY_PAGES } from "@/lib/cities";
 
 const UNDER_CENTS = 10000;
 
@@ -41,7 +43,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations("collection");
 
-  const { home } = await getSettings();
+  const { home, contact, social } = await getSettings();
   const [{ products: all }, featured, picked] = await Promise.all([
     getAllProducts({ take: Math.max(12, home.collectionLimit) }),
     getFeaturedProducts(12),
@@ -100,6 +102,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
+      <JsonLd
+        data={localBusinessJsonLd({
+          origin: siteOrigin(),
+          contact,
+          mapUrl: social.googleBusiness,
+          areaServed: CITY_PAGES.map((c) => (locale === "fr" ? c.name.fr : c.name.en)),
+        })}
+      />
       <Hero products={heroProducts} />
       <PromiseBar />
       <OccasionsRail />

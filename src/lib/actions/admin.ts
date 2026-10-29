@@ -10,6 +10,7 @@ import { clearZoneCache } from "@/lib/zones";
 import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { notifyIndexNow } from "@/lib/indexnow";
 import {
   cancelOrder,
   markOrderPaid,
@@ -308,6 +309,7 @@ const settingsSchema = z.object({
       province: z.string().max(2),
       postalCode: z.string().max(12),
       hours: z.string().max(120),
+      googleReviewUrl: z.union([z.literal(""), z.string().url().max(300)]),
     })
     .partial()
     .optional(),
@@ -613,7 +615,7 @@ export async function upsertArticle(input: z.input<typeof articleSchema>) {
   const bodyFr = sanitizeHtml(d.bodyFr);
 
   const existing = d.id
-    ? await prisma.article.findUnique({ where: { id: d.id }, select: { publishedAt: true } })
+    ? await prisma.article.findUnique({ where: { id: d.id }, select: { publishedAt: true, slug: true } })
     : null;
 
   const data = {
@@ -640,6 +642,8 @@ export async function upsertArticle(input: z.input<typeof articleSchema>) {
   }
   revalidatePath("/admin/articles");
   revalidatePath("/guides");
+  // An edit keeps the stored slug (the update above does not write one).
+  notifyIndexNow([`/guides/${existing?.slug ?? slug}`, "/guides"]);
   return { slug };
 }
 
@@ -648,6 +652,7 @@ export async function deleteArticle(articleId: string) {
   const d = parse(z.object({ id }), { id: articleId });
   const a = await prisma.article.findUnique({ where: { id: d.id } });
   await prisma.article.delete({ where: { id: d.id } });
+  if (a) notifyIndexNow([`/guides/${a.slug}`, "/guides"]);
   if (a?.coverPublicId) await deleteImage(a.coverPublicId);
   revalidatePath("/admin/articles");
 }

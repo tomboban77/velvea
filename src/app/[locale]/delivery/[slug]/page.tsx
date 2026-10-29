@@ -41,7 +41,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return pageMetadata({
     locale,
     path: `/delivery/${city.slug}`,
-    title: t("cityTitle", { city: name }),
+    // Leads with the phrase people search ("gift basket delivery Mississauga");
+    // the on-page H1 and the Service name keep the friendlier cityTitle.
+    title: t(offer.kind === "same-day" ? "citySearchTitleSameDay" : "citySearchTitle", { city: name }),
     description,
     // A city we cannot currently reach has nothing to say to a searcher.
     index: offer.kind !== "unserved",

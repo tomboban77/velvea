@@ -492,10 +492,24 @@ export async function sendOrderDelivered(data: {
   locale?: string | null;
   deliveryMethod?: string | null;
   shipping: OrderEmailAddress;
+  /** Google review link; the ask is left out when there is none. */
+  reviewUrl?: string | null;
 }) {
   const L = (en: string, fr: string) => pick(data.locale, en, fr);
   const link = await orderUrl(data.orderNumber, SITE);
   const pickup = data.deliveryMethod === "PICKUP";
+  // Every delivered order gets the same ask, whatever we think of the order:
+  // asking only the customers likely to be happy is review gating, which
+  // Google's policy forbids.
+  const review = data.reviewUrl
+    ? `<p style="margin-top:18px;color:#514a40">${escapeHtml(
+        L(
+          "If you have a minute, a short Google review helps other people find a small Mississauga studio like ours.",
+          "Si vous avez une minute, un court avis Google aide d'autres personnes à trouver un petit atelier de Mississauga comme le nôtre."
+        )
+      )}</p>
+    ${button(data.reviewUrl, L("Leave a Google review", "Laisser un avis Google"))}`
+    : "";
   const body = `
     <p style="color:#514a40">${escapeHtml(
       pickup
@@ -526,7 +540,8 @@ export async function sendOrderDelivered(data: {
         "Si quelque chose ne va pas avec votre panier, répondez à ce courriel dans les 48 heures avec une photo et nous y remédierons."
       )
     )}</p>
-    ${button(link, L("View your order", "Voir votre commande"))}`;
+    ${button(link, L("View your order", "Voir votre commande"))}
+    ${review}`;
   await send(
     data.email,
     pickup
