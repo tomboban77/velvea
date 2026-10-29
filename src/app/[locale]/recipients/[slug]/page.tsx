@@ -30,8 +30,8 @@ export default async function RecipientPage({ params, searchParams }: { params: 
   const description = data.collection?.description
     ? tc(data.collection.description, locale)
     : locale === "fr"
-    ? `Le bon cadeau ${title.toLowerCase()}, livré partout en Ontario.`
-    : `The right gift ${title.toLowerCase()}, delivered across Ontario.`;
+    ? `Le bon cadeau ${title.toLowerCase()}, expédié partout au Canada.`
+    : `The right gift ${title.toLowerCase()}, shipped across Canada.`;
   const heading = locale === "fr" ? `Paniers · ${title}` : `Gift Baskets ${title}`;
 
   return (

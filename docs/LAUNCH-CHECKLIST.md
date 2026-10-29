@@ -103,14 +103,20 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       ON ground $19.99 → $28.99 (+$15.99/extra basket), Northern ON $29.99 → $36.99 (+$16.99): the
       old fees lost ~$9 a parcel once label tax (not HST-registered) and packing were counted.
       Applied to production 7 Oct with `npm run zones:shipping -- --apply`; seed matches.
-- [ ] **Canada-wide shipping** — Quebec $28.99, Atlantic $42.99, Prairies $37.99, BC $41.99, Yukon
-      and fly-in FSAs (J0M, A0P, R0B, V0T) by quote. Created INACTIVE in production 7 Oct.
-      Before `npm run zones:shipping -- --apply --activate`: (1) replace the "across Ontario / Ontario only" copy — page
-      titles and descriptions in `src/app/layout.tsx`, shipping page, FAQ, `messages/*.json`,
-      occasion/recipient/corporate/gift-card/about/reviews pages, the shipping email label in
-      `email.ts`, and the unserved messages in `actions/checkout.ts` + `actions/delivery.ts` (still
-      true for NT/NU); (2) untick `shippable` on anything that can't survive 4–6 days in transit
-      (chocolate in summer, fresh items, fragile glass).
+- [x] **Canada-wide shipping, except Quebec** (owner, 29 Oct 2026). Atlantic $42.99, Prairies
+      $37.99, BC $41.99 switched ON in production, with Yukon and the fly-in carve-out (A0P, R0B,
+      V0T, J0M) by quote. All "across Ontario / Ontario only" copy now says "across Canada" (same-day
+      in the GTA kept up front); the shipping page, FAQ and delivery page name the provinces and say
+      Quebec is coming soon. Unserved checkout message is Quebec-specific for QC postal codes,
+      generic for NT/NU. Routing checked against live zones (Halifax, Calgary, Vancouver resolve;
+      Montréal refused; Whitehorse and V0T quoted). `shippable` flags reviewed and left as they are:
+      fresh flowers and the heavy chocolate / sparkling-juice hampers were already local-only.
+      Do NOT use `npm run zones:shipping -- --apply --activate` now: it would also open Quebec.
+- [ ] **Quebec shipping** — `qc-ground` ($28.99) exists, INACTIVE. Before switching it on in
+      /admin/delivery-zones: Law 25 (GA fully off until consent), Quebec consumer protection rules,
+      French product labelling (§1). Then drop "Quebec is coming soon" from the FAQ, shipping page
+      (`whereP1`), `delivery.shippingLede`, `llms.txt`, the article `velvea-gift-hampers-gta`, and
+      the QC branch of the unserved messages in `actions/checkout.ts` + `actions/delivery.ts`.
 
 ## 3. Guides (content)
 
@@ -160,6 +166,18 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       changed nothing; links resolve. Its 2026 dates join the yearly update below.
 - [ ] Cover images: every guide has `coverImage` null. They render without one; add photography when
       there is some.
+- [x] **"How a Mississauga studio is making inroads in GTA gift hampers"** published 29 Oct 2026
+      (`velvea-gift-hampers-gta`, source `docs/articles/`). It quotes delivery fees, cutoffs and the
+      shipping provinces, so it needs editing whenever those change.
+
+### Google reviews on the homepage
+
+- [x] Google-style review carousel added straight after the collection (29 Oct 2026,
+      `src/components/home/GoogleReviews.tsx`). Reviews are hand-copied into
+      `src/lib/google-reviews.ts`; not marked up as JSON-LD on purpose (see the file's comment).
+- [x] **All 7 Google reviews copied in** (29 Oct 2026): five written, two star-only. The Bloom Box
+      reviewer's name was hidden by Google and shows as "Google reviewer". For each new review, add
+      author, date, rating and text exactly, and keep `GOOGLE_RATING` in step with the profile.
 
 ## 4. Google Business Profile
 

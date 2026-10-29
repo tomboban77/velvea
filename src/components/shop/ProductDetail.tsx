@@ -406,7 +406,7 @@ export function ProductDetail({
               <p className="info-row">
                 <Truck strokeWidth={1.6} />
                 <span>
-                  {product.shippable ? t("ontarioWide") : t("localOnly")}
+                  {product.shippable ? t("canadaWide") : t("localOnly")}
                   {product.leadTimeDays > 0 && <> · {t("leadTime", { days: product.leadTimeDays })}</>}
                 </span>
               </p>
@@ -460,7 +460,7 @@ export function ProductDetail({
               <Accordion title={t("tabShipping")} open={openSection === "shipping"} onToggle={() => setOpenSection(openSection === "shipping" ? null : "shipping")}>
                 <ul className="space-y-2 text-[0.95rem] leading-relaxed text-ink-soft">
                   <li>{t("shippingLocal")}</li>
-                  <li>{product.shippable ? t("shippingOntario") : t("shippingLocalOnly")}</li>
+                  <li>{product.shippable ? t("shippingCanada") : t("shippingLocalOnly")}</li>
                   <li>{t("shippingPickup")}</li>
                   <li className="pt-1 text-muted">{t("returns")}</li>
                 </ul>

@@ -198,7 +198,7 @@ function methodLabel(method: OrderEmailData["deliveryMethod"], locale?: string |
     case "PICKUP":
       return pick(locale, "Pickup at our studio", "Ramassage à notre atelier");
     default:
-      return pick(locale, "Shipping within Ontario", "Expédition en Ontario");
+      return pick(locale, "Tracked shipping", "Expédition avec suivi");
   }
 }
 

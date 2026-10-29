@@ -113,9 +113,14 @@ export async function quoteDelivery(
             "We can reach this address, but it has to be quoted by hand. Please contact us.",
             "Nous pouvons livrer à cette adresse, mais le tarif doit être établi manuellement. Veuillez nous contacter."
           )
+        : match.province === "QC"
+        ? say(
+            "We don't ship to Quebec yet. Pickup is available for any address.",
+            "Nous n'expédions pas encore au Québec. Le ramassage demeure possible."
+          )
         : say(
-            "We deliver within Ontario only for now. Pickup is available for any address.",
-            "Nous livrons en Ontario seulement pour l'instant. Le ramassage demeure possible."
+            "We don't deliver to this area yet. Pickup is available for any address.",
+            "Nous ne livrons pas encore dans cette région. Le ramassage demeure possible."
           );
     return { ok: false, reason: match.reason, message, options: pickupOptions };
   }

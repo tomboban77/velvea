@@ -12,6 +12,7 @@ import { TheWay } from "@/components/home/TheWay";
 import { Corporate } from "@/components/home/Corporate";
 import { Atelier } from "@/components/home/Atelier";
 import { Reviews } from "@/components/home/Reviews";
+import { GoogleReviews } from "@/components/home/GoogleReviews";
 import { Journal } from "@/components/home/Journal";
 import { Faq } from "@/components/home/Faq";
 import { getAllProducts, getFeaturedProducts, getProductsByIds } from "@/lib/queries";
@@ -104,6 +105,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <OccasionsRail />
       <GiftFinderBar />
       <Collection tabs={tabs} />
+      {/* Proof straight after the baskets, while someone is still deciding.
+          The on-site <Reviews /> further down only renders once reviews are
+          approved in the admin. */}
+      <GoogleReviews />
       {/* One plum split band here, not two with the same photograph: the request
           form stands in while the builder is paused. */}
       {CUSTOM_BUILDER_ENABLED ? <BuildYourOwn /> : <CustomRequest />}

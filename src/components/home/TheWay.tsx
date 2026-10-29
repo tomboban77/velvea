@@ -60,7 +60,7 @@ export async function TheWay() {
               {i < CITY_PAGES.length - 1 ? " · " : ""}
             </span>
           ))}
-          <span>{fr ? " et partout en Ontario." : " and across Ontario."}</span>
+          <span>{fr ? " et partout au Canada." : " and across Canada."}</span>
         </nav>
 
         <p className="mt-4 text-sm text-muted">

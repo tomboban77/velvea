@@ -18,7 +18,7 @@ export async function GET() {
 
   const body = `# Velvéa
 
-> Velvéa is a gift-basket atelier in Mississauga, Ontario, Canada. Every basket is composed by hand after the order is placed and delivered by the Velvéa team across Mississauga, Toronto and the Greater Toronto Area, with same-day delivery available in eligible cities. Baskets are shipped by tracked courier to the rest of Ontario. The business is online-only (no walk-in shop); free pickup from the Mississauga studio is by appointment. No alcohol is sold. The site is bilingual: English at ${origin}/ and French at ${origin}/fr.
+> Velvéa is a gift-basket atelier in Mississauga, Ontario, Canada. Every basket is composed by hand after the order is placed and delivered by the Velvéa team across Mississauga, Toronto and the Greater Toronto Area, with same-day delivery available in eligible cities. Baskets that travel well are shipped by tracked courier to the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia. The business is online-only (no walk-in shop); free pickup from the Mississauga studio is by appointment. No alcohol is sold. The site is bilingual: English at ${origin}/ and French at ${origin}/fr.
 
 ## Key pages
 

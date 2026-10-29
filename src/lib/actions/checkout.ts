@@ -728,10 +728,16 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
               "We can reach this address, but it has to be quoted by hand. Please contact us and we'll arrange it.",
               "Nous pouvons livrer à cette adresse, mais le tarif doit être établi manuellement. Veuillez nous contacter."
             )
+          : match.province === "QC"
+          ? say(
+              locale,
+              "We don't ship to Quebec yet. Pickup from our Mississauga studio is available for any address.",
+              "Nous n'expédions pas encore au Québec. Le ramassage à notre atelier de Mississauga demeure possible."
+            )
           : say(
               locale,
-              "We currently deliver within Ontario only. Pickup from our Mississauga studio is available for any address.",
-              "Nous livrons actuellement en Ontario seulement. Le ramassage à notre atelier de Mississauga demeure possible."
+              "We don't deliver to this area yet. Pickup from our Mississauga studio is available for any address.",
+              "Nous ne livrons pas encore dans cette région. Le ramassage à notre atelier de Mississauga demeure possible."
             );
       return {
         ok: false,

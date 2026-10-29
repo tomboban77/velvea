@@ -14,7 +14,7 @@ const EN = {
 
   whereH: "Where we deliver",
   whereP1:
-    "We deliver throughout Ontario. Orders in Mississauga and the Greater Toronto Area are delivered by us directly; everywhere else in the province travels with a tracked courier. We do not currently deliver outside Ontario.",
+    "We deliver across Canada. Orders in Mississauga and the Greater Toronto Area are delivered by us directly, with same-day delivery on eligible orders. Everywhere else in Ontario, and the Atlantic provinces, the Prairies and British Columbia, travels with a tracked courier. Shipping to Quebec is coming soon. Yukon and a few remote fly-in communities are priced by hand: checkout will ask you to contact us. We do not deliver to the Northwest Territories or Nunavut.",
   whereP2:
     "Your delivery options and their exact cost appear at checkout as soon as you enter the recipient's postal code — the postal code, not the city name, is what determines the area, so there is no guesswork about whether an address qualifies.",
 
@@ -29,11 +29,11 @@ const EN = {
   localNote:
     "Same-day delivery depends on how far we have to travel, so the cutoff is earlier for areas further out. Whichever applies to your address is shown at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets are made to order and delivered from the next day.",
 
-  shipH: "Shipping within Ontario",
+  shipH: "Shipping across Canada",
   shipArriving: (min: number, max: number) => `, arriving in roughly ${min}–${max} business days`,
   shipExtra: (fee: string) => `, plus ${fee} for each additional basket`,
   shipP:
-    "Shipped orders travel in a protective outer box. Transit times are estimates rather than guarantees: once a parcel is with the courier, the final leg is theirs, and remote parts of the province can take longer. If you need a gift to arrive on a particular day, choose local delivery or pickup where you can, and order with room to spare.",
+    "Shipped orders travel in a protective outer box. Transit times are estimates rather than guarantees: once a parcel is with the courier, the final leg is theirs, and remote areas can take longer. If you need a gift to arrive on a particular day, choose local delivery or pickup where you can, and order with room to spare.",
 
   noShipH: "Baskets we cannot ship",
   noShipP:
@@ -57,7 +57,7 @@ const FR: typeof EN = {
 
   whereH: "Où nous livrons",
   whereP1:
-    "Nous livrons partout en Ontario. Les commandes à Mississauga et dans la région du Grand Toronto sont livrées directement par nous; partout ailleurs dans la province, elles voyagent avec un messager offrant le suivi. Nous ne livrons pas actuellement à l'extérieur de l'Ontario.",
+    "Nous livrons partout au Canada. Les commandes à Mississauga et dans la région du Grand Toronto sont livrées directement par nous, le jour même pour les commandes admissibles. Partout ailleurs en Ontario, ainsi que dans les provinces de l’Atlantique, les Prairies et la Colombie-Britannique, elles voyagent avec un messager offrant le suivi. L’expédition vers le Québec arrive bientôt. Le Yukon et quelques communautés éloignées accessibles par avion font l’objet d’un tarif établi à la main : la caisse vous invitera à nous contacter. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut.",
   whereP2:
     "Vos options de livraison et leur coût exact s'affichent à la caisse dès que vous saisissez le code postal du destinataire — c'est le code postal, et non le nom de la ville, qui détermine le secteur, de sorte qu'il n'y a aucune incertitude quant à l'admissibilité d'une adresse.",
 
@@ -72,11 +72,11 @@ const FR: typeof EN = {
   localNote:
     "La livraison le jour même dépend de la distance à parcourir, de sorte que l'heure limite est plus tôt pour les secteurs plus éloignés. Celle qui s'applique à votre adresse est indiquée à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets sont faits sur commande et livrés à partir du lendemain.",
 
-  shipH: "Expédition en Ontario",
+  shipH: "Expédition au Canada",
   shipArriving: (min: number, max: number) => `, livraison en environ ${min} à ${max} jours ouvrables`,
   shipExtra: (fee: string) => `, plus ${fee} pour chaque panier supplémentaire`,
   shipP:
-    "Les commandes expédiées voyagent dans une boîte extérieure protectrice. Les délais de transit sont des estimations et non des garanties : une fois le colis confié au messager, la dernière étape lui appartient, et les régions éloignées de la province peuvent prendre plus de temps. Si un cadeau doit arriver un jour précis, choisissez la livraison locale ou le ramassage lorsque c'est possible, et commandez avec une bonne marge.",
+    "Les commandes expédiées voyagent dans une boîte extérieure protectrice. Les délais de transit sont des estimations et non des garanties : une fois le colis confié au messager, la dernière étape lui appartient, et les régions éloignées peuvent prendre plus de temps. Si un cadeau doit arriver un jour précis, choisissez la livraison locale ou le ramassage lorsque c'est possible, et commandez avec une bonne marge.",
 
   noShipH: "Paniers que nous ne pouvons pas expédier",
   noShipP:

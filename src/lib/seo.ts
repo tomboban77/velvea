@@ -299,7 +299,7 @@ export function organizationJsonLd(opts: {
     logo: `${origin}/brand/velvea-logo.png`,
     // Online-only: there is no shop customers can visit, which is why this is
     // an Organization with a service area and not a LocalBusiness.
-    areaServed: { "@type": "AdministrativeArea", name: "Ontario, Canada" },
+    areaServed: { "@type": "Country", name: "Canada" },
     ...(contact.email ? { email: contact.email } : {}),
     ...(contact.phone ? { telephone: contact.phone } : {}),
     ...(contact.addressLine

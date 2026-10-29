@@ -32,8 +32,8 @@ export default async function OccasionPage({ params, searchParams }: { params: P
   const description = data.collection?.description
     ? tc(data.collection.description, locale)
     : locale === "fr"
-    ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et livrés partout en Ontario.`
-    : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and delivered across Ontario.`;
+    ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et expédiés partout au Canada.`
+    : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and shipped across Canada.`;
   const heading = locale === "fr" ? `Paniers · ${title}` : `${title} gift baskets`;
 
   return (
