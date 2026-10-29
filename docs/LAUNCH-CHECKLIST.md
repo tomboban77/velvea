@@ -175,9 +175,9 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
 - [x] Google-style review carousel added straight after the collection (29 Oct 2026,
       `src/components/home/GoogleReviews.tsx`). Reviews are hand-copied into
       `src/lib/google-reviews.ts`; not marked up as JSON-LD on purpose (see the file's comment).
-- [x] **All 7 Google reviews copied in** (29 Oct 2026): five written, two star-only. The Bloom Box
-      reviewer's name was hidden by Google and shows as "Google reviewer". For each new review, add
-      author, date, rating and text exactly, and keep `GOOGLE_RATING` in step with the profile.
+- [x] **All 7 Google reviews copied in** (29 Oct 2026): five written, two star-only. The carousel
+      shows them in file order (owner's pick: Kevin Ho, Emma Lecour, Vahid first). For each new
+      review, add author, date, rating and text exactly, and keep `GOOGLE_RATING` in step.
 
 ## 4. Google Business Profile
 

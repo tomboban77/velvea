@@ -27,10 +27,8 @@ export async function GoogleReviews() {
   const { social } = await getSettings();
   const now = Date.now();
 
-  // Written reviews lead; star-only ratings follow. Newest first within each.
-  const cards: GoogleReviewCard[] = [...GOOGLE_REVIEWS]
-    .sort((a, b) => Number(Boolean(b.text)) - Number(Boolean(a.text)) || b.date.localeCompare(a.date))
-    .map((r) => ({
+  // Shown in the order the owner lists them in google-reviews.ts, not by date.
+  const cards: GoogleReviewCard[] = GOOGLE_REVIEWS.map((r) => ({
       author: r.author || t("anonymous"),
       initial: (r.author || "G").charAt(0).toUpperCase(),
       ago: ago(r.date, locale, now),

@@ -13,7 +13,7 @@
  */
 
 export type GoogleReview = {
-  /** Display name exactly as it appears on Google. Empty if Google hides it. */
+  /** Display name as it appears on Google. Empty if Google hides it. */
   author: string;
   /** YYYY-MM-DD, the day the review was posted. Rendered as "2 weeks ago". */
   date: string;
@@ -28,10 +28,31 @@ export type GoogleReview = {
 export const GOOGLE_RATING = { average: 5.0, count: 7 };
 
 /**
- * Newest first; all seven as of 29 Oct 2026. Names Google shows in capitals
- * (PRACHI PAL, ADARSH REDDY) are written in normal case so the cards match.
+ * The carousel shows these in this order, so the list is the running order:
+ * the owner picks which reviews lead. All seven as of 29 Oct 2026. Names Google
+ * shows in capitals (PRACHI PAL, ADARSH REDDY) are written in normal case so
+ * the cards match.
  */
 export const GOOGLE_REVIEWS: GoogleReview[] = [
+  {
+    author: "Kevin Ho",
+    date: "2026-10-29",
+    rating: 5,
+    product: "Rose Glow Gift Basket",
+    text: "Got the Rose and Glow gift basket for my wife and she absolutely loved it. Definitely worth it!",
+  },
+  {
+    author: "Emma Lecour",
+    date: "2026-10-28",
+    rating: 5,
+  },
+  {
+    author: "Vahid Reza Niazmand",
+    date: "2026-10-29",
+    rating: 5,
+    product: "Rose Radiance Self-Care Gift Crate",
+    text: "Bought the Rose & Radiance Self-Care Gift Crate for my girlfriend, and she absolutely loved it! Everything was beautifully packed, and it made such a lovely gift. Really happy with the purchase!",
+  },
   {
     author: "Prachi Pal",
     date: "2026-10-29",
@@ -47,35 +68,15 @@ export const GOOGLE_REVIEWS: GoogleReview[] = [
     text: "Ordered the Crimson & Ivory Rose Bouquet from Velvea and it was absolutely beautiful! The roses were fresh, the colours looked lovely together, and the arrangement was just perfect. Really happy with the purchase and would definitely order again!",
   },
   {
-    author: "Kevin Ho",
-    date: "2026-10-29",
-    rating: 5,
-    product: "Rose Glow Gift Basket",
-    text: "Got the Rose and Glow gift basket for my wife and she absolutely loved it. Definitely worth it!",
-  },
-  {
-    author: "Vahid Reza Niazmand",
-    date: "2026-10-29",
-    rating: 5,
-    product: "Rose Radiance Self-Care Gift Crate",
-    text: "Bought the Rose & Radiance Self-Care Gift Crate for my girlfriend, and she absolutely loved it! Everything was beautifully packed, and it made such a lovely gift. Really happy with the purchase!",
-  },
-  {
-    author: "Adarsh Reddy",
-    date: "2026-10-29",
-    rating: 5,
-  },
-  {
-    // Google showed this one without the reviewer's name.
-    author: "",
+    author: "Dershan",
     date: "2026-10-28",
     rating: 5,
     product: "Birthday Chocolate Bloom Box",
     text: "Bought the Birthday Chocolate Bloom Box from Velvea as a birthday gift, and absolutely loved it! The packaging was beautiful, everything was arranged so nicely, and it made the gift feel extra special. Really happy with my purchase. Would definitely recommend Velvea for gifting!",
   },
   {
-    author: "Emma Lecour",
-    date: "2026-10-28",
+    author: "Adarsh Reddy",
+    date: "2026-10-29",
     rating: 5,
   },
 ];
