@@ -13,7 +13,7 @@ export type GoogleReviewCard = {
   text: string | null;
 };
 
-type Labels = {
+export type GoogleReviewLabels = {
   eyebrow: string;
   title: string;
   average: string;
@@ -37,7 +37,7 @@ const avatarColour = (name: string) => AVATAR[[...name].reduce((n, c) => n + c.c
 /** Long reviews are clamped; past this length the card offers "Read more". */
 const CLAMP_AT = 220;
 
-function GoogleG({ className }: { className?: string }) {
+export function GoogleG({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true" className={className}>
       <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
@@ -48,7 +48,7 @@ function GoogleG({ className }: { className?: string }) {
   );
 }
 
-function Stars({ rating, size = "h-4 w-4" }: { rating: number; size?: string }) {
+export function Stars({ rating, size = "h-4 w-4" }: { rating: number; size?: string }) {
   return (
     <span className="flex gap-0.5 text-[#fbbc04]" aria-hidden="true">
       {Array.from({ length: 5 }).map((_, i) => (
@@ -58,7 +58,7 @@ function Stars({ rating, size = "h-4 w-4" }: { rating: number; size?: string }) 
   );
 }
 
-function ReviewCard({ card, labels }: { card: GoogleReviewCard; labels: Labels }) {
+export function ReviewCard({ card, labels }: { card: GoogleReviewCard; labels: GoogleReviewLabels }) {
   const [open, setOpen] = useState(false);
   const long = (card.text?.length ?? 0) > CLAMP_AT;
   return (
@@ -113,7 +113,7 @@ export function GoogleReviewsCarousel({
   cards: GoogleReviewCard[];
   profileUrl: string | null;
   average: number;
-  labels: Labels;
+  labels: GoogleReviewLabels;
 }) {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
