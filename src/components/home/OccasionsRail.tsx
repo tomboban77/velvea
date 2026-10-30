@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Cake, Heart, Feather, Flower2, Moon, Leaf, Sparkles, KeyRound, Gift, Flame } from "lucide-react";
+import { Cake, Heart, Feather, Flower2, Moon, Leaf, Sparkles, KeyRound, Gift, Flame, TreePine } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCollections } from "@/lib/queries";
 import { OCCASIONS, HOLIDAYS, activeSeasonal, labelFor, type NavLink } from "@/lib/nav";
@@ -20,6 +20,7 @@ const ICONS: Record<string, typeof Gift> = {
   congratulations: Sparkles,
   housewarming: KeyRound,
   diwali: Flame, // the diya
+  christmas: TreePine,
 };
 
 /** The eight most-shopped occasions as round-icon tiles; scrolls on mobile, grid on desktop. */

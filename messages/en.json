@@ -212,7 +212,90 @@
     "pageTitle": "Corporate gift baskets for clients, teams and partners",
     "readyEyebrow": "Ready to order",
     "readyTitle": "Corporate gift boxes, ready to send",
-    "readyLede": "Two curated boxes at set prices, for when you need something today. Volume pricing and custom programmes on request."
+    "readyLede": "Curated boxes at set prices, for when you need something today. Volume pricing and custom programmes on request."
+  },
+  "corporatePage": {
+    "eyebrow": "Corporate gifting",
+    "lede": "Client thank-yous, team milestones and holiday programmes, hand-packed in our Mississauga studio. Shortlist baskets below, send us your list, and we deliver to every address on it.",
+    "downloadForm": "Download the bulk order form",
+    "formMeta": "Spreadsheet · Excel or Google Sheets · no sign-up",
+    "statBaskets": "{count} baskets",
+    "statBasketsSub": "to choose from online",
+    "statReply": "1 business day",
+    "statReplySub": "to a written proposal",
+    "statVolume": "From 10 baskets",
+    "statVolumeSub": "volume pricing applies",
+    "holidayBadge": "Holiday programmes",
+    "holidayTitle": "Planning for the holidays? Start early.",
+    "holidayBody": "December delivery days fill up first, so the sooner we have your brief, the more baskets and dates you can choose from. Every corporate order includes:",
+    "holidayNote": "Late briefs are still welcome. We will tell you which dates are left.",
+    "inc1": "Your logo on the card",
+    "inc1Sub": "A printed card with your company logo in every basket.",
+    "inc2": "A message per recipient",
+    "inc2Sub": "One message for everyone, or a different one for each name on your list.",
+    "inc3": "Delivery dates you choose",
+    "inc3Sub": "Offices on one day, homes on another. Each address gets its own date.",
+    "chaptersEyebrow": "Shop by programme",
+    "chaptersTitle": "Shortlist from the live collection.",
+    "chaptersLede": "No catalogue to go out of date. Each collection shows what is available today, at today's prices.",
+    "chapterMeta": "{count, plural, one {# basket} other {# baskets}} · from {price}",
+    "shopOnline": "Shop online",
+    "browseAll": "Browse all baskets",
+    "brandEyebrow": "Make it yours",
+    "brandTitle": "Your name on every basket.",
+    "brand1": "Logo card",
+    "brand1Sub": "A card printed with your logo, so the gift reads as yours before it is opened.",
+    "brand2": "Personal messages",
+    "brand2Sub": "Write each recipient a line of their own. We print it and tuck it in.",
+    "brand3": "Packaging in your colours",
+    "brand3Sub": "Ribbon and finishing chosen to sit well with your brand.",
+    "brand4": "Something of your own",
+    "brand4Sub": "A note from leadership or a small branded item? Send it over and we pack it in.",
+    "bulkEyebrow": "Ordering for a long list",
+    "bulkTitle": "Send a big order in four steps.",
+    "you": "You",
+    "us": "Us",
+    "s1": "Download the form",
+    "s1Sub": "One row per recipient, so ten names or three hundred work the same way.",
+    "s2": "Pick baskets and messages",
+    "s2Sub": "Paste a basket link from the shop into each row and write the card message.",
+    "s3": "Add addresses and dates",
+    "s3Sub": "Every recipient gets their own address and delivery date.",
+    "s4": "Email it to us",
+    "s4Sub": "We check each address against our delivery zones, confirm the total, then pack and deliver every basket.",
+    "emailUs": "Email {email}",
+    "bulkNote": "Prefer not to use a spreadsheet? Request a quote and we will build the list with you.",
+    "faqEyebrow": "Answers",
+    "faqTitle": "Corporate orders, asked and answered.",
+    "faq": [
+      {
+        "q": "Is there a minimum order?",
+        "a": "No. Volume pricing starts at 10 baskets, but smaller orders are welcome. You can order a few online as usual, or ask us to help with cards and delivery dates."
+      },
+      {
+        "q": "Can you deliver to many addresses at once?",
+        "a": "Yes. Send one list with an address and a date for each recipient. GTA addresses go out with our own drivers, and addresses further away ship by tracked courier."
+      },
+      {
+        "q": "Can we add our logo?",
+        "a": "Yes. Any corporate order can include a printed card with your logo and a different message for each recipient. Tell us about anything else you have in mind in your quote request."
+      },
+      {
+        "q": "How quickly will we hear back?",
+        "a": "Within one business day. You get a written proposal with the baskets, the price per basket and the delivery dates we can offer."
+      },
+      {
+        "q": "When should we order for the holidays?",
+        "a": "As early as you can. We limit how many deliveries we make each day, and the December weeks fill first. Briefing us in November gives you the widest choice of baskets and dates."
+      },
+      {
+        "q": "Do your baskets contain alcohol?",
+        "a": "No. Every Velvéa basket is alcohol-free, which makes it an easy choice for mixed teams and for clients whose habits you don't know."
+      }
+    ],
+    "ctaTitle": "Rather have us put it together?",
+    "ctaBody": "Tell us who you are gifting, how many and your budget per basket. We come back within one business day with a proposal.",
+    "ctaCall": "Call {phone}"
   },
   "atelier": {
     "eyebrow": "Our story",

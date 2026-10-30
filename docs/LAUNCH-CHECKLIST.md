@@ -48,6 +48,11 @@ more now, not less.
       page, so partial French is safe — but it should be a decision, not a default.
 - [ ] **Evidence for product claims** (dietary, origin, handmade, certifications) before any Merchant
       Center feed. Feed eligibility turns on these.
+- [ ] **Confirm the corporate page promises** (`/corporate`, rebuilt 30 Oct 2026). It says every
+      corporate order can have a logo card, a message per recipient, its own delivery date per
+      address, packaging in the client's colours and a client-supplied insert; that there is no
+      minimum (volume pricing from 10). The holiday band carries no deadline date by owner choice.
+      Bulk orders arrive by email as the CSV in `public/corporate/`.
 
 ### Legal and compliance (review of 26 Oct 2026)
 

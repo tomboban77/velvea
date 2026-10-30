@@ -192,6 +192,84 @@ export async function getCorporateProducts(take = 4): Promise<ProductCard[]> {
   return (await getProductsByCollection("RECIPIENT", "clients", { take })).products;
 }
 
+export type CollectionPreview = {
+  type: string;
+  slug: string;
+  name: unknown;
+  count: number;
+  fromCents: number | null;
+  image: string | null;
+};
+
+/**
+ * Count, starting price and a cover photo for a hand-picked set of
+ * collections, returned in the order asked for. Collections have no images of
+ * their own, so the cover is a product from the collection's curated order.
+ * Most baskets sit in several collections, so taking the first product gave
+ * neighbouring tiles the same photo: each tile takes the first product not
+ * already used by an earlier tile or listed in `excludeProductIds` (products
+ * shown elsewhere on the page). Empty or missing collections drop out.
+ */
+export async function getCollectionPreviews(
+  refs: { type: "OCCASION" | "RECIPIENT" | "CATEGORY" | "THEME"; slug: string }[],
+  excludeProductIds: string[] = []
+): Promise<CollectionPreview[]> {
+  if (!refs.length) return [];
+  try {
+    const active: Prisma.ProductWhereInput = { status: "ACTIVE", ...notHidden };
+    const [collections, stats] = await Promise.all([
+      prisma.collection.findMany({
+        where: { slug: { in: refs.map((r) => r.slug) } },
+        include: {
+          products: {
+            where: { product: active },
+            orderBy: { position: "asc" },
+            take: refs.length + excludeProductIds.length + 1,
+            select: { product: { select: { id: true, images: { orderBy: { position: "asc" }, take: 1, select: { url: true } } } } },
+          },
+        },
+      }),
+      Promise.all(
+        refs.map((r) =>
+          prisma.product.aggregate({
+            where: { ...active, collections: { some: { collection: { slug: r.slug } } } },
+            _count: true,
+            _min: { priceCents: true },
+          })
+        )
+      ),
+    ]);
+    const bySlug = new Map(collections.map((c) => [c.slug, c]));
+    const used = new Set(excludeProductIds);
+    return refs.flatMap((r, i) => {
+      const c = bySlug.get(r.slug);
+      if (!c || c.type !== r.type || !stats[i]._count) return [];
+      const withPhoto = c.products.map((row) => row.product).filter((pr) => pr.images[0]);
+      const cover = withPhoto.find((pr) => !used.has(pr.id)) ?? withPhoto[0];
+      if (cover) used.add(cover.id);
+      return [{
+        type: c.type,
+        slug: c.slug,
+        name: c.name,
+        count: stats[i]._count,
+        fromCents: stats[i]._min.priceCents,
+        image: c.imageUrl ?? cover?.images[0]?.url ?? null,
+      }];
+    });
+  } catch {
+    return [];
+  }
+}
+
+/** Number of baskets currently for sale. 0 when the database is unreachable. */
+export async function getActiveProductCount(): Promise<number> {
+  try {
+    return await prisma.product.count({ where: { status: "ACTIVE", ...notHidden } });
+  } catch {
+    return 0;
+  }
+}
+
 /**
  * Active products for a hand-picked list (the homepage hero), returned in the
  * order the ids were given. Ids that are inactive, hidden or deleted drop out.

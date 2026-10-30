@@ -212,7 +212,90 @@
     "pageTitle": "Paniers-cadeaux d'entreprise pour clients, équipes et partenaires",
     "readyEyebrow": "Prêts à commander",
     "readyTitle": "Coffrets d'entreprise, prêts à envoyer",
-    "readyLede": "Deux coffrets à prix fixe, pour quand il vous en faut un aujourd'hui. Prix de volume et programmes sur mesure sur demande."
+    "readyLede": "Des coffrets à prix fixe, pour quand il vous en faut un aujourd'hui. Prix de volume et programmes sur mesure sur demande."
+  },
+  "corporatePage": {
+    "eyebrow": "Cadeaux d'entreprise",
+    "lede": "Remerciements aux clients, jalons d'équipe et programmes des fêtes, emballés à la main dans notre atelier de Mississauga. Repérez vos paniers ci-dessous, envoyez-nous votre liste, et nous livrons à chaque adresse.",
+    "downloadForm": "Télécharger le bon de commande groupé",
+    "formMeta": "Tableur · Excel ou Google Sheets · sans inscription",
+    "statBaskets": "{count} paniers",
+    "statBasketsSub": "au choix en ligne",
+    "statReply": "1 jour ouvrable",
+    "statReplySub": "pour une proposition écrite",
+    "statVolume": "Dès 10 paniers",
+    "statVolumeSub": "prix de volume",
+    "holidayBadge": "Programmes des fêtes",
+    "holidayTitle": "Vous préparez les fêtes ? Commencez tôt.",
+    "holidayBody": "Les journées de livraison de décembre se remplissent en premier : plus votre brief arrive tôt, plus vous avez de choix de paniers et de dates. Chaque commande d'entreprise comprend :",
+    "holidayNote": "Les briefs tardifs restent les bienvenus. Nous vous dirons quelles dates sont encore libres.",
+    "inc1": "Votre logo sur la carte",
+    "inc1Sub": "Une carte imprimée à votre logo dans chaque panier.",
+    "inc2": "Un message par destinataire",
+    "inc2Sub": "Le même message pour tous, ou un mot différent pour chaque nom de votre liste.",
+    "inc3": "Les dates de votre choix",
+    "inc3Sub": "Les bureaux un jour, les domiciles un autre. Chaque adresse a sa propre date.",
+    "chaptersEyebrow": "Magasiner par programme",
+    "chaptersTitle": "Faites votre sélection dans la collection en ligne.",
+    "chaptersLede": "Aucun catalogue qui se périme. Chaque collection montre ce qui est offert aujourd'hui, aux prix d'aujourd'hui.",
+    "chapterMeta": "{count, plural, one {# panier} other {# paniers}} · dès {price}",
+    "shopOnline": "Magasiner",
+    "browseAll": "Voir tous les paniers",
+    "brandEyebrow": "À votre image",
+    "brandTitle": "Votre nom sur chaque panier.",
+    "brand1": "Carte à votre logo",
+    "brand1Sub": "Une carte imprimée à votre logo : le cadeau est le vôtre avant même d'être ouvert.",
+    "brand2": "Messages personnels",
+    "brand2Sub": "Un mot propre à chaque destinataire. Nous l'imprimons et le glissons dans le panier.",
+    "brand3": "Emballage à vos couleurs",
+    "brand3Sub": "Ruban et finition choisis pour s'accorder à votre marque.",
+    "brand4": "Un élément bien à vous",
+    "brand4Sub": "Un mot de la direction ou un petit objet à votre marque ? Envoyez-le-nous, nous l'ajoutons.",
+    "bulkEyebrow": "Commander pour une longue liste",
+    "bulkTitle": "Une grosse commande en quatre étapes.",
+    "you": "Vous",
+    "us": "Nous",
+    "s1": "Téléchargez le bon",
+    "s1Sub": "Une ligne par destinataire : dix noms ou trois cents, c'est la même chose.",
+    "s2": "Choisissez paniers et messages",
+    "s2Sub": "Collez le lien d'un panier de la boutique dans chaque ligne et écrivez le message de la carte.",
+    "s3": "Ajoutez adresses et dates",
+    "s3Sub": "Chaque destinataire a sa propre adresse et sa date de livraison.",
+    "s4": "Envoyez-le-nous par courriel",
+    "s4Sub": "Nous vérifions chaque adresse selon nos zones de livraison, confirmons le total, puis emballons et livrons chaque panier.",
+    "emailUs": "Écrire à {email}",
+    "bulkNote": "Pas envie d'un tableur ? Demandez un devis et nous bâtirons la liste avec vous.",
+    "faqEyebrow": "Réponses",
+    "faqTitle": "Commandes d'entreprise : vos questions.",
+    "faq": [
+      {
+        "q": "Y a-t-il une commande minimale ?",
+        "a": "Non. Les prix de volume commencent à 10 paniers, mais les petites commandes sont les bienvenues. Commandez-en quelques-uns en ligne comme d'habitude, ou demandez-nous de l'aide pour les cartes et les dates."
+      },
+      {
+        "q": "Pouvez-vous livrer à plusieurs adresses à la fois ?",
+        "a": "Oui. Envoyez une seule liste avec une adresse et une date pour chaque destinataire. Dans la RGT, nos propres livreurs s'en chargent; plus loin, nous expédions par messagerie avec suivi."
+      },
+      {
+        "q": "Pouvons-nous ajouter notre logo ?",
+        "a": "Oui. Toute commande d'entreprise peut inclure une carte imprimée à votre logo et un message différent pour chaque destinataire. Parlez-nous de vos autres idées dans votre demande de devis."
+      },
+      {
+        "q": "Quand aurons-nous une réponse ?",
+        "a": "En un jour ouvrable. Vous recevez une proposition écrite avec les paniers, le prix par panier et les dates de livraison possibles."
+      },
+      {
+        "q": "Quand commander pour les fêtes ?",
+        "a": "Le plus tôt possible. Nous limitons le nombre de livraisons par jour, et les semaines de décembre se remplissent en premier. Un brief en novembre vous donne le plus grand choix de paniers et de dates."
+      },
+      {
+        "q": "Vos paniers contiennent-ils de l'alcool ?",
+        "a": "Non. Tous les paniers Velvéa sont sans alcool, un choix simple pour des équipes variées et pour des clients dont vous ne connaissez pas les habitudes."
+      }
+    ],
+    "ctaTitle": "Vous préférez qu'on s'en occupe ?",
+    "ctaBody": "Dites-nous à qui vous offrez, combien de paniers et votre budget par panier. Nous revenons avec une proposition en un jour ouvrable.",
+    "ctaCall": "Appeler le {phone}"
   },
   "atelier": {
     "eyebrow": "Notre histoire",

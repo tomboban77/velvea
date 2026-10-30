@@ -50,8 +50,8 @@ export const CATEGORIES: NavLink[] = [
 // Needs a matching OCCASION collection with products in /admin/collections,
 // or the menu links to an empty (noindex) page.
 export const HOLIDAYS: NavLink[] = [
-  { slug: "diwali", en: "Diwali", fr: "Diwali" },
   { slug: "christmas", en: "Christmas", fr: "Noël" },
+  { slug: "diwali", en: "Diwali", fr: "Diwali" },
   { slug: "holiday", en: "Holiday Season", fr: "Temps des fêtes" },
   { slug: "valentines", en: "Valentine's Day", fr: "Saint-Valentin" },
   { slug: "mothers-day", en: "Mother's Day", fr: "Fête des Mères" },
@@ -69,10 +69,14 @@ export const HOLIDAYS: NavLink[] = [
  *
  * The homepage revalidates hourly, so a handover (Diwali to Christmas) takes
  * effect within the hour rather than waiting for a deploy.
+ *
+ * Christmas starts on 30 Oct, ahead of Diwali (8 Nov 2026), because corporate
+ * and early holiday orders are the bigger season: it leads the rail, and
+ * Diwali stays as the second tile until the festival is over.
  */
 export const SEASONAL: { slug: string; from?: string; until: string }[] = [
+  { slug: "christmas", from: "2026-10-30T00:00:00-04:00", until: "2026-12-26T00:00:00-05:00" },
   { slug: "diwali", from: "2026-10-01T00:00:00-04:00", until: "2026-11-09T00:00:00-05:00" },
-  { slug: "christmas", from: "2026-11-09T00:00:00-05:00", until: "2026-12-26T00:00:00-05:00" },
   { slug: "valentines", from: "2027-01-25T00:00:00-05:00", until: "2027-02-15T00:00:00-05:00" },
   { slug: "mothers-day", from: "2027-04-19T00:00:00-04:00", until: "2027-05-10T00:00:00-04:00" },
   { slug: "fathers-day", from: "2027-05-31T00:00:00-04:00", until: "2027-06-21T00:00:00-04:00" },
