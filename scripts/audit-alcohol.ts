@@ -27,13 +27,14 @@ const TERMS = [
 /**
  * "non-alcoholic" and friends are the opposite of a problem. "Champagne Toast"
  * is a Bath & Body Works candle scent, not a drink; it sits in the Rosé Glow
- * basket and would otherwise flag on every run. "Champagne-gold" is a ribbon
- * colour (Blush & Indulgence hamper).
+ * basket and would otherwise flag on every run. "Champagne-gold" and
+ * "champagne satin" are ribbon colours (Blush & Indulgence hamper, Gourmet
+ * Signature Gift Tray).
  */
 const CLEARED = [
   "non-alcoholic", "non alcoholic", "alcohol-free", "alcohol free", "nonalcoholic",
   "de-alcoholised", "dealcoholized",
-  "champagne toast", "champagne-gold", "champagne gold",
+  "champagne toast", "champagne-gold", "champagne gold", "champagne satin",
 ];
 
 function hits(text: string): string[] {
