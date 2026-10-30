@@ -162,7 +162,8 @@ export function GoogleReviewsCarousel({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        {/* Wraps: the French "Laisser un avis" plus two arrows is wider than a phone. */}
+        <div className="flex flex-wrap items-center gap-3">
           {profileUrl && (
             <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">
               {labels.write}
@@ -181,13 +182,18 @@ export function GoogleReviewsCarousel({
         </div>
       </div>
 
+      {/* `relative` is load-bearing: each card holds an absolutely positioned
+          sr-only label, and without a positioned scroller those labels escape
+          its clipping at their card's offset (up to ~2000px right), which
+          widened the whole homepage on phones and let it swipe sideways into
+          white space. */}
       <div
         ref={track}
         onScroll={measure}
         role="region"
         aria-roledescription="carousel"
         aria-label={labels.fromGoogle}
-        className="no-scrollbar -mx-(--gutter) mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-(--gutter) px-(--gutter) pb-2 sm:mx-0 sm:scroll-px-0 sm:px-0"
+        className="no-scrollbar relative -mx-(--gutter) mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-(--gutter) px-(--gutter) pb-2 sm:mx-0 sm:scroll-px-0 sm:px-0"
       >
         {cards.map((card, i) => (
           <div

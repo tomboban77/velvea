@@ -94,6 +94,12 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Backstop with body's clip: nothing may make the page itself pan sideways
+     on a phone. body alone was not enough: an absolutely positioned element
+     whose containing block is the root (an sr-only label in the reviews
+     carousel) still widened the viewport. `clip`, not `hidden`, so it creates
+     no scroll container and sticky headers keep working. */
+  overflow-x: clip;
 }
 
 body {
@@ -398,6 +404,13 @@ body {
 .btn-ghost:hover { color: var(--color-violet); }
 .btn-sm { min-height: 40px; padding: 0.65rem 1.1rem; font-size: 0.72rem; }
 .btn-lg { min-height: 56px; padding: 1rem 2rem; font-size: 0.82rem; }
+/* Small phones: a label that does not fit wraps inside the button instead of
+   pushing past the screen edge. "Request a custom basket" at btn-lg was 20px
+   wider than a 320px screen, and the longer French labels are worse. */
+@media (max-width: 479px) {
+  .btn { max-width: 100%; white-space: normal; text-align: center; line-height: 1.25; }
+  .btn-lg { padding-inline: 1.4rem; }
+}
 .btn-block { width: 100%; }
 
 .circle-arrow {

@@ -98,7 +98,10 @@ export function Turnstile({
           language: locale.startsWith("fr") ? "fr" : "en",
           appearance,
           theme,
-          size: "flexible",
+          // "flexible" never shrinks below 300px; inside a padded form card on a
+          // 320–360px phone that pushed the page 25–50px wider than the screen.
+          // Below 300px of room, the compact widget (150px) fits instead.
+          size: container.current.clientWidth >= 300 ? "flexible" : "compact",
           action,
           callback: (token) => onTokenRef.current(token),
           "expired-callback": () => onTokenRef.current(null),
