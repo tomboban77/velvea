@@ -37,6 +37,8 @@ export type ProductDetailView = {
   /** null = unlimited. Enforced again at checkout. */
   inventory: number | null;
   shippable: boolean;
+  /** Fresh or decorative flowers inside, which vary with the season. */
+  hasFlowers: boolean;
 };
 
 export function ProductDetail({
@@ -407,7 +409,9 @@ export function ProductDetail({
                 <Truck strokeWidth={1.6} />
                 <span>
                   {product.shippable ? t("canadaWide") : t("localOnly")}
-                  {product.leadTimeDays > 0 && <> · {t("leadTime", { days: product.leadTimeDays })}</>}
+                  {/* One day is the norm and the same-day/next-day notes cover it; only
+                      longer preparation is worth calling out. Calendar days: we work 7 days. */}
+                  {product.leadTimeDays > 1 && <> · {t("leadTime", { days: product.leadTimeDays })}</>}
                 </span>
               </p>
               <p className="info-row">
@@ -446,7 +450,8 @@ export function ProductDetail({
                   ))}
                 </ul>
                 {/* Allergen disclosure: items are packed together and labels change without notice. */}
-                <p className="mt-4 text-xs text-muted">{t("allergen")}</p>
+                {product.hasFlowers && <p className="mt-4 text-xs text-muted">{t("flowersVary")}</p>}
+                <p className={cn(product.hasFlowers ? "mt-1.5" : "mt-4", "text-xs text-muted")}>{t("allergen")}</p>
               </div>
             )}
 

@@ -9,7 +9,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
 import { advertisedSameDayCutoff } from "@/lib/zones";
-import { BOUQUET_COLLECTION_SLUG, bookedLocalDeliveries, isFull } from "@/lib/delivery-schedule";
+import { containsFlowers } from "@/lib/flowers";
+import { BOUQUET_COLLECTION_SLUG, STANDARD_LEAD_DAYS, bookedLocalDeliveries, isFull } from "@/lib/delivery-schedule";
 import { storeYmd } from "@/lib/dates";
 import { breadcrumbJsonLd, hasFrench, pageMetadata, productJsonLd, siteOrigin } from "@/lib/seo";
 
@@ -66,6 +67,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     images: product.images.map((img) => ({ url: img.url, alt: img.alt ?? "" })),
     inventory: product.inventory,
     shippable: product.shippable,
+    hasFlowers: containsFlowers(
+      tList(product.contents, "en"),
+      product.collections.some((c) => c.collection.slug === BOUQUET_COLLECTION_SLUG)
+    ),
     variants: product.variants.map((v) => ({
       id: v.id,
       label: tc(v.label, locale),
@@ -96,10 +101,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <ProductDetail
         product={view}
-        // Bouquets are made to order and never go out same-day, and a full day
-        // has no same-day left to advertise.
+        // Bouquets and anything needing more than a day to prepare never go out
+        // same-day, and a full day has no same-day left to advertise.
         sameDayCutoff={
           product.collections.some((c) => c.collection.slug === BOUQUET_COLLECTION_SLUG) ||
+          product.leadTimeDays > STANDARD_LEAD_DAYS ||
           isFull(storeYmd(), booked, settings.delivery)
             ? null
             : sameDayCutoff

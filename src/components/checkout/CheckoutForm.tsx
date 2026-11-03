@@ -41,7 +41,7 @@ function addressFields(a: SavedAddress) {
 
 function addressSummary(a: SavedAddress): string {
   const where = `${a.line1}, ${a.city}`;
-  return a.label ? `${a.label} — ${where}` : `${a.fullName} — ${where}`;
+  return a.label ? `${a.label} · ${where}` : `${a.fullName} · ${where}`;
 }
 
 const ICONS: Record<DeliveryMethod, React.ComponentType<{ className?: string }>> = {
@@ -628,7 +628,7 @@ export function CheckoutForm({
                 <ul className="mt-2 space-y-1 border-t border-danger/20 pt-2 text-xs">
                   {changes.map((c, i) => (
                     <li key={i}>
-                      <span className="font-semibold">{c.subject}</span> &mdash; {c.message}
+                      <span className="font-semibold">{c.subject}:</span> {c.message}
                     </li>
                   ))}
                 </ul>

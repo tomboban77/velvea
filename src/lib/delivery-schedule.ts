@@ -23,6 +23,13 @@ export const BOUQUET_COLLECTION_SLUG = "flowers";
 
 export const LOCAL_METHODS: DeliveryMethod[] = ["LOCAL_SAMEDAY", "LOCAL_STANDARD"];
 
+/**
+ * The preparation most baskets need. Anything above it (bouquets, baskets
+ * with flowers that are ordered in) is not ready today, so it is never offered
+ * same-day. Days are calendar days: the studio works seven days a week.
+ */
+export const STANDARD_LEAD_DAYS = 1;
+
 /** Statuses that hold a delivery slot for good. */
 const BOOKED: OrderStatus[] = ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"];
 
@@ -145,25 +152,50 @@ export function earliestScheduledDay({
 }
 
 /**
+ * The earliest pickup day, or null when the bag can be collected as usual.
+ *
+ * Pickup has no travel, so standard baskets keep their existing pickup terms.
+ * Only a bag that needs more than the standard preparation gets a floor: a
+ * two-day bouquet cannot be collected tomorrow just because nobody drives it.
+ */
+export function earliestPickupDay({
+  leadTimeDays,
+  hasBouquet,
+  handoffCutoff,
+  now = new Date(),
+}: {
+  leadTimeDays: number;
+  hasBouquet: boolean;
+  handoffCutoff: string;
+  now?: Date;
+}): string | null {
+  if (!hasBouquet && leadTimeDays <= STANDARD_LEAD_DAYS) return null;
+  return earliestScheduledDay({ zone: { minLeadDays: 0 }, leadTimeDays, hasBouquet, handoffCutoff, now });
+}
+
+/**
  * Why same-day is off the table for this bag and zone, or null if it is offered.
  * Shared by the quote and the charge so they can never disagree.
  */
 export function sameDayBlocker({
   zone,
   hasBouquet,
+  leadTimeDays = 0,
   booked,
   cap,
   now = new Date(),
 }: {
   zone: Pick<DeliveryZone, "sameDayCutoff">;
   hasBouquet: boolean;
+  leadTimeDays?: number;
   booked: Map<string, number>;
   cap: DeliveryCapacity;
   now?: Date;
-}): "no-same-day" | "past-cutoff" | "bouquet" | "full" | null {
+}): "no-same-day" | "past-cutoff" | "bouquet" | "lead-time" | "full" | null {
   if (!zone.sameDayCutoff) return "no-same-day";
   if (storeMinutesOfDay(now) >= cutoffMinutes(zone.sameDayCutoff)) return "past-cutoff";
   if (hasBouquet) return "bouquet";
+  if (leadTimeDays > STANDARD_LEAD_DAYS) return "lead-time";
   if (isFull(storeYmd(now), booked, cap)) return "full";
   return null;
 }

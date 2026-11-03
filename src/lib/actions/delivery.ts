@@ -14,6 +14,7 @@ import {
   firstOpenDay,
   fullDays,
   sameDayBlocker,
+  earliestPickupDay,
   sameDayWindow,
 } from "@/lib/delivery-schedule";
 import { rateLimitByIp } from "@/lib/rate-limit";
@@ -86,7 +87,29 @@ export async function quoteDelivery(
     };
   }
 
-  const [settings, zones] = await Promise.all([getSettings(), getZones()]);
+  const [settings, zones, bouquets, leadRows] = await Promise.all([
+    getSettings(),
+    getZones(),
+    bouquetProductIds(input.productIds),
+    input.productIds.length
+      ? prisma.product.findMany({
+          where: { id: { in: input.productIds } },
+          select: { leadTimeDays: true },
+        })
+      : Promise.resolve([]),
+  ]);
+  const hasBouquet = bouquets.size > 0;
+  const leadTimeDays = Math.max(
+    0,
+    ...leadRows.map((r) => r.leadTimeDays),
+    // A custom basket is assembled from scratch; see resolveCustomLine.
+    input.builderItemIds.length ? 2 : 0
+  );
+  const earliestPickup = earliestPickupDay({
+    leadTimeDays,
+    hasBouquet,
+    handoffCutoff: settings.delivery.orderCutoff,
+  });
 
   // Pickup is a property of us, not of the customer's address, so it is
   // offered regardless of where the order is going — including to the people
@@ -96,9 +119,10 @@ export async function quoteDelivery(
     ? [
         {
           method: "PICKUP",
-          label: say("Pickup — our studio", "Ramassage — notre atelier"),
+          label: say("Pickup at our studio", "Ramassage à notre atelier"),
           sub: `${settings.contact.addressLine}, ${settings.contact.city}`,
           feeCents: 0,
+          earliestDate: earliestPickup ?? undefined,
         },
       ]
     : [];
@@ -153,29 +177,14 @@ export async function quoteDelivery(
   const options: DeliveryOption[] = [...pickupOptions];
 
   if (zone.kind === "LOCAL") {
-    // Same rules the charge runs: bouquets never go same-day, and a day whose
+    // Same rules the charge runs: bouquets and anything needing more than the
+    // standard day of preparation never go same-day, and a day whose
     // route is full pushes the next order to the first day with room.
     const today = storeYmd();
-    const [bouquets, booked, leadRows] = await Promise.all([
-      bouquetProductIds(input.productIds),
-      bookedLocalDeliveries(today),
-      input.productIds.length
-        ? prisma.product.findMany({
-            where: { id: { in: input.productIds } },
-            select: { leadTimeDays: true },
-          })
-        : Promise.resolve([]),
-    ]);
-    const hasBouquet = bouquets.size > 0;
-    const leadTimeDays = Math.max(
-      0,
-      ...leadRows.map((r) => r.leadTimeDays),
-      // A custom basket is assembled from scratch; see resolveCustomLine.
-      input.builderItemIds.length ? 2 : 0
-    );
+    const booked = await bookedLocalDeliveries(today);
 
     const cutoff = zone.sameDayCutoff;
-    if (cutoff && !sameDayBlocker({ zone, hasBouquet, booked, cap: settings.delivery })) {
+    if (cutoff && !sameDayBlocker({ zone, hasBouquet, leadTimeDays, booked, cap: settings.delivery })) {
       options.push({
         method: "LOCAL_SAMEDAY",
         label: say("Same-day delivery", "Livraison le jour même"),

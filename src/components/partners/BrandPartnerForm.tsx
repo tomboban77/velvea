@@ -49,7 +49,7 @@ export function BrandPartnerForm() {
           <Check className="h-7 w-7 text-violet-deep" />
         </div>
         <h2 className="mt-5 font-display text-2xl">
-          {fr ? "Merci ! Nous avons bien reçu votre proposition." : "Thank you — we've received your note."}
+          {fr ? "Merci ! Nous avons bien reçu votre proposition." : "Thank you. We've received your note."}
         </h2>
         <p className="mt-2 text-ink-soft">
           {fr

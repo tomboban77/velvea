@@ -16,9 +16,9 @@ const EN = {
   whereP1:
     "We deliver across Canada. Orders in Mississauga and the Greater Toronto Area are delivered by us directly, with same-day delivery on eligible orders. Everywhere else in Ontario, and the Atlantic provinces, the Prairies and British Columbia, travels with a tracked courier. Shipping to Quebec is coming soon. Yukon and a few remote fly-in communities are priced by hand: checkout will ask you to contact us. We do not deliver to the Northwest Territories or Nunavut.",
   whereP2:
-    "Your delivery options and their exact cost appear at checkout as soon as you enter the recipient's postal code — the postal code, not the city name, is what determines the area, so there is no guesswork about whether an address qualifies.",
+    "Your delivery options and their exact cost appear at checkout as soon as you enter the recipient's postal code. It is the postal code, not the city name, that determines the area, so there is no guesswork about whether an address qualifies.",
 
-  pickupH: "Pickup — always free",
+  pickupH: "Pickup is always free",
   pickupA: "Collect your order from ",
   pickupB: ". There is no charge for pickup, and it is available for every order regardless of where you live.",
 
@@ -27,7 +27,7 @@ const EN = {
   localSameDay: (cutoff: string) => `, same-day on orders placed before ${cutoff} ET`,
   localNextDay: ", next available day",
   localNote:
-    "Same-day delivery depends on how far we have to travel, so the cutoff is earlier for areas further out. Whichever applies to your address is shown at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets are made to order and delivered from the next day.",
+    "The same-day cutoff for each area is listed above and shown again at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets and some flower baskets need extra preparation time, shown on their product page, so they are not available same-day.",
 
   shipH: "Shipping across Canada",
   shipArriving: (min: number, max: number) => `, arriving in roughly ${min}–${max} business days`,
@@ -37,7 +37,7 @@ const EN = {
 
   noShipH: "Baskets we cannot ship",
   noShipP:
-    "Some baskets are too perishable to travel — anything fresh, chilled or heavy on chocolate. Those are marked on their product page and are available for local delivery and pickup only. If one is in your bag and you have entered an address we would have to ship to, checkout will tell you before you pay rather than after.",
+    "Some baskets are too perishable to travel: anything fresh, chilled or heavy on chocolate. Those are marked on their product page and are available for local delivery and pickup only. If one is in your bag and you have entered an address we would have to ship to, checkout will tell you before you pay rather than after.",
 
   handH: "Hand-packed to order",
   handA:
@@ -59,9 +59,9 @@ const FR: typeof EN = {
   whereP1:
     "Nous livrons partout au Canada. Les commandes à Mississauga et dans la région du Grand Toronto sont livrées directement par nous, le jour même pour les commandes admissibles. Partout ailleurs en Ontario, ainsi que dans les provinces de l’Atlantique, les Prairies et la Colombie-Britannique, elles voyagent avec un messager offrant le suivi. L’expédition vers le Québec arrive bientôt. Le Yukon et quelques communautés éloignées accessibles par avion font l’objet d’un tarif établi à la main : la caisse vous invitera à nous contacter. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut.",
   whereP2:
-    "Vos options de livraison et leur coût exact s'affichent à la caisse dès que vous saisissez le code postal du destinataire — c'est le code postal, et non le nom de la ville, qui détermine le secteur, de sorte qu'il n'y a aucune incertitude quant à l'admissibilité d'une adresse.",
+    "Vos options de livraison et leur coût exact s'affichent à la caisse dès que vous saisissez le code postal du destinataire. C'est le code postal, et non le nom de la ville, qui détermine le secteur, de sorte qu'il n'y a aucune incertitude quant à l'admissibilité d'une adresse.",
 
-  pickupH: "Ramassage — toujours gratuit",
+  pickupH: "Le ramassage est toujours gratuit",
   pickupA: "Récupérez votre commande au ",
   pickupB: ". Le ramassage est sans frais et offert pour toutes les commandes, peu importe où vous habitez.",
 
@@ -70,7 +70,7 @@ const FR: typeof EN = {
   localSameDay: (cutoff: string) => `, le jour même pour les commandes passées avant ${cutoff} (HE)`,
   localNextDay: ", le prochain jour disponible",
   localNote:
-    "La livraison le jour même dépend de la distance à parcourir, de sorte que l'heure limite est plus tôt pour les secteurs plus éloignés. Celle qui s'applique à votre adresse est indiquée à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets sont faits sur commande et livrés à partir du lendemain.",
+    "L'heure limite du jour même pour chaque secteur est indiquée ci-dessus et de nouveau à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets et certains paniers fleuris demandent plus de temps de préparation, indiqué sur leur page de produit, et ne sont donc pas offerts le jour même.",
 
   shipH: "Expédition au Canada",
   shipArriving: (min: number, max: number) => `, livraison en environ ${min} à ${max} jours ouvrables`,
@@ -80,7 +80,7 @@ const FR: typeof EN = {
 
   noShipH: "Paniers que nous ne pouvons pas expédier",
   noShipP:
-    "Certains paniers sont trop périssables pour voyager — tout ce qui est frais, réfrigéré ou riche en chocolat. Ils sont indiqués comme tels sur leur page de produit et sont offerts uniquement pour la livraison locale et le ramassage. Si l'un d'eux est dans votre sac et que vous avez saisi une adresse vers laquelle nous devrions expédier, la caisse vous en avisera avant le paiement, et non après.",
+    "Certains paniers sont trop périssables pour voyager : tout ce qui est frais, réfrigéré ou riche en chocolat. Ils sont indiqués comme tels sur leur page de produit et sont offerts uniquement pour la livraison locale et le ramassage. Si l'un d'eux est dans votre sac et que vous avez saisi une adresse vers laquelle nous devrions expédier, la caisse vous en avisera avant le paiement, et non après.",
 
   handH: "Emballé à la main, sur commande",
   handA:
@@ -155,7 +155,7 @@ export default async function ShippingPage({ params }: { params: Promise<{ local
           <ul>
             {local.map((z) => (
               <li key={z.id}>
-                <strong>{t(z.name, locale)}</strong> — {money(z.baseFeeCents)}
+                <strong>{t(z.name, locale)}</strong>: {money(z.baseFeeCents)}
                 {z.sameDayCutoff ? c.localSameDay(z.sameDayCutoff) : c.localNextDay}
               </li>
             ))}
@@ -170,7 +170,7 @@ export default async function ShippingPage({ params }: { params: Promise<{ local
           <ul>
             {shipping.map((z) => (
               <li key={z.id}>
-                <strong>{t(z.name, locale)}</strong> — {money(z.baseFeeCents)}
+                <strong>{t(z.name, locale)}</strong>: {money(z.baseFeeCents)}
                 {c.shipArriving(z.minLeadDays, z.maxLeadDays)}
                 {z.extraItemCents > 0 && c.shipExtra(money(z.extraItemCents))}
               </li>

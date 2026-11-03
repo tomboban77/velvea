@@ -17,7 +17,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin()),
   title: {
-    default: `${BRAND} — Gift Baskets, Same-Day in the GTA & Shipped Across Canada`,
+    default: `${BRAND} | Gift Baskets, Same-Day in the GTA & Shipped Across Canada`,
     template: `%s · ${BRAND}`,
   },
   description:

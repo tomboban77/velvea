@@ -49,7 +49,7 @@ export function CorporateQuoteForm() {
           <Check className="h-7 w-7 text-violet-deep" />
         </div>
         <h2 className="mt-5 font-display text-2xl">
-          {fr ? "Merci ! Nous vous répondrons sous peu." : "Thank you — we'll be in touch shortly."}
+          {fr ? "Merci ! Nous vous répondrons sous peu." : "Thank you. We'll be in touch shortly."}
         </h2>
         <p className="mt-2 text-ink-soft">
           {fr

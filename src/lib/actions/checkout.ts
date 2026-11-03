@@ -29,6 +29,7 @@ import {
   firstOpenDay,
   isFull,
   sameDayBlocker,
+  earliestPickupDay,
   type DeliveryCapacity,
 } from "@/lib/delivery-schedule";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
@@ -350,7 +351,7 @@ async function resolveLineItems(
       if (!variant.inStock) {
         changes.push({
           kind: "out-of-stock",
-          subject: `${name} — ${t(variant.label, locale)}`,
+          subject: `${name} (${t(variant.label, locale)})`,
           message: say(locale, "This option is sold out.", "Cette option est épuisée."),
         });
         continue;
@@ -401,8 +402,8 @@ async function resolveLineItems(
             ? say(locale, "This basket is sold out.", "Ce panier est épuisé.")
             : say(
                 locale,
-                `Only ${product.inventory} left — please reduce the quantity.`,
-                `Il n'en reste que ${product.inventory} — veuillez réduire la quantité.`
+                `Only ${product.inventory} left. Please reduce the quantity.`,
+                `Il n'en reste que ${product.inventory}. Veuillez réduire la quantité.`
               ),
       });
       continue;
@@ -494,14 +495,38 @@ function validateDelivery({
 
   // Collection happens at the studio, so there is no travel to plan for.
   if (method === "PICKUP") {
+    const pickupSubject = say(locale, "Pickup date", "Date de ramassage");
+    if (deliveryDate && !parseStoreDate(deliveryDate)) {
+      changes.push({
+        kind: "delivery-date",
+        subject: pickupSubject,
+        message: say(locale, "That date isn't valid.", "Cette date n'est pas valide."),
+      });
+      return done();
+    }
     if (deliveryDate && deliveryDate < today) {
       changes.push({
         kind: "delivery-date",
-        subject: say(locale, "Pickup date", "Date de ramassage"),
+        subject: pickupSubject,
         message: say(locale, "That date has passed.", "Cette date est passée."),
       });
+      return done();
     }
-    return done();
+    const earliestPickup = earliestPickupDay({ leadTimeDays, hasBouquet, handoffCutoff });
+    if (earliestPickup && deliveryDate && deliveryDate < earliestPickup) {
+      changes.push({
+        kind: "delivery-date",
+        subject: pickupSubject,
+        message: say(
+          locale,
+          `This order needs time to prepare. The earliest pickup is ${earliestPickup}.`,
+          `Cette commande demande un temps de préparation. Le ramassage est possible à partir du ${earliestPickup}.`
+        ),
+      });
+    }
+    // A blank date would let a two-day bouquet be collected tomorrow; record the
+    // earliest day instead, as local delivery does with its next open day.
+    return done(deliveryDate || earliestPickup || "");
   }
 
   if (method === "LOCAL_SAMEDAY") {
@@ -509,7 +534,7 @@ function validateDelivery({
     // because we cannot drive an hour out and back the same afternoon. The
     // cutoff was previously only enforced in the browser.
     const subject = say(locale, "Same-day delivery", "Livraison le jour même");
-    const blocker = sameDayBlocker({ zone, hasBouquet, booked, cap: capacity });
+    const blocker = sameDayBlocker({ zone, hasBouquet, leadTimeDays, booked, cap: capacity });
     if (blocker === "no-same-day") {
       changes.push({
         kind: "delivery-area",
@@ -536,8 +561,18 @@ function validateDelivery({
         subject,
         message: say(
           locale,
-          "Bouquets are made to order and delivered from the next day. Please choose local delivery.",
-          "Les bouquets sont faits sur commande et livrés à partir du lendemain. Veuillez choisir la livraison locale."
+          "Bouquets are made to order and can't go out the same day. Please choose local delivery.",
+          "Les bouquets sont faits sur commande et ne peuvent pas partir le jour même. Veuillez choisir la livraison locale."
+        ),
+      });
+    } else if (blocker === "lead-time") {
+      changes.push({
+        kind: "delivery-date",
+        subject,
+        message: say(
+          locale,
+          `This order needs ${leadTimeDays} days to prepare, so it can't go out today. Please choose local delivery.`,
+          `Cette commande demande ${leadTimeDays} jours de préparation et ne peut donc pas partir aujourd'hui. Veuillez choisir la livraison locale.`
         ),
       });
     } else if (blocker === "full") {
@@ -771,8 +806,8 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
           subject: l.name,
           message: say(
             locale,
-            "Too perishable to ship — choose local delivery or pickup.",
-            "Trop périssable pour l'expédition — choisissez la livraison locale ou le ramassage."
+            "Too perishable to ship. Choose local delivery or pickup.",
+            "Trop périssable pour l'expédition. Choisissez la livraison locale ou le ramassage."
           ),
         })),
       };
@@ -1024,7 +1059,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
           currency: "cad",
           unit_amount: l.unitPriceCents,
           product_data: {
-            name: l.name + (l.variantLabel ? ` — ${l.variantLabel}` : ""),
+            name: l.name + (l.variantLabel ? ` (${l.variantLabel})` : ""),
           },
         },
       }));
@@ -1037,7 +1072,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
               currency: "cad",
               unit_amount: l.cardFeeCents,
               product_data: {
-                name: say(locale, "Premium greeting card", "Carte de vœux premium") + ` — ${l.name}`,
+                name: say(locale, "Premium greeting card for", "Carte de vœux premium pour") + ` ${l.name}`,
               },
             },
           });
@@ -1137,8 +1172,8 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         ok: false,
         error: say(
           locale,
-          "We couldn't reach our payment provider. Nothing has been charged — please try again in a moment.",
-          "Nous n'avons pas pu joindre notre fournisseur de paiement. Rien n'a été facturé — veuillez réessayer dans un instant."
+          "We couldn't reach our payment provider. Nothing has been charged. Please try again in a moment.",
+          "Nous n'avons pas pu joindre notre fournisseur de paiement. Rien n'a été facturé. Veuillez réessayer dans un instant."
         ),
       };
     }

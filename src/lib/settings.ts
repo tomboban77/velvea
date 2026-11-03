@@ -107,7 +107,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     googleBusiness: "",
   },
   delivery: {
-    orderCutoff: "16:00",
+    orderCutoff: "19:00",
     weekdayCapacity: 4,
     weekendCapacity: 10,
   },

@@ -6,6 +6,7 @@ vi.mock("@/lib/prisma", () => ({ prisma: { order: { findMany } } }));
 import {
   bookedLocalDeliveries,
   capacityFor,
+  earliestPickupDay,
   earliestScheduledDay,
   firstOpenDay,
   fullDays,
@@ -109,6 +110,15 @@ describe("sameDayBlocker", () => {
     expect(sameDayBlocker({ zone, hasBouquet: true, booked: empty, cap: CAP, now: MON_10AM })).toBe("bouquet");
   });
 
+  it("refuses anything needing more than a day to prepare", () => {
+    expect(
+      sameDayBlocker({ zone, hasBouquet: false, leadTimeDays: 2, booked: empty, cap: CAP, now: MON_10AM })
+    ).toBe("lead-time");
+    expect(
+      sameDayBlocker({ zone, hasBouquet: false, leadTimeDays: 1, booked: empty, cap: CAP, now: MON_10AM })
+    ).toBeNull();
+  });
+
   it("refuses once today is full", () => {
     const booked = new Map([["2026-10-26", 4]]);
     expect(sameDayBlocker({ zone, hasBouquet: false, booked, cap: CAP, now: MON_10AM })).toBe("full");
@@ -149,5 +159,23 @@ describe("bookedLocalDeliveries", () => {
     expect(where.OR[0].status.in).not.toContain("CANCELLED");
     expect(where.OR[1].status).toBe("PENDING");
     expect(where.OR[1].createdAt.gte.getTime()).toBe(MON_10AM.getTime() - 45 * 60000);
+  });
+});
+
+describe("earliestPickupDay", () => {
+  // Monday 7:30 pm Toronto, past a 19:00 order cutoff.
+  const MON_730PM = new Date("2026-10-26T23:30:00Z");
+
+  it("leaves standard baskets on the usual pickup terms", () => {
+    expect(earliestPickupDay({ leadTimeDays: 1, hasBouquet: false, handoffCutoff: "19:00", now: MON_10AM })).toBeNull();
+  });
+
+  it("counts calendar days for longer preparation, weekends included", () => {
+    expect(earliestPickupDay({ leadTimeDays: 2, hasBouquet: true, handoffCutoff: "19:00", now: MON_10AM })).toBe(
+      "2026-10-28"
+    );
+    expect(earliestPickupDay({ leadTimeDays: 2, hasBouquet: true, handoffCutoff: "19:00", now: MON_730PM })).toBe(
+      "2026-10-29"
+    );
   });
 });

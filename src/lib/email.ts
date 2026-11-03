@@ -366,8 +366,8 @@ export async function sendOrderAwaitingPayment(data: OrderEmailData) {
   const body = `
     <p style="color:#514a40">${escapeHtml(
       L(
-        "We've received your order details. Payment has not been taken yet — we'll contact you shortly to arrange it, and your basket isn't scheduled until then.",
-        "Nous avons reçu les détails de votre commande. Le paiement n'a pas encore été effectué — nous vous contacterons sous peu pour l'organiser. Votre panier ne sera préparé qu'à ce moment-là."
+        "We've received your order details. Payment has not been taken yet. We'll contact you shortly to arrange it, and your basket isn't scheduled until then.",
+        "Nous avons reçu les détails de votre commande. Le paiement n'a pas encore été effectué. Nous vous contacterons sous peu pour l'organiser. Votre panier ne sera préparé qu'à ce moment-là."
       )
     )}</p>
     <p style="margin:16px 0 4px"><strong>${escapeHtml(L("Order", "Commande"))} ${escapeHtml(
@@ -380,8 +380,8 @@ export async function sendOrderAwaitingPayment(data: OrderEmailData) {
   await send(
     data.email,
     L(
-      `Velvea order ${data.orderNumber} — payment to follow`,
-      `Commande Velvea ${data.orderNumber} — paiement à suivre`
+      `Velvea order ${data.orderNumber}: payment to follow`,
+      `Commande Velvea ${data.orderNumber} : paiement à suivre`
     ),
     shell(L("Order received", "Commande reçue"), body, data.locale)
   );
@@ -391,8 +391,8 @@ export async function sendAdminOrderNotice(data: OrderEmailData, opts?: { paid?:
   const to = adminRecipient();
   if (!to) return;
   const paid = opts?.paid ?? true;
-  const heading = paid ? "New paid order" : "New order — <strong>payment not taken</strong>";
-  const body = `<p>${heading} <strong>${escapeHtml(data.orderNumber)}</strong> — ${formatMoney(
+  const heading = paid ? "New paid order" : "New order, <strong>payment not taken</strong>";
+  const body = `<p>${heading} <strong>${escapeHtml(data.orderNumber)}</strong>, ${formatMoney(
     data.totalCents
   )}</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">${itemRows(data.items, "en")}</table>
@@ -435,7 +435,7 @@ export async function sendOrderShipped(data: {
     : "";
   const body = `
     <p style="color:#514a40">${escapeHtml(
-      L("Good news — your Velvea basket is on its way.", "Bonne nouvelle — votre panier Velvea est en route.")
+      L("Good news: your Velvea basket is on its way.", "Bonne nouvelle : votre panier Velvea est en route.")
     )}</p>
     <p style="margin:16px 0 4px"><strong>${escapeHtml(L("Order", "Commande"))} ${escapeHtml(
       data.orderNumber
@@ -575,7 +575,7 @@ export async function sendOrderRefunded(data: {
     data.email,
     L(
       `Refund for Velvea order ${data.orderNumber}`,
-      `Remboursement — commande Velvea ${data.orderNumber}`
+      `Remboursement de la commande Velvea ${data.orderNumber}`
     ),
     shell(L("Refund issued", "Remboursement émis"), body, data.locale)
   );
@@ -617,8 +617,8 @@ export async function sendAbandonedCart(data: {
   const body = `
     <p style="color:#514a40">${escapeHtml(
       L(
-        "You picked something out and did not quite finish. Your basket is still held \u2014 nothing has been charged.",
-        "Vous avez choisi un panier sans terminer votre commande. Il est toujours r\u00e9serv\u00e9 \u2014 rien n'a \u00e9t\u00e9 factur\u00e9."
+        "You picked something out and did not quite finish. Your basket is still held, and nothing has been charged.",
+        "Vous avez choisi un panier sans terminer votre commande. Il est toujours r\u00e9serv\u00e9 et rien n'a \u00e9t\u00e9 factur\u00e9."
       )
     )}</p>
     ${items}
@@ -628,8 +628,8 @@ export async function sendAbandonedCart(data: {
     ${button(link, L("Finish your order", "Terminer ma commande"))}
     <p style="margin-top:18px;font-size:13px;color:#8a8072">${escapeHtml(
       L(
-        "If you have changed your mind, no reply is needed \u2014 the basket is released on its own.",
-        "Si vous avez chang\u00e9 d'avis, rien \u00e0 faire \u2014 le panier se lib\u00e8re tout seul."
+        "If you have changed your mind, no reply is needed. The basket is released on its own.",
+        "Si vous avez chang\u00e9 d'avis, rien \u00e0 faire. Le panier se lib\u00e8re tout seul."
       )
     )}</p>`;
 
@@ -681,7 +681,7 @@ export async function sendCorporateInquiryNotice(inq: {
     ${line("Occasion", inq.occasion)}
     ${message}
     <p><a href="${SITE}/admin/inquiries">Open in admin</a></p>`;
-  await send(to, `Corporate inquiry — ${inq.company}`, shell("Corporate inquiry", body, "en"));
+  await send(to, `Corporate inquiry: ${inq.company}`, shell("Corporate inquiry", body, "en"));
 }
 
 /** Acknowledgement to the person who submitted the corporate form. */
@@ -750,7 +750,7 @@ export async function sendBrandPartnerNotice(inq: BrandPartnerEmailData): Promis
     ${message}
     <p><a href="${SITE}/admin/partners">Open in admin</a></p>
     <p style="font-size:12px;color:#8a8072;margin-top:16px">Before listing: no alcohol (no AGCO licence), bilingual CFIA-compliant labels on food, allergens and shelf life checked.</p>`;
-  return send(to, `Brand partnership — ${inq.brand}`, shell("Brand partnership enquiry", body, "en"));
+  return send(to, `Brand partnership: ${inq.brand}`, shell("Brand partnership enquiry", body, "en"));
 }
 
 /** Acknowledgement to the brand that submitted the partnership form. */
@@ -834,8 +834,8 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
     <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>
     <p><a href="${SITE}/admin/custom-requests">Open in admin</a></p>`;
   const subject = req.product
-    ? `Basket request — ${req.product.nameEn} — ${req.name}`
-    : `Custom basket request — ${req.name}`;
+    ? `Basket request: ${req.product.nameEn}, from ${req.name}`
+    : `Custom basket request from ${req.name}`;
   await send(to, subject, shell(kind, body, "en"));
 }
 
@@ -933,8 +933,8 @@ export async function sendNewsletterConfirm(data: {
   const link = `${SITE}/api/newsletter/confirm?token=${encodeURIComponent(data.token)}`;
   const body = `<p style="color:#514a40">${escapeHtml(
     L(
-      "Please confirm you'd like occasional notes from Velvea — new collections, seasonal guides and early access. We'll only email you once you've confirmed.",
-      "Confirmez que vous souhaitez recevoir occasionnellement des nouvelles de Velvea — nouvelles collections, guides saisonniers et accès anticipé. Nous n'écrirons qu'après votre confirmation."
+      "Please confirm you'd like occasional notes from Velvea: new collections, seasonal guides and early access. We'll only email you once you've confirmed.",
+      "Confirmez que vous souhaitez recevoir occasionnellement des nouvelles de Velvea : nouvelles collections, guides saisonniers et accès anticipé. Nous n'écrirons qu'après votre confirmation."
     )
   )}</p>
   ${button(link, L("Confirm subscription", "Confirmer l'abonnement"))}`;
