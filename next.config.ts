@@ -63,6 +63,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     const renamed: [string, string][] = [
       ["executive-reserve-corporate-gift-hamper", "golden-hour-coffee-gourmet-gift-box"],
+      ["thanksgiving-harvest-gourmet-basket", "heartfelt-gourmet-gift-basket"],
+      ["maple-grove-gourmet-gift-basket", "heartfelt-gourmet-gift-basket"],
+      ["grand-thanksgiving-luxe-hamper", "grand-luxe-gourmet-hamper"],
     ];
     return renamed.flatMap(([from, to]) => [
       { source: `/products/${from}`, destination: `/products/${to}`, permanent: true },
