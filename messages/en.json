@@ -437,7 +437,9 @@
     "emptyTitle": "Your bag is empty",
     "emptyLede": "Discover beautifully hand-packed baskets for every occasion.",
     "premiumCard": "Premium greeting card",
-    "footerNote": "Shipping & taxes calculated at checkout. Message card included · no prices on the slip."
+    "footerNote": "Shipping & taxes calculated at checkout. Message card included · no prices on the slip.",
+    "orderLimit": "Online orders are limited to {max} baskets. For a larger order, <quote>request a quote</quote> and we'll arrange it.",
+    "largeOrder": "Orders of {min} or more baskets need {days} days to prepare, so they can't go out same-day."
   },
   "newsletter": {
     "title": "Notes, on occasion",

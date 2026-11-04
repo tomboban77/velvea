@@ -32,6 +32,7 @@ import {
   earliestPickupDay,
   type DeliveryCapacity,
 } from "@/lib/delivery-schedule";
+import { MAX_ORDER_ITEMS, LARGE_ORDER_ITEMS, sizeLeadDays } from "@/lib/order-limits";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 import { z } from "zod";
 
@@ -453,6 +454,7 @@ function validateDelivery({
   method,
   deliveryDate,
   leadTimeDays,
+  largeOrder = false,
   hasBouquet,
   handoffCutoff,
   booked,
@@ -463,6 +465,8 @@ function validateDelivery({
   method: DeliveryMethod;
   deliveryDate: string;
   leadTimeDays: number;
+  /** Enough baskets that the order size alone sets the preparation time. */
+  largeOrder?: boolean;
   hasBouquet: boolean;
   handoffCutoff: string;
   booked: Map<string, number>;
@@ -569,11 +573,17 @@ function validateDelivery({
       changes.push({
         kind: "delivery-date",
         subject,
-        message: say(
-          locale,
-          `This order needs ${leadTimeDays} days to prepare, so it can't go out today. Please choose local delivery.`,
-          `Cette commande demande ${leadTimeDays} jours de préparation et ne peut donc pas partir aujourd'hui. Veuillez choisir la livraison locale.`
-        ),
+        message: largeOrder
+          ? say(
+              locale,
+              `Orders of ${LARGE_ORDER_ITEMS} or more baskets need ${leadTimeDays} days to prepare, so they can't go out today. Please choose local delivery.`,
+              `Les commandes de ${LARGE_ORDER_ITEMS} paniers ou plus demandent ${leadTimeDays} jours de préparation et ne peuvent donc pas partir aujourd'hui. Veuillez choisir la livraison locale.`
+            )
+          : say(
+              locale,
+              `This order needs ${leadTimeDays} days to prepare, so it can't go out today. Please choose local delivery.`,
+              `Cette commande demande ${leadTimeDays} jours de préparation et ne peut donc pas partir aujourd'hui. Veuillez choisir la livraison locale.`
+            ),
       });
     } else if (blocker === "full") {
       changes.push({
@@ -728,6 +738,18 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   if (lines.length === 0) {
     return { ok: false, error: say(locale, "Your cart is empty.", "Votre panier est vide.") };
   }
+  // The bag caps this too, but a stale or hand-edited cart must not get past it.
+  const itemCount = lines.reduce((n, l) => n + l.quantity, 0);
+  if (itemCount > MAX_ORDER_ITEMS) {
+    return {
+      ok: false,
+      error: say(
+        locale,
+        `Online orders are limited to ${MAX_ORDER_ITEMS} baskets. For a larger order, please contact us and we'll arrange it.`,
+        `Les commandes en ligne sont limitées à ${MAX_ORDER_ITEMS} paniers. Pour une commande plus importante, veuillez nous contacter.`
+      ),
+    };
+  }
 
   const method: DeliveryMethod = input.deliveryMethod;
 
@@ -814,7 +836,8 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     }
   }
 
-  const leadTimeDays = lines.reduce((max, l) => Math.max(max, l.leadTimeDays), 0);
+  // Three or more baskets take two days to make, whatever is in them.
+  const leadTimeDays = lines.reduce((max, l) => Math.max(max, l.leadTimeDays), sizeLeadDays(itemCount));
   const [bouquets, booked] = await Promise.all([
     bouquetProductIds(lines.flatMap((l) => (l.productId ? [l.productId] : []))),
     LOCAL_METHODS.includes(method)
@@ -827,6 +850,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     method,
     deliveryDate: input.deliveryDate,
     leadTimeDays,
+    largeOrder: itemCount >= LARGE_ORDER_ITEMS,
     hasBouquet: bouquets.size > 0,
     handoffCutoff: settings.delivery.orderCutoff,
     booked,

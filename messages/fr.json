@@ -437,7 +437,9 @@
     "emptyTitle": "Votre sac est vide",
     "emptyLede": "Découvrez des paniers composés à la main pour chaque occasion.",
     "premiumCard": "Carte de vœux premium",
-    "footerNote": "Livraison et taxes calculées à la caisse. Carte-message incluse · aucun prix sur le bordereau."
+    "footerNote": "Livraison et taxes calculées à la caisse. Carte-message incluse · aucun prix sur le bordereau.",
+    "orderLimit": "Les commandes en ligne sont limitées à {max} paniers. Pour une commande plus importante, <quote>demandez un devis</quote> et nous l'organiserons.",
+    "largeOrder": "Les commandes de {min} paniers ou plus demandent {days} jours de préparation et ne peuvent donc pas partir le jour même."
   },
   "newsletter": {
     "title": "Quelques notes, à l'occasion",

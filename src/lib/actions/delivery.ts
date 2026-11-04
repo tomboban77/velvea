@@ -18,6 +18,7 @@ import {
   sameDayWindow,
 } from "@/lib/delivery-schedule";
 import { rateLimitByIp } from "@/lib/rate-limit";
+import { sizeLeadDays } from "@/lib/order-limits";
 import type { DeliveryMethod } from "@prisma/client";
 import { z } from "zod";
 
@@ -103,7 +104,9 @@ export async function quoteDelivery(
     0,
     ...leadRows.map((r) => r.leadTimeDays),
     // A custom basket is assembled from scratch; see resolveCustomLine.
-    input.builderItemIds.length ? 2 : 0
+    input.builderItemIds.length ? 2 : 0,
+    // Three or more baskets take two days; checkout applies the same rule.
+    sizeLeadDays(input.itemCount)
   );
   const earliestPickup = earliestPickupDay({
     leadTimeDays,

@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { MAX_ORDER_ITEMS } from "@/lib/order-limits";
 
 export type CartItem = {
   id: string; // unique line id
@@ -80,6 +81,12 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "velvea_cart_v1";
 
+/** Baskets that still fit in the bag, leaving out one line's own quantity. */
+function roomFor(items: CartItem[], exceptId?: string): number {
+  const used = items.reduce((n, p) => (p.id === exceptId ? n : n + p.quantity), 0);
+  return Math.max(0, MAX_ORDER_ITEMS - used);
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -108,7 +115,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback<CartContextValue["addItem"]>((item) => {
     setItems((prev) => {
-      const qty = item.quantity ?? 1;
+      // Online orders stop at MAX_ORDER_ITEMS; checkout refuses more anyway, so
+      // the bag never holds more than can be bought.
+      const qty = Math.min(item.quantity ?? 1, roomFor(prev));
+      if (qty <= 0) return prev;
       // custom baskets are always their own line
       if (!item.isCustom) {
         const idx = prev.findIndex((p) => p.id === item.id);
@@ -136,7 +146,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       prev
         .map((p) =>
           p.id === id
-            ? { ...p, quantity: Math.max(0, Math.min(quantity, p.maxQty ?? 99)) }
+            ? {
+                ...p,
+                // Going down is always allowed, so a bag saved before the cap
+                // existed can still be trimmed; going up stops at the cap.
+                quantity: Math.max(
+                  0,
+                  quantity <= p.quantity
+                    ? quantity
+                    : Math.max(p.quantity, Math.min(quantity, p.maxQty ?? 99, roomFor(prev, id)))
+                ),
+              }
             : p
         )
         .filter((p) => p.quantity > 0)

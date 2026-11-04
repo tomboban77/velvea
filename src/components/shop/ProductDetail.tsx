@@ -11,6 +11,7 @@ import { useCart, giftLineId } from "@/components/cart/CartProvider";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
 import { Link } from "@/i18n/routing";
 import { formatMoney, cn, truncate } from "@/lib/utils";
+import { MAX_ORDER_ITEMS, LARGE_ORDER_ITEMS, LARGE_ORDER_LEAD_DAYS } from "@/lib/order-limits";
 
 export type ProductDetailView = {
   id: string;
@@ -54,9 +55,10 @@ export function ProductDetail({
 }) {
   const t = useTranslations("pdp");
   const tc = useTranslations("common");
+  const tcart = useTranslations("cart");
   const locale = useLocale();
   const fr = locale === "fr";
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart, count } = useCart();
 
   const [activeImg, setActiveImg] = useState(0);
   const [variantId, setVariantId] = useState<string | null>(product.variants[0]?.id ?? null);
@@ -90,7 +92,14 @@ export function ProductDetail({
     (stock !== null && stock <= 0) ||
     (product.variants.length > 0 && product.variants.every((v) => !v.inStock));
   const variantSoldOut = activeVariant ? !activeVariant.inStock : false;
-  const maxQty = stock === null ? 99 : Math.min(99, Math.max(1, stock));
+  // An online order holds at most MAX_ORDER_ITEMS baskets, counting what is
+  // already in the bag; the bag and checkout enforce the same cap.
+  const room = Math.max(0, MAX_ORDER_ITEMS - count);
+  const bagFull = room === 0;
+  const maxQty = Math.max(1, Math.min(room, stock ?? MAX_ORDER_ITEMS));
+  const buyQty = Math.min(qty, maxQty);
+  // Three or more baskets in the order take two days, so same-day is not on offer.
+  const largeOrder = count + buyQty >= LARGE_ORDER_ITEMS;
   const unavailable = soldOut || variantSoldOut;
 
   const price = activeVariant?.priceCents ?? product.priceCents;
@@ -125,7 +134,7 @@ export function ProductDetail({
   const GIFT_MAX = 300;
 
   function add() {
-    if (unavailable) return;
+    if (unavailable || bagFull) return;
     const base = variantId ? `${product.id}:${variantId}` : product.id;
     addItem({
       // The card message and card type are part of the line identity, so the
@@ -141,7 +150,7 @@ export function ProductDetail({
       variantLabel: activeVariant?.label,
       image: product.images[0]?.url,
       unitPriceCents: price,
-      quantity: Math.min(qty, maxQty),
+      quantity: buyQty,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -359,25 +368,37 @@ export function ProductDetail({
             {/* qty + add */}
             <div ref={buyRef} className="mt-4 flex flex-wrap items-stretch gap-3">
               <div className="qty" aria-label={t("qtyLabel")}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} aria-label="−">
+                <button onClick={() => setQty(Math.max(1, buyQty - 1))} aria-label="−">
                   <Minus className="h-4 w-4" strokeWidth={1.8} />
                 </button>
-                <span>{qty}</span>
-                <button onClick={() => setQty(Math.min(maxQty, qty + 1))} disabled={qty >= maxQty} aria-label="+">
+                <span>{buyQty}</span>
+                <button onClick={() => setQty(Math.min(maxQty, buyQty + 1))} disabled={buyQty >= maxQty} aria-label="+">
                   <Plus className="h-4 w-4" strokeWidth={1.8} />
                 </button>
               </div>
               <button
                 onClick={add}
-                disabled={unavailable}
+                disabled={unavailable || bagFull}
                 className={cn("btn btn-primary btn-lg min-w-[14rem] flex-1", added && "!border-success !bg-success")}
               >
-                {unavailable ? tc("soldOut") : added ? (<><Check /> {t("added")}</>) : (<>{t("addToBag")} · {money(price * qty)}</>)}
+                {unavailable ? tc("soldOut") : added ? (<><Check /> {t("added")}</>) : (<>{t("addToBag")} · {money(price * buyQty)}</>)}
               </button>
             </div>
             {!unavailable && stock !== null && stock <= 5 && (
               <p className="mt-2 text-sm font-semibold text-violet-deep">
                 {fr ? `Plus que ${stock} en stock` : `Only ${stock} left in stock`}
+              </p>
+            )}
+            {!unavailable && count + buyQty >= MAX_ORDER_ITEMS && (
+              <p className="mt-2 text-sm text-ink-soft">
+                {tcart.rich("orderLimit", {
+                  max: MAX_ORDER_ITEMS,
+                  quote: (chunks) => (
+                    <Link href="/corporate/quote" className="underline">
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </p>
             )}
             {added && (
@@ -404,7 +425,13 @@ export function ProductDetail({
 
             {/* delivery */}
             <div className="mt-6 space-y-3 rounded-lg bg-cream p-5">
-              {sameDayCutoff && <SameDayNotice cutoff={sameDayCutoff} />}
+              {sameDayCutoff && !largeOrder && <SameDayNotice cutoff={sameDayCutoff} />}
+              {largeOrder && !unavailable && (
+                <p className="info-row">
+                  <Truck strokeWidth={1.6} />
+                  <span>{tcart("largeOrder", { min: LARGE_ORDER_ITEMS, days: LARGE_ORDER_LEAD_DAYS })}</span>
+                </p>
+              )}
               <p className="info-row">
                 <Truck strokeWidth={1.6} />
                 <span>
@@ -533,7 +560,7 @@ export function ProductDetail({
           </div>
           <button
             onClick={add}
-            disabled={unavailable}
+            disabled={unavailable || bagFull}
             className={cn("btn btn-primary", added && "!border-success !bg-success")}
           >
             {added && !unavailable ? <Check /> : null}

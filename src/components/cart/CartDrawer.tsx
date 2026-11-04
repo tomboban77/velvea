@@ -7,12 +7,14 @@ import Image from "next/image";
 import { X, Plus, Minus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
 import { useCart, lineUnitCents } from "./CartProvider";
 import { formatMoney, cn } from "@/lib/utils";
+import { MAX_ORDER_ITEMS, LARGE_ORDER_ITEMS, LARGE_ORDER_LEAD_DAYS } from "@/lib/order-limits";
 
 export function CartDrawer() {
   const t = useTranslations();
   const locale = useLocale();
   const money = (c: number) => formatMoney(c, locale === "fr" ? "fr-CA" : "en-CA");
-  const { items, isOpen, closeCart, updateQty, removeItem, subtotalCents } = useCart();
+  const { items, count, isOpen, closeCart, updateQty, removeItem, subtotalCents } = useCart();
+  const atLimit = count >= MAX_ORDER_ITEMS;
 
   const panelRef = useRef<HTMLElement>(null);
   const titleId = useId();
@@ -113,6 +115,23 @@ export function CartDrawer() {
                 Delivery is calculated at checkout from the postal code. Pickup from our
                 Mississauga studio is always free.
               </p>
+              {count >= LARGE_ORDER_ITEMS && (
+                <p className="mt-1 text-xs text-ink-soft">
+                  {t("cart.largeOrder", { min: LARGE_ORDER_ITEMS, days: LARGE_ORDER_LEAD_DAYS })}
+                </p>
+              )}
+              {atLimit && (
+                <p className="mt-1 text-xs text-ink-soft">
+                  {t.rich("cart.orderLimit", {
+                    max: MAX_ORDER_ITEMS,
+                    quote: (chunks) => (
+                      <Link href="/corporate/quote" onClick={closeCart} className="underline">
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
+                </p>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -174,7 +193,8 @@ export function CartDrawer() {
                           </span>
                           <button
                             onClick={() => updateQty(item.id, item.quantity + 1)}
-                            className="p-1.5 text-ink-soft hover:text-ink"
+                            disabled={atLimit}
+                            className="p-1.5 text-ink-soft hover:text-ink disabled:opacity-40"
                             aria-label={t("cart.increase")}
                           >
                             <Plus className="h-3.5 w-3.5" />

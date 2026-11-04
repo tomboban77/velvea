@@ -27,7 +27,7 @@ const EN = {
   localSameDay: (cutoff: string) => `, same-day on orders placed before ${cutoff} ET`,
   localNextDay: ", next available day",
   localNote:
-    "The same-day cutoff for each area is listed above and shown again at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets and some flower baskets need extra preparation time, shown on their product page, so they are not available same-day.",
+    "The same-day cutoff for each area is listed above and shown again at checkout alongside the price. Same-day orders arrive between 7 and 11 pm on weekdays; on Saturdays and Sundays we deliver through the day, and the time depends on that day's orders. We take a limited number of deliveries each day, so once a day is full, checkout offers the next open one. Bouquets and some flower baskets need extra preparation time, shown on their product page, so they are not available same-day. Orders of 3 or more baskets also need 2 days, and an online order holds up to 10 baskets. For anything larger, request a corporate quote and we'll arrange it.",
 
   shipH: "Shipping across Canada",
   shipArriving: (min: number, max: number) => `, arriving in roughly ${min}–${max} business days`,
@@ -70,7 +70,7 @@ const FR: typeof EN = {
   localSameDay: (cutoff: string) => `, le jour même pour les commandes passées avant ${cutoff} (HE)`,
   localNextDay: ", le prochain jour disponible",
   localNote:
-    "L'heure limite du jour même pour chaque secteur est indiquée ci-dessus et de nouveau à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets et certains paniers fleuris demandent plus de temps de préparation, indiqué sur leur page de produit, et ne sont donc pas offerts le jour même.",
+    "L'heure limite du jour même pour chaque secteur est indiquée ci-dessus et de nouveau à la caisse, à côté du prix. Les commandes du jour même arrivent entre 19 h et 23 h en semaine; le samedi et le dimanche, nous livrons tout au long de la journée et l'heure dépend des commandes du jour. Nous acceptons un nombre limité de livraisons par jour : lorsqu'une journée est complète, la caisse propose la suivante. Les bouquets et certains paniers fleuris demandent plus de temps de préparation, indiqué sur leur page de produit, et ne sont donc pas offerts le jour même. Les commandes de 3 paniers ou plus demandent aussi 2 jours, et une commande en ligne peut contenir jusqu'à 10 paniers. Pour une commande plus importante, demandez un devis d'entreprise et nous l'organiserons.",
 
   shipH: "Expédition au Canada",
   shipArriving: (min: number, max: number) => `, livraison en environ ${min} à ${max} jours ouvrables`,
