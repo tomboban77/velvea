@@ -5,16 +5,28 @@
  * 2. Fill your products in:         import/products.json   (see import/products.example.json)
  * 3. Run:                           npm run import:products
  *
- * Images are uploaded to Cloudinary; products are created/updated by slug.
- * Re-running updates existing products (matched by slug) and replaces their images.
+ * Images are uploaded to Cloudinary; products are created by slug.
+ *
+ * A product that already exists is SKIPPED. Once a basket is live it is edited
+ * in /admin/products, and the import files go stale: re-running an old file
+ * used to replace the whole row, which silently undid admin work (lead times,
+ * contents, descriptions) and deleted the product's photos from Cloudinary.
+ *
+ *   npm run import:products -- --overwrite
+ *
+ * updates existing products on purpose, and even then only the fields the file
+ * actually sets. Anything left out (lead time, contents, images, variants,
+ * collections...) keeps its live value.
  */
 import "dotenv/config";
 import { readFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { PrismaClient } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
+import { containsFlowers } from "../src/lib/flowers";
 
 const prisma = new PrismaClient();
+const OVERWRITE = process.argv.includes("--overwrite");
 const IMAGES_DIR = resolve(process.cwd(), "import/images");
 const DATA_FILE = resolve(process.cwd(), "import/products.json");
 
@@ -116,6 +128,16 @@ async function main() {
     }
     const slug = toSlug(p.slug || nameL.en);
 
+    // Decided before any upload, so a skipped product leaves no orphan images.
+    const existing = await prisma.product.findUnique({
+      where: { slug },
+      include: { images: true },
+    });
+    if (existing && !OVERWRITE) {
+      warnings.push(`"${nameL.en}": skipped, already exists. Edit it in /admin/products, or re-run with --overwrite.`);
+      continue;
+    }
+
     // Upload images to Cloudinary
     const uploaded: { url: string; publicId: string; width: number; height: number }[] = [];
     for (const file of p.images ?? []) {
@@ -155,7 +177,18 @@ async function main() {
       featured: p.featured ?? false,
       bestseller: p.bestseller ?? false,
       badges: p.badges ?? [],
-      leadTimeDays: p.leadTimeDays ?? 1,
+      // Flowers are bought in for each order and need two days (owner rule,
+      // 3 Nov 2026); everything else is the standard one.
+      leadTimeDays:
+        p.leadTimeDays ??
+        (containsFlowers(
+          (p.contents ?? []).map((c) => L(c)?.en ?? ""),
+          // BOUQUET_COLLECTION_SLUG; delivery-schedule.ts is server-only and
+          // cannot be imported from a plain script.
+          (p.categories ?? []).some((c) => toSlug(c) === "flowers")
+        )
+          ? 2
+          : 1),
       shippable: p.shippable ?? true,
       inventory: p.inventory ?? null,
       seoTitle: L(p.seoTitle) ?? {},
@@ -173,28 +206,52 @@ async function main() {
     }));
     const collectionCreate = collectionIds.map((id, idx) => ({ collectionId: id, position: idx }));
 
-    const existing = await prisma.product.findUnique({
-      where: { slug },
-      include: { images: true },
-    });
-
     if (existing) {
-      // remove old Cloudinary images we uploaded before, then replace
-      for (const img of existing.images) if (img.publicId) await cloudinary.uploader.destroy(img.publicId).catch(() => {});
+      // --overwrite: only what the file states. A key left out of the file
+      // must not fall back to a create-time default (leadTimeDays 1, status
+      // ACTIVE, empty contents) and wipe the live value.
+      const has = (k: keyof InputProduct) => p[k] !== undefined;
+      const patch: Partial<typeof data> = { name: data.name, priceCents: data.priceCents };
+      if (has("tagline")) patch.tagline = data.tagline;
+      if (has("description")) patch.description = data.description;
+      if (has("care")) patch.care = data.care;
+      if (has("contents")) patch.contents = data.contents;
+      if (has("compareAt") || has("compareAtCents")) patch.compareAtCents = data.compareAtCents;
+      if (has("sku")) patch.sku = data.sku;
+      if (has("status")) patch.status = data.status;
+      if (has("featured")) patch.featured = data.featured;
+      if (has("bestseller")) patch.bestseller = data.bestseller;
+      if (has("badges")) patch.badges = data.badges;
+      if (has("leadTimeDays")) patch.leadTimeDays = data.leadTimeDays;
+      if (has("shippable")) patch.shippable = data.shippable;
+      if (has("inventory")) patch.inventory = data.inventory;
+      if (has("seoTitle")) patch.seoTitle = data.seoTitle;
+      if (has("seoDescription")) patch.seoDescription = data.seoDescription;
+
+      // Photos are replaced only when new ones actually uploaded; a missing or
+      // failed image must not leave the product with none.
+      const replaceImages = imageCreate.length > 0;
+      const replaceVariants = has("variants");
+      const replaceCollections = has("occasions") || has("recipients") || has("categories");
+
       await prisma.$transaction([
-        prisma.productImage.deleteMany({ where: { productId: existing.id } }),
-        prisma.productVariant.deleteMany({ where: { productId: existing.id } }),
-        prisma.productCollection.deleteMany({ where: { productId: existing.id } }),
+        ...(replaceImages ? [prisma.productImage.deleteMany({ where: { productId: existing.id } })] : []),
+        ...(replaceVariants ? [prisma.productVariant.deleteMany({ where: { productId: existing.id } })] : []),
+        ...(replaceCollections ? [prisma.productCollection.deleteMany({ where: { productId: existing.id } })] : []),
         prisma.product.update({
           where: { id: existing.id },
           data: {
-            ...data,
-            images: { create: imageCreate },
-            variants: { create: variantCreate },
-            collections: { create: collectionCreate },
+            ...patch,
+            ...(replaceImages ? { images: { create: imageCreate } } : {}),
+            ...(replaceVariants ? { variants: { create: variantCreate } } : {}),
+            ...(replaceCollections ? { collections: { create: collectionCreate } } : {}),
           },
         }),
       ]);
+      // Old photos leave Cloudinary only once the new ones are saved.
+      if (replaceImages) {
+        for (const img of existing.images) if (img.publicId) await cloudinary.uploader.destroy(img.publicId).catch(() => {});
+      }
       console.log(`updated: ${nameL.en}`);
     } else {
       await prisma.product.create({

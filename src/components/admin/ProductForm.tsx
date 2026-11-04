@@ -474,7 +474,10 @@ export function ProductForm({
 
           <Card className="space-y-4">
             <h3 className="font-display text-lg">Logistics</h3>
-            <Field label="Lead time (days)">
+            <Field
+              label="Lead time (days)"
+              hint="Calendar days, as we work 7 days. 1 is standard; use 2 for anything with flowers. Over 1 turns off same-day for this basket."
+            >
               <TextInput
                 type="number"
                 value={String(d.leadTimeDays)}

@@ -34,7 +34,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // No street address in the name. The address lives in site settings and is
     // rendered from there at checkout and on the delivery page; repeating it
     // here only creates a second copy to forget to update.
-    name: L("Pickup — our studio", "Ramassage — notre atelier"),
+    name: L("Pickup at our studio", "Ramassage à notre atelier"),
     kind: "PICKUP",
     baseFeeCents: 0,
     minLeadDays: 0,
@@ -47,7 +47,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   // --- Local: we drive it ---------------------------------------------------
   {
     key: "local-a",
-    name: L("Local A — Mississauga", "Local A — Mississauga"),
+    name: L("Mississauga", "Mississauga"),
     kind: "LOCAL",
     // Every L5 FSA is Mississauga, and L4T/L4V–L4Z cover Malton, the airport
     // lands and east Mississauga. Canadian postal codes never use D, F, I, O,
@@ -64,7 +64,9 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     baseFeeCents: 999,
     extraItemCents: 0, // one trip carries the whole order
     sameDaySurchargeCents: 500, // a dedicated run, not a stop on tomorrow's route
-    sameDayCutoff: "16:00",
+    // Noon across every GTA tier (owner decision, 3 Nov 2026): one cutoff is
+    // easier to promise than one per distance band.
+    sameDayCutoff: "12:00",
     minLeadDays: 0,
     maxLeadDays: 1,
     position: 10,
@@ -72,7 +74,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "local-b",
-    name: L("Local B — Toronto", "Local B — Toronto"),
+    name: L("Toronto", "Toronto"),
     kind: "LOCAL",
     // All of Toronto is M, with no exceptions and no other city inside it.
     fsaLetters: ["M"],
@@ -80,7 +82,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     baseFeeCents: 1499,
     extraItemCents: 0,
     sameDaySurchargeCents: 700,
-    sameDayCutoff: "13:00", // earlier than Local A — it is a longer run
+    sameDayCutoff: "12:00", // same as Local A since 3 Nov 2026
     minLeadDays: 0,
     maxLeadDays: 1,
     position: 20,
@@ -89,8 +91,8 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   {
     key: "local-b-west",
     name: L(
-      "Local B — Brampton, Oakville, Milton, Burlington, Georgetown, Bolton",
-      "Local B — Brampton, Oakville, Milton, Burlington, Georgetown, Bolton"
+      "Brampton, Oakville, Milton, Burlington, Georgetown and Bolton",
+      "Brampton, Oakville, Milton, Burlington, Georgetown et Bolton"
     ),
     kind: "LOCAL",
     fsaPrefixes: [
@@ -101,7 +103,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
       // Milton
       "L9E", "L9T",
       // Moved up from local-c on 24 Sept 2026 (owner decision): these now get
-      // the Local B fee, the 13:00 same-day cutoff and 0-1 day lead times.
+      // the Local B fee, the Local B same-day cutoff and 0-1 day lead times.
       // Burlington is the whole city; Georgetown is L7G only (L7J is Acton)
       // and Bolton is L7E only (L7C / L7K are elsewhere in Caledon), so the
       // rest of Halton Hills and Caledon stay on the slower Local C rate.
@@ -113,7 +115,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     baseFeeCents: 1499,
     extraItemCents: 0,
     sameDaySurchargeCents: 700, // same distance band as Toronto
-    sameDayCutoff: "13:00",
+    sameDayCutoff: "12:00",
     minLeadDays: 0,
     maxLeadDays: 1,
     position: 21,
@@ -121,7 +123,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "local-b-york",
-    name: L("Local B — Vaughan, Markham, Richmond Hill", "Local B — Vaughan, Markham, Richmond Hill"),
+    name: L("Vaughan, Markham and Richmond Hill", "Vaughan, Markham et Richmond Hill"),
     kind: "LOCAL",
     fsaPrefixes: [
       // Vaughan — L3L is Woodbridge, which the first pass missed entirely.
@@ -135,7 +137,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     baseFeeCents: 1499,
     extraItemCents: 0,
     sameDaySurchargeCents: 700, // same distance band as Toronto
-    sameDayCutoff: "13:00",
+    sameDayCutoff: "12:00",
     minLeadDays: 0,
     maxLeadDays: 1,
     position: 22,
@@ -143,7 +145,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "local-c",
-    name: L("Local C — Durham, north GTA", "Local C — Durham, nord du RGT"),
+    name: L("Durham and north GTA", "Durham et nord du RGT"),
     kind: "LOCAL",
     fsaPrefixes: [
       // Durham: Pickering, Ajax, Whitby, Oshawa, Clarington
@@ -168,7 +170,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   // --- Shipped: carrier -----------------------------------------------------
   {
     key: "on-ground",
-    name: L("Ontario — ground", "Ontario — terrestre"),
+    name: L("Ontario (ground shipping)", "Ontario (expédition terrestre)"),
     kind: "SHIPPING",
     // Everything in Ontario that no local tier claimed: Hamilton, Niagara,
     // Kitchener, Guelph, Barrie, London, Windsor, Ottawa, Kingston and the
@@ -208,7 +210,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   },
   {
     key: "on-fly-in",
-    name: L("Northern Ontario — remote", "Nord de l'Ontario — régions éloignées"),
+    name: L("Remote northern Ontario", "Régions éloignées du nord de l’Ontario"),
     kind: "QUOTE",
     // Ontario addresses with no year-round road. A basket here costs more to
     // send than it costs to buy, so it is quoted by hand rather than sold at a
@@ -240,10 +242,10 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
 
   // --- Shipped: beyond Ontario ------------------------------------------------
   //
-  // Seeded INACTIVE. Every page, email and checkout message still says
-  // "Ontario only", so switching these on is a launch, not a rate change: the
-  // copy goes first, then all of these activate together — the remote
-  // carve-out below included, or fly-in addresses would be sold a road rate.
+  // Live since the national launch, except Quebec, which the site still lists
+  // as coming soon. They went on together, the remote carve-out included,
+  // so fly-in addresses are never sold a road rate. Kept in step with the live
+  // rows so a reseed of an empty database comes back the same.
   //
   // Fees come from the ShipTime survey (npm run survey:shipping, Oct 2026,
   // 40x30x30 cm / 4 kg box): the dearest sampled town in each zone, tax
@@ -265,7 +267,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     minLeadDays: 5,
     maxLeadDays: 14,
     position: 95,
-    active: false,
+    active: true, // live since the national launch
   },
   {
     key: "qc-ground",
@@ -293,7 +295,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     minLeadDays: 3,
     maxLeadDays: 6,
     position: 130,
-    active: false,
+    active: true, // live since the national launch
   },
   {
     key: "prairies",
@@ -307,7 +309,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     minLeadDays: 3,
     maxLeadDays: 5,
     position: 140,
-    active: false,
+    active: true, // live since the national launch
   },
   {
     key: "bc",
@@ -322,7 +324,7 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     minLeadDays: 4,
     maxLeadDays: 6,
     position: 150,
-    active: false,
+    active: true, // live since the national launch
   },
   {
     key: "yukon",
@@ -336,6 +338,6 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     minLeadDays: 7,
     maxLeadDays: 14,
     position: 160,
-    active: false,
+    active: true, // live since the national launch
   },
 ];

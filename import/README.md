@@ -16,7 +16,15 @@ Add many products at once, with images, in one command.
    npm run import:products
    ```
    Each image is uploaded to Cloudinary and each product is created.
-   Re-running updates products that already exist (matched by name/slug) and replaces their images.
+   A product that already exists (matched by name/slug) is **skipped**, so re-running an old file
+   can never undo edits made since in the admin. Change live products in `/admin/products`.
+
+   To update existing products from a file on purpose:
+   ```
+   npm run import:products -- --overwrite
+   ```
+   Only the fields the file sets are changed. Anything left out (lead time, contents, images,
+   variants, collections) keeps its live value, and photos are replaced only when new ones upload.
 
 4. **Refresh the storefront**: in the admin, open Settings and click **Refresh storefront**.
    Product pages show the change straight away, but the homepage is cached for up to an hour
