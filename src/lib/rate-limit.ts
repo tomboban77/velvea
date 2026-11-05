@@ -37,6 +37,8 @@ export const RATE_LIMITS = {
   // budget a customer needs to apply their code.
   deliveryQuote: { limit: 60, windowSeconds: 5 * 60 },
   checkout: { limit: 10, windowSeconds: 10 * 60 },
+  // New unpaid local orders per IP: each holds a delivery slot for 45 minutes.
+  localCheckout: { limit: 4, windowSeconds: 60 * 60 },
   review: { limit: 5, windowSeconds: 60 * 60 },
   newsletter: { limit: 5, windowSeconds: 60 * 60 },
   corporate: { limit: 5, windowSeconds: 60 * 60 },

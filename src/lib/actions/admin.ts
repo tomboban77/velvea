@@ -11,6 +11,7 @@ import { deleteImage } from "@/lib/cloudinary";
 import { toSlug } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { notifyIndexNow } from "@/lib/indexnow";
+import { isKnownLocalFsa, isKnownLocalLetter } from "@/lib/address-check";
 import {
   cancelOrder,
   markOrderPaid,
@@ -892,6 +893,23 @@ const zoneSchema = z
         message: `"${badLetter}" is not a postal-code first letter`,
       });
     }
+    // Checkout refuses a local order whose city doesn't match its postal code,
+    // using the list in src/lib/address-check.ts. An FSA with no entry there
+    // would turn every order to it away, so it can't be added here until the
+    // list knows which city names belong to it.
+    if (d.kind === "LOCAL") {
+      const unknown = [
+        ...d.fsaPrefixes.map((p) => p.toUpperCase().trim()).filter((p) => FSA.test(p) && !isKnownLocalFsa(p)),
+        ...d.fsaLetters.map((l) => l.toUpperCase().trim()).filter((l) => !isKnownLocalLetter(l)),
+      ];
+      if (unknown.length) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fsaPrefixes"],
+          message: `Checkout can't yet check addresses in ${unknown.join(", ")}. The city names for these postal codes need adding to the address check first.`,
+        });
+      }
+    }
     if (d.kind === "LOCAL" || d.kind === "SHIPPING") {
       if (d.fsaPrefixes.length === 0 && d.fsaLetters.length === 0) {
         ctx.addIssue({
@@ -923,7 +941,8 @@ export async function upsertDeliveryZone(input: z.input<typeof zoneSchema>) {
     baseFeeCents: d.baseFeeCents,
     extraItemCents: d.extraItemCents,
     sameDaySurchargeCents: d.kind === "LOCAL" ? d.sameDaySurchargeCents : 0,
-    freeThresholdCents: d.freeThresholdCents ?? null,
+    // Delivery is never free for spending more (owner decision, 5 Nov 2026).
+    freeThresholdCents: null,
     sameDayCutoff: d.kind === "LOCAL" || d.kind === "PICKUP" ? d.sameDayCutoff ?? null : null,
     minLeadDays: d.minLeadDays,
     maxLeadDays: d.maxLeadDays,

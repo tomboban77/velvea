@@ -15,6 +15,7 @@ import {
 import { releaseDiscount } from "@/lib/discounts";
 import { getSettings } from "@/lib/settings";
 import { sessionSettles } from "@/lib/payment-status";
+import { t } from "@/lib/i18n-content";
 import type { Order, OrderItem, OrderStatus } from "@prisma/client";
 
 type OrderWithItems = Order & { items: OrderItem[] };
@@ -74,12 +75,19 @@ function emailDataOf(order: OrderWithItems): OrderEmailData {
 
 /**
  * Commit stock for a paid order. Products with `inventory === null` are
- * unlimited and skipped; the rest are floored at zero so a race that oversells
- * by one doesn't leave a negative count in the admin.
+ * unlimited and skipped; the rest are floored at zero so the admin never shows
+ * a negative count.
+ *
+ * Checkout counts open checkouts against stock, so this should not oversell,
+ * but a payment can still land after its 45-minute hold. Going below zero used
+ * to be floored silently, leaving two paid orders for one basket and nobody
+ * aware; now the owner is told which order is short.
  */
-async function commitInventory(items: OrderItem[]) {
-  for (const item of items) {
+async function commitInventory(order: OrderWithItems) {
+  const ids: string[] = [];
+  for (const item of order.items) {
     if (!item.productId) continue;
+    ids.push(item.productId);
     await prisma.product
       .updateMany({
         where: { id: item.productId, inventory: { not: null } },
@@ -87,9 +95,26 @@ async function commitInventory(items: OrderItem[]) {
       })
       .catch((err) => console.error("[orders] inventory decrement failed:", err));
   }
-  await prisma.product
-    .updateMany({ where: { inventory: { lt: 0 } }, data: { inventory: 0 } })
-    .catch(() => {});
+  if (!ids.length) return;
+  try {
+    const short = await prisma.product.findMany({
+      where: { id: { in: ids }, inventory: { lt: 0 } },
+      select: { id: true, name: true, inventory: true },
+    });
+    if (!short.length) return;
+    const list = short.map((p) => `${t(p.name, "en")} (short by ${-(p.inventory ?? 0)})`).join(", ");
+    await prisma.product.updateMany({ where: { id: { in: short.map((p) => p.id) } }, data: { inventory: 0 } });
+    await prisma.orderEvent
+      .create({ data: { orderId: order.id, label: "Oversold", note: `Not enough stock for: ${list}` } })
+      .catch(() => {});
+    await sendOwnerAlert(
+      `Order ${order.orderNumber} is paid but oversold`,
+      `There was not enough stock for: ${list}. Make the basket if you can, or contact the customer and refund the part you can't fill.`,
+      `/admin/orders/${order.id}`
+    );
+  } catch (err) {
+    console.error("[orders] oversell check failed:", err);
+  }
 }
 
 /** Give stock back when a paid order is cancelled or refunded. */
@@ -186,7 +211,7 @@ export async function markOrderPaid(
     .create({ data: { orderId, label: "Payment received", note: "Order confirmed" } })
     .catch((err) => console.error("[orders] timeline write failed:", err));
 
-  await commitInventory(order.items);
+  await commitInventory(order);
 
   // The discount redemption was already reserved when the checkout was created,
   // so nothing is incremented here.

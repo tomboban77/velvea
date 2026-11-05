@@ -70,7 +70,9 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
           )}
         </Link>
         {badgeLabel && <span className={cn("badge product-badge", badgeTone)}>{badgeLabel}</span>}
-        {!soldOut && (
+        {/* A basket with sizes has no quick add: it used to go in the bag with
+            no size chosen, at the base price. */}
+        {!soldOut && !product.hasSizes && (
           <button
             onClick={quickAdd}
             aria-label={`${t("quickAdd")}: ${product.name}`}
@@ -108,6 +110,11 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
           {onSale && <span className="text-sm text-muted line-through">{money(product.compareAtCents!)}</span>}
         </p>
 
+        {product.hasSizes && !soldOut ? (
+          <Link href={`/products/${product.slug}`} className="btn btn-outline btn-sm mt-4 w-full">
+            {t("chooseSize")}
+          </Link>
+        ) : (
         <button
           onClick={quickAdd}
           disabled={soldOut}
@@ -126,6 +133,7 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
             t("addToBag")
           )}
         </button>
+        )}
       </div>
     </article>
   );

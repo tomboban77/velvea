@@ -40,10 +40,12 @@ export function computeShipping(
   // A FREE_SHIPPING code now waives local delivery too. Previously the local
   // branch returned before the override was ever consulted, so the code was
   // accepted, shown as applied, and the customer still paid the fee.
-  const threshold = zone.freeThresholdCents;
-  const free =
-    freeShippingOverride || (threshold !== null && subtotalCents >= threshold);
-  if (free) return { shippingCents: 0, freeShipping: true };
+  //
+  // Spending over an amount no longer makes delivery free (owner decision,
+  // 5 Nov 2026): only pickup, or a code the owner issues on purpose, is free.
+  // The zone's freeThresholdCents column is kept but ignored. It was also
+  // judged before the discount, so a half-price code still earned free delivery.
+  if (freeShippingOverride) return { shippingCents: 0, freeShipping: true };
 
   const extras = Math.max(0, itemCount - 1) * zone.extraItemCents;
   const sameDay = method === "LOCAL_SAMEDAY" ? zone.sameDaySurchargeCents : 0;

@@ -15,6 +15,8 @@ export type ProductView = {
   badges: string[];
   /** Inventory exhausted, or every variant marked out of stock. Cards disable add-to-bag. */
   soldOut: boolean;
+  /** Comes in sizes, so it can only be added from the product page, with one chosen. */
+  hasSizes: boolean;
 };
 
 export function toProductView(p: ProductCard, locale: string): ProductView {
@@ -23,6 +25,7 @@ export function toProductView(p: ProductCard, locale: string): ProductView {
     (p.variants.length > 0 && p.variants.every((v) => !v.inStock));
   return {
     soldOut,
+    hasSizes: p.variants.length > 0,
     id: p.id,
     slug: p.slug,
     name: t(p.name, locale),

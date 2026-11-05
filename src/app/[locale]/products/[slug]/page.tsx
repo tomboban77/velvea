@@ -10,7 +10,13 @@ import { getProductBySlug, getBestsellers } from "@/lib/queries";
 import { t as tc, tList } from "@/lib/i18n-content";
 import { advertisedSameDayCutoff } from "@/lib/zones";
 import { containsFlowers } from "@/lib/flowers";
-import { BOUQUET_COLLECTION_SLUG, STANDARD_LEAD_DAYS, bookedLocalDeliveries, isFull } from "@/lib/delivery-schedule";
+import {
+  BOUQUET_COLLECTION_SLUG,
+  BOUQUET_LEAD_DAYS,
+  STANDARD_LEAD_DAYS,
+  bookedLocalDeliveries,
+  isFull,
+} from "@/lib/delivery-schedule";
 import { storeYmd } from "@/lib/dates";
 import { breadcrumbJsonLd, hasFrench, pageMetadata, productJsonLd, siteOrigin } from "@/lib/seo";
 
@@ -50,6 +56,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   ]);
   if (!product || product.status === "DRAFT") notFound();
 
+  const isBouquet = product.collections.some((c) => c.collection.slug === BOUQUET_COLLECTION_SLUG);
   const view: ProductDetailView = {
     id: product.id,
     slug: product.slug,
@@ -63,7 +70,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     rating: product.avgRating,
     reviewCount: product.reviewCount,
     badges: product.badges,
-    leadTimeDays: product.leadTimeDays,
+    // Flowers always take BOUQUET_LEAD_DAYS at checkout, whatever the product
+    // says, so the page shows the time the customer will actually be offered.
+    leadTimeDays: isBouquet ? Math.max(product.leadTimeDays, BOUQUET_LEAD_DAYS) : product.leadTimeDays,
     images: product.images.map((img) => ({ url: img.url, alt: img.alt ?? "" })),
     inventory: product.inventory,
     shippable: product.shippable,
@@ -104,7 +113,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         // Bouquets and anything needing more than a day to prepare never go out
         // same-day, and a full day has no same-day left to advertise.
         sameDayCutoff={
-          product.collections.some((c) => c.collection.slug === BOUQUET_COLLECTION_SLUG) ||
+          isBouquet ||
           product.leadTimeDays > STANDARD_LEAD_DAYS ||
           isFull(storeYmd(), booked, settings.delivery)
             ? null

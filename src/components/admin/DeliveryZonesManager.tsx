@@ -131,7 +131,6 @@ function describe(z: ZoneRow): string {
       : "";
     parts.push("same-day to " + z.sameDayCutoff + premium);
   }
-  if (z.freeThresholdCents !== null) parts.push("free over " + formatMoney(z.freeThresholdCents));
   return parts.join(" · ");
 }
 
@@ -355,14 +354,8 @@ export function DeliveryZonesManager({ initial }: { initial: ZoneRow[] }) {
                     />
                   </Field>
                 </div>
-                <Field label="Free over ($)" hint="Blank means never free.">
-                  <TextInput
-                    type="number"
-                    value={form.freeThresholdDollars}
-                    onChange={(v) => set("freeThresholdDollars", v)}
-                    placeholder="never"
-                  />
-                </Field>
+                {/* No "free over" field: delivery is never free for spending more
+                    (owner decision, 5 Nov 2026). Pickup is the free option. */}
               </>
             )}
 

@@ -68,10 +68,13 @@ describe("earliestScheduledDay", () => {
     expect(earliestScheduledDay({ ...args, now: MON_5PM })).toBe("2026-10-28");
   });
 
-  it("never offers a bouquet before tomorrow", () => {
+  it("always gives a bouquet two days, whatever the product's own lead time", () => {
     expect(
       earliestScheduledDay({ zone, leadTimeDays: 0, hasBouquet: true, handoffCutoff: "16:00", now: MON_10AM })
-    ).toBe("2026-10-27");
+    ).toBe("2026-10-28");
+    expect(
+      earliestScheduledDay({ zone, leadTimeDays: 1, hasBouquet: true, handoffCutoff: "16:00", now: MON_5PM })
+    ).toBe("2026-10-29");
     expect(
       earliestScheduledDay({ zone, leadTimeDays: 0, hasBouquet: false, handoffCutoff: "16:00", now: MON_10AM })
     ).toBe("2026-10-26");
@@ -150,7 +153,7 @@ describe("bookedLocalDeliveries", () => {
     expect(booked.size).toBe(1);
   });
 
-  it("only counts local deliveries that are paid or freshly pending", async () => {
+  it("only counts local deliveries that are paid, freshly pending or held for review", async () => {
     findMany.mockResolvedValue([]);
     await bookedLocalDeliveries("2026-10-26", 60, MON_10AM);
     const where = findMany.mock.calls[0][0].where;
@@ -158,7 +161,10 @@ describe("bookedLocalDeliveries", () => {
     expect(where.OR[0].status.in).toContain("PAID");
     expect(where.OR[0].status.in).not.toContain("CANCELLED");
     expect(where.OR[1].status).toBe("PENDING");
-    expect(where.OR[1].createdAt.gte.getTime()).toBe(MON_10AM.getTime() - 45 * 60000);
+    const [fresh, mismatch] = where.OR[1].OR;
+    expect(fresh.createdAt.gte.getTime()).toBe(MON_10AM.getTime() - 45 * 60000);
+    // Charged but held for review: keeps its slot until the owner settles it.
+    expect(mismatch.timeline.some.label).toBe("Payment amount mismatch");
   });
 });
 

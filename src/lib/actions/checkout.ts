@@ -4,13 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { getSettings } from "@/lib/settings";
 import { getSession } from "@/lib/auth";
 import { computeTotals, computeDiscount } from "@/lib/pricing";
-import { resolveZone, getZones, pickupZone, methodAllowedInZone, provinceForFsa, toFsa } from "@/lib/zones";
+import { resolveZone, getZones, pickupZone, methodAllowedInZone } from "@/lib/zones";
+import { checkCityForPostal, normalizePostalCode } from "@/lib/address-check";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { sendOrderAwaitingPayment, sendAdminOrderNotice, type OrderEmailItem } from "@/lib/email";
 import { generateOrderNumber, formatMoney } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { offlineOrdersAllowed, siteUrl } from "@/lib/env";
 import { rateLimitBoth, rateLimitByIp, rateLimitMessage } from "@/lib/rate-limit";
+import { cookies } from "next/headers";
 import { HIDDEN_PRODUCT_SLUGS, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 import {
   reserveDiscount,
@@ -31,6 +33,7 @@ import {
   isClosed,
   sameDayBlocker,
   earliestPickupDay,
+  heldPendingWhere,
   PENDING_HOLD_MINUTES,
   type DeliveryCapacity,
 } from "@/lib/delivery-schedule";
@@ -39,13 +42,40 @@ import { cancelOrder } from "@/lib/actions/orders";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 import { z } from "zod";
 
-/** Close this customer's open checkouts that carry `code` (see the caller). */
-async function supersedePendingCheckouts(code: string, email: string, userId?: string | null) {
+/**
+ * The unpaid checkouts this browser started, so a new attempt can close them.
+ * Each one holds a delivery slot and stock for 45 minutes, so a customer who
+ * came back from the payment page twice used to hold three of a weekday's four
+ * slots. Matching by the email typed in instead would let anyone who knows an
+ * address cancel that person's checkout mid-payment; order ids in an httpOnly
+ * cookie can only come from the browser that created them.
+ */
+const CHECKOUT_COOKIE = "velvea_checkouts";
+
+async function ownCheckoutIds(): Promise<string[]> {
+  const raw = (await cookies()).get(CHECKOUT_COOKIE)?.value ?? "";
+  return raw.split(".").filter((id) => /^[a-z0-9]{20,40}$/.test(id)).slice(-5);
+}
+
+async function rememberCheckout(orderId: string) {
+  const ids = [...(await ownCheckoutIds()), orderId].slice(-5);
+  (await cookies()).set(CHECKOUT_COOKIE, ids.join("."), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+}
+
+/** Close this customer's earlier unpaid checkouts: this browser's, or their account's. */
+async function supersedePendingCheckouts(userId?: string | null) {
+  const ids = await ownCheckoutIds();
+  if (!ids.length && !userId) return;
   const open = await prisma.order.findMany({
     where: {
       status: "PENDING",
-      discountCode: code,
-      OR: [{ email: email.toLowerCase() }, ...(userId ? [{ userId }] : [])],
+      OR: [...(ids.length ? [{ id: { in: ids } }] : []), ...(userId ? [{ userId }] : [])],
       // One held for review after a payment problem has been charged already.
       timeline: { none: { label: "Payment amount mismatch" } },
     },
@@ -328,6 +358,19 @@ async function resolveLineItems(
       wantedByProduct.set(item.productId, (wantedByProduct.get(item.productId) ?? 0) + item.quantity);
     }
   }
+  // Stock only goes down when an order is paid, and a payment page stays open
+  // for 40 minutes, so two shoppers could both pay for the last basket. Open
+  // checkouts count against stock the way they count against delivery slots.
+  // This customer's own earlier checkouts were closed before we got here.
+  const heldByProduct = new Map<string, number>();
+  if (wantedByProduct.size) {
+    const held = await prisma.orderItem.groupBy({
+      by: ["productId"],
+      where: { productId: { in: [...wantedByProduct.keys()] }, order: heldPendingWhere() },
+      _sum: { quantity: true },
+    });
+    for (const h of held) if (h.productId) heldByProduct.set(h.productId, h._sum.quantity ?? 0);
+  }
 
   for (const item of items) {
     if (item.isCustom) {
@@ -364,6 +407,18 @@ async function resolveLineItems(
     let unitPriceCents = product.priceCents;
     let variantLabel: string | null = null;
     let variantId: string | null = null;
+
+    // A product with sizes must be bought in one of them. A cart line without a
+    // size, from a hand-edited bag or one saved before the sizes existed, used
+    // to be charged the base price and skipped the sizes' sold-out flags.
+    if (!item.variantId && product.variants.length > 0) {
+      changes.push({
+        kind: "variant-gone",
+        subject: name,
+        message: say(locale, "Please choose a size for this basket.", "Veuillez choisir une taille pour ce panier."),
+      });
+      continue;
+    }
 
     if (item.variantId) {
       const variant = product.variants.find((v) => v.id === item.variantId);
@@ -426,17 +481,19 @@ async function resolveLineItems(
       continue;
     }
 
-    if (product.inventory !== null && product.inventory < (wantedByProduct.get(product.id) ?? item.quantity)) {
+    const available =
+      product.inventory === null ? null : product.inventory - (heldByProduct.get(product.id) ?? 0);
+    if (available !== null && available < (wantedByProduct.get(product.id) ?? item.quantity)) {
       changes.push({
         kind: "out-of-stock",
         subject: name,
         message:
-          product.inventory <= 0
+          available <= 0
             ? say(locale, "This basket is sold out.", "Ce panier est épuisé.")
             : say(
                 locale,
-                `Only ${product.inventory} left. Please reduce the quantity.`,
-                `Il n'en reste que ${product.inventory}. Veuillez réduire la quantité.`
+                `Only ${available} left. Please reduce the quantity.`,
+                `Il n'en reste que ${available}. Veuillez réduire la quantité.`
               ),
       });
       continue;
@@ -545,6 +602,15 @@ function validateDelivery({
         kind: "delivery-date",
         subject: pickupSubject,
         message: say(locale, "That date has passed.", "Cette date est passée."),
+      });
+      return done();
+    }
+    // The same year-ahead limit as delivery; pickup used to return before it.
+    if (deliveryDate > addStoreDays(today, 365)) {
+      changes.push({
+        kind: "delivery-date",
+        subject: pickupSubject,
+        message: say(locale, "That date is too far ahead.", "Cette date est trop éloignée."),
       });
       return done();
     }
@@ -791,6 +857,10 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   const settings = await getSettings();
   const session = await getSession();
 
+  // Before anything is counted: this customer's own open checkouts must not
+  // take the stock or the delivery slot they are trying to book again.
+  await supersedePendingCheckouts(session?.sub);
+
   const resolved = await resolveLineItems(input.items, locale, settings.gifting.premiumCardFeeCents);
   if (!resolved.ok) {
     return {
@@ -829,6 +899,9 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   const zones = await getZones();
   const pickup = pickupZone(zones);
   let zone;
+  // What is stored on the order: for delivery, the postal code in standard
+  // form and the province it actually belongs to, not what was sent.
+  let shipping = input.shipping;
 
   if (method === "PICKUP") {
     if (!pickup) {
@@ -878,6 +951,47 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
       };
     }
     zone = match.zone;
+
+    // The postal code sets the fee and whether same-day is offered, so it has
+    // to be a whole, real postal code that agrees with the city. A Mississauga
+    // postal code on an Oshawa address used to get the Mississauga rate.
+    const addressSubject = say(locale, "Delivery address", "Adresse de livraison");
+    const postalCode = normalizePostalCode(input.shipping.postalCode);
+    const city = input.shipping.city.trim();
+    const cityCheck = postalCode ? checkCityForPostal(city, match.fsa, zone.kind === "LOCAL") : null;
+    const addressProblem = !postalCode
+      ? say(
+          locale,
+          "Please enter the full postal code, for example L5B 1M2.",
+          "Veuillez entrer le code postal complet, par exemple L5B 1M2."
+        )
+      : !cityCheck || cityCheck.ok
+      ? null
+      : cityCheck.reason === "mismatch"
+      ? say(
+          locale,
+          `The postal code ${postalCode} is in ${cityCheck.expected.join(" / ")}, not ${city}. Please check the city and the postal code.`,
+          `Le code postal ${postalCode} se trouve à ${cityCheck.expected.join(" / ")}, et non à ${city}. Veuillez vérifier la ville et le code postal.`
+        )
+      : cityCheck.reason === "wrong-postal"
+      ? say(
+          locale,
+          `The postal code ${postalCode} isn't in ${cityCheck.city}. Please check the city and the postal code.`,
+          `Le code postal ${postalCode} ne se trouve pas à ${cityCheck.city}. Veuillez vérifier la ville et le code postal.`
+        )
+      : say(
+          locale,
+          "We couldn't confirm this address. Please contact us and we'll arrange the delivery.",
+          "Nous n'avons pas pu confirmer cette adresse. Veuillez nous contacter pour organiser la livraison."
+        );
+    if (addressProblem) {
+      return {
+        ok: false,
+        error: addressProblem,
+        changes: [{ kind: "delivery-area", subject: addressSubject, message: addressProblem }],
+      };
+    }
+    shipping = { ...input.shipping, city, postalCode: postalCode!, province: match.province };
   }
 
   // Anything that cannot survive a carrier is local and pickup only. This used
@@ -940,10 +1054,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
 
   // Tax follows the postal code, not the dropdown. Pickup is always collected
   // here, so it is taxed at our own rate.
-  const taxProvince =
-    method === "PICKUP"
-      ? settings.contact.province
-      : provinceForFsa(toFsa(input.shipping.postalCode) ?? "") ?? input.shipping.province;
+  const taxProvince = method === "PICKUP" ? settings.contact.province : shipping.province;
 
   // --- Discount ---
   // The card upgrade is part of the line, so it counts toward the subtotal,
@@ -969,17 +1080,13 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         ],
       };
     }
-    // The limits below count paid orders only, so two checkouts opened side by
-    // side with a one-per-customer code could both be paid. Any earlier unpaid
-    // checkout from this customer with the code is closed first: it is almost
-    // always the same person coming back from the Stripe page, and leaving it
-    // open would also keep holding their delivery slot.
-    if (found && (found.perCustomerLimit !== null || FIRST_ORDER_CODES.has(code))) {
-      await supersedePendingCheckouts(code, input.email, session?.sub);
-    }
-    if (found!.perCustomerLimit !== null) {
+    // Open checkouts count as uses, so the same code can't be paid twice from
+    // two browsers. This browser's own earlier checkout was closed above.
+    // A first-order code is one use per customer whatever its own setting.
+    const perCustomer = found!.perCustomerLimit ?? (FIRST_ORDER_CODES.has(code) ? 1 : null);
+    if (perCustomer !== null) {
       const used = await customerRedemptions(code, input.email, session?.sub);
-      if (used >= found!.perCustomerLimit) {
+      if (used >= perCustomer) {
         return {
           ok: false,
           error: say(
@@ -1064,6 +1171,17 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     };
   }
 
+  // Each unpaid local order holds one of a day's few delivery slots for 45
+  // minutes, so one visitor can only open a handful an hour. A real customer
+  // retrying closes their earlier attempt instead of adding to it.
+  if (LOCAL_METHODS.includes(method)) {
+    const local = await rateLimitByIp("localCheckout");
+    if (!local.ok) {
+      await releaseIfReserved();
+      return { ok: false, error: rateLimitMessage(local, fr(locale)) };
+    }
+  }
+
   const orderNumber = generateOrderNumber();
   const stripeReady = isStripeConfigured();
 
@@ -1101,7 +1219,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         giftMessage: input.giftMessage || null,
         deliveryDate: deliveryDate ? parseStoreDate(deliveryDate) : null,
         deliveryNotes: input.deliveryNotes || null,
-        shipping: input.shipping,
+        shipping,
         items: {
           create: lines.map((l) => ({
             productId: l.productId,
@@ -1134,6 +1252,9 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     };
   }
 
+  // So this browser's next attempt can close this one (see supersedePendingCheckouts).
+  await rememberCheckout(order.id);
+
   const emailItems: OrderEmailItem[] = lines.map((l) => ({
     name: l.name,
     variantLabel: l.variantLabel,
@@ -1159,7 +1280,7 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     deliveryMethod: method,
     deliveryDate: order.deliveryDate,
     deliveryNotes: order.deliveryNotes,
-    shipping: input.shipping,
+    shipping,
     giftMessage: input.giftMessage,
   };
 

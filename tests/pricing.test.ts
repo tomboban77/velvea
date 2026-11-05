@@ -189,12 +189,11 @@ describe("computeShipping", () => {
     expect(computeShipping(shippingZone, "SHIPPING", 0, 0).shippingCents).toBe(1999);
   });
 
-  it("waives the fee at the free threshold (inclusive)", () => {
+  it("ignores a zone's free threshold: spending more never makes delivery free", () => {
     expect(computeShipping(localZone, "LOCAL_STANDARD", 15000, 1)).toEqual({
-      shippingCents: 0,
-      freeShipping: true,
+      shippingCents: localZone.baseFeeCents,
+      freeShipping: false,
     });
-    expect(computeShipping(localZone, "LOCAL_STANDARD", 14999, 1).freeShipping).toBe(false);
   });
 
   it("never waives the fee when the zone has no threshold", () => {
@@ -312,7 +311,7 @@ describe("computeTotals", () => {
     expect(r.totalCents).toBe(9000 + 1500 + 1365);
   });
 
-  it("judges the free-shipping threshold on the pre-discount subtotal", () => {
+  it("charges delivery on a large discounted order", () => {
     const r = computeTotals({
       settings: DEFAULT_SETTINGS,
       zone: localZone,
@@ -321,9 +320,8 @@ describe("computeTotals", () => {
       discount: code({ type: "PERCENT", value: 50 }),
     });
     expect(r.discountCents).toBe(7500);
-    expect(r.freeShipping).toBe(true);
-    expect(r.shippingCents).toBe(0);
-    expect(r.totalCents).toBe(7500);
+    expect(r.freeShipping).toBe(false);
+    expect(r.shippingCents).toBe(localZone.baseFeeCents);
   });
 
   it("never lets a fixed discount push the goods total below zero", () => {

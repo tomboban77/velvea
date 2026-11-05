@@ -30,6 +30,13 @@ export const LOCAL_METHODS: DeliveryMethod[] = ["LOCAL_SAMEDAY", "LOCAL_STANDARD
  */
 export const STANDARD_LEAD_DAYS = 1;
 
+/**
+ * Flowers are ordered in for each bouquet, so they always take two days. This
+ * used to depend on each flower product's own lead time, which defaults to one
+ * day, so a bouquet added in the admin could be booked for tomorrow.
+ */
+export const BOUQUET_LEAD_DAYS = 2;
+
 /** Statuses that hold a delivery slot for good. */
 const BOOKED: OrderStatus[] = ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"];
 
@@ -40,6 +47,22 @@ const BOOKED: OrderStatus[] = ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DE
  * (actions/checkout.ts), so nobody can pay for a slot that is no longer held.
  */
 export const PENDING_HOLD_MINUTES = 45;
+
+/**
+ * Unpaid orders that still hold a delivery slot and their stock: a checkout
+ * opened in the last 45 minutes, or one held for review after Stripe charged an
+ * amount that didn't match. That one has been paid, so it holds its slot until
+ * the owner settles it, however long that takes.
+ */
+export function heldPendingWhere(now: Date = new Date()): Prisma.OrderWhereInput {
+  return {
+    status: "PENDING",
+    OR: [
+      { createdAt: { gte: new Date(now.getTime() - PENDING_HOLD_MINUTES * 60000) } },
+      { timeline: { some: { label: "Payment amount mismatch" } } },
+    ],
+  };
+}
 
 /** How far ahead we search for an open day before giving up. */
 const SEARCH_DAYS = 60;
@@ -86,10 +109,7 @@ export async function bookedLocalDeliveries(
     // Dates are stored at Toronto noon; the half-day margin keeps a date an
     // admin typed at midnight inside the right bucket.
     deliveryDate: { gte: new Date(start.getTime() - halfDay), lt: new Date(end.getTime() + halfDay) },
-    OR: [
-      { status: { in: BOOKED } },
-      { status: "PENDING", createdAt: { gte: new Date(now.getTime() - PENDING_HOLD_MINUTES * 60000) } },
-    ],
+    OR: [{ status: { in: BOOKED } }, heldPendingWhere(now)],
   };
   const rows = await prisma.order.findMany({ where, select: { deliveryDate: true } });
 
@@ -139,8 +159,8 @@ export function fullDays(
  *
  * Assembly (the product lead time) and travel (the zone minimum) both have to
  * fit, and anything ordered after the daily handoff starts that clock
- * tomorrow. Bouquets are made to order, so they are never earlier than the
- * day after.
+ * tomorrow. Bouquets are made to order, so they are never earlier than
+ * BOUQUET_LEAD_DAYS out.
  *
  * Scheduled local delivery is never today either: today is the same-day
  * option, with its own cutoff, fee and window. Without this a basket with no
@@ -162,7 +182,11 @@ export function earliestScheduledDay({
   now?: Date;
 }): string {
   const pastCutoff = storeMinutesOfDay(now) >= cutoffMinutes(handoffCutoff);
-  const lead = Math.max(leadTimeDays, zone.minLeadDays, hasBouquet || local ? 1 : 0);
+  const lead = Math.max(
+    leadTimeDays,
+    zone.minLeadDays,
+    hasBouquet ? BOUQUET_LEAD_DAYS : local ? 1 : 0
+  );
   return addStoreDays(storeYmd(now), lead + (pastCutoff ? 1 : 0));
 }
 

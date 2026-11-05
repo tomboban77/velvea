@@ -37,6 +37,26 @@ Status legend: **Fix before launch** · **Fix soon after launch** · **Improve**
 - Two checkouts at the same moment can both take the last delivery slot (count then insert, no
   lock). Rare at current volume; fix with a per-day advisory lock around order creation.
 
+**Shopping follow-up (5 Nov 2026), fixed:**
+- A basket with sizes can't be bought without one: the product-card quick add skipped the size
+  picker and checkout charged the base price. Cards now say "Choose a size"; checkout refuses.
+- Open checkouts (last 45 min, or held for a payment mismatch) count against stock, and an oversold
+  paid order alerts the owner. Mismatch-held orders also keep their delivery slot.
+- A new checkout closes the same browser's (httpOnly cookie of order ids) or account's earlier
+  unpaid ones, so retries don't stack up slots; never by typed email. New local orders: 4/hour/IP.
+- Flowers are always at least 2 days (`BOUQUET_LEAD_DAYS`), whatever the product's lead time.
+- Pickup dates get the one-year limit. One-per-customer codes count refunds, open checkouts,
+  `+tag` and Gmail-dot spellings.
+- No free delivery for spending more (owner decision): `freeThresholdCents` ignored and removed
+  from the admin. FREE_SHIPPING codes still work if the owner creates one.
+- Delivery addresses: full postal code required, province taken from it, and for local zones the
+  city must be one Canada Post uses for that FSA (`src/lib/address-check.ts`). The admin refuses a
+  local FSA the list doesn't know. Not covered: a street from elsewhere typed with a matching
+  city and postal code; that needs a street-level lookup (Canada Post AddressComplete or Google
+  Address Validation).
+- Still open: delayed payment methods (bank debit) if enabled in Stripe. Restrict the session to
+  cards, or handle "processing" payments, once the owner confirms what is enabled.
+
 ## Status — verified against source 24 Sept 2026
 
 **Numbered findings 1–25: all resolved** except as noted. Verified item by item in code (`npm test`

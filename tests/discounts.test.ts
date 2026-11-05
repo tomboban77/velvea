@@ -7,13 +7,14 @@ const prisma = vi.hoisted(() => ({
     updateMany: vi.fn(),
   },
   order: {
-    count: vi.fn(),
+    findMany: vi.fn(),
   },
 }));
 
 vi.mock("@/lib/prisma", () => ({ prisma }));
 
 import {
+  canonicalEmail,
   customerRedemptions,
   FIRST_ORDER_CODES,
   hasPriorOrder,
@@ -115,28 +116,56 @@ describe("releaseDiscount", () => {
   });
 });
 
+describe("canonicalEmail", () => {
+  it("drops +tags and case", () => {
+    expect(canonicalEmail(" Anna+Promo@Example.com ")).toBe("anna@example.com");
+  });
+
+  it("ignores dots for Gmail only, and treats googlemail as gmail", () => {
+    expect(canonicalEmail("a.n.n.a+x@googlemail.com")).toBe("anna@gmail.com");
+    expect(canonicalEmail("a.nna@example.com")).toBe("a.nna@example.com");
+  });
+});
+
 describe("customerRedemptions", () => {
-  it("counts paid-status orders by lower-cased email when there is no user", async () => {
-    prisma.order.count.mockResolvedValue(2);
+  it("counts every spelling of the same mailbox, and nobody else", async () => {
+    prisma.order.findMany.mockResolvedValue([
+      { email: "anna@example.com", userId: null },
+      { email: "anna+2@example.com", userId: null },
+      { email: "annabelle@example.com", userId: null },
+    ]);
 
     await expect(customerRedemptions("VIP", "Anna@Example.com")).resolves.toBe(2);
 
-    expect(prisma.order.count).toHaveBeenCalledWith({
-      where: {
-        discountCode: "VIP",
-        status: { in: ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"] },
-        OR: [{ email: "anna@example.com" }],
-      },
-    });
+    const [filter, who] = prisma.order.findMany.mock.calls[0]![0].where.AND;
+    expect(filter.discountCode).toBe("VIP");
+    expect(who.OR).toEqual([{ email: { startsWith: "anna", endsWith: "@example.com" } }]);
+  });
+
+  it("counts refunded orders and open checkouts, not cancelled ones", async () => {
+    prisma.order.findMany.mockResolvedValue([]);
+
+    await customerRedemptions("VIP", "anna@example.com");
+
+    const [purchased, held] = prisma.order.findMany.mock.calls[0]![0].where.AND[0].OR;
+    expect(purchased.status.in).toContain("REFUNDED");
+    expect(purchased.status.in).not.toContain("CANCELLED");
+    expect(held.status).toBe("PENDING");
+  });
+
+  it("matches Gmail addresses written with dots", async () => {
+    prisma.order.findMany.mockResolvedValue([{ email: "j.ane@gmail.com", userId: null }]);
+
+    await expect(customerRedemptions("VIP", "jane+x@gmail.com")).resolves.toBe(1);
   });
 
   it("also matches on userId when one is supplied", async () => {
-    prisma.order.count.mockResolvedValue(0);
+    prisma.order.findMany.mockResolvedValue([{ email: "other@example.com", userId: "user_1" }]);
 
-    await customerRedemptions("VIP", "anna@example.com", "user_1");
+    await expect(customerRedemptions("VIP", "anna@example.com", "user_1")).resolves.toBe(1);
 
-    const where = prisma.order.count.mock.calls[0]![0].where;
-    expect(where.OR).toEqual([{ email: "anna@example.com" }, { userId: "user_1" }]);
+    const who = prisma.order.findMany.mock.calls[0]![0].where.AND[1];
+    expect(who.OR).toContainEqual({ userId: "user_1" });
   });
 });
 
@@ -146,24 +175,20 @@ describe("hasPriorOrder", () => {
   });
 
   it("is false for a customer with no completed orders", async () => {
-    prisma.order.count.mockResolvedValue(0);
+    prisma.order.findMany.mockResolvedValue([]);
 
     await expect(hasPriorOrder("New@Example.com")).resolves.toBe(false);
-
-    const where = prisma.order.count.mock.calls[0][0].where;
-    expect(where.OR).toEqual([{ email: "new@example.com" }]);
   });
 
   it("counts any completed order, with or without a code, refunds included", async () => {
-    prisma.order.count.mockResolvedValue(1);
+    prisma.order.findMany.mockResolvedValue([{ email: "anna@example.com", userId: null }]);
 
     await expect(hasPriorOrder("anna@example.com", "user_1")).resolves.toBe(true);
 
-    const where = prisma.order.count.mock.calls[0][0].where;
+    const where = prisma.order.findMany.mock.calls[0][0].where.AND[0];
     expect(where.discountCode).toBeUndefined();
     expect(where.status.in).toContain("REFUNDED");
     expect(where.status.in).not.toContain("PENDING");
     expect(where.status.in).not.toContain("CANCELLED");
-    expect(where.OR).toEqual([{ email: "anna@example.com" }, { userId: "user_1" }]);
   });
 });
