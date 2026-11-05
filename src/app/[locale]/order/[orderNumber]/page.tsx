@@ -10,6 +10,7 @@ import { formatStoreDate, storeYmd } from "@/lib/dates";
 import { LOCAL_METHODS, sameDayWindow } from "@/lib/delivery-schedule";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { RestoreBag, type RestorableLine } from "@/components/checkout/RestoreBag";
+import { TrackPurchase } from "@/components/analytics/TrackPurchase";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -182,6 +183,24 @@ export default async function OrderPage({
 
   return (
     <div className="container-x max-w-3xl py-16">
+      {/* Only on the return from Stripe: the email link, a signed-in customer
+          and an admin all open this same page, and none of those is a new sale. */}
+      {paid && ownsViaSession && (
+        <TrackPurchase
+          orderNumber={order!.orderNumber}
+          totalCents={order!.totalCents}
+          shippingCents={order!.shippingCents}
+          taxCents={order!.taxCents}
+          coupon={order!.discountCode}
+          items={order!.items.map((i) => ({
+            id: i.slug ?? i.productId ?? i.name,
+            name: i.name,
+            variant: i.variantLabel,
+            priceCents: i.unitPriceCents + i.cardFeeCents,
+            quantity: i.quantity,
+          }))}
+        />
+      )}
       <div className="text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lilac">
           {paid ? (

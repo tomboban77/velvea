@@ -12,6 +12,7 @@ import { SameDayNotice } from "@/components/ui/SameDayNotice";
 import { Link } from "@/i18n/routing";
 import { formatMoney, cn, truncate } from "@/lib/utils";
 import { MAX_ORDER_ITEMS, LARGE_ORDER_ITEMS, LARGE_ORDER_LEAD_DAYS } from "@/lib/order-limits";
+import { trackAddToCart, trackViewItem } from "@/lib/analytics";
 
 export type ProductDetailView = {
   id: string;
@@ -88,6 +89,18 @@ export function ProductDetail({
 
   const activeVariant = product.variants.find((v) => v.id === variantId) ?? null;
 
+  // Once per product, at the price the page opens on.
+  useEffect(() => {
+    trackViewItem({
+      id: product.slug,
+      name: product.name,
+      variant: product.variants[0]?.label,
+      priceCents: product.variants[0]?.priceCents ?? product.priceCents,
+      quantity: 1,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
+
   // Inventory was tracked but never shown, so a sold-out basket could be added
   // to the bag and only failed at checkout.
   const stock = product.inventory;
@@ -153,6 +166,13 @@ export function ProductDetail({
       variantLabel: activeVariant?.label,
       image: product.images[0]?.url,
       unitPriceCents: price,
+      quantity: buyQty,
+    });
+    trackAddToCart({
+      id: product.slug,
+      name: product.name,
+      variant: activeVariant?.label,
+      priceCents: price + (premiumCard ? premiumCardFeeCents : 0),
       quantity: buyQty,
     });
     setAdded(true);

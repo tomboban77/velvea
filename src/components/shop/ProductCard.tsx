@@ -8,6 +8,7 @@ import { Star, Check, Plus } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatMoney, cn } from "@/lib/utils";
 import type { ProductView } from "@/lib/view";
+import { trackAddToCart } from "@/lib/analytics";
 
 /**
  * Catalogue card: square photo tile, badge, name, rating, price and a full-width
@@ -30,6 +31,7 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
       image: product.image ?? undefined,
       unitPriceCents: product.priceCents,
     });
+    trackAddToCart({ id: product.slug, name: product.name, priceCents: product.priceCents, quantity: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }

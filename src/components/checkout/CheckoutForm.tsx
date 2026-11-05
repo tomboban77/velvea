@@ -12,6 +12,7 @@ import { Honeypot } from "@/components/ui/Honeypot";
 import { formatMoney, cn } from "@/lib/utils";
 import type { SavedAddress } from "@/lib/addresses";
 import type { DeliveryMethod } from "@prisma/client";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 export type StudioAddress = {
   addressLine: string;
@@ -70,6 +71,23 @@ export function CheckoutForm({
   const [error, setError] = useState<string | null>(null);
   const [changes, setChanges] = useState<CartChange[]>([]);
   const [company, setCompany] = useState("");
+
+  // Once per visit to checkout, as soon as the bag has loaded from storage
+  // (it is empty on the first render, before hydration).
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || items.length === 0) return;
+    checkoutTracked.current = true;
+    trackBeginCheckout(
+      items.map((i) => ({
+        id: i.slug ?? i.productId ?? i.id,
+        name: i.name,
+        variant: i.variantLabel,
+        priceCents: lineUnitCents(i),
+        quantity: i.quantity,
+      }))
+    );
+  }, [items]);
 
   const saved = customer?.addresses ?? [];
   const defaultSaved = saved.find((a) => a.isDefault) ?? null;
