@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ArticleForm, type ArticleFormData } from "@/components/admin/ArticleForm";
+import { requireAdminPage } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 const asL = (v: unknown) => { const o = (v ?? {}) as Record<string, string>; return { en: o.en ?? "", fr: o.fr ?? "" }; };
 export default async function EditArticle({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdminPage("articles:write");
   const { id } = await params;
   let a; try { a = await prisma.article.findUnique({ where: { id } }); } catch { a = null; }
   if (!a) notFound();

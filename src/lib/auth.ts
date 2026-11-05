@@ -1,9 +1,11 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { authSecretBytes } from "./env";
+import { can, type Permission } from "./permissions";
 import type { Role } from "@prisma/client";
 
 export const SESSION_COOKIE = "velvea_session";
@@ -129,4 +131,19 @@ export async function getVerifiedAdmin(): Promise<{
     // A database outage must not silently promote a stale token to admin.
     return null;
   }
+}
+
+/**
+ * Auth gate for every admin panel page, called before it touches data.
+ *
+ * The (panel) layout already checks, but Next does not re-render a layout on
+ * every navigation (partial rendering), so a layout is not a reliable auth
+ * boundary on its own. No session goes to the sign-in page; a role without
+ * the page's permission gets a 404, matching the menu that hides the entry.
+ */
+export async function requireAdminPage(permission?: Permission) {
+  const admin = await getVerifiedAdmin();
+  if (!admin) redirect("/admin/login");
+  if (permission && !can(admin.role, permission)) notFound();
+  return admin;
 }

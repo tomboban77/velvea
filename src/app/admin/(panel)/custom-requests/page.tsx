@@ -4,6 +4,7 @@ import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
 import { Mail, Phone, MessageSquareText, ShoppingBag } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ const tone = { NEW: "amber", CONTACTED: "iris", QUOTED: "iris", WON: "green", LO
 const dialable = (phone: string) => phone.replace(/[^\d+]/g, "");
 
 export default async function CustomRequestsPage() {
+  await requireAdminPage("inquiries:write");
   let requests;
   try {
     requests = await prisma.customBasketRequest.findMany({

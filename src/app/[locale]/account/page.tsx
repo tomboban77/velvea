@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "My Account", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Private and transactional pages stay out of search in both languages.
+  return { title: locale === "fr" ? "Mon compte" : "My Account", robots: { index: false, follow: false } };
+}
 
 const RESEND_MESSAGES: Record<ResendVerificationStatus, { en: string; fr: string }> = {
   sent: {

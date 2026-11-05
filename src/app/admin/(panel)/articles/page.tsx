@@ -4,10 +4,12 @@ import { PageHeader, EmptyState, Card, Badge, AdminLink } from "@/components/adm
 import { formatDate } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { Plus } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ArticlesPage() {
+  await requireAdminPage("articles:write");
   let articles;
   try { articles = await prisma.article.findMany({ orderBy: { updatedAt: "desc" }, take: 100 }); }
   catch { articles = null; }

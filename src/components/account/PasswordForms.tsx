@@ -128,6 +128,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     >
       <form action={formAction} className="rounded-lg border border-line bg-white p-6 sm:p-8">
         <input type="hidden" name="token" value={token} />
+        <input type="hidden" name="locale" value={fr ? "fr" : "en"} />
         <div className="mb-4">
           <label className="label">{fr ? "Mot de passe" : "New password"}</label>
           <PasswordInput

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Packing slip", robots: { index: false, follow: false } };
@@ -12,6 +13,7 @@ export const metadata = { title: "Packing slip", robots: { index: false, follow:
  * message and delivery notes the packer needs.
  */
 export default async function PackingSlip({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdminPage("orders:read");
   const { id } = await params;
 
   let order;

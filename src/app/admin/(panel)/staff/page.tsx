@@ -1,16 +1,13 @@
-import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/admin/ui";
 import { StaffManager } from "@/components/admin/StaffManager";
-import { getVerifiedAdmin } from "@/lib/auth";
-import { can } from "@/lib/permissions";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function StaffPage() {
-  const admin = await getVerifiedAdmin();
   // STAFF can reach the admin panel but must not be able to promote anyone.
-  if (!admin || !can(admin.role, "staff:manage")) notFound();
+  const admin = await requireAdminPage("staff:manage");
 
   let users;
   try {

@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState, Card, Badge } from "@/components/admin/ui";
 import { formatDate } from "@/lib/utils";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewsletterPage() {
+  await requireAdminPage();
   let subs;
   let counts = { confirmed: 0, pending: 0, unsubscribed: 0 };
   try {

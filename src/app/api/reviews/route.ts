@@ -16,6 +16,7 @@ const schema = z.object({
   /** Honeypot — must stay empty. */
   company: z.string().max(200).optional().default(""),
   turnstileToken: z.string().max(2048).optional(),
+  locale: z.enum(["en", "fr"]).optional().default("en"),
 });
 
 /** True when this person has a paid order containing the product. */
@@ -37,8 +38,13 @@ async function hasPurchased(productId: string, email?: string, userId?: string) 
 }
 
 export async function POST(req: NextRequest) {
+  // Read before validation so even a rejected payload gets its error in the
+  // shopper's language; the form shows these messages verbatim.
+  let fr = false;
   try {
-    const data = schema.parse(await req.json());
+    const raw: unknown = await req.json();
+    fr = Boolean(raw && typeof raw === "object" && (raw as { locale?: unknown }).locale === "fr");
+    const data = schema.parse(raw);
 
     if (data.company.trim()) return NextResponse.json({ ok: true });
 
@@ -49,13 +55,13 @@ export async function POST(req: NextRequest) {
       : await rateLimitByIp("review");
     if (!limit.ok) {
       return NextResponse.json(
-        { error: rateLimitMessage(limit) },
+        { error: rateLimitMessage(limit, fr) },
         { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
       );
     }
 
     if (!(await verifyTurnstile(data.turnstileToken))) {
-      return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+      return NextResponse.json({ error: fr ? "La vérification a échoué. Veuillez réessayer." : "Verification failed. Please try again." }, { status: 400 });
     }
 
     const product = await prisma.product.findUnique({
@@ -63,7 +69,7 @@ export async function POST(req: NextRequest) {
       select: { id: true },
     });
     if (!product) {
-      return NextResponse.json({ error: "Unknown product" }, { status: 400 });
+      return NextResponse.json({ error: fr ? "Ce panier est introuvable." : "We couldn't find that basket." }, { status: 400 });
     }
 
     // One review per product per signed-in customer.
@@ -74,7 +80,7 @@ export async function POST(req: NextRequest) {
       });
       if (existing) {
         return NextResponse.json(
-          { error: "You've already reviewed this basket." },
+          { error: fr ? "Vous avez déjà donné votre avis sur ce panier." : "You've already reviewed this basket." },
           { status: 409 }
         );
       }
@@ -109,9 +115,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, verified });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid review" }, { status: 400 });
+      return NextResponse.json({
+          error: fr
+            ? "Vérifiez votre avis : il faut un nom, une note et au moins quelques mots."
+            : "Please check your review: it needs a name, a rating and a few words.",
+        }, { status: 400 });
     }
     console.error("[reviews] submit failed:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({
+        error: fr
+          ? "Une erreur s'est produite. Veuillez réessayer."
+          : "Something went wrong. Please try again.",
+      }, { status: 500 });
   }
 }

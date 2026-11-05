@@ -2,15 +2,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
-  findMany: vi.fn(),
-  update: vi.fn(),
+  /** Candidate orders: the query filtered on status CANCELLED. */
+  candidates: vi.fn(),
+  /** Later orders from the same addresses: every other findMany. */
+  laterOrders: vi.fn(),
+  updateMany: vi.fn(),
   optOutFindMany: vi.fn(),
   sendAbandonedCart: vi.fn(),
 }));
 
+const findMany = vi.fn((args: { where: { status?: unknown } }) =>
+  args.where.status === "CANCELLED" ? mocks.candidates(args) : mocks.laterOrders(args)
+);
+
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    order: { findMany: mocks.findMany, update: mocks.update },
+    order: { findMany: (args: { where: { status?: unknown } }) => findMany(args), updateMany: mocks.updateMany },
     emailOptOut: { findMany: mocks.optOutFindMany },
   },
 }));
@@ -30,6 +37,8 @@ function request(auth?: string | null): NextRequest {
   }) as unknown as NextRequest;
 }
 
+const CREATED = new Date("2026-11-05T15:00:00Z");
+
 function order(over: Partial<Record<string, unknown>> = {}) {
   return {
     id: "o1",
@@ -37,6 +46,7 @@ function order(over: Partial<Record<string, unknown>> = {}) {
     email: "shopper@example.com",
     locale: "en",
     totalCents: 15900,
+    createdAt: CREATED,
     items: [{ name: "Blush Bloom", quantity: 1 }],
     ...over,
   };
@@ -46,7 +56,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   process.env.CRON_SECRET = SECRET;
   mocks.optOutFindMany.mockResolvedValue([]);
-  mocks.update.mockResolvedValue({});
+  mocks.laterOrders.mockResolvedValue([]);
+  mocks.updateMany.mockResolvedValue({ count: 1 });
   mocks.sendAbandonedCart.mockResolvedValue(true);
 });
 
@@ -60,7 +71,7 @@ describe("abandoned cart cron", () => {
     const res = await GET(request());
     expect(res.status).toBe(503);
     // An open endpoint that emails customers must not be reachable by accident.
-    expect(mocks.findMany).not.toHaveBeenCalled();
+    expect(findMany).not.toHaveBeenCalled();
     expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
   });
 
@@ -72,8 +83,8 @@ describe("abandoned cart cron", () => {
     expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
   });
 
-  it("sends one reminder and stamps the order", async () => {
-    mocks.findMany.mockResolvedValue([order()]);
+  it("sends one reminder and claims the order", async () => {
+    mocks.candidates.mockResolvedValue([order()]);
     const res = await GET(request());
 
     expect(res.status).toBe(200);
@@ -85,28 +96,49 @@ describe("abandoned cart cron", () => {
       totalCents: 15900,
       itemNames: ["Blush Bloom"],
     });
-    expect(mocks.update).toHaveBeenCalledWith(
+    expect(mocks.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: "o1" },
+        where: { id: "o1", abandonedEmailAt: null },
         data: expect.objectContaining({ abandonedEmailAt: expect.any(Date) }),
       })
     );
   });
 
-  it("only queries PENDING orders that have never been reminded", async () => {
-    mocks.findMany.mockResolvedValue([]);
+  it("only queries expired checkouts that have never been reminded", async () => {
+    mocks.candidates.mockResolvedValue([]);
     await GET(request());
-    const where = mocks.findMany.mock.calls[0][0].where;
-    expect(where.status).toBe("PENDING");
+    const where = mocks.candidates.mock.calls[0][0].where;
+    // Not PENDING: a PENDING order this old is held after a payment problem
+    // and its customer has been charged.
+    expect(where.status).toBe("CANCELLED");
+    expect(where.timeline).toEqual({ some: { label: "Cancelled", note: "Checkout expired" } });
     expect(where.abandonedEmailAt).toBeNull();
-    // Bounded at both ends: not racing a live checkout, not after Stripe expires it.
     expect(where.createdAt.lt).toBeInstanceOf(Date);
     expect(where.createdAt.gt).toBeInstanceOf(Date);
     expect(where.createdAt.gt.getTime()).toBeLessThan(where.createdAt.lt.getTime());
   });
 
+  it("skips a customer who placed another order afterwards", async () => {
+    mocks.candidates.mockResolvedValue([order()]);
+    mocks.laterOrders.mockResolvedValue([
+      { email: "shopper@example.com", createdAt: new Date(CREATED.getTime() + 60_000) },
+    ]);
+    const res = await GET(request());
+    expect(await res.json()).toEqual({ checked: 1, sent: 0, skipped: 1 });
+    expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
+  });
+
+  it("still sends when the other order came before this one", async () => {
+    mocks.candidates.mockResolvedValue([order()]);
+    mocks.laterOrders.mockResolvedValue([
+      { email: "shopper@example.com", createdAt: new Date(CREATED.getTime() - 60_000) },
+    ]);
+    const res = await GET(request());
+    expect(await res.json()).toMatchObject({ sent: 1 });
+  });
+
   it("does not email an address that opted out, but still stamps it", async () => {
-    mocks.findMany.mockResolvedValue([order()]);
+    mocks.candidates.mockResolvedValue([order()]);
     mocks.optOutFindMany.mockResolvedValue([{ email: "shopper@example.com" }]);
 
     const res = await GET(request());
@@ -114,11 +146,11 @@ describe("abandoned cart cron", () => {
     expect(await res.json()).toEqual({ checked: 1, sent: 0, skipped: 1 });
     expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
     // Stamped anyway, or every run re-examines it for the next 20 hours.
-    expect(mocks.update).toHaveBeenCalledTimes(1);
+    expect(mocks.updateMany).toHaveBeenCalledTimes(1);
   });
 
   it("matches opt-outs case-insensitively", async () => {
-    mocks.findMany.mockResolvedValue([order({ email: "Shopper@Example.COM" })]);
+    mocks.candidates.mockResolvedValue([order({ email: "Shopper@Example.COM" })]);
     mocks.optOutFindMany.mockResolvedValue([{ email: "shopper@example.com" }]);
 
     const res = await GET(request());
@@ -126,40 +158,48 @@ describe("abandoned cart cron", () => {
     expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
   });
 
-  it("stamps before sending, so a failure never sends twice", async () => {
+  it("does not send when another run already claimed the order", async () => {
+    mocks.candidates.mockResolvedValue([order()]);
+    mocks.updateMany.mockResolvedValue({ count: 0 });
+    const res = await GET(request());
+    expect(await res.json()).toEqual({ checked: 1, sent: 0, skipped: 0 });
+    expect(mocks.sendAbandonedCart).not.toHaveBeenCalled();
+  });
+
+  it("claims before sending, so a failure never sends twice", async () => {
     const calls: string[] = [];
-    mocks.update.mockImplementation(async () => {
-      calls.push("stamp");
-      return {};
+    mocks.updateMany.mockImplementation(async () => {
+      calls.push("claim");
+      return { count: 1 };
     });
     mocks.sendAbandonedCart.mockImplementation(async () => {
       calls.push("send");
       return true;
     });
-    mocks.findMany.mockResolvedValue([order()]);
+    mocks.candidates.mockResolvedValue([order()]);
 
     await GET(request());
-    expect(calls).toEqual(["stamp", "send"]);
+    expect(calls).toEqual(["claim", "send"]);
   });
 
   it("counts a rejected send without retrying it", async () => {
-    mocks.findMany.mockResolvedValue([order()]);
+    mocks.candidates.mockResolvedValue([order()]);
     mocks.sendAbandonedCart.mockResolvedValue(false);
 
     const res = await GET(request());
     expect(await res.json()).toEqual({ checked: 1, sent: 0, skipped: 0 });
-    expect(mocks.update).toHaveBeenCalledTimes(1);
+    expect(mocks.updateMany).toHaveBeenCalledTimes(1);
   });
 
   it("reports quietly when there is nothing to do", async () => {
-    mocks.findMany.mockResolvedValue([]);
+    mocks.candidates.mockResolvedValue([]);
     const res = await GET(request());
     expect(await res.json()).toEqual({ checked: 0, sent: 0, skipped: 0 });
     expect(mocks.optOutFindMany).not.toHaveBeenCalled();
   });
 
   it("returns 500 rather than throwing when the database is unreachable", async () => {
-    mocks.findMany.mockRejectedValue(new Error("connection refused"));
+    mocks.candidates.mockRejectedValue(new Error("connection refused"));
     const res = await GET(request());
     expect(res.status).toBe(500);
   });

@@ -1,10 +1,12 @@
 import { ProductForm } from "@/components/admin/ProductForm";
 import { emptyProduct } from "@/lib/admin-forms";
 import { getCollectionOptions } from "@/lib/admin-data";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProductPage() {
+  await requireAdminPage("products:write");
   const collections = await getCollectionOptions();
   return (
     <>

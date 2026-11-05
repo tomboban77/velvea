@@ -79,14 +79,23 @@ export function sanitizeHtml(input: string): string {
   // Comments can hide conditional-comment script in some clients.
   html = html.replace(/<!--[\s\S]*?-->/g, "");
 
+  // Every tag is rebuilt from the allow-list, and every "<" that is not part
+  // of a tag we rebuilt comes out as "&lt;". The tag pattern alone used to be
+  // the whole regex, so a tag it could not match (an unbalanced quote, as in
+  // `<img src=x onerror=alert(1) a">`) was skipped and passed through raw,
+  // where the browser happily parsed it as a live <img onerror>. With the
+  // bare-"<" alternative nothing the browser could read as markup survives
+  // except our own output: unmatched tags, "<!" comments and doctypes,
+  // "<?", "</ " and plain text such as "3 < 5" all become text.
   return html.replace(
-    /<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g,
-    (_full, closing: string, rawTag: string, attrs: string) => {
+    /<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>|</g,
+    (_full: string, closing: string | undefined, rawTag: string | undefined, attrs: string | undefined) => {
+      if (rawTag === undefined) return "&lt;";
       const tag = rawTag.toLowerCase();
       if (!ALLOWED_TAGS.has(tag)) return "";
       if (closing) return `</${tag}>`;
       const selfClosing = tag === "br" || tag === "hr" || tag === "img";
-      return `<${tag}${sanitizeAttributes(tag, attrs)}${selfClosing ? " /" : ""}>`;
+      return `<${tag}${sanitizeAttributes(tag, attrs ?? "")}${selfClosing ? " /" : ""}>`;
     }
   );
 }

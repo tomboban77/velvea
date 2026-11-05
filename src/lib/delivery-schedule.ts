@@ -34,16 +34,30 @@ export const STANDARD_LEAD_DAYS = 1;
 const BOOKED: OrderStatus[] = ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"];
 
 /**
- * An unpaid order holds its slot only briefly. Stripe sessions live for a day,
- * and an abandoned checkout must not block one of four slots for that long;
- * almost everyone who pays does so within minutes.
+ * An unpaid order holds its slot only briefly: an abandoned checkout must not
+ * block one of four slots for long, and almost everyone who pays does so
+ * within minutes. The Stripe session expires inside this window
+ * (actions/checkout.ts), so nobody can pay for a slot that is no longer held.
  */
-const PENDING_HOLD_MINUTES = 45;
+export const PENDING_HOLD_MINUTES = 45;
 
 /** How far ahead we search for an open day before giving up. */
 const SEARCH_DAYS = 60;
 
-export type DeliveryCapacity = { weekdayCapacity: number; weekendCapacity: number };
+export type DeliveryCapacity = {
+  weekdayCapacity: number;
+  weekendCapacity: number;
+  /**
+   * Days the studio is closed ("YYYY-MM-DD", Toronto). Treated as full, so no
+   * local delivery, same-day run or pickup lands on them; Christmas Day used to
+   * be bookable with full capacity. Courier shipping is not affected.
+   */
+  closedDates?: string[];
+};
+
+export function isClosed(ymd: string, cap: Pick<DeliveryCapacity, "closedDates">): boolean {
+  return cap.closedDates?.includes(ymd) ?? false;
+}
 
 export function isWeekend(ymd: string): boolean {
   const [y, m, d] = ymd.split("-").map(Number);
@@ -52,6 +66,7 @@ export function isWeekend(ymd: string): boolean {
 }
 
 export function capacityFor(ymd: string, cap: DeliveryCapacity): number {
+  if (isClosed(ymd, cap)) return 0;
   return isWeekend(ymd) ? cap.weekendCapacity : cap.weekdayCapacity;
 }
 
@@ -162,15 +177,32 @@ export function earliestPickupDay({
   leadTimeDays,
   hasBouquet,
   handoffCutoff,
+  closedDates,
   now = new Date(),
 }: {
   leadTimeDays: number;
   hasBouquet: boolean;
   handoffCutoff: string;
+  closedDates?: string[];
   now?: Date;
-}): string | null {
-  if (!hasBouquet && leadTimeDays <= STANDARD_LEAD_DAYS) return null;
-  return earliestScheduledDay({ zone: { minLeadDays: 0 }, leadTimeDays, hasBouquet, handoffCutoff, now });
+}): string {
+  // A standard bag can be collected today, but not once the day's orders have
+  // closed: an order placed at 10:30 pm used to be able to book pickup for
+  // that same night.
+  const day =
+    !hasBouquet && leadTimeDays <= STANDARD_LEAD_DAYS
+      ? storeMinutesOfDay(now) >= cutoffMinutes(handoffCutoff)
+        ? addStoreDays(storeYmd(now), 1)
+        : storeYmd(now)
+      : earliestScheduledDay({ zone: { minLeadDays: 0 }, leadTimeDays, hasBouquet, handoffCutoff, now });
+  return nextOpenDay(day, { closedDates });
+}
+
+/** The first day on or after `ymd` the studio is open. */
+export function nextOpenDay(ymd: string, cap: Pick<DeliveryCapacity, "closedDates">): string {
+  let day = ymd;
+  for (let i = 0; i < SEARCH_DAYS && isClosed(day, cap); i++) day = addStoreDays(day, 1);
+  return day;
 }
 
 /**

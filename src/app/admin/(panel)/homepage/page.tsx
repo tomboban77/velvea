@@ -4,10 +4,12 @@ import { getSettings } from "@/lib/settings";
 import { prisma } from "@/lib/prisma";
 import { t } from "@/lib/i18n-content";
 import { HIDDEN_PRODUCT_SLUGS } from "@/lib/features";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomepageAdminPage() {
+  await requireAdminPage("settings:write");
   const [settings, rows] = await Promise.all([
     getSettings(),
     prisma.product

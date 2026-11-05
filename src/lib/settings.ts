@@ -51,6 +51,11 @@ export type SiteSettings = {
      */
     weekdayCapacity: number;
     weekendCapacity: number;
+    /**
+     * Days the studio is closed ("YYYY-MM-DD"): holidays, time off. No local
+     * delivery, same-day or pickup is booked on them. See delivery-schedule.ts.
+     */
+    closedDates: string[];
   };
   home: {
     /**
@@ -110,6 +115,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     orderCutoff: "19:00",
     weekdayCapacity: 4,
     weekendCapacity: 10,
+    closedDates: [],
   },
   home: {
     heroProductIds: [],

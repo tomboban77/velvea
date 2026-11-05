@@ -3,12 +3,14 @@ import { PageHeader, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
 import { formatDate } from "@/lib/utils";
 import { Mail, Phone, Building2 } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 const tone = { NEW: "amber", CONTACTED: "iris", QUOTED: "iris", WON: "green", LOST: "gray" } as const;
 
 export default async function InquiriesPage() {
+  await requireAdminPage("inquiries:write");
   let inquiries;
   try {
     inquiries = await prisma.corporateInquiry.findMany({ orderBy: { createdAt: "desc" }, take: 100 });

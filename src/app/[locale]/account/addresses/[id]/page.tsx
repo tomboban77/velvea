@@ -7,7 +7,11 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { AddressForm } from "@/components/account/AddressForm";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Edit address", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Private and transactional pages stay out of search in both languages.
+  return { title: locale === "fr" ? "Modifier l'adresse" : "Edit address", robots: { index: false, follow: false } };
+}
 
 export default async function EditAddressPage({
   params,

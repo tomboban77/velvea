@@ -5,7 +5,11 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { ProfileForm } from "@/components/account/ProfileForm";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Profile", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Private and transactional pages stay out of search in both languages.
+  return { title: locale === "fr" ? "Profil" : "Profile", robots: { index: false, follow: false } };
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

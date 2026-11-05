@@ -3,6 +3,40 @@
 Scope: payments, orders, auth, admin operations, emails, data model, i18n. Findings verified in source.
 Status legend: **Fix before launch** · **Fix soon after launch** · **Improve** · **Nice to have**.
 
+## Audit of 5 Nov 2026 — fixed the same day
+
+- Stripe Checkout sessions now expire after 40 minutes (`expires_at`), inside the 45-minute
+  delivery-slot hold. Before, a 24-hour session let a customer pay for a slot already released,
+  a same-day order after the cutoff, or a day already past.
+- $0 orders (a discount covering the total) settle: `no_payment_required` counts as paid
+  (`src/lib/payment-status.ts`). Totals of 1–49 cents are refused at checkout (Stripe minimum).
+- Abandoned-checkout reminder targets orders cancelled as "Checkout expired", not PENDING ones
+  (a PENDING order that old is held after a payment mismatch, i.e. already charged). Claimed with a
+  conditional write so overlapping cron runs cannot double-send; skipped when the customer has
+  ordered again. Copy no longer claims the basket is held. The order page offers "Complete
+  payment" (open session), "Put these baskets back in my bag" (expired), or a review notice.
+- Admin: PROCESSING/FULFILLED/SHIPPED/DELIVERED require a paid order; cancelled or refunded orders
+  cannot be reopened; refunds only on paid orders and recorded cumulatively, so the
+  `charge.refunded` webhook landing first no longer double-counts.
+- Closed days: `settings.delivery.closedDates` (Admin -> Settings -> Delivery) have zero capacity:
+  no local delivery, same-day or pickup on them. Pickup for a standard bag is today until the
+  order cutoff, tomorrow after it (was: any time today, even 10:30 pm).
+- One-per-customer and first-order codes: an earlier unpaid checkout by the same customer with the
+  code is cancelled when a new one starts, so two cannot both be paid.
+- Stock is checked per product across lines, not per line.
+- Security: `sanitizeHtml` escapes any `<` it did not rebuild (unbalanced-quote bypass gave
+  stored XSS through guides; `tests/sanitize.test.ts`). Middleware lets an invalid-cookie request
+  through only for a POST Server Action. Every `/admin/(panel)` page calls `requireAdminPage()`.
+- Copy/i18n: GTA city pages and `/delivery` say one noon cutoff; About qualifies same-day; the
+  same-day notice switches message after the 19:00 order cutoff; auth, reviews, checkout and cart
+  strings and account/checkout titles are bilingual; French sign-in lands on `/fr/account`.
+
+**Still open from that audit**
+- Password change/reset does not end other sessions (stateless JWT). Needs a `User.sessionVersion`
+  column: schema change, owner go-ahead.
+- Two checkouts at the same moment can both take the last delivery slot (count then insert, no
+  lock). Rare at current volume; fix with a per-day advisory lock around order creation.
+
 ## Status — verified against source 24 Sept 2026
 
 **Numbered findings 1–25: all resolved** except as noted. Verified item by item in code (`npm test`

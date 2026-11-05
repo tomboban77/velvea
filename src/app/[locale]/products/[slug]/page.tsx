@@ -110,6 +110,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             ? null
             : sameDayCutoff
         }
+        orderCutoff={settings.delivery.orderCutoff}
         premiumCardFeeCents={settings.gifting.premiumCardFeeCents}
       />
 

@@ -4,7 +4,11 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { verifyEmailToken } from "@/lib/actions/auth";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Confirm your email", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Private and transactional pages stay out of search in both languages.
+  return { title: locale === "fr" ? "Confirmez votre courriel" : "Confirm your email", robots: { index: false, follow: false } };
+}
 
 export default async function Page({
   params,

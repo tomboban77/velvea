@@ -439,7 +439,9 @@
     "premiumCard": "Premium greeting card",
     "footerNote": "Shipping & taxes calculated at checkout. Message card included · no prices on the slip.",
     "orderLimit": "Online orders are limited to {max} baskets. For a larger order, <quote>request a quote</quote> and we'll arrange it.",
-    "largeOrder": "Orders of {min} or more baskets need {days} days to prepare, so they can't go out same-day."
+    "largeOrder": "Orders of {min} or more baskets need {days} days to prepare, so they can't go out same-day.",
+    "deliveryNote": "Delivery is calculated at checkout from the postal code. Pickup from our Mississauga studio is always free.",
+    "customItem": "Custom basket"
   },
   "newsletter": {
     "title": "Notes, on occasion",
@@ -505,6 +507,8 @@
     "sameDayWeekday": "between 7 and 11 pm tonight",
     "sameDayWeekend": "timed around the day's orders",
     "sameDayNext": "Order now for next-day local delivery",
+    "imageN": "Image {n}",
+    "sameDayAfterCutoff": "Today's orders are closed, so anything placed now goes out the day after tomorrow at the earliest",
     "canadaWide": "Tracked shipping across Canada",
     "localOnly": "Local delivery and pickup only",
     "deliveryAtCheckout": "Delivery is priced from your postal code at checkout",
@@ -649,7 +653,7 @@
     "title": "Gift basket delivery across Mississauga, Toronto and the GTA",
     "lede": "Every basket is composed in our Mississauga studio and delivered by our own team across the Greater Toronto Area, with same-day delivery in the cities below. Everywhere else, in Ontario and across Canada, we ship by tracked courier.",
     "sameDayH": "Same-day delivery",
-    "sameDayLede": "Order before the city's cutoff and your basket is delivered by hand the same day. Each city has its own cutoff because of the drive. Weekday same-day orders arrive between 7 and 11 pm; on weekends the time depends on that day's orders.",
+    "sameDayLede": "Order by noon and your basket is delivered by hand the same day across most of the GTA, with one cutoff for every city. Durham and the towns north of the city are next-day at the earliest. Weekday same-day orders arrive between 7 and 11 pm; on weekends the time depends on that day's orders.",
     "nextDayH": "Next-day local delivery",
     "nextDayLede": "A little further out, delivered by our team the next available day.",
     "shippingH": "Shipped by courier",

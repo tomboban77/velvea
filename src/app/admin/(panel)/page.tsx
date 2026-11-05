@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader, StatCard, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { Package, ShoppingCart, Star, Building2, MessageSquareText, ArrowRight } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 async function getDashboard() {
   try {
@@ -67,6 +68,7 @@ const statusTone: Record<string, "green" | "amber" | "gray" | "red" | "iris"> = 
 };
 
 export default async function AdminDashboard() {
+  await requireAdminPage();
   const data = await getDashboard();
 
   if (!data.ok) {

@@ -6,6 +6,7 @@ import { formatMoney } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { Plus, Search } from "lucide-react";
 import type { Prisma } from "@prisma/client";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
+  await requireAdminPage("products:read");
   const { q, status, page } = await searchParams;
   const current = Math.max(1, Number(page) || 1);
   const where = productWhere(q, status);

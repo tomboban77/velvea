@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/admin/ui";
 import { DeliveryZonesManager, type ZoneRow } from "@/components/admin/DeliveryZonesManager";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function DeliveryZonesPage() {
+  await requireAdminPage("zones:write");
   let zones: ZoneRow[] | null;
   try {
     const rows = await prisma.deliveryZone.findMany({

@@ -14,12 +14,13 @@ import {
 } from "@/lib/email";
 import { releaseDiscount } from "@/lib/discounts";
 import { getSettings } from "@/lib/settings";
+import { sessionSettles } from "@/lib/payment-status";
 import type { Order, OrderItem, OrderStatus } from "@prisma/client";
 
 type OrderWithItems = Order & { items: OrderItem[] };
 
 /** Statuses that mean the customer has paid and stock is committed. */
-const PAID_STATUSES: OrderStatus[] = [
+export const PAID_STATUSES: OrderStatus[] = [
   "PAID",
   "PROCESSING",
   "FULFILLED",
@@ -358,14 +359,20 @@ export async function markOrderShipped(
 }
 
 /**
- * A cancelled or refunded order must not be moved along the fulfilment path,
- * however two admin tabs race. Throws a message the admin UI can show.
+ * Only a paid order moves along the fulfilment path. A cancelled or refunded
+ * one has had its stock and discount released, and an unpaid one has had
+ * neither committed: moving a PENDING order on also meant a later payment
+ * found it "already settled" and skipped the stock commit and confirmation.
+ * Throws a message the admin UI can show.
  */
-async function assertOpenOrder(orderId: string, verb: string): Promise<void> {
+export async function assertOpenOrder(orderId: string, verb: string): Promise<void> {
   const current = await prisma.order.findUnique({ where: { id: orderId }, select: { status: true } });
   if (!current) throw new Error("Order not found.");
   if (current.status === "CANCELLED" || current.status === "REFUNDED") {
     throw new Error(`This order is ${current.status.toLowerCase()} and cannot be ${verb}.`);
+  }
+  if (!PAID_STATUSES.includes(current.status)) {
+    throw new Error(`This order has not been paid yet, so it cannot be ${verb}. Mark it paid first.`);
   }
 }
 
@@ -412,7 +419,7 @@ export async function settleFromSession(
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.metadata?.orderNumber !== orderNumber) return { owns: false };
 
-    if (session.payment_status === "paid" && session.metadata?.orderId) {
+    if (sessionSettles(session) && session.metadata?.orderId) {
       await markOrderPaid(session.metadata.orderId, {
         paymentIntentId:
           typeof session.payment_intent === "string" ? session.payment_intent : undefined,

@@ -112,8 +112,7 @@ export function CartDrawer() {
                 promise here until we know the postal code. */}
             <div className="border-b border-line bg-cream/60 px-6 py-3">
               <p className="text-xs text-ink-soft">
-                Delivery is calculated at checkout from the postal code. Pickup from our
-                Mississauga studio is always free.
+                {t("cart.deliveryNote")}
               </p>
               {count >= LARGE_ORDER_ITEMS && (
                 <p className="mt-1 text-xs text-ink-soft">
@@ -166,7 +165,7 @@ export function CartDrawer() {
                         <p className="text-xs text-muted">{item.variantLabel}</p>
                       )}
                       {item.isCustom && (
-                        <p className="text-xs text-violet">Custom basket</p>
+                        <p className="text-xs text-violet">{t("cart.customItem")}</p>
                       )}
                       {item.giftMessage && (
                         <p className="mt-1 line-clamp-2 rounded-lg bg-cream px-2 py-1 text-[0.7rem] italic text-ink-soft">

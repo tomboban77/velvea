@@ -8,7 +8,11 @@ import { MAX_ADDRESSES, type AddressListStatus } from "@/lib/addresses";
 import { AccountHeader } from "@/components/account/AccountHeader";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Saved addresses", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Private and transactional pages stay out of search in both languages.
+  return { title: locale === "fr" ? "Adresses enregistrées" : "Saved addresses", robots: { index: false, follow: false } };
+}
 
 const STATUS_MESSAGES: Record<AddressListStatus, { en: string; fr: string }> = {
   saved: { en: "Address saved.", fr: "Adresse enregistrée." },

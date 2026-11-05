@@ -8,16 +8,19 @@ export const dynamic = "force-dynamic";
 /**
  * One reminder to anyone who reached checkout and did not pay.
  *
- * Timing sits between two bounds. Wait long enough that the email is not
- * racing a customer who is still on the Stripe page (they come back and find
- * "you didn't finish" in their inbox), and send before Stripe expires the
- * session and the webhook cancels the order — after that the link is dead and
- * the message is worse than useless.
+ * The Stripe session now expires after about 40 minutes (it used to live 24
+ * hours while the delivery slot was only held for 45), and the expired webhook
+ * cancels the order. So this looks for orders cancelled as "Checkout expired",
+ * not PENDING ones: a PENDING order this old is one held for review after a
+ * payment problem, and its customer has already been charged. The email links
+ * to the order page, which offers to put the same baskets back in the bag.
  */
 const MIN_AGE_MINUTES = 90;
-const MAX_AGE_HOURS = 20; // Stripe sessions expire at 24h; leave room.
+const MAX_AGE_HOURS = 20;
 /** Per run. A backlog drains over the following runs rather than in one burst. */
 const BATCH = 25;
+/** The note cancelOrder records for the checkout.session.expired webhook. */
+const EXPIRED_NOTE = "Checkout expired";
 
 export async function GET(req: NextRequest) {
   // Vercel Cron signs its calls with CRON_SECRET. Without the secret set the
@@ -39,9 +42,10 @@ export async function GET(req: NextRequest) {
   try {
     const orders = await prisma.order.findMany({
       where: {
-        status: "PENDING",
+        status: "CANCELLED",
         abandonedEmailAt: null,
         createdAt: { lt: before, gt: after },
+        timeline: { some: { label: "Cancelled", note: EXPIRED_NOTE } },
       },
       orderBy: { createdAt: "asc" },
       take: BATCH,
@@ -51,6 +55,7 @@ export async function GET(req: NextRequest) {
         email: true,
         locale: true,
         totalCents: true,
+        createdAt: true,
         items: { select: { name: true, quantity: true } },
       },
     });
@@ -59,36 +64,47 @@ export async function GET(req: NextRequest) {
 
     // One query for the whole batch rather than one per order.
     const emails = [...new Set(orders.map((o) => o.email.toLowerCase()))];
-    const optedOut = new Set(
-      (
-        await prisma.emailOptOut.findMany({
-          where: { email: { in: emails } },
-          select: { email: true },
-        })
-      ).map((r) => r.email)
-    );
+    const [optOutRows, laterOrders] = await Promise.all([
+      prisma.emailOptOut.findMany({
+        where: { email: { in: emails } },
+        select: { email: true },
+      }),
+      // Someone who tried again and got through (or is paying right now) has
+      // not abandoned anything.
+      prisma.order.findMany({
+        where: {
+          email: { in: emails },
+          status: { notIn: ["CANCELLED", "REFUNDED"] },
+          createdAt: { gt: after },
+        },
+        select: { email: true, createdAt: true },
+      }),
+    ]);
+    const optedOut = new Set(optOutRows.map((r) => r.email));
 
     let sent = 0;
     let skipped = 0;
 
     for (const order of orders) {
-      if (optedOut.has(order.email.toLowerCase())) {
-        // Stamp it anyway: this order is done being considered, and leaving it
-        // null would re-examine it on every run for the next 20 hours.
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { abandonedEmailAt: new Date() },
-        });
+      // Claimed with a conditional write before sending. The hourly GitHub run
+      // and the daily Vercel run can overlap; whichever loses sees count 0.
+      // A crash after the claim costs one reminder; sending twice is a complaint.
+      const claimed = await prisma.order.updateMany({
+        where: { id: order.id, abandonedEmailAt: null },
+        data: { abandonedEmailAt: new Date() },
+      });
+      if (claimed.count !== 1) continue;
+
+      const email = order.email.toLowerCase();
+      const retried = laterOrders.some(
+        (o) => o.email.toLowerCase() === email && o.createdAt > order.createdAt
+      );
+      // Stamped anyway (above): this order is done being considered, and
+      // leaving it null would re-examine it on every run for the next 20 hours.
+      if (optedOut.has(email) || retried) {
         skipped++;
         continue;
       }
-
-      // Stamped before sending, not after. A crash between the two costs one
-      // reminder; the other order sends it twice, and twice is a complaint.
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { abandonedEmailAt: new Date() },
-      });
 
       const ok = await sendAbandonedCart({
         orderNumber: order.orderNumber,

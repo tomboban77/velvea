@@ -53,6 +53,18 @@ export async function CollectionIndex({
       </div>
 
       <div className="container-x pb-16 pt-10">
+        {/* Nothing published yet (or the database is unreachable): say so
+            rather than leave a blank band under the header. */}
+        {items.length === 0 && (
+          <p className="max-w-xl text-ink-soft">
+            {locale === "fr"
+              ? "Rien à afficher ici pour le moment. Revenez bientôt, ou parcourez tous nos paniers en attendant."
+              : "Nothing to show here just yet. Check back soon, or browse all our baskets in the meantime."}{" "}
+            <Link href="/baskets" className="link-draw text-violet-deep">
+              {locale === "fr" ? "Voir les paniers" : "See the baskets"}
+            </Link>
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 xl:gap-5">
           {items.map((item, i) => (
             <Link key={item.slug} href={`${base}/${item.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-lg border border-line transition-shadow hover:shadow-md">

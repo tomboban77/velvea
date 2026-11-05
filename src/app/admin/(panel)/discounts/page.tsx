@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/admin/ui";
 import { DiscountsManager } from "@/components/admin/DiscountsManager";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function DiscountsPage() {
+  await requireAdminPage("discounts:write");
   let discounts;
   try {
     discounts = await prisma.discountCode.findMany({ orderBy: { code: "asc" } });

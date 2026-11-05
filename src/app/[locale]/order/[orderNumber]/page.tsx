@@ -8,9 +8,28 @@ import { verifyOrderToken } from "@/lib/tokens";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { formatStoreDate, storeYmd } from "@/lib/dates";
 import { LOCAL_METHODS, sameDayWindow } from "@/lib/delivery-schedule";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { RestoreBag, type RestorableLine } from "@/components/checkout/RestoreBag";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Order confirmation", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return {
+    title: locale === "fr" ? "Votre commande" : "Your order",
+    robots: { index: false, follow: false },
+  };
+}
+
+/** A still-open Stripe page for this order, if the customer can pay right now. */
+async function openSessionUrl(sessionId: string | null): Promise<string | null> {
+  if (!sessionId || !isStripeConfigured()) return null;
+  try {
+    const session = await getStripe().checkout.sessions.retrieve(sessionId);
+    return session.status === "open" && session.url ? session.url : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Order numbers carry a predictable timestamp prefix, so the order number alone
@@ -103,6 +122,62 @@ export default async function OrderPage({
     postalCode: string;
   };
   const paid = order!.status !== "PENDING" && order!.status !== "CANCELLED";
+  // An unpaid order splits four ways, and each needs a different next step.
+  // "Payment hasn't been taken yet" used to cover all of them, with no way to
+  // pay, including for a customer whose payment was taken and held for review.
+  const heldForReview = order!.timeline.some((e) => e.label === "Payment amount mismatch");
+  const expired =
+    order!.status === "CANCELLED" &&
+    order!.timeline.some((e) => e.label === "Cancelled" && e.note === "Checkout expired");
+  const payUrl =
+    order!.status === "PENDING" && !heldForReview ? await openSessionUrl(order!.stripeSessionId) : null;
+  const canRestore = (order!.status === "PENDING" && !heldForReview && !payUrl) || expired;
+  const restorable: RestorableLine[] = canRestore
+    ? order!.items.flatMap((i) =>
+        i.productId && !i.isCustom
+          ? [
+              {
+                productId: i.productId,
+                variantId: i.variantId,
+                slug: i.slug,
+                name: i.name,
+                variantLabel: i.variantLabel,
+                imageUrl: i.imageUrl,
+                unitPriceCents: i.unitPriceCents,
+                quantity: i.quantity,
+                giftMessage: i.giftMessage,
+                cardFeeCents: i.cardFeeCents,
+              },
+            ]
+          : []
+      )
+    : [];
+  const unpaidHeading = heldForReview
+    ? fr ? "Paiement en vérification" : "Checking your payment"
+    : order!.status === "CANCELLED"
+    ? expired
+      ? fr ? "Commande non terminée" : "This order wasn't finished"
+      : fr ? "Commande annulée" : "Order cancelled"
+    : fr ? "Commande reçue" : "Order received";
+  const unpaidText = heldForReview
+    ? fr
+      ? "Votre paiement a été reçu, mais nous devons le vérifier avant de préparer la commande. Nous vous écrirons sous peu."
+      : "Your payment came through, but we need to check it before we prepare the order. We'll be in touch shortly."
+    : order!.status === "CANCELLED"
+    ? expired
+      ? fr
+        ? "Le paiement n'a pas été complété, donc rien n'a été facturé. Vous pouvez remettre les mêmes paniers dans votre sac et choisir une nouvelle date de livraison."
+        : "Payment wasn't completed, so nothing was charged. You can put the same baskets back in your bag and choose a delivery date again."
+      : fr
+      ? "Cette commande a été annulée. Écrivez-nous si ce n'est pas ce que vous attendiez."
+      : "This order was cancelled. Contact us if that isn't what you expected."
+    : payUrl
+    ? fr
+      ? "Votre commande est enregistrée, mais le paiement n'est pas encore fait."
+      : "Your order is saved, but payment hasn't been made yet."
+    : fr
+    ? "Le paiement n'a pas été complété, donc rien n'a été facturé."
+    : "Payment wasn't completed, so nothing was charged.";
   const money = (c: number) => formatMoney(c, fr ? "fr-CA" : "en-CA");
 
   return (
@@ -116,23 +191,26 @@ export default async function OrderPage({
           )}
         </div>
         <h1 className="mt-5 font-display text-4xl">
-          {paid
-            ? fr
-              ? "Merci pour votre commande !"
-              : "Thank you for your order!"
-            : fr
-            ? "Commande reçue"
-            : "Order received"}
+          {paid ? (fr ? "Merci pour votre commande !" : "Thank you for your order!") : unpaidHeading}
         </h1>
         <p className="mt-2 text-ink-soft">
           {paid
             ? fr
               ? "Nous préparons votre panier avec soin."
               : "We're hand-packing your basket with care."
-            : fr
-            ? "Votre commande est enregistrée. Le paiement n'a pas encore été prélevé."
-            : "Your order is recorded. Payment hasn't been taken yet."}
+            : unpaidText}
         </p>
+        {!paid && (payUrl || restorable.length > 0) && (
+          <div className="mt-5 flex justify-center">
+            {payUrl ? (
+              <a href={payUrl} className="btn btn-primary">
+                {fr ? "Terminer le paiement" : "Complete payment"}
+              </a>
+            ) : (
+              <RestoreBag lines={restorable} />
+            )}
+          </div>
+        )}
         <p className="mt-1 text-sm text-muted">
           {fr ? "Commande" : "Order"}{" "}
           <span className="font-semibold text-ink">{order!.orderNumber}</span>

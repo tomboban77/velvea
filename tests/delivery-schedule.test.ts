@@ -166,8 +166,26 @@ describe("earliestPickupDay", () => {
   // Monday 7:30 pm Toronto, past a 19:00 order cutoff.
   const MON_730PM = new Date("2026-10-26T23:30:00Z");
 
-  it("leaves standard baskets on the usual pickup terms", () => {
-    expect(earliestPickupDay({ leadTimeDays: 1, hasBouquet: false, handoffCutoff: "19:00", now: MON_10AM })).toBeNull();
+  it("lets a standard basket be collected today, until the order cutoff", () => {
+    expect(earliestPickupDay({ leadTimeDays: 1, hasBouquet: false, handoffCutoff: "19:00", now: MON_10AM })).toBe(
+      "2026-10-26"
+    );
+    // An order placed after 7 pm used to be able to book pickup that same night.
+    expect(earliestPickupDay({ leadTimeDays: 1, hasBouquet: false, handoffCutoff: "19:00", now: MON_730PM })).toBe(
+      "2026-10-27"
+    );
+  });
+
+  it("skips days the studio is closed", () => {
+    expect(
+      earliestPickupDay({
+        leadTimeDays: 1,
+        hasBouquet: false,
+        handoffCutoff: "19:00",
+        closedDates: ["2026-10-26", "2026-10-27"],
+        now: MON_10AM,
+      })
+    ).toBe("2026-10-28");
   });
 
   it("counts calendar days for longer preparation, weekends included", () => {
@@ -177,5 +195,26 @@ describe("earliestPickupDay", () => {
     expect(earliestPickupDay({ leadTimeDays: 2, hasBouquet: true, handoffCutoff: "19:00", now: MON_730PM })).toBe(
       "2026-10-29"
     );
+  });
+});
+
+describe("closed days", () => {
+  const CLOSED = { ...CAP, closedDates: ["2026-10-27"] };
+
+  it("have no capacity, so they count as full", () => {
+    expect(capacityFor("2026-10-27", CLOSED)).toBe(0);
+    expect(capacityFor("2026-10-28", CLOSED)).toBe(4);
+    expect(fullDays("2026-10-26", new Map(), CLOSED, 3)).toEqual(["2026-10-27"]);
+  });
+
+  it("push a local delivery to the next open day", () => {
+    expect(firstOpenDay("2026-10-27", new Map(), CLOSED)).toBe("2026-10-28");
+  });
+
+  it("switch off same-day when today is closed", () => {
+    const todayClosed = { ...CAP, closedDates: ["2026-10-26"] };
+    expect(
+      sameDayBlocker({ zone: { sameDayCutoff: "12:00" }, hasBouquet: false, booked: new Map(), cap: todayClosed, now: MON_10AM })
+    ).toBe("full");
   });
 });

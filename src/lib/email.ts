@@ -617,19 +617,22 @@ export async function sendAbandonedCart(data: {
   const body = `
     <p style="color:#514a40">${escapeHtml(
       L(
-        "You picked something out and did not quite finish. Your basket is still held, and nothing has been charged.",
-        "Vous avez choisi un panier sans terminer votre commande. Il est toujours r\u00e9serv\u00e9 et rien n'a \u00e9t\u00e9 factur\u00e9."
+        // The checkout expired before this is sent, so nothing is held: the
+        // old wording promised a reserved basket and delivery slot that had
+        // already been released.
+        "You picked something out and did not quite finish, so nothing has been charged. One click puts the same baskets back in your bag.",
+        "Vous avez choisi un panier sans terminer votre commande, donc rien n'a \u00e9t\u00e9 factur\u00e9. Un clic remet les m\u00eames paniers dans votre sac."
       )
     )}</p>
     ${items}
     <p style="margin:16px 0 4px"><strong>${escapeHtml(L("Total", "Total"))} ${escapeHtml(
       formatMoney(data.totalCents, isFr(data.locale) ? "fr-CA" : "en-CA")
     )}</strong></p>
-    ${button(link, L("Finish your order", "Terminer ma commande"))}
+    ${button(link, L("Return to my bag", "Retrouver mon sac"))}
     <p style="margin-top:18px;font-size:13px;color:#8a8072">${escapeHtml(
       L(
-        "If you have changed your mind, no reply is needed. The basket is released on its own.",
-        "Si vous avez chang\u00e9 d'avis, rien \u00e0 faire. Le panier se lib\u00e8re tout seul."
+        "Delivery dates are not reserved until you pay, so check the date again at checkout. If you have changed your mind, no reply is needed.",
+        "Les dates de livraison ne sont r\u00e9serv\u00e9es qu'au paiement, alors v\u00e9rifiez la date \u00e0 la caisse. Si vous avez chang\u00e9 d'avis, rien \u00e0 faire."
       )
     )}</p>`;
 
@@ -644,8 +647,8 @@ export async function sendAbandonedCart(data: {
 
   return send(
     data.email,
-    L("Your Velvea basket is still waiting", "Votre panier Velvea vous attend"),
-    shell(L("Still here", "Toujours l\u00e0"), body, data.locale, footerExtra),
+    L("You left something in your Velvea bag", "Vous avez laiss\u00e9 quelque chose dans votre sac Velvea"),
+    shell(L("Still thinking it over?", "Vous h\u00e9sitez encore ?"), body, data.locale, footerExtra),
     { "List-Unsubscribe": `<${optOut}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" }
   );
 }

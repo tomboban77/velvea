@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ProductForm, type ProductFormData } from "@/components/admin/ProductForm";
 import { getCollectionOptions } from "@/lib/admin-data";
 import { DeleteProductButton } from "@/components/admin/DeleteProductButton";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdminPage("products:read");
   const { id } = await params;
 
   let product;

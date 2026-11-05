@@ -58,8 +58,8 @@ export const CITIES: City[] = [
       fr: ["Centre-ville et quartier financier", "Etobicoke", "North York", "Scarborough", "East York", "The Beaches", "Leslieville", "Liberty Village", "Yorkville", "The Annex", "High Park", "Midtown"],
     },
     intro: {
-      en: "Every Toronto postal code, from Etobicoke to Scarborough, is covered by our own drivers rather than a courier, which is what makes same-day possible for a gift that has to arrive today. Downtown condo deliveries are left with the concierge and confirmed to you by message; office gifts are timed for business hours. The cutoff is earlier than in Mississauga because of the drive, so morning orders are the safest bet.",
-      fr: "Chaque code postal de Toronto, d'Etobicoke à Scarborough, est desservi par nos propres livreurs plutôt que par un transporteur, ce qui rend possible la livraison le jour même d'un cadeau qui doit arriver aujourd'hui. Les livraisons en condo au centre-ville sont remises au concierge et confirmées par message ; les cadeaux au bureau sont livrés pendant les heures ouvrables. L'heure limite est plus tôt qu'à Mississauga à cause du trajet : les commandes du matin sont les plus sûres.",
+      en: "Every Toronto postal code, from Etobicoke to Scarborough, is covered by our own drivers rather than a courier, which is what makes same-day possible for a gift that has to arrive today. Downtown condo deliveries are left with the concierge and confirmed to you by message; office gifts are timed for business hours. Same-day works the same way as everywhere else in the GTA: place your order by noon.",
+      fr: "Chaque code postal de Toronto, d'Etobicoke à Scarborough, est desservi par nos propres livreurs plutôt que par un transporteur, ce qui rend possible la livraison le jour même d'un cadeau qui doit arriver aujourd'hui. Les livraisons en condo au centre-ville sont remises au concierge et confirmées par message ; les cadeaux au bureau sont livrés pendant les heures ouvrables. La livraison le jour même fonctionne comme partout ailleurs dans le Grand Toronto : passez votre commande avant midi.",
     },
     page: true,
   },
@@ -138,8 +138,8 @@ export const CITIES: City[] = [
       fr: ["Unionville", "Markham Village", "Milliken", "Cornell", "Berczy", "Thornhill (côté Markham)", "Cachet", "Wismer"],
     },
     intro: {
-      en: "Markham is the far edge of our same-day range, from Unionville and Markham Village to Cornell and Milliken. Because of the drive across the top of the city, the cutoff is earlier than in Mississauga: order in the morning for same-day, or choose a date for next-day delivery at the standard local rate.",
-      fr: "Markham est la limite de notre zone de livraison le jour même, d'Unionville et Markham Village jusqu'à Cornell et Milliken. En raison du trajet à travers le nord de la ville, l'heure limite est plus tôt qu'à Mississauga : commandez le matin pour le jour même, ou choisissez une date pour une livraison le lendemain au tarif local habituel.",
+      en: "Markham is the far edge of our same-day range, from Unionville and Markham Village to Cornell and Milliken. The cutoff is the same as in the rest of the GTA: order by noon for same-day, or choose a date for next-day delivery at the standard local rate.",
+      fr: "Markham est la limite de notre zone de livraison le jour même, d'Unionville et Markham Village jusqu'à Cornell et Milliken. L'heure limite est la même que dans le reste du Grand Toronto : commandez avant midi pour le jour même, ou choisissez une date pour une livraison le lendemain au tarif local habituel.",
     },
     page: true,
   },
@@ -154,8 +154,8 @@ export const CITIES: City[] = [
       fr: ["Centre-ville de Richmond Hill", "Oak Ridges", "Bayview Hill", "Mill Pond", "Jefferson", "Langstaff"],
     },
     intro: {
-      en: "Richmond Hill sits at the top of our same-day map, reached by Highway 7 or the 404 through Thornhill. Deliveries to Oak Ridges and Jefferson are timed with the York Region run so a single trip covers the area, which is why the cutoff here is the early one. Next-day delivery is always available if you miss it.",
-      fr: "Richmond Hill est au sommet de notre carte de livraison le jour même, atteinte par la route 7 ou la 404 via Thornhill. Les livraisons à Oak Ridges et Jefferson sont regroupées avec la tournée de York afin qu'un seul trajet couvre le secteur, d'où l'heure limite plus tôt. La livraison le lendemain est toujours possible si vous la manquez.",
+      en: "Richmond Hill sits at the top of our same-day map, reached by Highway 7 or the 404 through Thornhill. Deliveries to Oak Ridges and Jefferson are timed with the York Region run so a single trip covers the area. Order by noon for same-day, as anywhere in the GTA, and next-day delivery is always available if you miss it.",
+      fr: "Richmond Hill est au sommet de notre carte de livraison le jour même, atteinte par la route 7 ou la 404 via Thornhill. Les livraisons à Oak Ridges et Jefferson sont regroupées avec la tournée de York afin qu'un seul trajet couvre le secteur. Commandez avant midi pour le jour même, comme partout dans le Grand Toronto ; la livraison le lendemain est toujours possible si vous manquez l'heure limite.",
     },
     page: true,
   },

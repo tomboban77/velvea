@@ -4,12 +4,14 @@ import { ReviewActions } from "@/components/admin/ReviewActions";
 import { formatDate } from "@/lib/utils";
 import { t } from "@/lib/i18n-content";
 import { Star } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 const tone = { PENDING: "amber", APPROVED: "green", REJECTED: "gray" } as const;
 
 export default async function ReviewsPage() {
+  await requireAdminPage("reviews:moderate");
   let reviews;
   try {
     reviews = await prisma.review.findMany({

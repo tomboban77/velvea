@@ -3,6 +3,7 @@ import { PageHeader, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
 import { formatDate } from "@/lib/utils";
 import { Mail, Phone, Handshake, Globe } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ function safeUrl(value: string): string | null {
 }
 
 export default async function BrandPartnersPage() {
+  await requireAdminPage("inquiries:write");
   let inquiries;
   try {
     inquiries = await prisma.brandPartnerInquiry.findMany({ orderBy: { createdAt: "desc" }, take: 100 });

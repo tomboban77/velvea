@@ -4,14 +4,28 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Save, Loader2, Check } from "lucide-react";
 import { Card } from "./ui";
-import { Field, TextInput } from "./form";
+import { Field, TextInput, TextArea } from "./form";
 import { updateSettings } from "@/lib/actions/admin";
 import type { SiteSettings } from "@/lib/settings";
+
+const YMD = /^\d{4}-\d{2}-\d{2}$/;
 
 export function SettingsForm({ initial }: { initial: SiteSettings }) {
   const [s, setS] = useState(initial);
   const [pending, start] = useTransition();
   const [saved, setSaved] = useState(false);
+  // Edited as free text, one date per line; only well-formed dates are saved.
+  const [closedText, setClosedText] = useState((initial.delivery.closedDates ?? []).join("\n"));
+  const closedLines = closedText.split(/[\n,]+/).map((l) => l.trim()).filter(Boolean);
+  const badClosed = closedLines.filter((l) => !YMD.test(l));
+
+  function setClosed(text: string) {
+    setClosedText(text);
+    const dates = [
+      ...new Set(text.split(/[\n,]+/).map((l) => l.trim()).filter((l) => YMD.test(l))),
+    ].sort();
+    setS((prev) => ({ ...prev, delivery: { ...prev.delivery, closedDates: dates } }));
+  }
 
   function save() {
     start(async () => {
@@ -94,6 +108,17 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
               }
             />
           </Field>
+          <Field
+            label="Closed days (one per line, YYYY-MM-DD)"
+            hint="No local delivery, same-day or pickup is booked on these days, e.g. 2026-12-25. Courier shipping is not affected."
+          >
+            <TextArea rows={4} value={closedText} onChange={setClosed} placeholder="2026-12-25" />
+          </Field>
+          {badClosed.length > 0 && (
+            <p className="self-end text-xs text-danger">
+              Not a date, so it will not be saved: {badClosed.join(", ")}
+            </p>
+          )}
         </div>
         <p className="text-xs text-muted">
           Delivery fees, same-day cutoffs and the areas we serve now live in{" "}

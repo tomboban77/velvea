@@ -4,6 +4,7 @@ import { Link } from "@/i18n/routing";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SameDayNotice } from "@/components/ui/SameDayNotice";
 import { advertisedSameDayCutoff } from "@/lib/zones";
+import { getSettings } from "@/lib/settings";
 import { formatMoney, cn } from "@/lib/utils";
 import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
 
@@ -22,7 +23,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
   const locale = await getLocale();
   const fr = locale === "fr";
   const money = (c: number) => formatMoney(c, fr ? "fr-CA" : "en-CA");
-  const cutoff = await advertisedSameDayCutoff();
+  const [cutoff, settings] = await Promise.all([advertisedSameDayCutoff(), getSettings()]);
 
   const withImage = products.filter((p) => p.image);
   const [lead, ...rest] = withImage;
@@ -67,7 +68,7 @@ export async function Hero({ products }: { products: HeroProduct[] }) {
           </div>
           {cutoff && (
             <div className="hero-note">
-              <SameDayNotice cutoff={cutoff} />
+              <SameDayNotice cutoff={cutoff} orderCutoff={settings.delivery.orderCutoff} />
             </div>
           )}
         </div>

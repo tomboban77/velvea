@@ -4,6 +4,7 @@ import { PageHeader, Badge, EmptyState } from "@/components/admin/ui";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { Download, Search } from "lucide-react";
 import { orderListWhere, ORDER_STATUSES } from "@/lib/admin-orders";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function OrdersPage({
 }: {
   searchParams: Promise<{ status?: string; q?: string; page?: string }>;
 }) {
+  await requireAdminPage("orders:read");
   const { status, q, page } = await searchParams;
   const current = Math.max(1, Number(page) || 1);
   const where = orderListWhere(status, q);

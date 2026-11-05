@@ -112,6 +112,7 @@ export async function quoteDelivery(
     leadTimeDays,
     hasBouquet,
     handoffCutoff: settings.delivery.orderCutoff,
+    closedDates: settings.delivery.closedDates,
   });
 
   // Pickup is a property of us, not of the customer's address, so it is
@@ -125,7 +126,7 @@ export async function quoteDelivery(
           label: say("Pickup at our studio", "Ramassage à notre atelier"),
           sub: `${settings.contact.addressLine}, ${settings.contact.city}`,
           feeCents: 0,
-          earliestDate: earliestPickup ?? undefined,
+          earliestDate: earliestPickup,
         },
       ]
     : [];

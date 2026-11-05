@@ -96,12 +96,13 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
 
 - [x] **Burlington, Georgetown and Bolton moved** into `local-b-west`. Already done in production
       (26 FSAs) — confirmed 24 Sept with `npx tsx scripts/move-delivery-fsas.ts` (dry run).
-      Those postal codes now get $14.99, a 13:00 same-day cutoff and 0–1 day lead times.
+      Those postal codes now get $14.99 and 0–1 day lead times. (Same-day cutoff is 12:00 in every
+      GTA zone since 3 Nov 2026.)
 - [x] **Hamilton stays courier shipping** — owner, 24 Sept. Hub-only, no city page.
 - [x] **Seed synced to production.** `prisma/zones.ts` still described the pre-move layout, so a
       reseed would have silently reverted the move. It now matches production exactly (26 / 27 FSAs).
-- [x] **`local-c` renamed** — applied to production 24 Sept. It now reads "Local C — Durham,
-      north GTA" in both locales; Burlington no longer appears in a zone it is not in.
+- [x] **`local-c` renamed** — applied to production 24 Sept. It read "Local C — Durham,
+      north GTA" (renamed again 3 Nov 2026 to "Durham and north GTA"); Burlington no longer appears in a zone it is not in.
       `scripts/sync-zone-names.ts` reports clean. Re-run it (report mode is free) after any admin
       zone edit — it is what caught this.
 - [x] **Courier rates repriced from real quotes** (ShipTime, Oct 2026 — `npm run survey:shipping`).
@@ -122,6 +123,9 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       French product labelling (§1). Then drop "Quebec is coming soon" from the FAQ, shipping page
       (`whereP1`), `delivery.shippingLede`, `llms.txt`, the article `velvea-gift-hampers-gta`, and
       the QC branch of the unserved messages in `actions/checkout.ts` + `actions/delivery.ts`.
+
+- [ ] **Enter closed days** in Admin -> Settings -> Delivery (built 5 Nov 2026), e.g. 2026-12-25,
+      2026-12-26, 2027-01-01, and any days off. Nothing is closed until listed there.
 
 ## 3. Guides (content)
 

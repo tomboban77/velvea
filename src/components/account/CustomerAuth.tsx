@@ -30,6 +30,8 @@ export function CustomerAuth({ mode }: { mode: "login" | "register" }) {
 
         <form action={formAction} className="relative rounded-lg border border-line bg-white p-6 sm:p-8">
           <Honeypot value={company} onChange={setCompany} />
+          {/* Lets the server action answer in the shopper's language. */}
+          <input type="hidden" name="locale" value={fr ? "fr" : "en"} />
           {mode === "register" && (
             <div className="mb-4">
               <label className="label">{fr ? "Nom" : "Name"}</label>

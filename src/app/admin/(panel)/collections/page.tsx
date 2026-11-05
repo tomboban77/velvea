@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/admin/ui";
 import { CollectionsManager } from "@/components/admin/CollectionsManager";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ const asL = (v: unknown) => {
 };
 
 export default async function CollectionsPage() {
+  await requireAdminPage("collections:write");
   let rows;
   try {
     const collections = await prisma.collection.findMany({

@@ -53,7 +53,10 @@ export default async function middleware(req: NextRequest) {
       // server" instead of "your session expired". Let it reach the action,
       // which re-reads the session from the database and refuses on its own —
       // no mutation runs without a verified admin either way.
-      if (req.headers.get("next-action")) return NextResponse.next();
+      // Only a POST qualifies: Server Actions are always POSTs, and honouring
+      // the header on a GET let anyone add `next-action: x` to skip this gate
+      // and have the admin page itself render (behind only the layout check).
+      if (req.method === "POST" && req.headers.get("next-action")) return NextResponse.next();
 
       const url = req.nextUrl.clone();
       url.pathname = "/admin/login";

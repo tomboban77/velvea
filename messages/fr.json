@@ -439,7 +439,9 @@
     "premiumCard": "Carte de vœux premium",
     "footerNote": "Livraison et taxes calculées à la caisse. Carte-message incluse · aucun prix sur le bordereau.",
     "orderLimit": "Les commandes en ligne sont limitées à {max} paniers. Pour une commande plus importante, <quote>demandez un devis</quote> et nous l'organiserons.",
-    "largeOrder": "Les commandes de {min} paniers ou plus demandent {days} jours de préparation et ne peuvent donc pas partir le jour même."
+    "largeOrder": "Les commandes de {min} paniers ou plus demandent {days} jours de préparation et ne peuvent donc pas partir le jour même.",
+    "deliveryNote": "La livraison est calculée au paiement selon le code postal. Le ramassage à notre atelier de Mississauga est toujours gratuit.",
+    "customItem": "Panier personnalisé"
   },
   "newsletter": {
     "title": "Quelques notes, à l'occasion",
@@ -505,6 +507,8 @@
     "sameDayWeekday": "entre 19 h et 23 h ce soir",
     "sameDayWeekend": "selon les commandes du jour",
     "sameDayNext": "Commandez maintenant pour une livraison locale le lendemain",
+    "imageN": "Image {n}",
+    "sameDayAfterCutoff": "Les commandes du jour sont fermées : une commande passée maintenant part au plus tôt le surlendemain",
     "canadaWide": "Expédition suivie partout au Canada",
     "localOnly": "Livraison locale et ramassage seulement",
     "deliveryAtCheckout": "Les frais de livraison sont calculés selon le code postal au paiement",
@@ -649,7 +653,7 @@
     "title": "Livraison de paniers-cadeaux à Mississauga, Toronto et dans le Grand Toronto",
     "lede": "Chaque panier est composé dans notre atelier de Mississauga et livré par notre équipe dans le Grand Toronto, avec livraison le jour même dans les villes ci-dessous. Partout ailleurs, en Ontario et au Canada, nous expédions par transporteur avec suivi.",
     "sameDayH": "Livraison le jour même",
-    "sameDayLede": "Commandez avant l'heure limite de la ville et votre panier est livré en main propre le jour même. Chaque ville a sa propre heure limite en raison du trajet. En semaine, les commandes du jour même arrivent entre 19 h et 23 h; la fin de semaine, l'heure dépend des commandes du jour.",
+    "sameDayLede": "Commandez avant midi et votre panier est livré en main propre le jour même dans la majeure partie du Grand Toronto, avec la même heure limite pour toutes les villes. Durham et les villes au nord de Toronto sont livrées au plus tôt le lendemain. En semaine, les commandes du jour même arrivent entre 19 h et 23 h; la fin de semaine, l'heure dépend des commandes du jour.",
     "nextDayH": "Livraison locale le lendemain",
     "nextDayLede": "Un peu plus loin, livré par notre équipe le prochain jour disponible.",
     "shippingH": "Expédié par transporteur",

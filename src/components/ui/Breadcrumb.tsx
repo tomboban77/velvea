@@ -1,10 +1,12 @@
 import { Link } from "@/i18n/routing";
 import { ChevronRight } from "lucide-react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
 export function Breadcrumb({ items, className }: { items: { label: string; href: string }[]; className?: string }) {
+  const fr = useLocale() === "fr";
   return (
-    <nav className={cn("flex items-center gap-1.5 overflow-hidden text-[0.82rem] text-muted", className)} aria-label="Breadcrumb">
+    <nav className={cn("flex items-center gap-1.5 overflow-hidden text-[0.82rem] text-muted", className)} aria-label={fr ? "Fil d'Ariane" : "Breadcrumb"}>
       {items.map((b, i) => {
         const last = i === items.length - 1;
         return (

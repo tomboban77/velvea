@@ -63,7 +63,7 @@ export function ProductReviews({
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, ...form, turnstileToken }),
+        body: JSON.stringify({ productId, ...form, turnstileToken, locale }),
       });
       if (res.ok) {
         setSubmitted(true);
@@ -126,7 +126,7 @@ export function ProductReviews({
             <p className="label">{fr ? "Votre note" : "Your rating"}</p>
             <div className="mb-5 flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
-                <button key={n} type="button" onClick={() => setForm({ ...form, rating: n })} aria-label={`${n} stars`}>
+                <button key={n} type="button" onClick={() => setForm({ ...form, rating: n })} aria-label={fr ? `${n} étoile${n > 1 ? "s" : ""}` : `${n} star${n > 1 ? "s" : ""}`}>
                   <Star className={cn("h-7 w-7", n <= form.rating ? "fill-star text-star" : "text-line-strong")} />
                 </button>
               ))}

@@ -28,13 +28,36 @@ import {
   earliestScheduledDay,
   firstOpenDay,
   isFull,
+  isClosed,
   sameDayBlocker,
   earliestPickupDay,
+  PENDING_HOLD_MINUTES,
   type DeliveryCapacity,
 } from "@/lib/delivery-schedule";
 import { MAX_ORDER_ITEMS, LARGE_ORDER_ITEMS, sizeLeadDays } from "@/lib/order-limits";
+import { cancelOrder } from "@/lib/actions/orders";
 import type { DeliveryMethod, DiscountCode, DeliveryZone } from "@prisma/client";
 import { z } from "zod";
+
+/** Close this customer's open checkouts that carry `code` (see the caller). */
+async function supersedePendingCheckouts(code: string, email: string, userId?: string | null) {
+  const open = await prisma.order.findMany({
+    where: {
+      status: "PENDING",
+      discountCode: code,
+      OR: [{ email: email.toLowerCase() }, ...(userId ? [{ userId }] : [])],
+      // One held for review after a payment problem has been charged already.
+      timeline: { none: { label: "Payment amount mismatch" } },
+    },
+    select: { id: true },
+  });
+  for (const o of open) {
+    // Expires the Stripe session and releases the reserved redemption. If that
+    // session completed a moment ago, markOrderPaid sees the cancellation and
+    // alerts the owner rather than losing the payment.
+    await cancelOrder(o.id, { reason: "Replaced by a newer checkout" });
+  }
+}
 
 const addressSchema = z.object({
   fullName: z.string().min(1).max(120),
@@ -296,6 +319,15 @@ async function resolveLineItems(
 ): Promise<ResolveOutcome> {
   const lines: LineItem[] = [];
   const changes: CartChange[] = [];
+  // Stock is per product, but one product can sit on several lines (a card
+  // message each, or different variants), so lines are checked against the
+  // product's total in the bag rather than one at a time.
+  const wantedByProduct = new Map<string, number>();
+  for (const item of items) {
+    if (!item.isCustom && item.productId) {
+      wantedByProduct.set(item.productId, (wantedByProduct.get(item.productId) ?? 0) + item.quantity);
+    }
+  }
 
   for (const item of items) {
     if (item.isCustom) {
@@ -394,7 +426,7 @@ async function resolveLineItems(
       continue;
     }
 
-    if (product.inventory !== null && product.inventory < item.quantity) {
+    if (product.inventory !== null && product.inventory < (wantedByProduct.get(product.id) ?? item.quantity)) {
       changes.push({
         kind: "out-of-stock",
         subject: name,
@@ -516,8 +548,24 @@ function validateDelivery({
       });
       return done();
     }
-    const earliestPickup = earliestPickupDay({ leadTimeDays, hasBouquet, handoffCutoff });
-    if (earliestPickup && deliveryDate && deliveryDate < earliestPickup) {
+    const earliestPickup = earliestPickupDay({
+      leadTimeDays,
+      hasBouquet,
+      handoffCutoff,
+      closedDates: capacity.closedDates,
+    });
+    if (deliveryDate && deliveryDate >= earliestPickup && isClosed(deliveryDate, capacity)) {
+      changes.push({
+        kind: "delivery-date",
+        subject: pickupSubject,
+        message: say(
+          locale,
+          `We're closed on ${deliveryDate}. Please choose another day.`,
+          `Nous sommes fermés le ${deliveryDate}. Veuillez choisir un autre jour.`
+        ),
+      });
+    }
+    if (deliveryDate && deliveryDate < earliestPickup) {
       changes.push({
         kind: "delivery-date",
         subject: pickupSubject,
@@ -530,7 +578,7 @@ function validateDelivery({
     }
     // A blank date would let a two-day bouquet be collected tomorrow; record the
     // earliest day instead, as local delivery does with its next open day.
-    return done(deliveryDate || earliestPickup || "");
+    return done(deliveryDate || earliestPickup);
   }
 
   if (method === "LOCAL_SAMEDAY") {
@@ -584,6 +632,16 @@ function validateDelivery({
               `This order needs ${leadTimeDays} days to prepare, so it can't go out today. Please choose local delivery.`,
               `Cette commande demande ${leadTimeDays} jours de préparation et ne peut donc pas partir aujourd'hui. Veuillez choisir la livraison locale.`
             ),
+      });
+    } else if (blocker === "full" && isClosed(today, capacity)) {
+      changes.push({
+        kind: "delivery-date",
+        subject,
+        message: say(
+          locale,
+          "We're closed today. Please choose local delivery for the next open day.",
+          "Nous sommes fermés aujourd'hui. Veuillez choisir la livraison locale pour la prochaine journée disponible."
+        ),
       });
     } else if (blocker === "full") {
       changes.push({
@@ -677,7 +735,13 @@ function validateDelivery({
       kind: "delivery-date",
       subject: dateSubject,
       message: after
-        ? say(
+        ? isClosed(deliveryDate, capacity)
+          ? say(
+              locale,
+              `We're closed on ${deliveryDate}. The next open day is ${after}.`,
+              `Nous sommes fermés le ${deliveryDate}. La prochaine journée disponible est le ${after}.`
+            )
+          : say(
             locale,
             `${deliveryDate} is fully booked. The next open day is ${after}.`,
             `Le ${deliveryDate} est complet. La prochaine journée disponible est le ${after}.`
@@ -703,7 +767,12 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   try {
     input = checkoutSchema.parse(rawInput);
   } catch {
-    return { ok: false, error: "Please complete all required fields." };
+    // The parse failed, so the locale is read off the raw input.
+    const rawLocale = (rawInput as { locale?: unknown } | null)?.locale === "fr" ? "fr" : "en";
+    return {
+      ok: false,
+      error: say(rawLocale, "Please complete all required fields.", "Veuillez remplir tous les champs obligatoires."),
+    };
   }
 
   const locale = input.locale;
@@ -900,6 +969,14 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         ],
       };
     }
+    // The limits below count paid orders only, so two checkouts opened side by
+    // side with a one-per-customer code could both be paid. Any earlier unpaid
+    // checkout from this customer with the code is closed first: it is almost
+    // always the same person coming back from the Stripe page, and leaving it
+    // open would also keep holding their delivery slot.
+    if (found && (found.perCustomerLimit !== null || FIRST_ORDER_CODES.has(code))) {
+      await supersedePendingCheckouts(code, input.email, session?.sub);
+    }
     if (found!.perCustomerLimit !== null) {
       const used = await customerRedemptions(code, input.email, session?.sub);
       if (used >= found!.perCustomerLimit) {
@@ -971,6 +1048,21 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
     method,
     discount,
   });
+
+  // Stripe refuses a charge under 50 cents, so a discount that leaves a few
+  // cents would fail at the payment page. A total of exactly 0 is fine: the
+  // session completes as "no_payment_required" and settles like a payment.
+  if (totals.totalCents > 0 && totals.totalCents < 50) {
+    await releaseIfReserved();
+    return {
+      ok: false,
+      error: say(
+        locale,
+        "This discount leaves a total below the 50 cent minimum we can charge. Please add to your order or remove the code.",
+        "Ce rabais laisse un total inférieur au minimum de 50 cents que nous pouvons facturer. Veuillez ajouter un article ou retirer le code."
+      ),
+    };
+  }
 
   const orderNumber = generateOrderNumber();
   const stripeReady = isStripeConfigured();
@@ -1147,6 +1239,12 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
       const checkout = await stripe.checkout.sessions.create(
         {
           mode: "payment",
+          // Stripe's default is 24 hours, but the delivery slot is only held for
+          // PENDING_HOLD_MINUTES. Paying hours later could book a full day, or a
+          // same-day order after the cutoff or after the day had passed.
+          // Expiring a little inside the hold closes that (Stripe's minimum is
+          // 30 minutes); the expired webhook then cancels the order.
+          expires_at: Math.floor(Date.now() / 1000) + (PENDING_HOLD_MINUTES - 5) * 60,
           line_items: lineItems,
           discounts,
           customer_email: order.email,

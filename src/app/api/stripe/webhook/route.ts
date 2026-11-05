@@ -4,6 +4,7 @@ import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { markOrderPaid, cancelOrder, recordRefund } from "@/lib/actions/orders";
 import { sendOwnerAlert } from "@/lib/email";
+import { sessionSettles } from "@/lib/payment-status";
 
 export const runtime = "nodejs";
 
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         const orderId = session.metadata?.orderId;
-        if (orderId && session.payment_status === "paid") {
+        if (orderId && sessionSettles(session)) {
           await markOrderPaid(orderId, {
             paymentIntentId:
               typeof session.payment_intent === "string" ? session.payment_intent : undefined,

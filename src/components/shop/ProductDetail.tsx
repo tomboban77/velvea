@@ -45,11 +45,14 @@ export type ProductDetailView = {
 export function ProductDetail({
   product,
   sameDayCutoff,
+  orderCutoff,
   premiumCardFeeCents,
 }: {
   product: ProductDetailView;
   /** Home-zone cutoff for the live countdown; null hides it. */
   sameDayCutoff: string | null;
+  /** Daily production cutoff (settings `delivery.orderCutoff`); after it next-day is gone too. */
+  orderCutoff: string;
   /** Per-basket fee for the store greeting card upgrade. 0 shows it as free. */
   premiumCardFeeCents: number;
 }) {
@@ -215,7 +218,7 @@ export function ProductDetail({
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    aria-label={`Image ${i + 1}`}
+                    aria-label={t("imageN", { n: i + 1 })}
                     className={cn("pdp-thumb", activeImg === i && "is-active")}
                   >
                     <Image src={img.url} alt="" fill sizes="96px" className="object-cover" />
@@ -425,7 +428,7 @@ export function ProductDetail({
 
             {/* delivery */}
             <div className="mt-6 space-y-3 rounded-lg bg-cream p-5">
-              {sameDayCutoff && !largeOrder && <SameDayNotice cutoff={sameDayCutoff} />}
+              {sameDayCutoff && !largeOrder && <SameDayNotice cutoff={sameDayCutoff} orderCutoff={orderCutoff} />}
               {largeOrder && !unavailable && (
                 <p className="info-row">
                   <Truck strokeWidth={1.6} />

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/admin/ui";
 import { BuilderManager } from "@/components/admin/BuilderManager";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ const asL = (v: unknown) => {
 };
 
 export default async function BuilderPage() {
+  await requireAdminPage("builder:write");
   let containers, categories;
   try {
     [containers, categories] = await Promise.all([

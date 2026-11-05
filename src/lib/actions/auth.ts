@@ -17,13 +17,62 @@ import { sendPasswordReset, sendEmailVerification } from "@/lib/email";
 
 export type AuthState = { error?: string; notice?: string } | null;
 
-/**
- * One message for "no such user", "wrong password" and "not an admin".
- * The old copy ("Invalid credentials or insufficient access") told an attacker
- * which addresses were admin accounts.
- */
-const INVALID_CREDENTIALS = "Invalid email or password.";
 const MIN_PASSWORD = 8;
+
+/**
+ * Every message a shopper can see, in both languages. The storefront forms send
+ * a hidden `locale` field; the admin forms do not, so they stay in English.
+ *
+ * INVALID_CREDENTIALS is one message for "no such user", "wrong password" and
+ * "not an admin". The old copy ("Invalid credentials or insufficient access")
+ * told an attacker which addresses were admin accounts.
+ */
+const MESSAGES = {
+  en: {
+    INVALID_CREDENTIALS: "Invalid email or password.",
+    missingCredentials: "Enter your email and password.",
+    generic: "Something went wrong. Please try again.",
+    refused: "We couldn't process that request.",
+    registerInvalid: `Use a valid email and a password of at least ${MIN_PASSWORD} characters.`,
+    accountExists: "An account with this email already exists.",
+    registerFailed: "Could not create the account. Please try again.",
+    signInFailed: "Sign-in failed. Please try again.",
+    resetNotice: "If that email has an account, a reset link is on its way.",
+    resetNoticeAdmin: "If that email has an admin account, a reset link is on its way.",
+    invalidEmail: "Enter a valid email address.",
+    passwordTooShort: `Choose a password of at least ${MIN_PASSWORD} characters.`,
+    passwordMismatch: "Those passwords don't match.",
+    resetFailed: "Could not reset the password. Please try again.",
+    resetExpired: "That reset link has expired or was already used.",
+    resetInvalid: "That reset link is no longer valid.",
+  },
+  fr: {
+    INVALID_CREDENTIALS: "Courriel ou mot de passe invalide.",
+    missingCredentials: "Entrez votre courriel et votre mot de passe.",
+    generic: "Une erreur s'est produite. Veuillez réessayer.",
+    refused: "Nous n'avons pas pu traiter cette demande.",
+    registerInvalid: `Entrez un courriel valide et un mot de passe d'au moins ${MIN_PASSWORD} caractères.`,
+    accountExists: "Un compte existe déjà avec ce courriel.",
+    registerFailed: "Le compte n'a pas pu être créé. Veuillez réessayer.",
+    signInFailed: "La connexion a échoué. Veuillez réessayer.",
+    resetNotice: "Si ce courriel correspond à un compte, un lien de réinitialisation est en route.",
+    resetNoticeAdmin: "Si ce courriel correspond à un compte administrateur, un lien de réinitialisation est en route.",
+    invalidEmail: "Entrez une adresse courriel valide.",
+    passwordTooShort: `Choisissez un mot de passe d'au moins ${MIN_PASSWORD} caractères.`,
+    passwordMismatch: "Les mots de passe ne correspondent pas.",
+    resetFailed: "Le mot de passe n'a pas pu être réinitialisé. Veuillez réessayer.",
+    resetExpired: "Ce lien de réinitialisation a expiré ou a déjà été utilisé.",
+    resetInvalid: "Ce lien de réinitialisation n'est plus valide.",
+  },
+} as const;
+
+function isFrench(formData: FormData): boolean {
+  return formData.get("locale") === "fr";
+}
+
+function messagesFor(formData: FormData) {
+  return isFrench(formData) ? MESSAGES.fr : MESSAGES.en;
+}
 
 const emailSchema = z.string().email().max(200);
 
@@ -47,8 +96,9 @@ export async function adminLoginAction(
   const email = field(formData, "email").toLowerCase();
   const password = String(formData.get("password") || "");
   const next = field(formData, "next") || "/admin";
+  const msg = messagesFor(formData);
 
-  if (!email || !password) return { error: "Enter your email and password." };
+  if (!email || !password) return { error: msg.missingCredentials };
 
   const limit = await rateLimitBoth("adminLogin", email);
   if (!limit.ok) return { error: rateLimitMessage(limit) };
@@ -57,18 +107,19 @@ export async function adminLoginAction(
   try {
     user = await prisma.user.findUnique({ where: { email } });
   } catch (err) {
+    // The detail stays in the logs; the form only says something went wrong.
     console.error("[auth] admin login database error:", err);
-    return { error: "Database unavailable. Check the connection and try again." };
+    return { error: msg.generic };
   }
 
   if (!user || !user.passwordHash || !isAdminRole(user.role)) {
     // Spend roughly the same time as a real comparison so the response time
     // doesn't reveal whether the account exists.
     await verifyPassword(password, "$2a$11$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidin");
-    return { error: INVALID_CREDENTIALS };
+    return { error: msg.INVALID_CREDENTIALS };
   }
   if (!(await verifyPassword(password, user.passwordHash))) {
-    return { error: INVALID_CREDENTIALS };
+    return { error: msg.INVALID_CREDENTIALS };
   }
 
   await createSession(user);
@@ -88,22 +139,23 @@ export async function customerRegisterAction(
   _prev: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  if (trippedHoneypot(formData)) return { error: "We couldn't process that request." };
+  const msg = messagesFor(formData);
+  if (trippedHoneypot(formData)) return { error: msg.refused };
 
   const name = field(formData, "name").slice(0, 120);
   const email = field(formData, "email").toLowerCase();
   const password = String(formData.get("password") || "");
 
   if (!emailSchema.safeParse(email).success || password.length < MIN_PASSWORD) {
-    return { error: `Use a valid email and a password of at least ${MIN_PASSWORD} characters.` };
+    return { error: msg.registerInvalid };
   }
 
   const limit = await rateLimitBoth("customerRegister", email);
-  if (!limit.ok) return { error: rateLimitMessage(limit) };
+  if (!limit.ok) return { error: rateLimitMessage(limit, isFrench(formData)) };
 
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return { error: "An account with this email already exists." };
+    if (existing) return { error: msg.accountExists };
 
     const user = await prisma.user.create({
       data: { name, email, passwordHash: await hashPassword(password), role: "CUSTOMER" },
@@ -116,9 +168,11 @@ export async function customerRegisterAction(
     await sendEmailVerification({ email, token });
   } catch (err) {
     console.error("[auth] customer register error:", err);
-    return { error: "Could not create the account. Please try again." };
+    return { error: msg.registerFailed };
   }
-  redirect("/account");
+  // The French site lives under /fr; a bare "/account" dropped French shoppers
+  // onto the English pages after signing up or in.
+  redirect(isFrench(formData) ? "/fr/account" : "/account");
 }
 
 export async function customerLoginAction(
@@ -127,26 +181,27 @@ export async function customerLoginAction(
 ): Promise<AuthState> {
   const email = field(formData, "email").toLowerCase();
   const password = String(formData.get("password") || "");
-  if (!email || !password) return { error: "Enter your email and password." };
+  const msg = messagesFor(formData);
+  if (!email || !password) return { error: msg.missingCredentials };
 
   const limit = await rateLimitBoth("customerLogin", email);
-  if (!limit.ok) return { error: rateLimitMessage(limit) };
+  if (!limit.ok) return { error: rateLimitMessage(limit, isFrench(formData)) };
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.passwordHash) {
       await verifyPassword(password, "$2a$11$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidin");
-      return { error: INVALID_CREDENTIALS };
+      return { error: msg.INVALID_CREDENTIALS };
     }
     if (!(await verifyPassword(password, user.passwordHash))) {
-      return { error: INVALID_CREDENTIALS };
+      return { error: msg.INVALID_CREDENTIALS };
     }
     await createSession(user);
   } catch (err) {
     console.error("[auth] customer login error:", err);
-    return { error: "Sign-in failed. Please try again." };
+    return { error: msg.signInFailed };
   }
-  redirect("/account");
+  redirect(isFrench(formData) ? "/fr/account" : "/account");
 }
 
 export async function customerLogoutAction() {
@@ -166,19 +221,18 @@ export async function requestPasswordResetAction(
   _prev: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  if (trippedHoneypot(formData)) return { notice: "If that email has an account, a reset link is on its way." };
+  const msg = messagesFor(formData);
+  if (trippedHoneypot(formData)) return { notice: msg.resetNotice };
 
   const email = field(formData, "email").toLowerCase();
   const admin = field(formData, "admin") === "1";
   const locale = field(formData, "locale") || "en";
-  const notice = admin
-    ? "If that email has an admin account, a reset link is on its way."
-    : "If that email has an account, a reset link is on its way.";
+  const notice = admin ? msg.resetNoticeAdmin : msg.resetNotice;
 
-  if (!emailSchema.safeParse(email).success) return { error: "Enter a valid email address." };
+  if (!emailSchema.safeParse(email).success) return { error: msg.invalidEmail };
 
   const limit = await rateLimitBoth("passwordReset", email);
-  if (!limit.ok) return { error: rateLimitMessage(limit) };
+  if (!limit.ok) return { error: rateLimitMessage(limit, isFrench(formData)) };
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
@@ -200,26 +254,27 @@ export async function resetPasswordAction(
   const password = String(formData.get("password") || "");
   const confirm = String(formData.get("confirm") || "");
   const admin = field(formData, "admin") === "1";
+  const msg = messagesFor(formData);
 
   if (password.length < MIN_PASSWORD) {
-    return { error: `Choose a password of at least ${MIN_PASSWORD} characters.` };
+    return { error: msg.passwordTooShort };
   }
-  if (password !== confirm) return { error: "Those passwords don't match." };
+  if (password !== confirm) return { error: msg.passwordMismatch };
 
   const limit = await rateLimitBoth("passwordReset", token.slice(0, 24) || "unknown");
-  if (!limit.ok) return { error: rateLimitMessage(limit) };
+  if (!limit.ok) return { error: rateLimitMessage(limit, isFrench(formData)) };
 
   let consumed;
   try {
     consumed = await consumeToken("PASSWORD_RESET", token);
   } catch (err) {
     console.error("[auth] password reset failed:", err);
-    return { error: "Could not reset the password. Please try again." };
+    return { error: msg.resetFailed };
   }
-  if (!consumed) return { error: "That reset link has expired or was already used." };
+  if (!consumed) return { error: msg.resetExpired };
 
   const user = await prisma.user.findUnique({ where: { email: consumed.email } });
-  if (!user) return { error: "That reset link is no longer valid." };
+  if (!user) return { error: msg.resetInvalid };
 
   await prisma.user.update({
     where: { id: user.id },

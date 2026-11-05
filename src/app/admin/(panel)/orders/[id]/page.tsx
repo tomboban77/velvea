@@ -11,10 +11,12 @@ import {
 import { formatMoney, formatDate } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
 import { ArrowLeft, Printer } from "lucide-react";
+import { requireAdminPage } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrderDetail({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdminPage("orders:read");
   const { id } = await params;
   let order;
   try {

@@ -130,7 +130,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
               <button className="icon-btn -ml-2 lg:hidden" onClick={() => setMobileOpen(true)} aria-label={t("nav.menu")}>
                 <Menu className="h-6 w-6" strokeWidth={1.6} />
               </button>
-              <nav className="hidden items-center gap-7 lg:flex" aria-label="Utility">
+              <nav className="hidden items-center gap-7 lg:flex" aria-label={fr ? "Liens utiles" : "Utility"}>
                 <Link href="/corporate" className="util-link">{t("footer.corporate")}</Link>
                 {CUSTOM_BUILDER_ENABLED && <Link href="/custom" className="util-link">{t("nav.build")}</Link>}
                 <Link href="/guides" className="util-link">{t("nav.guides")}</Link>
@@ -139,7 +139,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
 
             {/* centre: logo */}
             <div className="flex items-center justify-center">
-              <Link href="/" aria-label="Velvea home" className="block">
+              <Link href="/" aria-label={fr ? "Accueil Velvea" : "Velvea home"} className="block">
                 <Logo height={22} priority className="lg:hidden" />
                 <Logo height={30} priority className="hidden lg:block xl:hidden" />
                 <Logo height={36} priority className="hidden xl:block" />
@@ -204,12 +204,12 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
               compact ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-3 opacity-0"
             )}
           >
-            <Link href="/" className="font-display text-[1.35rem] tracking-[0.12em] text-white" aria-label="Velvea home">
+            <Link href="/" className="font-display text-[1.35rem] tracking-[0.12em] text-white" aria-label={fr ? "Accueil Velvea" : "Velvea home"}>
               VELVÉA
             </Link>
           </div>
 
-          <nav className={cn("mx-auto flex items-center transition-transform duration-300", compact && "translate-x-0")} aria-label="Primary">
+          <nav className={cn("mx-auto flex items-center transition-transform duration-300", compact && "translate-x-0")} aria-label={fr ? "Navigation principale" : "Primary"}>
             {groups.map((g) => (
               <div key={g.key} onMouseEnter={() => show(g.key)}>
                 <button

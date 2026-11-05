@@ -17,6 +17,8 @@ import {
   markOrderShipped,
   markOrderDelivered,
   recordRefund,
+  assertOpenOrder,
+  PAID_STATUSES,
 } from "@/lib/actions/orders";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
@@ -128,6 +130,10 @@ export async function updateOrderStatus(input: z.input<typeof orderStatusSchema>
   } else if (data.status === "DELIVERED") {
     await markOrderDelivered(data.id, { note: data.note, notify: data.notify });
   } else {
+    // PROCESSING / FULFILLED: a bare status write, so it gets the same gate as
+    // shipping and delivery. Without it an unpaid order could be packed, and a
+    // cancelled one reopened after its stock and discount were released.
+    await assertOpenOrder(data.id, `moved to ${data.status.toLowerCase()}`);
     await prisma.order.update({
       where: { id: data.id },
       data: {
@@ -202,6 +208,11 @@ export async function refundOrder(input: z.input<typeof refundSchema>) {
 
   const order = await prisma.order.findUnique({ where: { id: data.id } });
   if (!order) throw new Error("Order not found");
+  // An unpaid or cancelled order holds no money, so there is nothing to refund;
+  // recording one would mark it REFUNDED for money that was never taken.
+  if (!PAID_STATUSES.includes(order.status)) {
+    throw new Error(`This order is ${order.status.toLowerCase()}, so there is no payment to refund.`);
+  }
 
   const remaining = order.totalCents - order.refundedCents;
   if (data.amountCents > remaining) {
@@ -217,7 +228,13 @@ export async function refundOrder(input: z.input<typeof refundSchema>) {
     // The charge.refunded webhook records it; this keeps the admin in step now.
   }
 
-  await recordRefund(order.id, data.amountCents, { notify: data.notify });
+  // Cumulative, not a delta: the charge.refunded webhook can land before this
+  // line and record the same refund. Stating the running total we expect means
+  // whichever arrives second is a no-op instead of counting it twice.
+  await recordRefund(order.id, order.refundedCents + data.amountCents, {
+    notify: data.notify,
+    cumulative: true,
+  });
   revalidatePath(`/admin/orders/${data.id}`);
   revalidatePath("/admin/orders");
 }
@@ -329,6 +346,7 @@ const settingsSchema = z.object({
       orderCutoff: z.string().regex(/^\d{1,2}:\d{2}$/, "Use HH:MM"),
       weekdayCapacity: z.number().int().min(0).max(100),
       weekendCapacity: z.number().int().min(0).max(100),
+      closedDates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")).max(120),
     })
     .partial()
     .optional(),

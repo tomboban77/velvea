@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState, Badge } from "@/components/admin/ui";
-import { getVerifiedAdmin } from "@/lib/auth";
-import { can } from "@/lib/permissions";
+import { requireAdminPage } from "@/lib/auth";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { Search } from "lucide-react";
 import type { Prisma } from "@prisma/client";
@@ -17,8 +15,7 @@ export default async function CustomersPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const admin = await getVerifiedAdmin();
-  if (!admin || !can(admin.role, "customers:read")) notFound();
+  await requireAdminPage("customers:read");
 
   const { q, page } = await searchParams;
   const current = Math.max(1, Number(page) || 1);
