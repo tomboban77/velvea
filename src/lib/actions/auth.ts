@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import {
   createSession,
   destroySession,
+  endAllSessions,
   verifyPassword,
   hashPassword,
   getSession,
@@ -285,6 +286,9 @@ export async function resetPasswordAction(
     },
   });
 
+  // A reset is often because the account was taken over: sign out every
+  // device before signing this one in.
+  await endAllSessions(user.id);
   await createSession(user);
   redirect(admin && isAdminRole(user.role) ? "/admin" : "/account");
 }

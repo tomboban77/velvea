@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
@@ -20,6 +21,8 @@ export type SessionPayload = {
   email: string;
   role: Role;
   name?: string;
+  /** The account's sessionVersion when this token was issued. Absent on older tokens: 0. */
+  sv?: number;
 };
 
 export function sessionMaxAge(role: Role): number {
@@ -50,12 +53,19 @@ export async function createSession(user: {
   name?: string | null;
 }) {
   const maxAge = sessionMaxAge(user.role);
+  // Read here rather than passed in, so no caller can issue a token for an
+  // older version and sign the user straight back out.
+  const { sessionVersion } = await prisma.user.findUniqueOrThrow({
+    where: { id: user.id },
+    select: { sessionVersion: true },
+  });
   const token = await signToken(
     {
       sub: user.id,
       email: user.email,
       role: user.role,
       name: user.name ?? undefined,
+      sv: sessionVersion,
     },
     maxAge
   );
@@ -81,16 +91,36 @@ export async function destroySession() {
   jar.delete(ADMIN_COOKIE);
 }
 
-export async function getSession(): Promise<SessionPayload | null> {
+/**
+ * The signed-in user, or null.
+ *
+ * A signed token alone used to be enough, so a session stayed valid for its
+ * full 30 days (12 for admin) after the password changed: whoever had stolen
+ * it kept access. The token now has to carry the account's current
+ * sessionVersion. Cached per request, so pages that ask several times cost one
+ * lookup. A database error counts as signed out: never trust an unchecked token.
+ */
+export const getSession = cache(async (): Promise<SessionPayload | null> => {
   try {
     const jar = await cookies();
     const token = jar.get(SESSION_COOKIE)?.value;
     if (!token) return null;
     const { payload } = await jwtVerify(token, authSecretBytes());
-    return payload as unknown as SessionPayload;
+    const session = payload as unknown as SessionPayload;
+    const user = await prisma.user.findUnique({
+      where: { id: session.sub },
+      select: { sessionVersion: true },
+    });
+    if (!user || user.sessionVersion !== (session.sv ?? 0)) return null;
+    return session;
   } catch {
     return null;
   }
+});
+
+/** Sign this account out everywhere. The caller re-issues the current device's session. */
+export async function endAllSessions(userId: string) {
+  await prisma.user.update({ where: { id: userId }, data: { sessionVersion: { increment: 1 } } });
 }
 
 export async function getCurrentUser() {

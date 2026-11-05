@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getSession, hashPassword, verifyPassword } from "@/lib/auth";
+import { createSession, endAllSessions, getSession, hashPassword, verifyPassword } from "@/lib/auth";
 import { rateLimitBoth } from "@/lib/rate-limit";
 import {
   MAX_ADDRESSES,
@@ -135,6 +135,9 @@ export async function changePasswordAction(
       where: { id: session.sub },
       data: { passwordHash: await hashPassword(password) },
     });
+    // Every other device is signed out; this one gets a fresh session.
+    await endAllSessions(session.sub);
+    await createSession({ id: session.sub, email: session.email, role: session.role, name: session.name });
   } catch (err) {
     console.error("[account] password change failed:", err);
     return { error: "failed" };

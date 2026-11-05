@@ -28,6 +28,10 @@ model User {
   phone         String?
   role          Role      @default(CUSTOMER)
   emailVerified DateTime?
+  /// Copied into every session token. Raising it signs the account out on
+  /// every device: done on each password change or reset, so a stolen
+  /// session doesn't outlive the password it was stolen with.
+  sessionVersion Int      @default(0)
   addresses     Address[]
   orders        Order[]
   reviews       Review[]

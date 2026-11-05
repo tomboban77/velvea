@@ -32,8 +32,9 @@ Status legend: **Fix before launch** · **Fix soon after launch** · **Improve**
   strings and account/checkout titles are bilingual; French sign-in lands on `/fr/account`.
 
 **Still open from that audit**
-- Password change/reset does not end other sessions (stateless JWT). Needs a `User.sessionVersion`
-  column: schema change, owner go-ahead.
+- ~~Password change/reset does not end other sessions.~~ Fixed 5 Nov 2026: `User.sessionVersion`
+  (migration `20261105000000_user_session_version`) is copied into each token and checked by
+  `getSession`; a password change or reset raises it, signing out every other device.
 - Two checkouts at the same moment can both take the last delivery slot (count then insert, no
   lock). Rare at current volume; fix with a per-day advisory lock around order creation.
 
