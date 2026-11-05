@@ -1,4 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -51,13 +52,20 @@ export default async function GuidesPage({
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
             {articles.map((a) => (
-              <Link key={a.id} href={`/guides/${a.slug}`} className="group flex h-full flex-col rounded-lg border border-line bg-white p-7 card-hover">
-                <p className="caps">{a.category.toLowerCase()}</p>
-                <h2 className="mt-3 font-display text-[1.5rem] font-medium leading-snug text-ink group-hover:text-violet-deep">{tc(a.title, locale)}</h2>
-                <p className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-ink-soft">{tc(a.excerpt, locale)}</p>
-                <span className="link-draw mt-6">
-                  {t("readGuide")} <ArrowRight className="h-4 w-4" />
-                </span>
+              <Link key={a.id} href={`/guides/${a.slug}`} className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white card-hover">
+                {a.coverImage && (
+                  <div className="relative aspect-video bg-cream">
+                    <Image src={a.coverImage} alt="" fill sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col p-7">
+                  <p className="caps">{a.category.toLowerCase()}</p>
+                  <h2 className="mt-3 font-display text-[1.5rem] font-medium leading-snug text-ink group-hover:text-violet-deep">{tc(a.title, locale)}</h2>
+                  <p className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-ink-soft">{tc(a.excerpt, locale)}</p>
+                  <span className="link-draw mt-6">
+                    {t("readGuide")} <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
               </Link>
             ))}
           </div>

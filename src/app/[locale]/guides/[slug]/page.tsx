@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -72,6 +73,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {a.author ?? "Velvea"} · {t("guides.readMinutes", { count: a.readMinutes })}
         {a.publishedAt ? ` · ${formatDate(a.publishedAt, locale === "fr" ? "fr-CA" : "en-CA")}` : ""}
       </p>
+
+      {a.coverImage && (
+        <div className="relative mt-8 aspect-video overflow-hidden rounded-lg bg-cream">
+          {/* Decorative: most guides share the branded cover, so it says nothing the headline doesn't. */}
+          <Image src={a.coverImage} alt="" fill priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
+        </div>
+      )}
 
       {/* Bodies are sanitised on save, and again here so articles written
           before that check can't render script either. */}
