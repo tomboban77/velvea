@@ -21,6 +21,7 @@ export async function Listing({
   activeSlug,
   searchable = false,
   pagination,
+  children,
 }: {
   eyebrow?: string;
   title: string;
@@ -35,6 +36,8 @@ export async function Listing({
   searchable?: boolean;
   /** Present when the page honours `?page=`; renders real prev/next links under the grid. */
   pagination?: { page: number; totalPages: number; basePath: string; params: Record<string, string | undefined> };
+  /** Editorial content rendered under the grid (occasion intro, delivery links, FAQ). */
+  children?: React.ReactNode;
 }) {
   const locale = await getLocale();
   const t = await getTranslations("listing");
@@ -88,6 +91,7 @@ export async function Listing({
           </div>
         )}
       </div>
+      {children}
     </div>
   );
 }

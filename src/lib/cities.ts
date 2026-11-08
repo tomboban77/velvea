@@ -48,6 +48,26 @@ export const CITIES: City[] = [
     page: true,
   },
   {
+    // Malton is a Mississauga neighbourhood, but people search for it by name
+    // (it has its own postal area, L4T, and its own identity around the
+    // airport), so it gets a page written for the place, not a copy of the
+    // Mississauga one.
+    slug: "malton",
+    name: { en: "Malton", fr: "Malton" },
+    region: { en: "Mississauga, beside Pearson Airport", fr: "Mississauga, près de l'aéroport Pearson" },
+    fsas: ["L4T"],
+    sampleFsa: "L4T",
+    areas: {
+      en: ["Westwood Square", "Malton Village", "Morning Star", "Ridgewood", "Victory Village", "Derry Road and Goreway Drive", "Airport Corporate Centre", "Pearson Airport hotels"],
+      fr: ["Westwood Square", "Malton Village", "Morning Star", "Ridgewood", "Victory Village", "Derry Road et Goreway Drive", "Airport Corporate Centre", "Hôtels de l'aéroport Pearson"],
+    },
+    intro: {
+      en: "Malton is ten minutes up Hurontario and along Derry from the studio, close enough that it is on nearly every afternoon run. Gifts here follow the calendar of a close-knit community: Diwali and wedding hampers for the family, sweets and savoury baskets for a housewarming or a new baby, and thank-you boxes for the hotels and offices around Pearson Airport. Every basket is alcohol-free and lists exactly what is inside, which matters when a hamper is going to a puja or a vegetarian household. Order before the cutoff and it is delivered by hand the same day.",
+      fr: "Malton est à dix minutes de l'atelier par Hurontario et Derry, assez près pour figurer sur presque toutes nos tournées de l'après-midi. Les cadeaux ici suivent le calendrier d'une communauté très soudée : paniers de Diwali et de mariage pour la famille, sucreries et paniers salés pour une pendaison de crémaillère ou une naissance, boîtes de remerciement pour les hôtels et les bureaux autour de l'aéroport Pearson. Chaque panier est sans alcool et indique exactement ce qu'il contient, ce qui compte quand il est destiné à une puja ou à un foyer végétarien. Commandez avant l'heure limite et il est remis en main propre le jour même.",
+    },
+    page: true,
+  },
+  {
     slug: "toronto",
     name: { en: "Toronto", fr: "Toronto" },
     region: { en: "Including Etobicoke, North York and Scarborough", fr: "Y compris Etobicoke, North York et Scarborough" },
@@ -60,6 +80,25 @@ export const CITIES: City[] = [
     intro: {
       en: "Every Toronto postal code, from Etobicoke to Scarborough, is covered by our own drivers rather than a courier, which is what makes same-day possible for a gift that has to arrive today. Downtown condo deliveries are left with the concierge and confirmed to you by message; office gifts are timed for business hours. Same-day works the same way as everywhere else in the GTA: place your order by noon.",
       fr: "Chaque code postal de Toronto, d'Etobicoke à Scarborough, est desservi par nos propres livreurs plutôt que par un transporteur, ce qui rend possible la livraison le jour même d'un cadeau qui doit arriver aujourd'hui. Les livraisons en condo au centre-ville sont remises au concierge et confirmées par message ; les cadeaux au bureau sont livrés pendant les heures ouvrables. La livraison le jour même fonctionne comme partout ailleurs dans le Grand Toronto : passez votre commande avant midi.",
+    },
+    page: true,
+  },
+  {
+    // Etobicoke is part of Toronto, but it is the part next to Mississauga and
+    // people search for it by name. The M8/M9 postal codes are routed by the
+    // Toronto zone; the page only tells Etobicoke's own story.
+    slug: "etobicoke",
+    name: { en: "Etobicoke", fr: "Etobicoke" },
+    region: { en: "Toronto's west end", fr: "Ouest de Toronto" },
+    fsas: ["M8", "M9"],
+    sampleFsa: "M9C",
+    areas: {
+      en: ["The Kingsway", "Islington Village", "Mimico and Humber Bay Shores", "New Toronto", "Long Branch", "Alderwood", "Markland Wood", "Eringate and Centennial", "Royal York", "Rexdale", "Thistletown", "Humber Valley"],
+      fr: ["The Kingsway", "Islington Village", "Mimico et Humber Bay Shores", "New Toronto", "Long Branch", "Alderwood", "Markland Wood", "Eringate et Centennial", "Royal York", "Rexdale", "Thistletown", "Humber Valley"],
+    },
+    intro: {
+      en: "Etobicoke is the part of Toronto nearest our studio: Islington and The Kingsway are a short run along Dundas or down the 427, and the lakeshore neighbourhoods of Mimico, New Toronto and Long Branch are on the way into the city. A good share of what we call Toronto deliveries are really Etobicoke deliveries: birthday hampers to Humber Bay condos, thank-you baskets to the offices around the airport, Christmas hampers to family in Markland Wood and Alderwood. Our own driver brings the basket, never a courier, and same-day is available when you order before the cutoff.",
+      fr: "Etobicoke est la partie de Toronto la plus proche de notre atelier : Islington et The Kingsway sont à un court trajet par Dundas ou la 427, et les quartiers riverains de Mimico, New Toronto et Long Branch sont sur la route vers le centre-ville. Une bonne part de ce que nous appelons nos livraisons à Toronto sont en réalité des livraisons à Etobicoke : paniers d'anniversaire dans les condos de Humber Bay, paniers de remerciement aux bureaux près de l'aéroport, paniers de Noël pour la famille à Markland Wood et Alderwood. C'est notre propre livreur qui apporte le panier, jamais un transporteur, et le jour même est offert si vous commandez avant l'heure limite.",
     },
     page: true,
   },
@@ -243,6 +282,23 @@ export function offerFor(city: City, zones: DeliveryZone[]): CityOffer {
     return zone.sameDayCutoff ? { kind: "same-day", zone, cutoff: zone.sameDayCutoff } : { kind: "next-day", zone };
   }
   return { kind: "shipping", zone };
+}
+
+/**
+ * The facts the occasion pages and llms.txt quote: the Mississauga same-day
+ * cutoff and fee, and the cities whose representative postal code gets
+ * same-day today. Read from the zones, so copy can never promise a cutoff
+ * checkout would refuse.
+ */
+export function sameDayFacts(zones: DeliveryZone[], locale: string, money: (cents: number) => string) {
+  const home = cityBySlug("mississauga");
+  const offer = home ? offerFor(home, zones) : ({ kind: "unserved" } as CityOffer);
+  const cities = CITY_PAGES.filter((c) => offerFor(c, zones).kind === "same-day").map((c) => (locale === "fr" ? c.name.fr : c.name.en));
+  return {
+    cutoff: offer.kind === "same-day" ? formatCutoff(offer.cutoff, locale) : undefined,
+    fee: offer.kind === "same-day" || offer.kind === "next-day" ? money(offer.zone.baseFeeCents) : undefined,
+    cityNames: cities,
+  };
 }
 
 /** "16:00" → "4:00 p.m." in English, "16 h" in French. Store time is Eastern. */

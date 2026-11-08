@@ -16,6 +16,12 @@ export const OCCASIONS: NavLink[] = [
   { slug: "retirement", en: "Retirement", fr: "Retraite" },
   { slug: "thinking-of-you", en: "Thinking of You", fr: "Je pense à toi" },
   { slug: "just-because", en: "Just Because", fr: "Juste comme ça" },
+  // Searched-for occasions with their own content in occasion-seo.ts. Each
+  // needs a stocked OCCASION collection (scripts/occasion-collections.ts) or
+  // the menu links to an empty, noindex page.
+  { slug: "milestone-birthday", en: "Milestone Birthday", fr: "Anniversaire marquant" },
+  { slug: "proposal", en: "Proposal & Engagement", fr: "Demande en mariage et fiançailles" },
+  { slug: "real-estate-closing", en: "Real Estate Closing", fr: "Clôture immobilière" },
   { slug: "holiday", en: "Holiday", fr: "Fêtes" },
 ];
 

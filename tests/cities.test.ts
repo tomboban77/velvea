@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { DeliveryZone } from "@prisma/client";
-import { CITIES, CITY_PAGES, cityBySlug, formatCutoff, offerFor } from "@/lib/cities";
+import { CITIES, CITY_PAGES, cityBySlug, formatCutoff, offerFor, sameDayFacts } from "@/lib/cities";
 import { buildSitemap } from "@/lib/seo";
 
 // cities.ts → zones.ts → prisma. Nothing here touches the client.
@@ -71,6 +71,39 @@ describe("city data", () => {
   it("looks cities up by slug", () => {
     expect(cityBySlug("brampton")?.name.en).toBe("Brampton");
     expect(cityBySlug("nowhere")).toBeUndefined();
+  });
+
+  it("gives Etobicoke and Malton their own pages, routed by the Toronto and Mississauga zones", () => {
+    // People search for both by name; the pages exist so those searches land
+    // somewhere written for the place. The zones are untouched: M9 is Toronto,
+    // L4T is Mississauga.
+    expect(cityBySlug("etobicoke")?.page).toBe(true);
+    expect(cityBySlug("malton")?.page).toBe(true);
+    expect(offerFor(cityBySlug("etobicoke")!, zones)).toMatchObject({ kind: "same-day", cutoff: "13:00" });
+    expect(offerFor(cityBySlug("malton")!, [zone({ key: "local-a", fsaPrefixes: ["L4T"] })])).toMatchObject({ kind: "same-day", cutoff: "16:00" });
+  });
+});
+
+describe("sameDayFacts", () => {
+  const money = (c: number) => `$${(c / 100).toFixed(2)}`;
+
+  it("quotes the Mississauga cutoff and fee and lists only same-day cities", () => {
+    const facts = sameDayFacts(zones, "en", money);
+    expect(facts.cutoff).toBe("4:00 p.m.");
+    expect(facts.fee).toBe("$9.99");
+    expect(facts.cityNames).toContain("Mississauga");
+    expect(facts.cityNames).toContain("Toronto");
+    expect(facts.cityNames).toContain("Etobicoke");
+    expect(facts.cityNames).not.toContain("Burlington"); // next-day in these fixtures
+    expect(sameDayFacts(zones, "fr", money).cutoff).toBe("16 h");
+  });
+
+  it("has no cutoff when Mississauga loses same-day, so copy that quotes it is dropped", () => {
+    const edited = zones.map((z) => (z.key === "local-a" ? { ...z, sameDayCutoff: null } : z));
+    const facts = sameDayFacts(edited, "en", money);
+    expect(facts.cutoff).toBeUndefined();
+    expect(facts.fee).toBe("$9.99");
+    expect(facts.cityNames).not.toContain("Mississauga");
   });
 });
 

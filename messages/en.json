@@ -377,6 +377,22 @@
       {
         "q": "Can I cancel, return or exchange my order?",
         "a": "All sales are final. Every basket is perishable and packed to order for one recipient, so we cannot accept returns, exchanges or cancellations once an order is placed. If we get something wrong and a basket arrives damaged, incomplete or not as ordered, write to us within 48 hours of delivery with a photo and we will make it right."
+      },
+      {
+        "q": "Which cities do you deliver gift hampers to?",
+        "a": "Our own team delivers across Mississauga and Malton, Toronto and Etobicoke, Brampton, Oakville, Milton, Burlington, Georgetown, Bolton, Vaughan, Markham and Richmond Hill, same day when you order before the cutoff shown at checkout. Durham Region and the towns north of the city are next-day. Hamilton, Guelph and the rest of Ontario ship by tracked courier. Every city has its own delivery page with the current fee and cutoff."
+      },
+      {
+        "q": "Do you ship gift hampers across Canada?",
+        "a": "Yes. Baskets marked shippable travel by tracked courier to the rest of Ontario, the Atlantic provinces, Manitoba, Saskatchewan, Alberta and British Columbia, usually within two to six business days. Quebec is coming soon. Fresh, chilled and flower baskets are local delivery only."
+      },
+      {
+        "q": "Can I get a Christmas hamper delivered the same day?",
+        "a": "In our same-day cities, yes: order before the cutoff and a Christmas hamper is delivered by hand that evening. December days fill up, so for a particular date choose it at checkout as early as you can. Courier orders for the rest of Canada should go in by the second week of December."
+      },
+      {
+        "q": "Do your gift hampers contain alcohol?",
+        "a": "No. Every Velvéa hamper is alcohol-free, so it can go to any colleague, client, family or household without a second thought. Each basket's page lists exactly what is inside."
       }
     ]
   },
@@ -638,16 +654,16 @@
     "giftCardsTitle": "Gift cards",
     "giftCardsDescription": "Give the gift of choice with a Velvéa gift card, redeemable on any basket.",
     "productFallbackTitle": "Gift basket",
-    "deliveryTitle": "Gift basket delivery in Mississauga, Toronto and the GTA",
-    "deliveryDescription": "Same-day gift basket and hamper delivery in Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham and across the GTA. Tracked shipping across Canada. Free pickup in Mississauga, by appointment.",
+    "deliveryTitle": "Gift basket delivery in Mississauga, Toronto and the GTA, shipped across Canada",
+    "deliveryDescription": "Same-day gift basket and hamper delivery in Mississauga, Malton, Brampton, Toronto, Etobicoke, Oakville, Milton, Vaughan and Markham. Tracked shipping across Canada. Free pickup in Mississauga, by appointment.",
     "cityTitle": "Gift baskets and hampers delivered in {city}",
     "citySearchTitle": "Gift Basket & Hamper Delivery in {city}",
     "citySearchTitleSameDay": "Gift Basket & Hamper Delivery in {city}, Same Day",
     "cityDescriptionSameDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario. Order by {time} for same-day delivery from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionNextDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario by our own team, next-day from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionShipping": "Hand-composed gift baskets and hampers shipped to {city}, Ontario by tracked courier from {fee}. Birthday, thank-you, sympathy, corporate and more.",
-    "customRequestTitle": "Custom gift basket request",
-    "customRequestDescription": "Send Velvéa a list of the products you'd like and we'll arrange them by hand in our own style, with a final price first. Made in Mississauga, delivered across the GTA and shipped across Canada."
+    "customRequestTitle": "Custom gift hampers, made to order in Mississauga",
+    "customRequestDescription": "Custom gift hampers and baskets for any occasion: tell Velvéa what you want in it and we price it by hand, with nothing charged until you approve. Made in Mississauga, delivered across the GTA and shipped across Canada."
   },
   "delivery": {
     "eyebrow": "Delivery areas",
@@ -696,7 +712,38 @@
     "faqQ3": "Who delivers my basket, and how will I know it arrived?",
     "faqA3Local": "Our own team, by hand. Baskets in our local zones never go through a courier, and you receive an email when the basket is delivered.",
     "faqA3Shipping": "A tracked courier. You receive the tracking number by email when it ships and a confirmation when it is delivered.",
-    "otherCities": "Other delivery areas"
+    "otherCities": "Other delivery areas",
+    "glanceSameDay": "Velvéa delivers gift baskets and hampers to any {city} address for {fee}, same day on orders placed before {time} Eastern, by our own team.",
+    "glanceNextDay": "Velvéa delivers gift baskets and hampers to any {city} address for {fee}, by our own team, on the next available day.",
+    "glanceShipping": "Velvéa ships gift baskets and hampers to {city} by tracked courier for {fee}, arriving in {min} to {max} business days.",
+    "occasionHampersH": "Hampers for every occasion in {city}",
+    "occasionHampersLede": "The same baskets, chosen for the moment. Every one is packed by hand in Mississauga after you order, and none contain alcohol.",
+    "occChristmas": "Christmas hampers",
+    "occChristmasSub": "Gourmet, chocolate and coffee hampers for family, neighbours, clients and teams, delivered in {city} through December.",
+    "occBirthday": "Birthday hampers",
+    "occBirthdaySub": "Treats to open that evening, with your message printed on a card inside.",
+    "occAnniversary": "Anniversary hampers",
+    "occAnniversarySub": "Chocolate, roses, spa and gourmet baskets for a partner, or a shared hamper for the parents.",
+    "occWedding": "Wedding hampers",
+    "occWeddingSub": "For the couple, the hosts, the wedding party and every function before the day, delivered to homes, hotels and venues in {city}.",
+    "occCorporate": "Corporate hampers",
+    "occCorporateSub": "Client and employee gifts with volume pricing, branded cards and delivery to many {city} addresses.",
+    "occCustom": "Custom hampers",
+    "occCustomSub": "Describe what you want in it and we price it by hand, then deliver it in {city} like any other order.",
+    "faqQ4": "Do you deliver Christmas and holiday hampers in {city}?",
+    "faqA4SameDay": "Yes. Christmas hampers go out with our regular {city} deliveries: order before {time} Eastern for same-day, or choose a December date at checkout. The open dates are shown as you check out, and December fills up, so book early for a specific day.",
+    "faqA4NextDay": "Yes. Christmas hampers are delivered in {city} by our own team on the next available day. Choose a December date at checkout; the open dates are shown as you check out, and December fills up, so book early for a specific day.",
+    "faqA4Shipping": "Yes, by tracked courier, in {min} to {max} business days. Order by the second week of December so the hamper arrives before Christmas.",
+    "faqQ5": "Can I order a custom gift hamper for delivery in {city}?",
+    "faqA5": "Yes. Send a custom basket request with the products, occasion and budget you have in mind. We reply with a final price, nothing is charged until you approve it, and the finished hamper is delivered in {city} like any other order.",
+    "provincesH": "Courier shipping by province",
+    "provincesLede": "Baskets marked shippable travel in a protective box by tracked courier. The fee covers the first basket in an order; the exact cost for an address appears at checkout.",
+    "occMilestone": "Milestone birthdays",
+    "occMilestoneSub": "The big ones, 18th to 90th: luxury hampers and crates delivered in {city} on the date you choose.",
+    "occProposal": "Proposal and engagement",
+    "occProposalSub": "Roses, chocolate and spa baskets for the question and for the couple who just said yes, delivered to homes, hotels and restaurants in {city}.",
+    "occClosing": "Real estate closing gifts",
+    "occClosingSub": "Welcome-home hampers for agents and brokers, delivered to the new address in {city} on closing day."
   },
   "customRequest": {
     "eyebrow": "Custom basket",
@@ -770,5 +817,14 @@
       "general": "Not this basket? Send a general request",
       "viewBasket": "View basket"
     }
+  },
+  "occasionSeo": {
+    "deliveryLink": "Delivery areas and cutoffs",
+    "customLink": "Want something different? Request a custom hamper",
+    "citiesH": "Delivered by our own team in",
+    "citiesLedeSameDay": "Same day when you order before {time} Eastern. Each city page shows the current fee and cutoff.",
+    "citiesLede": "Each city page shows the current delivery options, fee and cutoff.",
+    "canadaNote": "Everywhere else in Ontario, the Prairies, British Columbia and Atlantic Canada: tracked courier shipping on baskets marked shippable.",
+    "faqH": "Questions people ask"
   }
 }

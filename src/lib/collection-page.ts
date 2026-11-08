@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getProductsByCollection } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
 import { labelFor, type NavLink } from "@/lib/nav";
+import { occasionSeo } from "@/lib/occasion-seo";
 import { PAGE_SIZE, collectionPageJsonLd, listingPolicy, pageMetadata, parsePage, recipientPhrase, siteOrigin, totalPages, type JsonLdValue } from "@/lib/seo";
 
 /**
@@ -67,11 +68,18 @@ export async function collectionMetadata(opts: {
   // only the fallback for collections nobody has written copy for yet.
   const storedTitle = tc(data.collection?.seoTitle, locale);
   const storedDescription = tc(data.collection?.seoDescription, locale) || tc(data.collection?.description, locale);
+  // Occasions people search for by name and place ("christmas hampers
+  // mississauga") carry written titles in occasion-seo.ts; the generic
+  // template is for everything else.
+  const editorial = type === "OCCASION" ? occasionSeo(slug) : undefined;
+  const fr = locale === "fr";
   const title =
     storedTitle ||
+    (editorial ? (fr ? editorial.title.fr : editorial.title.en) : null) ||
     (type === "RECIPIENT" ? t("recipientTitle", { name: recipientPhrase(name, locale) }) : t("collectionTitle", { name }));
   const description =
     storedDescription ||
+    (editorial ? (fr ? editorial.description.fr : editorial.description.en) : null) ||
     (type === "OCCASION"
       ? t("occasionDescription", { name: name.toLowerCase() })
       : type === "RECIPIENT"

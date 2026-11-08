@@ -102,7 +102,42 @@ export default async function CityDeliveryPage({ params }: { params: Promise<{ s
   if (offer.kind !== "unserved" && offer.kind !== "quote") {
     faq.push({ q: t("faqQ2", { city: name }), a: t("faqA2", { city: name, fee: money(offer.zone.baseFeeCents) }) });
     faq.push({ q: t("faqQ3"), a: offer.kind === "shipping" ? t("faqA3Shipping") : t("faqA3Local") });
+    // "christmas hampers {city}" and "custom gift hamper {city}" are the two
+    // occasion-and-place searches the city pages are meant to answer.
+    faq.push({
+      q: t("faqQ4", { city: name }),
+      a:
+        offer.kind === "same-day"
+          ? t("faqA4SameDay", { city: name, time: formatCutoff(offer.cutoff, locale) })
+          : offer.kind === "next-day"
+          ? t("faqA4NextDay", { city: name })
+          : t("faqA4Shipping", { min: offer.zone.minLeadDays, max: offer.zone.maxLeadDays }),
+    });
+    faq.push({ q: t("faqQ5", { city: name }), a: t("faqA5", { city: name }) });
   }
+
+  // One plain sentence an assistant can quote as-is, built from the same
+  // resolved zone as the facts below it.
+  const glance =
+    offer.kind === "same-day"
+      ? t("glanceSameDay", { city: name, fee: money(offer.zone.baseFeeCents), time: formatCutoff(offer.cutoff, locale) })
+      : offer.kind === "next-day"
+      ? t("glanceNextDay", { city: name, fee: money(offer.zone.baseFeeCents) })
+      : offer.kind === "shipping"
+      ? t("glanceShipping", { city: name, fee: money(offer.zone.baseFeeCents), min: offer.zone.minLeadDays, max: offer.zone.maxLeadDays })
+      : null;
+
+  const occasionCards = [
+    { href: "/occasions/christmas", title: t("occChristmas"), sub: t("occChristmasSub", { city: name }) },
+    { href: "/occasions/birthday", title: t("occBirthday"), sub: t("occBirthdaySub") },
+    { href: "/occasions/milestone-birthday", title: t("occMilestone"), sub: t("occMilestoneSub", { city: name }) },
+    { href: "/occasions/anniversary", title: t("occAnniversary"), sub: t("occAnniversarySub") },
+    { href: "/occasions/proposal", title: t("occProposal"), sub: t("occProposalSub", { city: name }) },
+    { href: "/occasions/wedding", title: t("occWedding"), sub: t("occWeddingSub", { city: name }) },
+    { href: "/occasions/real-estate-closing", title: t("occClosing"), sub: t("occClosingSub", { city: name }) },
+    { href: "/corporate", title: t("occCorporate"), sub: t("occCorporateSub", { city: name }) },
+    { href: "/custom-basket", title: t("occCustom"), sub: t("occCustomSub", { city: name }) },
+  ];
 
   const serviceLd: JsonLdValue = {
     "@context": "https://schema.org",
@@ -119,7 +154,9 @@ export default async function CityDeliveryPage({ params }: { params: Promise<{ s
   return (
     <div>
       <JsonLd data={[serviceLd, breadcrumbJsonLd(breadcrumb, { locale, origin }), ...(faq.length ? [faqJsonLd(faq)] : [])]} />
-      <PageHeader eyebrow={t("cityEyebrow", { city: name })} title={t("cityTitle", { city: name })} lede={fr ? city.intro.fr : city.intro.en} breadcrumb={breadcrumb} />
+      <PageHeader eyebrow={t("cityEyebrow", { city: name })} title={t("cityTitle", { city: name })} lede={fr ? city.intro.fr : city.intro.en} breadcrumb={breadcrumb}>
+        {glance && <p className="mt-5 max-w-2xl border-l-2 border-violet-deep pl-4 text-[0.98rem] font-medium leading-relaxed text-ink">{glance}</p>}
+      </PageHeader>
 
       <section className="container-x section-sm">
         <h2 className="h-sub">{t("factsH", { city: name })}</h2>
@@ -155,6 +192,24 @@ export default async function CityDeliveryPage({ params }: { params: Promise<{ s
       )}
 
       <ProductRail products={bestsellers} title={t("popularH", { city: name })} link="/baskets" linkLabel={t("popularLink")} />
+
+      {offer.kind !== "unserved" && (
+        <section className="container-x section-sm border-t border-line">
+          <h2 className="h-sub">{t("occasionHampersH", { city: name })}</h2>
+          <p className="mt-2 max-w-2xl text-ink-soft">{t("occasionHampersLede")}</p>
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {occasionCards.map((c) => (
+              <Link key={c.href} href={c.href} className="group flex items-start justify-between gap-4 rounded-lg border border-line bg-white p-5 card-hover">
+                <div className="min-w-0">
+                  <p className="font-display text-[1.25rem] font-medium leading-tight text-ink group-hover:text-violet-deep">{c.title}</p>
+                  <p className="mt-2 text-sm text-ink-soft">{c.sub}</p>
+                </div>
+                <span className="circle-arrow h-9 w-9 shrink-0"><ArrowRight className="h-4 w-4" strokeWidth={1.8} /></span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container-x section-sm border-t border-line">
         <h2 className="h-sub">{t("occasionsH")}</h2>

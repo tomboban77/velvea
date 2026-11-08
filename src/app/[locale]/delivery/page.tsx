@@ -6,6 +6,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getZonesForDisplay } from "@/lib/zones";
 import { CITIES, formatCutoff, offerFor, type City, type CityOffer } from "@/lib/cities";
 import { formatMoney } from "@/lib/utils";
+import { PROVINCE_NAMES, type ProvinceCode } from "@/lib/addresses";
+import { t as tc } from "@/lib/i18n-content";
 import { breadcrumbJsonLd, pageMetadata, siteOrigin } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +36,18 @@ export default async function DeliveryHubPage({ params }: { params: Promise<{ lo
   const sameDay = withOffer.filter((c) => c.offer.kind === "same-day");
   const nextDay = withOffer.filter((c) => c.offer.kind === "next-day");
   const shipping = withOffer.filter((c) => c.offer.kind === "shipping" || c.offer.kind === "quote");
+  // Courier zones by province, so "gift baskets delivered to Alberta" has a
+  // page that names the province with its real lead time and fee.
+  const provinceName = (code: string) => (PROVINCE_NAMES as Record<string, { en: string; fr: string }>)[code as ProvinceCode];
+  const courier = zones
+    .filter((z) => z.kind === "SHIPPING" && z.provinces.length > 0)
+    .map((z) => ({
+      key: z.key,
+      name: tc(z.name, locale),
+      provinces: z.provinces.map((p) => provinceName(p)).filter(Boolean).map((p) => (fr ? p.fr : p.en)),
+      label: t("cardShipping", { min: z.minLeadDays, max: z.maxLeadDays, fee: money(z.baseFeeCents) }),
+    }))
+    .filter((z) => z.provinces.length > 0);
 
   const breadcrumb = [
     { label: tp("home"), href: "/" },
@@ -98,6 +112,22 @@ export default async function DeliveryHubPage({ params }: { params: Promise<{ lo
       <Group icon={Clock} title={t("sameDayH")} lede={t("sameDayLede")} items={sameDay} />
       <Group icon={Truck} title={t("nextDayH")} lede={t("nextDayLede")} items={nextDay} />
       <Group icon={Package} title={t("shippingH")} lede={t("shippingLede")} items={shipping} />
+
+      {courier.length > 0 && (
+        <section className="container-x section-sm">
+          <h2 className="h-sub">{t("provincesH")}</h2>
+          <p className="mt-1 max-w-2xl text-ink-soft">{t("provincesLede")}</p>
+          <dl className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {courier.map((z) => (
+              <div key={z.key} className="rounded-lg border border-line bg-white p-5">
+                <dt className="font-display text-[1.25rem] font-medium leading-tight text-ink">{z.name}</dt>
+                <dd className="mt-1 text-sm text-muted">{z.provinces.join(" · ")}</dd>
+                <dd className="mt-2 text-sm text-ink-soft">{z.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       <section className="container-x pb-16">
         <div className="band-cream flex flex-col gap-4 rounded-lg p-7 sm:flex-row sm:items-center sm:justify-between">

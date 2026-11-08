@@ -39,6 +39,87 @@ shippable (§3.8).
 **Still open:** everything owner-only in §2, §4, §5.1, §6, and the About/Corporate copy in §3.7
 (it needs facts only you have: your name, story, minimums, terms).
 
+## Status, 8 Nov 2026: occasion and city targeting
+
+**Target set by the owner:** "best gift hamper", "gift hamper near me", "custom gift hamper near
+me", birthday / anniversary / surprise / wedding and marriage / function hampers, and above all
+**Christmas hampers**, in Mississauga, Brampton, Milton, Malton, Oakville, Toronto, Etobicoke and
+nearby, plus Canada-wide for shipped baskets. On Google, and in ChatGPT and the other assistants.
+
+**Built in code (needs deploy; `tsc`, lint and 316 tests pass):**
+
+- **Two new city pages:** `/delivery/etobicoke` (M8/M9, routed by the Toronto zone) and
+  `/delivery/malton` (L4T, routed by the Mississauga zone), each with its own intro and
+  neighbourhood list in both languages. Both are same-day at today's zones. They enter the
+  sitemap, `llms.txt`, the delivery hub and the `LocalBusiness` `areaServed` list automatically.
+- **Occasion pages now have written content** (`src/lib/occasion-seo.ts`, rendered by
+  `OccasionSeoBlock` under the product grid): Christmas, Holiday, Birthday, Anniversary, Wedding
+  (covers marriage, engagement, mehndi/sangeet and other functions), Congratulations (functions,
+  pujas, house parties), Housewarming, Just Because (surprise hampers) and Thank You. Each has a
+  two-paragraph intro, a city link rail to every delivery page, three or four FAQs with FAQPage
+  JSON-LD, and a search-led meta title and description (EN + FR). The cutoff, local fee and the
+  list of same-day cities are filled from the live delivery zones at render time, so the copy
+  can never promise what checkout refuses; same-day sentences disappear if the Mississauga zone
+  loses its cutoff. A stored SEO title/description on the collection in admin still overrides
+  the code copy (Christmas has one today: "Christmas Gift Baskets & Hampers | Mississauga, GTA,
+  Canada"; clear it in Admin → Collections to use the longer code title).
+- **City pages** gained a quotable one-line fact under the intro ("Velvéa delivers gift baskets
+  and hampers to any Brampton address for $14.99, same day on orders placed before 12:00 p.m.
+  Eastern, by our own team"), an "Hampers for every occasion in {city}" card grid (Christmas,
+  birthday, anniversary, wedding, corporate, custom) and two more FAQs: Christmas/holiday
+  delivery in the city, and custom hampers in the city. All from the zones.
+- **Delivery hub** lists courier shipping by province (name, lead time, fee, from the zones) and
+  its title now says "shipped across Canada". `/shipping` is titled "Gift basket delivery and
+  shipping across Canada" instead of "Delivery". `/custom-basket` is titled "Custom gift
+  hampers, made to order in Mississauga".
+- **FAQ** (`/faq`, FAQPage JSON-LD) gained four answers: which cities we deliver to (names every
+  target city), Canada-wide shipping, same-day Christmas hampers, alcohol-free. The homepage
+  shows the first six as a teaser; `/faq` shows all ten.
+- **`llms.txt`** now opens with the same-day sentence built from the zones, lists each city page
+  with its current offer, lists courier shipping by province, and has a "Hampers by occasion"
+  section with the nine occasion pages and their one-line descriptions.
+
+**Added the same day, owner request:** three more occasions with written content and search-led
+titles: **Milestone Birthday** (`/occasions/milestone-birthday`, 18th to 90th, the upper end of the
+range), **Proposal & Engagement** (`/occasions/proposal`, hotel and restaurant delivery, the
+newly engaged couple, roka) and **Real Estate Closing** (`/occasions/real-estate-closing`, agents,
+brokers, lawyers; the live closing-gifts guide will point at it). The nav entries are in code;
+the collections themselves are created by `npm run occasions:collections -- --write`
+(`scripts/occasion-collections.ts`, report-only without the flag: 14, 12 and 13 baskets picked
+from the live catalogue). **Run the script before or with the deploy**, otherwise the three menu
+links open empty, noindex pages. Each city page's occasion grid links all three.
+
+**Why not one page per city per occasion.** "Christmas hampers Brampton" pages with a swapped
+city name are the doorway pattern Google demotes, and they would split the signals of the
+Christmas page across twelve thin copies. The occasion page carries the content and links to
+every city; the city page names every occasion and links back. That is the combination a
+search engine and an assistant both read as one entity covering both.
+
+**Owner actions that move these queries (nothing in code does this):**
+
+1. **Business Profile, this week.** Primary category *Gift basket store*; add *Etobicoke* and
+   *Malton* to the service areas so they match the new pages; add every Christmas basket as a
+   product with its velvea.ca link; one post a week through December linking to
+   `/occasions/christmas` ("Christmas hampers, same-day in Mississauga and the GTA, order by
+   noon"). The map pack is what answers "near me" and "best", and it ranks the profile, not the
+   site.
+2. **Reviews.** Keep the delivered-email ask running; aim for 25+ by Christmas. Reviews that
+   mention the city and the occasion ("Christmas hamper", "Brampton", "same day") are what the
+   profile ranks on for exactly these searches.
+3. **Citations** (§4): Bing Places and Apple Business Connect first, then Yelp, YellowPages.ca,
+   Facebook. Use the service-area list including Etobicoke and Malton.
+4. **Lists and press** (§5.1), now with a Christmas angle: pitch insauga, BramptonGuardian /
+   Mississauga.com community pages, Narcity and BlogTO's "best Christmas gift baskets" refreshes
+   before 20 Nov with the Christmas page, prices and the same-day promise. Assistants answer
+   "best gift hampers in Mississauga" from those lists; the site cannot put itself on them.
+5. **Reddit**: r/mississauga, r/BramptonON, r/askTO answers from a named personal account when
+   someone asks where to get a hamper. Genuine replies only.
+6. **Merchant Center** free listings (§6) so the Christmas baskets show in the Shopping tab.
+
+**Measure** (§7): Search Console queries containing "hamper", "christmas", each city name;
+Business Profile search terms; the monthly five-question assistant check, now including
+"christmas hampers mississauga", "wedding hampers brampton" and "gift hampers etobicoke".
+
 ---
 
 ## 1. Summary

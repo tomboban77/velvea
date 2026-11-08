@@ -377,6 +377,22 @@
       {
         "q": "Puis-je annuler, retourner ou échanger ma commande ?",
         "a": "Toutes les ventes sont finales. Chaque panier est périssable et préparé à la commande pour un destinataire, nous ne pouvons donc accepter ni retour, ni échange, ni annulation une fois la commande passée. Si nous faisons une erreur et qu'un panier arrive endommagé, incomplet ou non conforme, écrivez-nous dans les 48 heures suivant la livraison avec une photo et nous y remédierons."
+      },
+      {
+        "q": "Dans quelles villes livrez-vous des paniers-cadeaux ?",
+        "a": "Notre propre équipe livre à Mississauga et Malton, Toronto et Etobicoke, Brampton, Oakville, Milton, Burlington, Georgetown, Bolton, Vaughan, Markham et Richmond Hill, le jour même si vous commandez avant l'heure limite indiquée à la caisse. La région de Durham et les villes au nord de Toronto sont livrées le lendemain. Hamilton, Guelph et le reste de l'Ontario sont desservis par transporteur avec suivi. Chaque ville a sa propre page de livraison avec les frais et l'heure limite en vigueur."
+      },
+      {
+        "q": "Expédiez-vous des paniers-cadeaux partout au Canada ?",
+        "a": "Oui. Les paniers expédiables voyagent par transporteur avec suivi dans le reste de l'Ontario, les provinces de l'Atlantique, le Manitoba, la Saskatchewan, l'Alberta et la Colombie-Britannique, habituellement en deux à six jours ouvrables. Le Québec arrive bientôt. Les paniers frais, réfrigérés et fleuris sont réservés à la livraison locale."
+      },
+      {
+        "q": "Puis-je faire livrer un panier de Noël le jour même ?",
+        "a": "Dans nos villes desservies le jour même, oui : commandez avant l'heure limite et un panier de Noël est remis en main propre le soir même. Les journées de décembre se remplissent vite; pour une date précise, choisissez-la à la caisse le plus tôt possible. Les commandes par transporteur pour le reste du Canada devraient être passées avant la deuxième semaine de décembre."
+      },
+      {
+        "q": "Vos paniers-cadeaux contiennent-ils de l'alcool ?",
+        "a": "Non. Chaque panier Velvéa est sans alcool : il peut donc aller à n'importe quel collègue, client, famille ou foyer sans hésitation. La page de chaque panier indique exactement ce qu'il contient."
       }
     ]
   },
@@ -638,16 +654,16 @@
     "giftCardsTitle": "Cartes-cadeaux",
     "giftCardsDescription": "Offrez le choix avec une carte-cadeau Velvéa, échangeable sur n'importe quel panier.",
     "productFallbackTitle": "Panier-cadeau",
-    "deliveryTitle": "Livraison de paniers-cadeaux à Mississauga, Toronto et dans le Grand Toronto",
-    "deliveryDescription": "Livraison le jour même de paniers-cadeaux à Mississauga, Brampton, Toronto, Oakville, Vaughan, Markham et dans tout le Grand Toronto. Expédition avec suivi partout au Canada. Ramassage gratuit à Mississauga, sur rendez-vous.",
+    "deliveryTitle": "Livraison de paniers-cadeaux à Mississauga, Toronto et dans le Grand Toronto, expédition partout au Canada",
+    "deliveryDescription": "Livraison le jour même de paniers-cadeaux à Mississauga, Malton, Brampton, Toronto, Etobicoke, Oakville, Milton, Vaughan et Markham. Expédition avec suivi partout au Canada. Ramassage gratuit à Mississauga, sur rendez-vous.",
     "cityTitle": "Paniers-cadeaux et coffrets livrés à {city}",
     "citySearchTitle": "Livraison de paniers-cadeaux et coffrets à {city}",
     "citySearchTitleSameDay": "Livraison de paniers-cadeaux à {city}, le jour même",
     "cityDescriptionSameDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario. Commandez avant {time} pour une livraison le jour même dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionNextDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario, par notre équipe dès le lendemain, à partir de {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionShipping": "Paniers-cadeaux composés à la main et expédiés à {city}, en Ontario, par transporteur avec suivi dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
-    "customRequestTitle": "Demande de panier cadeau sur mesure",
-    "customRequestDescription": "Envoyez à Velvéa la liste des produits que vous aimeriez : nous les disposons à la main dans notre style, avec un prix final d’abord. Préparé à Mississauga, livré dans la RGT et expédié partout au Canada."
+    "customRequestTitle": "Paniers-cadeaux sur mesure, préparés à Mississauga",
+    "customRequestDescription": "Paniers-cadeaux sur mesure pour toute occasion : dites à Velvéa ce que vous voulez y mettre et nous l'évaluons à la main, sans rien facturer avant votre approbation. Préparés à Mississauga, livrés dans le Grand Toronto et expédiés partout au Canada."
   },
   "delivery": {
     "eyebrow": "Zones de livraison",
@@ -696,7 +712,38 @@
     "faqQ3": "Qui livre mon panier et comment saurai-je qu'il est arrivé ?",
     "faqA3Local": "Notre propre équipe, en main propre. Dans nos zones locales, les paniers ne passent jamais par un transporteur, et vous recevez un courriel dès que le panier est livré.",
     "faqA3Shipping": "Un transporteur avec suivi. Vous recevez le numéro de suivi par courriel à l'expédition et une confirmation à la livraison.",
-    "otherCities": "Autres zones de livraison"
+    "otherCities": "Autres zones de livraison",
+    "glanceSameDay": "Velvéa livre des paniers-cadeaux à toute adresse de {city} pour {fee}, le jour même pour les commandes passées avant {time} (heure de l'Est), par notre propre équipe.",
+    "glanceNextDay": "Velvéa livre des paniers-cadeaux à toute adresse de {city} pour {fee}, par notre propre équipe, le prochain jour disponible.",
+    "glanceShipping": "Velvéa expédie des paniers-cadeaux à {city} par transporteur avec suivi pour {fee}, livrés en {min} à {max} jours ouvrables.",
+    "occasionHampersH": "Des paniers pour chaque occasion à {city}",
+    "occasionHampersLede": "Les mêmes paniers, choisis pour le moment. Chacun est emballé à la main à Mississauga après votre commande, et aucun ne contient d'alcool.",
+    "occChristmas": "Paniers de Noël",
+    "occChristmasSub": "Paniers gourmet, chocolat et café pour la famille, les voisins, les clients et les équipes, livrés à {city} tout le mois de décembre.",
+    "occBirthday": "Paniers d'anniversaire",
+    "occBirthdaySub": "Des gâteries à ouvrir le soir même, avec votre message imprimé sur une carte à l'intérieur.",
+    "occAnniversary": "Paniers d'anniversaire de mariage",
+    "occAnniversarySub": "Chocolat, roses, spa et gourmet pour un conjoint, ou un panier à partager pour les parents.",
+    "occWedding": "Paniers de mariage",
+    "occWeddingSub": "Pour les mariés, les hôtes, le cortège et chaque fête avant le grand jour, livrés à domicile, à l'hôtel ou à la salle à {city}.",
+    "occCorporate": "Paniers d'entreprise",
+    "occCorporateSub": "Cadeaux pour clients et employés avec prix de volume, cartes à votre image et livraison à plusieurs adresses à {city}.",
+    "occCustom": "Paniers sur mesure",
+    "occCustomSub": "Décrivez ce que vous voulez y mettre, nous l'évaluons à la main, puis nous le livrons à {city} comme toute autre commande.",
+    "faqQ4": "Livrez-vous des paniers de Noël et des fêtes à {city} ?",
+    "faqA4SameDay": "Oui. Les paniers de Noël partent avec nos livraisons habituelles à {city} : commandez avant {time} (heure de l'Est) pour le jour même, ou choisissez une date de décembre à la caisse. Les dates ouvertes s'affichent au moment de payer, et décembre se remplit vite : réservez tôt pour un jour précis.",
+    "faqA4NextDay": "Oui. Les paniers de Noël sont livrés à {city} par notre propre équipe le prochain jour disponible. Choisissez une date de décembre à la caisse; les dates ouvertes s'affichent au moment de payer, et décembre se remplit vite : réservez tôt pour un jour précis.",
+    "faqA4Shipping": "Oui, par transporteur avec suivi, en {min} à {max} jours ouvrables. Commandez avant la deuxième semaine de décembre pour que le panier arrive avant Noël.",
+    "faqQ5": "Puis-je commander un panier-cadeau sur mesure pour une livraison à {city} ?",
+    "faqA5": "Oui. Envoyez une demande de panier sur mesure avec les produits, l'occasion et le budget que vous avez en tête. Nous répondons avec un prix final, rien n'est facturé avant votre approbation, et le panier fini est livré à {city} comme toute autre commande.",
+    "provincesH": "Expédition par transporteur, par province",
+    "provincesLede": "Les paniers expédiables voyagent dans une boîte protectrice par transporteur avec suivi. Les frais couvrent le premier panier d'une commande; le coût exact pour une adresse s'affiche à la caisse.",
+    "occMilestone": "Anniversaires marquants",
+    "occMilestoneSub": "Les grands, de 18 à 90 ans : paniers et coffrets de luxe livrés à {city} à la date de votre choix.",
+    "occProposal": "Demande en mariage et fiançailles",
+    "occProposalSub": "Roses, chocolat et paniers spa pour la question et pour le couple qui vient de dire oui, livrés à domicile, à l'hôtel ou au restaurant à {city}.",
+    "occClosing": "Cadeaux de clôture immobilière",
+    "occClosingSub": "Paniers de bienvenue pour courtiers, livrés à la nouvelle adresse à {city} le jour de la clôture."
   },
   "customRequest": {
     "eyebrow": "Panier sur mesure",
@@ -770,5 +817,14 @@
       "general": "Pas ce panier ? Envoyez une demande générale",
       "viewBasket": "Voir le panier"
     }
+  },
+  "occasionSeo": {
+    "deliveryLink": "Zones de livraison et heures limites",
+    "customLink": "Envie d'autre chose ? Demandez un panier sur mesure",
+    "citiesH": "Livré par notre propre équipe à",
+    "citiesLedeSameDay": "Le jour même si vous commandez avant {time} (heure de l'Est). Chaque page de ville indique les frais et l'heure limite en vigueur.",
+    "citiesLede": "Chaque page de ville indique les options de livraison, les frais et l'heure limite en vigueur.",
+    "canadaNote": "Partout ailleurs en Ontario, dans les Prairies, en Colombie-Britannique et dans les provinces de l'Atlantique : expédition par transporteur avec suivi pour les paniers expédiables.",
+    "faqH": "Questions fréquentes"
   }
 }

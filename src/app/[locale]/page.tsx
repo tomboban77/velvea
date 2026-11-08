@@ -127,7 +127,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <Atelier />
       <Reviews />
       <Journal />
-      <Faq />
+      <Faq limit={6} />
     </>
   );
 }

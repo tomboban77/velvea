@@ -7,9 +7,15 @@ import { Plus, Minus, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveFaqItems, type FaqItem } from "@/lib/faq";
 
-export function Faq({ standalone = false }: { standalone?: boolean }) {
+/**
+ * `limit` trims the list on the homepage, where the FAQ is a teaser; /faq
+ * (standalone) always shows every item, and its FAQPage JSON-LD is built
+ * from the same full list.
+ */
+export function Faq({ standalone = false, limit }: { standalone?: boolean; limit?: number }) {
   const t = useTranslations("faq");
-  const items = resolveFaqItems(t.raw("items") as FaqItem[]);
+  const all = resolveFaqItems(t.raw("items") as FaqItem[]);
+  const items = limit && !standalone ? all.slice(0, limit) : all;
   const [open, setOpen] = useState(0);
 
   return (

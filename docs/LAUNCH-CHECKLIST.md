@@ -232,10 +232,14 @@ verification in Google's hands (up to 5 days, no promised date).
 - [ ] **Opening hours: confirm on the profile.** The live /contact page now says Mon–Sun 8am–6pm ET
       (checked 29 Oct 2026), which matches what the Business Profile was set to. Tick once the
       profile is confirmed unchanged.
-- [ ] **Work through [SEO-AUDIT.md](./SEO-AUDIT.md)** (29 Oct 2026). Code and product-copy fixes are
-      done (see its Status section). Open: set the Google review link in Admin -> Settings, set
-      `INDEXNOW_KEY` in Vercel, then the owner-only local work (Business Profile category
-      "Gift basket store", reviews, citations, press, Merchant Center, About/Corporate copy).
+- [ ] **Work through [SEO-AUDIT.md](./SEO-AUDIT.md)** (29 Oct 2026, updated 8 Nov). Code and
+      product-copy fixes are done (see its Status sections). 8 Nov added the occasion content
+      (Christmas, birthday, anniversary, wedding, functions, surprise, thank-you), the Etobicoke
+      and Malton pages, Canada-wide shipping copy, FAQ and `llms.txt` facts from the zones.
+      Open: set the Google review link in Admin -> Settings, set `INDEXNOW_KEY` in Vercel, then
+      the owner-only local work (Business Profile category "Gift basket store" + Etobicoke and
+      Malton service areas + weekly Christmas posts, reviews, citations, press lists before
+      20 Nov, Merchant Center, About/Corporate copy).
 - [ ] **Decide whether to track inventory.** All 15 active products are `inventory = null`
       (unlimited), so the "Only N left" and sold-out UI — which is built and correct — never
       appears. Set numbers only where stock is genuinely limited.

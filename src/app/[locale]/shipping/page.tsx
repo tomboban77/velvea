@@ -7,7 +7,7 @@ import { getZonesForDisplay } from "@/lib/zones";
 import { t } from "@/lib/i18n-content";
 
 const EN = {
-  metaTitle: "Delivery",
+  metaTitle: "Gift basket delivery and shipping across Canada",
   eyebrow: "Support",
   title: "Delivery",
   intro: "Where we deliver, what it costs, and how soon your gift arrives.",
@@ -50,7 +50,7 @@ const EN = {
 };
 
 const FR: typeof EN = {
-  metaTitle: "Livraison",
+  metaTitle: "Livraison et expédition de paniers-cadeaux partout au Canada",
   eyebrow: "Soutien",
   title: "Livraison",
   intro: "Où nous livrons, ce que cela coûte et quand votre cadeau arrive.",

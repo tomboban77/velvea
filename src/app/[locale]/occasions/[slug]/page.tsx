@@ -1,9 +1,11 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/shop/Listing";
+import { OccasionSeoBlock } from "@/components/shop/OccasionSeoBlock";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { t as tc } from "@/lib/i18n-content";
 import { OCCASIONS, HOLIDAYS } from "@/lib/nav";
+import { occasionSeo } from "@/lib/occasion-seo";
 import { collectionJsonLd, collectionMetadata, collectionTitle, loadCollection, totalPages, type CollectionSearch } from "@/lib/collection-page";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +37,12 @@ export default async function OccasionPage({ params, searchParams }: { params: P
     ? `Des paniers attentionnés pour ${title.toLowerCase()}, composés à la main et expédiés partout au Canada.`
     : `Thoughtful gift baskets for ${title.toLowerCase()}, composed by hand and shipped across Canada.`;
   const heading = locale === "fr" ? `Paniers · ${title}` : `${title} gift baskets`;
+  // The editorial block (intro, city links, FAQ + FAQPage markup) belongs to
+  // the canonical page only: filtered and paginated views are noindex or
+  // canonicalised elsewhere, and repeating the FAQ markup on them would
+  // publish the same questions under several URLs.
+  const editorial = occasionSeo(slug);
+  const showEditorial = Boolean(editorial) && !data.filtered && data.page === 1 && data.products.length > 0;
 
   return (
     <>
@@ -55,7 +63,9 @@ export default async function OccasionPage({ params, searchParams }: { params: P
           { label: title, href: `${BASE}/${slug}` },
         ]}
         pagination={{ page: data.page, totalPages: pages, basePath: `${BASE}/${slug}`, params: { sort: sp.sort, min: sp.min, max: sp.max, recipient: sp.recipient } }}
-      />
+      >
+        {showEditorial && editorial && <OccasionSeoBlock entry={editorial} locale={locale} />}
+      </Listing>
     </>
   );
 }
