@@ -1,6 +1,6 @@
 import { getSettings } from "@/lib/settings";
 import { CITY_PAGES, offerFor, sameDayFacts } from "@/lib/cities";
-import { OCCASIONS, RECIPIENTS, CATEGORIES } from "@/lib/nav";
+import { OCCASIONS, HOLIDAYS, RECIPIENTS, CATEGORIES } from "@/lib/nav";
 import { OCCASION_SEO, joinNames } from "@/lib/occasion-seo";
 import { siteOrigin } from "@/lib/seo";
 import { getPublishedArticles, getSitemapCollections } from "@/lib/queries";
@@ -50,7 +50,7 @@ export async function GET() {
   // Occasion pages with written introductions, one line each, so an assistant
   // answering "christmas hampers in Mississauga" has the page and the gist.
   const occasionLines = OCCASION_SEO.filter(has("OCCASION"))
-    .map((o) => `- [${OCCASIONS.find((n) => n.slug === o.slug)?.en ?? o.slug} hampers](${url(`/occasions/${o.slug}`)}): ${o.description.en}`)
+    .map((o) => `- [${[...OCCASIONS, ...HOLIDAYS].find((n) => n.slug === o.slug)?.en ?? o.slug} hampers](${url(`/occasions/${o.slug}`)}): ${o.description.en}`)
     .join("\n");
 
   const guides = await getPublishedArticles({ limit: 100 });
