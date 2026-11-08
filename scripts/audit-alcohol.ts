@@ -29,12 +29,16 @@ const TERMS = [
  * is a Bath & Body Works candle scent, not a drink; it sits in the Rosé Glow
  * basket and would otherwise flag on every run. "Champagne-gold" and
  * "champagne satin" are ribbon colours (Blush & Indulgence hamper, Gourmet
- * Signature Gift Tray).
+ * Signature Gift Tray). "Wine gums" are gummy sweets with no wine in them
+ * (Festive Holiday Gourmet Gift Box). The ice wine milk chocolates in the
+ * same box were cleared by the owner on 7 Nov 2026 as confectionery; clear
+ * any other ice-wine product separately rather than widening this to "ice wine".
  */
 const CLEARED = [
   "non-alcoholic", "non alcoholic", "alcohol-free", "alcohol free", "nonalcoholic",
   "de-alcoholised", "dealcoholized",
   "champagne toast", "champagne-gold", "champagne gold", "champagne satin",
+  "wine gums", "ice wine milk chocolates",
 ];
 
 function hits(text: string): string[] {
