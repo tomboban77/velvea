@@ -17,6 +17,7 @@ import { sympathyGifts } from "./sympathy-gifts";
 import { getWellGifts } from "./get-well-gifts";
 import { housewarmingGifts } from "./housewarming-gifts";
 import { christmasHostGifts } from "./christmas-host-gifts";
+import { retirementGifts } from "./retirement-gifts";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -42,6 +43,7 @@ export const GUIDES: GuideSeed[] = [
   getWellGifts,
   housewarmingGifts,
   christmasHostGifts,
+  retirementGifts,
 ];
 
 export type { GuideSeed };

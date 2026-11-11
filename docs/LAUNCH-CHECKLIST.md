@@ -173,6 +173,12 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       tone). Same editorial audit; sanitiser changed nothing; links resolve; 200 in EN and FR; the
       shared guide cover was set on all four. The host guide states Christmas Day 2026 is a Friday
       and the 21–23 Dec delivery window, so it joins the yearly date update below.
+- [x] **Retirement guide published live 10 Nov 2026:** `retirement-gift-ideas-coworker-boss-parent`
+      (office collection, company long-service gift deferring to the CRA guide, boss, parent, spend
+      table, card wording). Same audit; 200 in EN and FR; shared cover set. The same day, a
+      script-run audit of all 23 published articles (both locales, title/excerpt/body/SEO fields)
+      found no emoji, em dashes, stock AI words, summary headings, marketing clichés or repeated
+      bold-lead lists. Re-run the same checks on any future article before publishing.
 - [ ] The Christmas guide hard-codes the 2026 calendar (Friday 25 Dec, the 14–18 Dec office week,
       the "order by" table) and the Diwali etiquette guide the 8 Nov date: update every autumn in
       both locales with the Diwali hamper guide, then re-run with `--write --force`.
