@@ -23,8 +23,7 @@ import { formatMoney } from "@/lib/utils";
 import { localBusinessJsonLd, pageMetadata, siteOrigin } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CITY_PAGES } from "@/lib/cities";
-
-const UNDER_CENTS = 10000;
+import { UNDER_CENTS } from "@/lib/price-steps";
 
 // Hourly ISR: the occasions rail promotes holidays on a dated schedule
 // (lib/nav.ts SEASONAL), and a holiday handover should not wait for the next
@@ -92,8 +91,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       label: t("tabUnder", { amount: money(UNDER_CENTS) }),
       href: `/baskets?max=${UNDER_CENTS}`,
       seeAll: t("seeAll", { label: t("tabUnder", { amount: money(UNDER_CENTS) }).toLowerCase() }),
-      products: view(all.filter((p) => p.priceCents < UNDER_CENTS)),
-      count: all.filter((p) => p.priceCents < UNDER_CENTS).length,
+      products: view(all.filter((p) => p.priceCents <= UNDER_CENTS)),
+      count: all.filter((p) => p.priceCents <= UNDER_CENTS).length,
     },
   ];
   const tabs: CollectionTab[] = candidates

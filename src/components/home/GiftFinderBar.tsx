@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
+import { formatMoney } from "@/lib/utils";
+import { OVER_CENTS, PRICE_STEPS } from "@/lib/price-steps";
 
 /** Native selects keep the gift finder easy to use on touch devices. */
 const WHO: Record<string, { en: string; fr: string }> = {
@@ -32,13 +34,8 @@ const OCC: Record<string, { en: string; fr: string }> = {
   holiday: { en: "The holidays", fr: "Les fêtes" },
 };
 
-const BUDGET: Record<string, { en: string; fr: string }> = {
-  "": { en: "Any budget", fr: "Tout budget" },
-  "7500": { en: "Under $75", fr: "Moins de 75 $" },
-  "12500": { en: "Under $125", fr: "Moins de 125 $" },
-  "20000": { en: "Under $200", fr: "Moins de 200 $" },
-  "999999": { en: "$200 and up", fr: "200 $ et plus" },
-};
+/** Sentinel for the open-ended bucket; it becomes `min=` rather than `max=`. */
+const OVER = "over";
 
 export function GiftFinderBar() {
   const t = useTranslations("finder");
@@ -51,12 +48,18 @@ export function GiftFinderBar() {
 
   const opts = (m: Record<string, { en: string; fr: string }>): { value: string; label: string }[] =>
     Object.entries(m).map(([value, l]) => ({ value, label: fr ? l.fr : l.en }));
+  const money = (c: number) => formatMoney(c, fr ? "fr-CA" : "en-CA").replace(/[.,]00/, "");
+  const budgets: { value: string; label: string }[] = [
+    { value: "", label: t("budgetAny") },
+    ...PRICE_STEPS.map((p) => ({ value: String(p), label: t("under", { amount: money(p) }) })),
+    { value: OVER, label: t("over", { amount: money(OVER_CENTS) }) },
+  ];
 
   function go(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (max && max !== "999999") params.set("max", max);
-    if (max === "999999") params.set("min", "20000");
+    if (max === OVER) params.set("min", String(OVER_CENTS));
+    else if (max) params.set("max", max);
     let base = "/baskets";
     if (occ) {
       base = `/occasions/${occ}`;
@@ -91,7 +94,7 @@ export function GiftFinderBar() {
           <label>
             <span>{t("budget")}</span>
             <select className="field" value={max} onChange={(e) => setMax(e.target.value)}>
-              {opts(BUDGET).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              {budgets.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </label>
           <button type="submit" className="btn btn-primary">

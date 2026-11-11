@@ -583,6 +583,7 @@
     "price": "Price",
     "priceAll": "Any price",
     "under": "Under {amount}",
+    "over": "{amount} and up",
     "clear": "Clear",
     "results": "{count} baskets",
     "result": "{count} basket",

@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Search, X } from "lucide-react";
 import { Select } from "@/components/ui/Select";
 import { formatMoney, cn } from "@/lib/utils";
+import { OVER_CENTS, PRICE_STEPS } from "@/lib/price-steps";
 
-const PRICE_STEPS = [7500, 12500, 20000];
-
-/** Search + price chips + sort, driven by URL params (`q`, `max`, `sort`). */
+/** Search + price chips + sort, driven by URL params (`q`, `min`, `max`, `sort`). */
 export function FilterBar({ total, searchable = false }: { total: number; searchable?: boolean }) {
   const t = useTranslations("listing");
   const router = useRouter();
@@ -18,9 +17,16 @@ export function FilterBar({ total, searchable = false }: { total: number; search
   const params = useSearchParams();
   const locale = useLocale();
   const currentSort = params.get("sort") ?? "featured";
-  const currentMax = params.get("max") ?? "";
+  const currentMax = Number(params.get("max")) || 0;
+  const currentMin = Number(params.get("min")) || 0;
   const currentQ = params.get("q") ?? "";
   const [q, setQ] = useState(currentQ);
+  // The URL is the source of truth: back/forward or a link that clears `q`
+  // must empty the box too, not leave the previous term sitting in it.
+  useEffect(() => setQ(currentQ), [currentQ]);
+
+  // A price bucket is either a cap (`max`) or a floor (`min`), never both.
+  const priceActive = (p: { max?: number; min?: number }) => currentMax === (p.max ?? 0) && currentMin === (p.min ?? 0);
 
   function update(next: Record<string, string | null>) {
     const sp = new URLSearchParams(params.toString());
@@ -28,6 +34,9 @@ export function FilterBar({ total, searchable = false }: { total: number; search
       if (!v || v === "featured") sp.delete(k);
       else sp.set(k, v);
     }
+    // Any change to the filters or sort restarts at page 1: a stale `page=3`
+    // past the end of the new result set is a 404 on the listing pages.
+    sp.delete("page");
     const qs = sp.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   }
@@ -71,14 +80,17 @@ export function FilterBar({ total, searchable = false }: { total: number; search
       )}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
         <span className="mr-1 shrink-0 text-[0.78rem] font-semibold text-ink-soft">{t("price")}</span>
-        <button onClick={() => update({ max: null })} className={cn("chip", !currentMax && "is-active")}>
+        <button onClick={() => update({ max: null, min: null })} className={cn("chip", priceActive({}) && "is-active")}>
           {t("priceAll")}
         </button>
         {PRICE_STEPS.map((p) => (
-          <button key={p} onClick={() => update({ max: String(p) })} className={cn("chip", currentMax === String(p) && "is-active")}>
+          <button key={p} onClick={() => update({ max: String(p), min: null })} className={cn("chip", priceActive({ max: p }) && "is-active")}>
             {t("under", { amount: money(p) })}
           </button>
         ))}
+        <button onClick={() => update({ max: null, min: String(OVER_CENTS) })} className={cn("chip", priceActive({ min: OVER_CENTS }) && "is-active")}>
+          {t("over", { amount: money(OVER_CENTS) })}
+        </button>
       </div>
 
       <div className="flex items-center justify-between gap-5 sm:justify-end">
