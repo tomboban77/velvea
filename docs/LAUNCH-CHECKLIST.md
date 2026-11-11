@@ -165,6 +165,14 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       "To sum up" / "En résumé" closings, the remaining body em dashes, stock words (truly,
       thoughtful, indulge, meaningful…), and cut bold-lead bullet lists to one per guide, with the
       rest turned into prose. Facts and links unchanged. For future guides, the same rules apply.
+- [x] **Four more guides published live 10 Nov 2026** via `npm run seed:guides -- --write --publish`,
+      chosen from evergreen gift searches the site had no page for: `sympathy-gift-ideas-what-to-send-when-someone-dies`
+      (first SYMPATHY article), `get-well-gift-ideas-after-surgery-illness`,
+      `housewarming-gift-ideas-how-much-to-spend` and `christmas-host-gifts-what-to-bring-to-christmas-dinner`
+      (host angle; the other four Christmas guides cover the list, who-gets-what, work and corporate
+      tone). Same editorial audit; sanitiser changed nothing; links resolve; 200 in EN and FR; the
+      shared guide cover was set on all four. The host guide states Christmas Day 2026 is a Friday
+      and the 21–23 Dec delivery window, so it joins the yearly date update below.
 - [ ] The Christmas guide hard-codes the 2026 calendar (Friday 25 Dec, the 14–18 Dec office week,
       the "order by" table) and the Diwali etiquette guide the 8 Nov date: update every autumn in
       both locales with the Diwali hamper guide, then re-run with `--write --force`.
@@ -216,8 +224,11 @@ verification in Google's hands (up to 5 days, no promised date).
 
 ## 5. Search and analytics
 
-- [ ] **Set `CRON_SECRET` in two places** — Vercel (Production) and the GitHub repository secrets.
-      The same value in both. Abandoned-cart recovery refuses to run until it exists: an endpoint
+- [x] **Set `CRON_SECRET` in two places** — Vercel (Production) and the GitHub repository secrets.
+      The same value in both. Done 24 Sept; rotated 9 Nov 2026 after a one-off failed run
+      (214 green runs before it, so it was a transient timeout, not a missing secret). Vercel
+      stores the variable as sensitive, so its value cannot be read back: to rotate, set a new
+      value in both places and redeploy, then Run workflow from the Actions tab to confirm. Abandoned-cart recovery refuses to run until it exists: an endpoint
       that emails customers is not left open. Redeploy after adding it to Vercel; env vars only
       reach a new deployment.
       **Why two places:** the Vercel account is on the Hobby plan, which runs cron at most once a
