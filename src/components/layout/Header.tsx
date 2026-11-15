@@ -12,6 +12,7 @@ import { useCart } from "@/components/cart/CartProvider";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
 import { formatMoney, cn } from "@/lib/utils";
 import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
+import { GIFT_STYLES_ANCHOR } from "@/lib/gift-styles";
 
 export type HeaderFeatured = {
   slug: string;
@@ -96,6 +97,8 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
   const plain: { href: string; label: string }[] = [
     { href: "/baskets", label: t("nav.allBaskets") },
     ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
+    // Jumps to the gift styles section of the home page, from any page.
+    { href: `/#${GIFT_STYLES_ANCHOR}`, label: t("nav.giftStyles") },
     { href: "/custom-basket", label: t("nav.customRequest") },
     { href: "/corporate", label: t("nav.corporate") },
   ];

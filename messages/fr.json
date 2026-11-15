@@ -46,7 +46,8 @@
     "shopAll": "Tous les paniers",
     "searchShort": "Rechercher",
     "browseAll": "Tout parcourir",
-    "customRequest": "Panier sur mesure"
+    "customRequest": "Panier sur mesure",
+    "giftStyles": "Styles de cadeaux"
   },
   "common": {
     "shopGiftBaskets": "Voir les paniers",
@@ -817,7 +818,31 @@
       "placeholder": "ex. Pourriez-vous remplacer la bougie par plus de chocolat ? Et sans noix, s’il vous plaît.",
       "general": "Pas ce panier ? Envoyez une demande générale",
       "viewBasket": "Voir le panier"
+    },
+    "style": {
+      "eyebrow": "Style de cadeau",
+      "title": "Faites de ce style le vôtre",
+      "lede": "Dites-nous ce que vous aimeriez à l’intérieur et ce que vous voulez changer. Nous le composons dans ce style et vous envoyons un prix final avant toute facturation.",
+      "cardLabel": "Votre demande part de",
+      "section": "Votre version",
+      "label": "Que souhaitez-vous y mettre ?",
+      "hint": "Indiquez les articles, marques, couleurs ou fleurs souhaités, ce qu’il faut éviter, et les touches personnelles comme des photos ou un message.",
+      "placeholder": "ex. Des roses rouges et blanches, des truffes Lindt, une photo de nous encadrée et une bougie parfumée. Sans noix, s’il vous plaît.",
+      "general": "Pas ce style ? Envoyez une demande générale"
     }
+  },
+  "styles": {
+    "eyebrow": "Style sur mesure",
+    "ref": "Style {code}",
+    "title": "Partez d’un style et faites-le vôtre",
+    "lede": "Vous ne savez pas quelle allure donner à votre cadeau ? Ce sont des styles, pas des paniers fixes, et chacun peut être réalisé pour un anniversaire de mariage, un anniversaire, la Saint-Valentin ou tout cadeau destiné à une personne chère. Choisissez celui qui vous plaît, dites-nous ce que vous voulez à l’intérieur et nous vous enverrons un prix avant toute facturation.",
+    "conceptBadge": "Concept de design",
+    "conceptTitle": "Ce sont des concepts de design, pas des paniers finis",
+    "note": "Chaque photo montre une façon de présenter un cadeau. Votre panier final dépend de votre demande : les articles, les marques, les couleurs et le texte de la carte sont choisis avec vous, et le résultat peut donc différer de la photo. Les styles avec fleurs fraîches demandent un préavis de deux jours.",
+    "conceptShort": "Concept de design. Votre panier final est composé selon votre demande et peut différer de cette photo.",
+    "priced": "Prix sur devis",
+    "ideasLabel": "À personnaliser",
+    "cta": "Personnaliser ce style"
   },
   "occasionSeo": {
     "deliveryLink": "Zones de livraison et heures limites",

@@ -142,6 +142,41 @@ describe("POST /api/custom-basket", () => {
     expect(mocks.notice.mock.calls[0][0].product).toBeNull();
   });
 
+  it("records the gift style a request starts from, with no basket or price", async () => {
+    const res = await post({ ...base, style: "keepsake-display-box", locale: "fr" });
+    expect(res.status).toBe(200);
+    expect(mocks.create.mock.calls[0][0].data).toMatchObject({
+      productId: null,
+      productName: "Style VS-01: Keepsake Display Box",
+      productPriceCents: null,
+    });
+    expect(mocks.notice.mock.calls[0][0].product).toBeNull();
+    expect(mocks.ack.mock.calls[0][0].style).toEqual({
+      slug: "keepsake-display-box",
+      code: "VS-01",
+      image: "/styles/keepsake-display-box.webp",
+      nameEn: "Keepsake Display Box",
+      nameLocal: "Coffret vitrine souvenir",
+    });
+  });
+
+  it("treats an unknown style as a general request, and lets a basket win over a style", async () => {
+    await post({ ...base, style: "no-such-style" });
+    expect(mocks.create.mock.calls[0][0].data.productName).toBeNull();
+    expect(mocks.notice.mock.calls[0][0].style).toBeNull();
+
+    mocks.getRequestableProduct.mockResolvedValue({
+      id: "p1",
+      slug: "coffee-comfort-basket",
+      name: { en: "Coffee Comfort Basket", fr: "Panier Douceur café" },
+      priceCents: 13999,
+      images: [],
+    });
+    await post({ ...base, product: "coffee-comfort-basket", style: "keepsake-display-box" });
+    expect(mocks.create.mock.calls[1][0].data.productName).toBe("Coffee Comfort Basket");
+    expect(mocks.notice.mock.calls[1][0].style).toBeNull();
+  });
+
   it("stores the request, lowercases the email and sends both emails", async () => {
     const res = await post({ ...base, budget: "around $150", locale: "fr" });
     expect(res.status).toBe(200);

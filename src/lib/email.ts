@@ -796,6 +796,8 @@ export type CustomBasketEmailData = {
   locale: string;
   /** The basket the request is about, when sent from its page. */
   product?: { slug: string; priceCents: number; nameEn: string; nameLocal: string } | null;
+  /** The gift style the request starts from (src/lib/gift-styles.ts). Never set with `product`. */
+  style?: { slug: string; code: string; image: string; nameEn: string; nameLocal: string } | null;
 };
 
 /**
@@ -821,9 +823,26 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
         formatMoney(req.product.priceCents)
       )})`
     : "";
-  const kind = req.product ? "Request about a basket" : "New custom basket request";
+  // Code, name and the photo itself, so there is no doubt which look they
+  // picked; the link opens the style's own request page.
+  const styleUrl = req.style ? `${SITE}/custom-basket?style=${encodeURIComponent(req.style.slug)}` : "";
+  const style = req.style
+    ? `<a href="${styleUrl}">${escapeHtml(req.style.code)} · ${escapeHtml(req.style.nameEn)}</a> (priced by quote)`
+    : "";
+  const stylePhoto = req.style
+    ? `<p style="margin:10px 0"><a href="${styleUrl}"><img src="${SITE}${escapeHtml(req.style.image)}" alt="${escapeHtml(
+        req.style.nameEn
+      )}" width="220" style="display:block;width:220px;max-width:100%;height:auto;border-radius:4px"></a></p>`
+    : "";
+  const kind = req.product
+    ? "Request about a basket"
+    : req.style
+      ? "Request from a gift style"
+      : "New custom basket request";
   const body = `<p>${kind} from <strong>${escapeHtml(req.name)}</strong></p>
     ${line("Basket", basket)}
+    ${line("Style", style)}
+    ${stylePhoto}
     ${line("Email", email || "<em>not given</em>")}
     ${line("Mobile", phone || "<em>not given</em>")}
     ${line("Occasion", escapeHtml(req.occasion))}
@@ -832,13 +851,15 @@ export async function sendCustomBasketNotice(req: CustomBasketEmailData) {
     ${line("Delivery area", escapeHtml(req.deliveryArea))}
     ${line("Language", req.locale === "fr" ? "French" : "English")}
     <p style="margin:14px 0 4px;color:#8a8072;font-size:13px">${
-      req.product ? "Their changes or question:" : "What they'd like in the basket:"
+      req.product ? "Their changes or question:" : req.style ? "What they'd like in this style:" : "What they'd like in the basket:"
     }</p>
     <p style="color:#514a40;margin:0">${escapeHtmlMultiline(req.products)}</p>
     <p><a href="${SITE}/admin/custom-requests">Open in admin</a></p>`;
   const subject = req.product
     ? `Basket request: ${req.product.nameEn}, from ${req.name}`
-    : `Custom basket request from ${req.name}`;
+    : req.style
+      ? `Style request ${req.style.code}: ${req.style.nameEn}, from ${req.name}`
+      : `Custom basket request from ${req.name}`;
   await send(to, subject, shell(kind, body, "en"));
 }
 
@@ -855,6 +876,11 @@ export async function sendCustomBasketAck(req: CustomBasketEmailData) {
     ? L(
         `Thank you, ${req.name}. We've received your message about the ${p.nameLocal}. We'll review it and get back to you; if anything changes the price, we'll send you the final price first. Nothing is charged until you approve it.`,
         `Merci, ${req.name}. Nous avons bien reçu votre message au sujet du panier « ${p.nameLocal} ». Nous allons l'étudier et vous revenir; si cela modifie le prix, nous vous enverrons d'abord le prix final. Rien n'est facturé avant que vous l'approuviez.`
+      )
+    : req.style
+    ? L(
+        `Thank you, ${req.name}. We've received your request based on our ${req.style.nameLocal} style (${req.style.code}). The photo is a design concept: your hamper is made to what you asked for, so it can look different. We'll review it and get back to you with a final price. Nothing is charged until you approve the quote.`,
+        `Merci, ${req.name}. Nous avons bien reçu votre demande à partir de notre style « ${req.style.nameLocal} » (${req.style.code}). La photo est un concept de design : votre panier est composé selon votre demande et peut donc être différent. Nous allons l'étudier et vous revenir avec un prix final. Rien n'est facturé avant que vous approuviez le devis.`
       )
     : L(
         `Thank you, ${req.name}. We've received your custom basket request. We'll review it and get back to you with a final price. Nothing is charged until you approve the quote.`,

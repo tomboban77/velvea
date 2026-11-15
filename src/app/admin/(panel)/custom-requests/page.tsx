@@ -3,8 +3,10 @@ import { PageHeader, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
-import { Mail, Phone, MessageSquareText, ShoppingBag } from "lucide-react";
+import { Mail, Phone, MessageSquareText, ShoppingBag, Sparkles } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth";
+import Image from "next/image";
+import { styleFromLabel } from "@/lib/gift-styles";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +40,9 @@ export default async function CustomRequestsPage() {
         <EmptyState title="No requests yet" description="Requests from the custom basket form will appear here." />
       ) : (
         <div className="space-y-4">
-          {requests.map((r) => (
+          {requests.map((r) => {
+            const fromStyle = styleFromLabel(r.productName);
+            return (
             <Card key={r.id} className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-3">
@@ -47,7 +51,46 @@ export default async function CustomRequestsPage() {
                   <Badge tone={tone[r.status]}>{r.status}</Badge>
                   {r.locale === "fr" && <Badge tone="gray">FR</Badge>}
                 </div>
-                {r.productName && (
+                {/* A request that started from a gift style keeps the style's code
+                    and name in productName; it never had a basket. The photo is
+                    shown so there is no guessing which look they picked. */}
+                {fromStyle && (
+                  <div className="mt-3 flex items-center gap-3 rounded-lg border border-line bg-cream/60 p-2.5">
+                    {fromStyle.style && (
+                      <a href={`/custom-basket?style=${fromStyle.style.slug}`} target="_blank" rel="noreferrer" className="shrink-0">
+                        <Image
+                          src={fromStyle.style.image.src}
+                          alt={fromStyle.name}
+                          width={72}
+                          height={72}
+                          className="h-[72px] w-[72px] rounded-md object-cover"
+                        />
+                      </a>
+                    )}
+                    <div className="min-w-0 text-sm text-ink-soft">
+                      <p className="flex flex-wrap items-center gap-x-2">
+                        <Sparkles className="h-3.5 w-3.5 text-violet" />
+                        Gift style
+                        <Badge tone="iris">{fromStyle.code}</Badge>
+                        <span className="font-semibold text-ink">{fromStyle.name}</span>
+                      </p>
+                      <p className="mt-1 text-xs text-muted">
+                        Priced by quote
+                        {fromStyle.style ? (
+                          <>
+                            {" · "}
+                            <a href={`/custom-basket?style=${fromStyle.style.slug}`} target="_blank" rel="noreferrer" className="hover:text-violet">
+                              View the style
+                            </a>
+                          </>
+                        ) : (
+                          " · no longer in the style list"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {r.productName && !fromStyle && (
                   <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-ink-soft">
                     <ShoppingBag className="h-3.5 w-3.5 text-violet" />
                     About basket:
@@ -93,7 +136,8 @@ export default async function CustomRequestsPage() {
               </div>
               <InquiryStatusControl id={r.id} current={r.status} kind="custom" />
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

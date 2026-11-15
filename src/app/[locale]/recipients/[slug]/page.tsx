@@ -2,6 +2,8 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/shop/Listing";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { StyleGallery } from "@/components/shop/StyleGallery";
+import { showsGiftStyles } from "@/lib/gift-styles";
 import { t as tc } from "@/lib/i18n-content";
 import { RECIPIENTS } from "@/lib/nav";
 import { collectionJsonLd, collectionMetadata, collectionTitle, loadCollection, totalPages, type CollectionSearch } from "@/lib/collection-page";
@@ -51,7 +53,10 @@ export default async function RecipientPage({ params, searchParams }: { params: 
           { label: title, href: `${BASE}/${slug}` },
         ]}
         pagination={{ page: data.page, totalPages: pages, basePath: `${BASE}/${slug}`, params: { sort: sp.sort, min: sp.min, max: sp.max } }}
-      />
+      >
+        {/* Quote-only gift styles, on the canonical page only (see the occasion page). */}
+        {showsGiftStyles(slug) && !data.filtered && data.page === 1 && <StyleGallery />}
+      </Listing>
     </>
   );
 }

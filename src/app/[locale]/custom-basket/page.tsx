@@ -5,6 +5,8 @@ import { ShieldCheck } from "lucide-react";
 import { pageMetadata } from "@/lib/seo";
 import { getRequestableProduct } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
+import { getGiftStyle } from "@/lib/gift-styles";
+import { StyleGallery } from "@/components/shop/StyleGallery";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,16 +28,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  * basket"): the same form, framed as changes or questions about that basket.
  * The canonical stays the clean /custom-basket URL (pageMetadata), so the
  * per-basket variants are never indexed as separate pages.
+ *
+ * `?style=<slug>` comes from a gift style (src/lib/gift-styles.ts): a look with
+ * no price of its own, which the customer fills in here. A basket wins if both
+ * are somehow present, since it is the one with a price attached.
  */
 export default async function CustomBasketPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ product?: string | string[] }>;
+  searchParams: Promise<{ product?: string | string[]; style?: string | string[] }>;
 }) {
   const { locale } = await params;
-  const { product: slugParam } = await searchParams;
+  const { product: slugParam, style: styleParam } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
   const found = await getRequestableProduct(typeof slugParam === "string" ? slugParam : null);
@@ -47,8 +53,19 @@ export default async function CustomBasketPage({
         image: found.images[0] ? { url: found.images[0].url, alt: found.images[0].alt ?? "" } : null,
       }
     : null;
+  const foundStyle = product ? null : getGiftStyle(typeof styleParam === "string" ? styleParam : null);
+  const style = foundStyle
+    ? {
+        slug: foundStyle.slug,
+        code: foundStyle.code,
+        name: tc(foundStyle.name, locale),
+        image: { url: foundStyle.image.src, alt: tc(foundStyle.summary, locale) },
+      }
+    : null;
   const head = product
     ? { eyebrow: t("customRequest.basket.eyebrow"), title: t("customRequest.basket.title"), lede: t("customRequest.basket.lede") }
+    : style
+    ? { eyebrow: t("customRequest.style.eyebrow"), title: t("customRequest.style.title"), lede: t("customRequest.style.lede") }
     : { eyebrow: t("customRequest.eyebrow"), title: t("customRequest.title"), lede: t("customRequest.lede") };
   const steps = [
     { title: t("customRequest.s1"), sub: t("customRequest.s1Sub") },
@@ -89,10 +106,12 @@ export default async function CustomBasketPage({
           </div>
         </aside>
         <div className="lg:col-span-8">
-          {/* Keyed so moving between baskets starts a fresh form. */}
-          <CustomBasketRequestForm key={product?.slug ?? "general"} product={product} />
+          {/* Keyed so moving between baskets or styles starts a fresh form. */}
+          <CustomBasketRequestForm key={product?.slug ?? style?.slug ?? "general"} product={product} style={style} />
         </div>
       </div>
+      {/* A general request can start from a style instead of a blank page. */}
+      {!product && !style && <StyleGallery />}
     </div>
   );
 }

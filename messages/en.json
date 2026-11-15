@@ -46,7 +46,8 @@
     "shopAll": "Shop all baskets",
     "searchShort": "Search",
     "browseAll": "Browse all",
-    "customRequest": "Custom basket"
+    "customRequest": "Custom basket",
+    "giftStyles": "Gift styles"
   },
   "common": {
     "shopGiftBaskets": "Shop gift baskets",
@@ -817,7 +818,31 @@
       "placeholder": "e.g. Could you replace the candle with extra chocolate? And no nuts, please.",
       "general": "Not this basket? Send a general request",
       "viewBasket": "View basket"
+    },
+    "style": {
+      "eyebrow": "Gift style",
+      "title": "Make this style your own",
+      "lede": "Tell us what you'd like inside and anything you want changed. We'll put it together in this style and send you a final price before anything is charged.",
+      "cardLabel": "Your request starts from",
+      "section": "Your version",
+      "label": "What would you like in it?",
+      "hint": "List the items, brands, colours or flowers you'd like, anything to leave out, and any personal touches such as photos or a message.",
+      "placeholder": "e.g. Red and white roses, Lindt truffles, a framed photo of us and a scented candle. No nuts, please.",
+      "general": "Not this style? Send a general request"
     }
+  },
+  "styles": {
+    "eyebrow": "Custom styling",
+    "title": "Start from a style and make it your own",
+    "ref": "Style {code}",
+    "lede": "Not sure how you want your gift to look? These are looks, not fixed baskets, and each one can be made for an anniversary, a birthday, Valentine's Day or any gift for someone special. Pick the one you like, tell us what you want inside, and we'll send you a price before anything is charged.",
+    "conceptBadge": "Design concept",
+    "conceptTitle": "These are design concepts, not finished hampers",
+    "note": "Each photo shows a way we can present a gift. Your final hamper depends on what you ask for: the items, brands, colours and card wording are chosen with you, so it can look different from the picture. Styles with fresh flowers need two days' notice.",
+    "conceptShort": "Design concept. Your final hamper is made to your request and can look different from this photo.",
+    "priced": "Priced by quote",
+    "ideasLabel": "Make it yours",
+    "cta": "Customize this style"
   },
   "occasionSeo": {
     "deliveryLink": "Delivery areas and cutoffs",

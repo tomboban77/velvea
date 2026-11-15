@@ -2,6 +2,8 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/shop/Listing";
 import { OccasionSeoBlock } from "@/components/shop/OccasionSeoBlock";
+import { StyleGallery } from "@/components/shop/StyleGallery";
+import { showsGiftStyles } from "@/lib/gift-styles";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { t as tc } from "@/lib/i18n-content";
 import { OCCASIONS, HOLIDAYS } from "@/lib/nav";
@@ -64,6 +66,9 @@ export default async function OccasionPage({ params, searchParams }: { params: P
         ]}
         pagination={{ page: data.page, totalPages: pages, basePath: `${BASE}/${slug}`, params: { sort: sp.sort, min: sp.min, max: sp.max, recipient: sp.recipient } }}
       >
+        {/* Quote-only gift styles, on the occasions they suit. Canonical page
+            only, like the editorial block: not repeated on filtered or later pages. */}
+        {showsGiftStyles(slug) && !data.filtered && data.page === 1 && <StyleGallery />}
         {showEditorial && editorial && <OccasionSeoBlock entry={editorial} locale={locale} />}
       </Listing>
     </>

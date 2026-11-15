@@ -9,6 +9,7 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 import { OCCASIONS, RECIPIENTS, CATEGORIES, HOLIDAYS, labelFor, type NavLink } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { GIFT_CARDS_ENABLED, CUSTOM_BUILDER_ENABLED } from "@/lib/features";
+import { GIFT_STYLES_ANCHOR } from "@/lib/gift-styles";
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -112,6 +113,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="px-5 py-3">
             {[
               ...(CUSTOM_BUILDER_ENABLED ? [{ href: "/custom", label: t("nav.build") }] : []),
+              { href: `/#${GIFT_STYLES_ANCHOR}`, label: t("nav.giftStyles") },
               { href: "/custom-basket", label: t("nav.customRequest") },
               { href: "/corporate", label: t("nav.corporate") },
               ...(GIFT_CARDS_ENABLED ? [{ href: "/gift-cards", label: t("nav.giftCards") }] : []),
@@ -119,7 +121,10 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
               { href: "/about", label: t("nav.story") },
               { href: "/contact", label: t("footer.contact") },
             ].map((l) => (
-              <Link key={l.href} href={l.href} className="block py-2.5 text-[1rem] font-medium text-ink">
+              // onClose here because the header only closes the menu when the
+              // path changes, and the gift styles link on the home page is a
+              // same-page jump: without it the menu would stay over the section.
+              <Link key={l.href} href={l.href} onClick={onClose} className="block py-2.5 text-[1rem] font-medium text-ink">
                 {l.label}
               </Link>
             ))}

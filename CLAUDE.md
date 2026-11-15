@@ -113,6 +113,13 @@ tests/                  Vitest suites + helpers (empty.ts aliases "server-only",
   pair and a noindex FR page. `/` and `/contact` also emit a `LocalBusiness` node matching the Google
   Business Profile (`localBusinessJsonLd`). Product and guide saves ping IndexNow
   (`src/lib/indexnow.ts`, off unless `INDEXNOW_KEY` is set). Open work: `docs/SEO-AUDIT.md`.
+- **Gift styles** (`src/lib/gift-styles.ts`, images in `public/styles/`): quote-only looks, not
+  products. No price, no cart, not tagged to any occasion. `<StyleGallery>` shows the same set on
+  home, `/custom-basket` and the collection pages in `showsGiftStyles`; each links to
+  `/custom-basket?style=<slug>`. The request is stored with `productName = "Style VS-01: <name>"`
+  and no product link (no schema column for styles); admin and the owner email read the permanent
+  `code` back to show the photo. The photos are
+  illustrations, so copy describes the presentation and never promises a brand or item.
 - Styling: Tailwind utilities + component classes from `globals.css`; plum is the single brand
   colour, 4px radii. Prefer editing existing classes over adding new CSS.
 - Comments in the code explain *why* (past bugs, legal constraints). Keep that habit.

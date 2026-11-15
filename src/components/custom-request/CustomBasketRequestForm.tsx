@@ -52,8 +52,23 @@ export type RequestProduct = {
   image: { url: string; alt: string } | null;
 };
 
-export function CustomBasketRequestForm({ product = null }: { product?: RequestProduct | null }) {
+/** The gift style a request starts from (src/lib/gift-styles.ts). No price: styles are quote-only. */
+export type RequestStyle = {
+  slug: string;
+  code: string;
+  name: string;
+  image: { url: string; alt: string };
+};
+
+export function CustomBasketRequestForm({
+  product = null,
+  style = null,
+}: {
+  product?: RequestProduct | null;
+  style?: RequestStyle | null;
+}) {
   const t = useTranslations("customRequest");
+  const tStyles = useTranslations("styles");
   const locale = useLocale();
   // About a specific basket, the free-text box holds changes or questions
   // rather than a full wish list; same field, different words.
@@ -63,6 +78,13 @@ export function CustomBasketRequestForm({ product = null }: { product?: RequestP
         label: t("basket.label"),
         hint: t("basket.hint"),
         placeholder: t("basket.placeholder"),
+      }
+    : style
+    ? {
+        section: t("style.section"),
+        label: t("style.label"),
+        hint: t("style.hint"),
+        placeholder: t("style.placeholder"),
       }
     : {
         section: t("sectionBasket"),
@@ -127,7 +149,7 @@ export function CustomBasketRequestForm({ product = null }: { product?: RequestP
       const r = await fetch("/api/custom-basket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, locale, website, turnstileToken, product: product?.slug }),
+        body: JSON.stringify({ ...f, locale, website, turnstileToken, product: product?.slug, style: style?.slug }),
       });
       if (r.ok) {
         setSent({ email: res.data.email, phone: res.data.phone });
@@ -240,6 +262,27 @@ export function CustomBasketRequestForm({ product = null }: { product?: RequestP
           </div>
           <Link href="/custom-basket" className="mt-3 inline-block text-sm text-muted underline-offset-2 hover:underline">
             {t("basket.general")}
+          </Link>
+        </div>
+      )}
+
+      {style && (
+        <div className="mb-7 rounded-lg border border-line bg-cream/60 p-4">
+          <p className="caps text-[0.7rem]">{t("style.cardLabel")}</p>
+          <div className="mt-3 flex items-center gap-4">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-white">
+              <Image src={style.image.url} alt={style.image.alt} fill sizes="80px" className="object-cover" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-ink">{style.name}</p>
+              <p className="text-sm text-ink-soft">
+                {tStyles("ref", { code: style.code })} · {tStyles("priced")}
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">{tStyles("conceptShort")}</p>
+          <Link href="/custom-basket" className="mt-3 inline-block text-sm text-muted underline-offset-2 hover:underline">
+            {t("style.general")}
           </Link>
         </div>
       )}

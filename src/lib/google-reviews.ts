@@ -25,12 +25,13 @@ export type GoogleReview = {
 };
 
 /** The figures Google shows at the top of the profile. */
-export const GOOGLE_RATING = { average: 5.0, count: 12 };
+export const GOOGLE_RATING = { average: 5.0, count: 17 };
 
 /**
  * The carousel shows these in this order, so the list is the running order:
  * the owner picks which reviews lead. The first seven are from 29 Oct 2026;
- * the rest were added 8 Nov 2026 to the end of the list. Names Google shows in
+ * the next five were added 8 Nov 2026 and the last five on 14 Nov 2026, each
+ * time to the end of the list. Names Google shows in
  * capitals or lowercase (PRACHI PAL, ADARSH REDDY, angela binny) are written in
  * normal case so the cards match.
  */
@@ -113,5 +114,35 @@ export const GOOGLE_REVIEWS: GoogleReview[] = [
     date: "2026-11-06",
     rating: 5,
     text: "The package was satisfactory. Delivery was on time. Staff was courteous. I recommend Velvea anytime",
+  },
+  {
+    author: "Rohan T George",
+    date: "2026-11-11",
+    rating: 5,
+    text: "Everything went smoothly, and the service and hamper was really good. Very happy with the experience.",
+  },
+  {
+    author: "Zach",
+    date: "2026-11-12",
+    rating: 5,
+    text: "Had a custom hamper made by Velvea, and it turned out better than expected! Beautifully arranged, exactly how I wanted it, and great customer service throughout. Really happy with the experience!",
+  },
+  {
+    author: "Brix",
+    date: "2026-11-13",
+    rating: 5,
+    text: "We got a small batch of corporate gifts from Velvea, and everything turned out great. The packaging was neat, the gifts looked lovely, and the whole process was smooth. Really happy with the service!",
+  },
+  {
+    author: "GrowMint",
+    date: "2026-11-13",
+    rating: 5,
+    text: "Really happy with team Velvea. The hamper was beautifully put together, the service was friendly, and everything went smoothly. Would definitely recommend!",
+  },
+  {
+    author: "Nancy Ortiz",
+    date: "2026-11-14",
+    rating: 5,
+    text: "Absolutely beautiful! The basket was thoughtfully put together, with great attention to detail and lovely presentation. Everything was wonderful, and the overall experience exceeded my expectations. You can truly tell how much care goes into every detail. Highly recommend Velvea! 🩷",
   },
 ];

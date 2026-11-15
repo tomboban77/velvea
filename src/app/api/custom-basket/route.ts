@@ -8,6 +8,7 @@ import { parseStoreDate } from "@/lib/dates";
 import { validateCustomRequest } from "@/lib/custom-request";
 import { getRequestableProduct } from "@/lib/queries";
 import { t as tc } from "@/lib/i18n-content";
+import { getGiftStyle, styleRequestLabel } from "@/lib/gift-styles";
 
 /** Transport fields that are not part of the request itself. */
 const envelope = z.object({
@@ -17,6 +18,8 @@ const envelope = z.object({
   turnstileToken: z.string().max(2048).optional(),
   /** Slug of the basket the customer was viewing, when sent from its page. */
   product: z.string().max(200).optional(),
+  /** Slug of the gift style the request starts from (src/lib/gift-styles.ts). */
+  style: z.string().max(200).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const meta = envelope.safeParse(body);
   if (!meta.success) return NextResponse.json({ error: "invalid" }, { status: 400 });
-  const { locale, website, turnstileToken, product: productSlug } = meta.data;
+  const { locale, website, turnstileToken, product: productSlug, style: styleSlug } = meta.data;
   const fr = locale === "fr";
 
   // A bot filled the hidden field: report success so it learns nothing.
@@ -60,6 +63,8 @@ export async function POST(req: NextRequest) {
   // what matters, and it still reaches us as a general request.
   const product = await getRequestableProduct(productSlug);
   const productNameEn = product ? tc(product.name, "en") : null;
+  // Same leniency for a style. A basket wins if both arrive: it carries a price.
+  const style = product ? null : getGiftStyle(styleSlug);
 
   try {
     await prisma.customBasketRequest.create({
@@ -73,7 +78,9 @@ export async function POST(req: NextRequest) {
         neededBy: data.neededBy ? parseStoreDate(data.neededBy) : null,
         deliveryArea: data.deliveryArea || null,
         productId: product?.id ?? null,
-        productName: productNameEn,
+        // A style has no row to link to; its name is kept in the same column
+        // with its reference code, which admin reads back (see styleRequestLabel).
+        productName: productNameEn ?? (style ? styleRequestLabel(style) : null),
         productPriceCents: product?.priceCents ?? null,
         locale,
       },
@@ -97,6 +104,7 @@ export async function POST(req: NextRequest) {
           nameLocal: tc(product.name, locale),
         }
       : null,
+    style: style ? { slug: style.slug, code: style.code, image: style.image.src, nameEn: style.name.en, nameLocal: tc(style.name, locale) } : null,
   };
   await sendCustomBasketNotice(mail);
   await sendCustomBasketAck(mail);
