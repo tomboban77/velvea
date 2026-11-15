@@ -145,3 +145,61 @@ describe("sendEmailVerification", () => {
     expect(payload.html).toContain("Confirmer mon courriel");
   });
 });
+
+describe("custom basket emails for a gift style request", () => {
+  const req = {
+    name: "Anna",
+    email: "anna@example.com",
+    phone: "",
+    products: "Red roses, truffles and a framed photo",
+    occasion: "Birthday",
+    budget: "",
+    neededBy: "",
+    deliveryArea: "",
+    locale: "fr",
+    product: null,
+    style: {
+      slug: "keepsake-display-box",
+      code: "VS-01",
+      image: "/styles/keepsake-display-box.webp",
+      nameEn: "Keepsake Display Box",
+      nameLocal: "Coffret vitrine souvenir",
+    },
+  };
+
+  it("tells the owner which style it is: code and name in the subject, photo and link in the body", async () => {
+    mocks.send.mockResolvedValue({ data: { id: "em_1" }, error: null });
+    const { sendCustomBasketNotice } = await import("@/lib/email");
+    await sendCustomBasketNotice(req);
+
+    const payload = mocks.send.mock.calls[0][0];
+    expect(payload.to).toBe("hello@velvea.ca");
+    expect(payload.subject).toBe("Style request VS-01: Keepsake Display Box, from Anna");
+    expect(payload.html).toContain("https://www.velvea.ca/custom-basket?style=keepsake-display-box");
+    expect(payload.html).toContain('src="https://www.velvea.ca/styles/keepsake-display-box.webp"');
+    expect(payload.html).toContain("VS-01");
+    expect(payload.html).toContain("Red roses, truffles and a framed photo");
+  });
+
+  it("confirms to the customer in their language, with the style, its code and the design-concept note", async () => {
+    mocks.send.mockResolvedValue({ data: { id: "em_2" }, error: null });
+    const { sendCustomBasketAck } = await import("@/lib/email");
+    await sendCustomBasketAck(req);
+
+    const payload = mocks.send.mock.calls[0][0];
+    expect(payload.to).toBe("anna@example.com");
+    expect(payload.html).toContain("Coffret vitrine souvenir");
+    expect(payload.html).toContain("VS-01");
+    expect(payload.html).toContain("concept de design");
+  });
+
+  it("leaves a general request untouched: no style line, the usual subject", async () => {
+    mocks.send.mockResolvedValue({ data: { id: "em_3" }, error: null });
+    const { sendCustomBasketNotice } = await import("@/lib/email");
+    await sendCustomBasketNotice({ ...req, style: null });
+
+    const payload = mocks.send.mock.calls[0][0];
+    expect(payload.subject).toBe("Custom basket request from Anna");
+    expect(payload.html).not.toContain("/styles/");
+  });
+});
