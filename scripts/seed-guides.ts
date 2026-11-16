@@ -21,7 +21,7 @@
 import "dotenv/config";
 import { PrismaClient, type Prisma } from "@prisma/client";
 import { sanitizeHtml } from "../src/lib/sanitize";
-import { GUIDES } from "./guides";
+import { GUIDES, LIVE_ONLY_GUIDE_SLUGS } from "./guides";
 
 const prisma = new PrismaClient();
 const WRITE = process.argv.includes("--write");
@@ -32,7 +32,7 @@ const AUTHOR = "Velvéa";
 
 /** Internal /guides/... links must resolve, or a published guide ships a 404. */
 function checkCrossLinks(): string[] {
-  const slugs = new Set(GUIDES.map((g) => g.slug));
+  const slugs = new Set([...GUIDES.map((g) => g.slug), ...LIVE_ONLY_GUIDE_SLUGS]);
   const problems: string[] = [];
   for (const guide of GUIDES) {
     for (const [locale, body] of Object.entries(guide.body)) {

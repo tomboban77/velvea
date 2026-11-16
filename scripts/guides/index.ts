@@ -18,6 +18,9 @@ import { getWellGifts } from "./get-well-gifts";
 import { housewarmingGifts } from "./housewarming-gifts";
 import { christmasHostGifts } from "./christmas-host-gifts";
 import { retirementGifts } from "./retirement-gifts";
+import { lastMinuteChristmasGifts } from "./last-minute-christmas-gifts";
+import { sendGiftToCanada } from "./send-gift-to-canada";
+import { milestoneBirthdayGifts } from "./milestone-birthday-gifts";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -44,6 +47,19 @@ export const GUIDES: GuideSeed[] = [
   housewarmingGifts,
   christmasHostGifts,
   retirementGifts,
+  lastMinuteChristmasGifts,
+  sendGiftToCanada,
+  milestoneBirthdayGifts,
+];
+
+/**
+ * Guides that exist in the database but were written in the admin or by a
+ * one-off script, so they have no file here. Listed so a seeded guide can link
+ * to them without the seeder's cross-link check calling the link broken.
+ */
+export const LIVE_ONLY_GUIDE_SLUGS = [
+  "birthday-gifts-for-someone-who-doesnt-want-anything",
+  "what-to-send-when-a-friend-has-a-baby",
 ];
 
 export type { GuideSeed };
