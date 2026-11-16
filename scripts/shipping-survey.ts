@@ -44,6 +44,17 @@ const BOX = { length: +m[1], width: +m[2], height: +m[3], weight: +m[4] };
 const PACKING_CENTS = Math.round(Number(arg("packing") ?? "3") * 100);
 
 /**
+ * Safety margin per parcel on top of label + packing (owner decision,
+ * 15 Nov 2026). Fees used to be set to the bare cost of the dearest town, so
+ * one carrier repricing (St. John's went from $39 to $46 in a month) turned a
+ * break-even zone into a loss. $4 for the farthest zones, where quotes swing
+ * most; $3 everywhere else a courier goes.
+ */
+const BUFFER_CENTS: Record<string, number> = { atlantic: 400, nl: 400, bc: 400, "on-northwest": 400, yukon: 400 };
+const DEFAULT_BUFFER_CENTS = 300;
+const bufferFor = (zone: string) => BUFFER_CENTS[zone] ?? DEFAULT_BUFFER_CENTS;
+
+/**
  * Carriers we'd hand a food gift to. Cheaper names exist in the quote list,
  * but a basket stuck in a depot for a week costs more than the $3 saved.
  */
@@ -70,7 +81,13 @@ const DESTS: Dest[] = [
   { zone: "on-north", city: "North Bay", prov: "ON", postal: "P1B 8H8", maxDays: 5 },
   { zone: "on-north", city: "Sault Ste. Marie", prov: "ON", postal: "P6A 5X6", maxDays: 5 },
   { zone: "on-north", city: "Thunder Bay", prov: "ON", postal: "P7E 5V3", maxDays: 5 },
-  { zone: "on-north", city: "Kenora", prov: "ON", postal: "P9N 3X7", maxDays: 5 },
+
+  // The far northwest corner, sampled apart from the rest of the north: Kenora
+  // costs ~$7 more than Thunder Bay and was the one Ontario town losing money.
+  { zone: "on-northwest", city: "Kenora", prov: "ON", postal: "P9N 3X7", maxDays: 5 },
+  { zone: "on-northwest", city: "Dryden", prov: "ON", postal: "P8N 2A7", maxDays: 5 },
+  { zone: "on-northwest", city: "Fort Frances", prov: "ON", postal: "P9A 3P9", maxDays: 5 },
+  { zone: "on-northwest", city: "Sioux Lookout", prov: "ON", postal: "P8T 1B3", maxDays: 5 },
 
   { zone: "qc", city: "Gatineau", prov: "QC", postal: "J8X 3Y9", maxDays: 3 },
   { zone: "qc", city: "Montreal", prov: "QC", postal: "H2Y 1C6", maxDays: 3 },
@@ -81,7 +98,9 @@ const DESTS: Dest[] = [
   { zone: "atlantic", city: "Fredericton", prov: "NB", postal: "E3B 1B5", maxDays: 5 },
   { zone: "atlantic", city: "Halifax", prov: "NS", postal: "B3J 3A5", maxDays: 5 },
   { zone: "atlantic", city: "Charlottetown", prov: "PE", postal: "C1A 7K4", maxDays: 5 },
-  { zone: "atlantic", city: "St. John's", prov: "NL", postal: "A1C 5M2", maxDays: 6 },
+  // Newfoundland on its own: St. John's runs ~$11 over the Maritimes.
+  { zone: "nl", city: "St. John's", prov: "NL", postal: "A1C 5M2", maxDays: 6 },
+  { zone: "nl", city: "Corner Brook", prov: "NL", postal: "A2H 6E1", maxDays: 6 },
 
   { zone: "prairies", city: "Winnipeg", prov: "MB", postal: "R3B 1B9", maxDays: 5 },
   { zone: "prairies", city: "Regina", prov: "SK", postal: "S4P 3C8", maxDays: 6 },
@@ -241,7 +260,7 @@ async function main() {
   }
 
   // Worst case per zone: the fee has to cover the dearest town in it.
-  console.log("\nSuggested zone fees (worst town in zone + packing, rounded up to .99)\n");
+  console.log("\nSuggested zone fees (worst town in zone + packing + buffer, rounded up to .99)\n");
   console.log("| Zone | Base fee | Each extra basket | Delivery days | Priced from |");
   console.log("|---|---|---|---|---|");
   for (const zone of [...new Set(DESTS.map((d) => d.zone))]) {
@@ -251,7 +270,9 @@ async function main() {
       continue;
     }
     const worst = ok.reduce((a, b) => (b.one!.totalCharge.amount > a.one!.totalCharge.amount ? b : a));
-    const base = toNinetyNine(worst.one!.totalCharge.amount + PACKING_CENTS);
+    // The buffer goes on the base fee only: the extra-basket fee rides on an
+    // order that has already paid it once.
+    const base = toNinetyNine(worst.one!.totalCharge.amount + PACKING_CENTS + bufferFor(zone));
     const extras = ok.filter((r) => r.two).map((r) => r.two!.totalCharge.amount - r.one!.totalCharge.amount);
     const extra = extras.length ? toNinetyNine(Math.max(...extras) + PACKING_CENTS) : null;
     const minD = Math.min(...ok.map((r) => r.one!.transitDays ?? 99));

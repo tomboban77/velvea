@@ -100,8 +100,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             <h2 className="font-display text-[1.4rem] font-medium">{fr ? "Où nous livrons" : "Where we deliver"}</h2>
             <p className="mt-3 text-muted">
               {fr
-                ? "Notre équipe livre elle-même à Mississauga et dans le Grand Toronto, et les paniers qui voyagent bien sont expédiés par messager avec suivi partout au Canada, sauf au Québec pour l'instant."
-                : "Our own team delivers across Mississauga and the GTA, and baskets that travel well ship by tracked courier across Canada, except Quebec for now."}
+                ? "Notre équipe livre elle-même à Mississauga et dans le Grand Toronto, et les paniers qui voyagent bien sont expédiés par messager avec suivi partout au Canada."
+                : "Our own team delivers across Mississauga and the GTA, and baskets that travel well ship by tracked courier across Canada."}
             </p>
             <ul className="mt-4 flex flex-wrap gap-2">
               {cities.map((c) => (

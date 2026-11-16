@@ -356,7 +356,7 @@
     "items": [
       {
         "q": "Where do you deliver?",
-        "a": "Across Canada. We deliver ourselves throughout Mississauga and the GTA, including same-day on eligible orders, and ship by tracked courier to the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia. Quebec is coming soon, and Yukon and remote fly-in communities are quoted by hand. Pickup from our Mississauga studio is free, by appointment."
+        "a": "Across Canada. We deliver ourselves throughout Mississauga and the GTA, including same-day on eligible orders, and ship by tracked courier to the rest of Ontario, Quebec, the Atlantic provinces, the Prairies and British Columbia. Yukon and remote fly-in communities are quoted by hand. Pickup from our Mississauga studio is free, by appointment."
       },
       {
         "q": "Is a gift message included?",
@@ -385,7 +385,7 @@
       },
       {
         "q": "Do you ship gift hampers across Canada?",
-        "a": "Yes. Baskets marked shippable travel by tracked courier to the rest of Ontario, the Atlantic provinces, Manitoba, Saskatchewan, Alberta and British Columbia, usually within two to six business days. Quebec is coming soon. Fresh, chilled and flower baskets are local delivery only."
+        "a": "Yes. Baskets marked shippable travel by tracked courier to the rest of Ontario, Quebec, the Atlantic provinces, Manitoba, Saskatchewan, Alberta and British Columbia, usually within two to seven business days. For the United States, contact us and we will quote it by hand. Fresh, chilled and flower baskets are local delivery only."
       },
       {
         "q": "Can I get a Christmas hamper delivered the same day?",
@@ -676,7 +676,7 @@
     "nextDayH": "Next-day local delivery",
     "nextDayLede": "A little further out, delivered by our team the next available day.",
     "shippingH": "Shipped by courier",
-    "shippingLede": "Tracked courier delivery to the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia. Quebec is coming soon. Fresh and chilled baskets are local-only.",
+    "shippingLede": "Tracked courier delivery to the rest of Ontario, Quebec, the Atlantic provinces, the Prairies and British Columbia. Fresh and chilled baskets are local-only.",
     "pickupNote": "Prefer to collect? Pickup from our Mississauga studio is always free and by appointment; we message you a time once your basket is ready.",
     "seePolicy": "Delivery costs and policy in full",
     "cardSameDay": "Same-day by {time}",

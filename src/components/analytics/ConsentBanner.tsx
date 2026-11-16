@@ -4,24 +4,31 @@ import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 
+// Must match CONSENT_KEY in GoogleAnalytics.tsx, which reads it before React
+// hydrates. Not imported: that file is a server component.
 const KEY = "velvea_consent";
 type Choice = "granted" | "denied";
 
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    /** Defined by <GoogleAnalytics> on the public domain only. */
+    velveaLoadGa?: () => void;
   }
 }
 
 function applyChoice(choice: Choice) {
-  window.gtag?.("consent", "update", { analytics_storage: choice });
+  // Accepting is what loads GA in the first place. Declining only matters if
+  // it is somehow already running, in which case it stops storing anything.
+  if (choice === "granted") window.velveaLoadGa?.();
+  else window.gtag?.("consent", "update", { analytics_storage: "denied" });
 }
 
 /**
- * Analytics consent. Google Analytics starts with consent denied (see
- * <GoogleAnalytics>); this banner is the only thing that flips it to granted,
- * and the choice is remembered per browser. Declining is one click and equal
- * in weight to accepting. Rendered only when GA is configured.
+ * Analytics consent. Google Analytics is not loaded at all until the visitor
+ * accepts here (see <GoogleAnalytics>, Law 25), and the choice is remembered
+ * per browser. Declining is one click and equal in weight to accepting.
+ * Rendered only when GA is configured.
  */
 export function ConsentBanner() {
   const fr = useLocale() === "fr";
@@ -34,8 +41,8 @@ export function ConsentBanner() {
     } catch {
       // Private mode or blocked storage: ask every visit, never crash.
     }
-    if (stored === "granted" || stored === "denied") applyChoice(stored);
-    else setOpen(true);
+    // A stored choice was already acted on by the loader script itself.
+    if (stored !== "granted" && stored !== "denied") setOpen(true);
   }, []);
 
   function choose(choice: Choice) {

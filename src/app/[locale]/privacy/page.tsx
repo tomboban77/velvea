@@ -73,7 +73,7 @@ const EN = {
   cookiesP:
     "We keep this minimal. A secure session cookie keeps you signed in to your account. Your browser's local storage remembers your cart and preferences on your own device. We use Vercel Analytics, which measures page views without cookies and does not identify or track individual visitors across sites. Cloudflare Turnstile may set a short-lived cookie on the forms it protects while it checks that you are not a bot. We do not use advertising cookies or trackers.",
   cookiesGA:
-    "If you accept analytics cookies in the banner shown on your first visit, Google Analytics sets cookies that recognise your browser on return visits so we can see which pages and baskets are popular. Until you accept, Google Analytics runs without cookies and cannot recognise you. You can change your choice at any time by clearing this site's data in your browser, which brings the banner back.",
+    "If you accept analytics cookies in the banner shown on your first visit, Google Analytics sets cookies that recognise your browser on return visits so we can see which pages and baskets are popular. Until you accept, Google Analytics is not loaded and receives nothing about your visit. You can change your choice at any time by clearing this site's data in your browser, which brings the banner back.",
 
   retentionH: "How long we keep information",
   retentionP:
@@ -181,7 +181,7 @@ const FR: typeof EN = {
   cookiesP:
     "Nous en faisons un usage minimal. Un témoin de session sécurisé vous garde connecté à votre compte. Le stockage local de votre navigateur mémorise votre panier et vos préférences sur votre propre appareil. Nous utilisons Vercel Analytics, qui mesure les consultations de pages sans témoins et n'identifie ni ne suit les visiteurs individuels d'un site à l'autre. Cloudflare Turnstile peut déposer un témoin de courte durée sur les formulaires qu'il protège pendant qu'il vérifie que vous n'êtes pas un robot. Nous n'utilisons aucun témoin publicitaire ni traceur.",
   cookiesGA:
-    "Si vous acceptez les témoins d'analyse dans la bannière affichée lors de votre première visite, Google Analytics dépose des témoins qui reconnaissent votre navigateur lors de vos visites suivantes, afin que nous voyions quelles pages et quels paniers sont populaires. Tant que vous n'acceptez pas, Google Analytics fonctionne sans témoins et ne peut pas vous reconnaître. Vous pouvez changer d'avis à tout moment en effaçant les données de ce site dans votre navigateur, ce qui fait réapparaître la bannière.",
+    "Si vous acceptez les témoins d'analyse dans la bannière affichée lors de votre première visite, Google Analytics dépose des témoins qui reconnaissent votre navigateur lors de vos visites suivantes, afin que nous voyions quelles pages et quels paniers sont populaires. Tant que vous n'acceptez pas, Google Analytics n'est pas chargé et ne reçoit rien au sujet de votre visite. Vous pouvez changer d'avis à tout moment en effaçant les données de ce site dans votre navigateur, ce qui fait réapparaître la bannière.",
 
   retentionH: "Durée de conservation des renseignements",
   retentionP:

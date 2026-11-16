@@ -105,7 +105,7 @@ ${cityLines}
 ## Shipping across Canada
 
 ${courierLines || "- Tracked courier shipping on baskets marked shippable; the exact rate appears at checkout."}
-- Quebec: coming soon. Yukon and remote fly-in communities are priced by hand. No delivery to the Northwest Territories or Nunavut.
+- Yukon and remote fly-in communities are priced by hand. No delivery to the Northwest Territories or Nunavut. United States: by request only, contact us for a quote.
 - Fresh, chilled and flower baskets are local delivery only.
 
 ## Hampers by occasion

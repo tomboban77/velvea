@@ -78,8 +78,8 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
 - [ ] **Home address in the footer and emails:** if 5105 Hurontario is a residence, a PO box or
       virtual mailbox also satisfies CASL.
 - [ ] **Product liability insurance** — not required by law, strongly advised when selling food.
-- [ ] **Before switching on Quebec shipping:** Law 25 (GA would need to be fully off until consent,
-      not cookieless pings), Quebec consumer protection rules, French product labelling.
+- [ ] **Quebec shipping is on (15 Nov 2026).** Law 25 is handled in code (GA off until consent).
+      Still open: Quebec consumer protection rules and French product labelling. See §2.
 
 ## 2. Delivery zones
 
@@ -117,12 +117,33 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       generic for NT/NU. Routing checked against live zones (Halifax, Calgary, Vancouver resolve;
       Montréal refused; Whitehorse and V0T quoted). `shippable` flags reviewed and left as they are:
       fresh flowers and the heavy chocolate / sparkling-juice hampers were already local-only.
-      Do NOT use `npm run zones:shipping -- --apply --activate` now: it would also open Quebec.
-- [ ] **Quebec shipping** — `qc-ground` ($28.99) exists, INACTIVE. Before switching it on in
-      /admin/delivery-zones: Law 25 (GA fully off until consent), Quebec consumer protection rules,
-      French product labelling (§1). Then drop "Quebec is coming soon" from the FAQ, shipping page
-      (`whereP1`), `delivery.shippingLede`, `llms.txt`, the article `velvea-gift-hampers-gta`, and
-      the QC branch of the unserved messages in `actions/checkout.ts` + `actions/delivery.ts`.
+      (Fees and territory superseded on 15 Nov 2026, below.)
+- [x] **Quebec shipping opened** (owner, 15 Nov 2026). `qc-ground` is ACTIVE at $34.99. "Quebec is
+      coming soon" is gone from the FAQ, shipping page, `delivery.shippingLede`, contact page,
+      `llms.txt`, the live article `velvea-gift-hampers-gta` (`scripts/article-shipping-copy.ts`)
+      and the unserved messages. Law 25: Google Analytics is no longer loaded at all until the
+      visitor accepts the banner (`GoogleAnalytics.tsx`); the privacy page says so.
+      **Zone went live before the code was deployed: deploy to finish the Law 25 part.**
+- [ ] **Quebec, still the owner's to check:** every product that can go into a shipped basket
+      carries French on its label; products and guides with no French version (`hasFrench` false)
+      get translated; Quebec consumer protection rules reviewed (nobody has checked the site
+      against them).
+- [x] **No zone priced at a loss: buffer on every courier fee** (owner, 15 Nov 2026). Fee = dearest
+      sampled town's label (tax in) + $3 packing + buffer, rounded up to .99. Buffer is $3, or $4
+      for Atlantic, Newfoundland, BC and northwestern Ontario; it lives in
+      `scripts/shipping-survey.ts`. Applied to production with `npm run zones:shipping -- --apply`:
+      ON ground $31.99, Northern ON $39.99, Quebec $34.99, Prairies $44.99, BC $45.99, Maritimes
+      $42.99 (unchanged). Two towns were losing money and got their own zones instead of dragging
+      their region's fee up: `on-northwest` (Kenora, Dryden, Sioux Lookout, Fort Frances; $53.99,
+      +$34.99) and `nl` (Newfoundland and Labrador; $53.99, +$32.99). `atlantic` keeps its key but
+      is now NS, NB and PEI only. Routing verified with `scripts/check-zone-routing.ts`.
+      Two survey runs minutes apart disagreed by up to $5 (a carrier that answers late is missing),
+      so fees use the dearer run. Not covered: boxes larger or heavier than 40x30x30 cm / 4 kg,
+      Labrador City and Goose Bay (never quoted, on the `nl` rate), and P0T towns on `on-north`.
+      Re-run the survey every couple of months and before the Christmas rush.
+- [x] **United States is by request** (owner, 15 Nov 2026). No US zone and no checkout path: a ZIP
+      gets "contact us for a quote", and the shipping page, FAQ and `llms.txt` say the same. A real
+      US shipment of food needs FDA Prior Notice and duties paperwork; check before quoting one.
 
 - [ ] **Enter closed days** in Admin -> Settings -> Delivery (built 5 Nov 2026), e.g. 2026-12-25,
       2026-12-26, 2027-01-01, and any days off. Nothing is closed until listed there.

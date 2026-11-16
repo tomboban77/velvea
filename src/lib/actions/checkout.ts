@@ -918,20 +918,14 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
         match.reason === "invalid-postal"
           ? say(
               locale,
-              "That doesn't look like a Canadian postal code. Please check it.",
-              "Ce code postal canadien semble incorrect. Veuillez le vérifier."
+              "That doesn't look like a Canadian postal code. Please check it. For a gift going to the United States, contact us for a quote.",
+              "Ce code postal canadien semble incorrect. Veuillez le vérifier. Pour un envoi aux États-Unis, écrivez-nous pour obtenir un prix."
             )
           : match.reason === "quote"
           ? say(
               locale,
               "We can reach this address, but it has to be quoted by hand. Please contact us and we'll arrange it.",
               "Nous pouvons livrer à cette adresse, mais le tarif doit être établi manuellement. Veuillez nous contacter."
-            )
-          : match.province === "QC"
-          ? say(
-              locale,
-              "We don't ship to Quebec yet. Pickup from our Mississauga studio is available for any address.",
-              "Nous n'expédions pas encore au Québec. Le ramassage à notre atelier de Mississauga demeure possible."
             )
           : say(
               locale,

@@ -356,7 +356,7 @@
     "items": [
       {
         "q": "Où livrez-vous ?",
-        "a": "Partout au Canada. Nous livrons nous-mêmes à Mississauga et dans le Grand Toronto, y compris le jour même pour les commandes admissibles, et nous expédions par transporteur avec suivi dans le reste de l’Ontario, les provinces de l’Atlantique, les Prairies et la Colombie-Britannique. Le Québec arrive bientôt; le Yukon et les communautés éloignées font l’objet d’un tarif établi à la main. Le ramassage à notre atelier de Mississauga est gratuit, sur rendez-vous."
+        "a": "Partout au Canada. Nous livrons nous-mêmes à Mississauga et dans le Grand Toronto, y compris le jour même pour les commandes admissibles, et nous expédions par transporteur avec suivi dans le reste de l’Ontario, au Québec, dans les provinces de l’Atlantique, les Prairies et en Colombie-Britannique. Le Yukon et les communautés éloignées font l’objet d’un tarif établi à la main. Le ramassage à notre atelier de Mississauga est gratuit, sur rendez-vous."
       },
       {
         "q": "Un message cadeau est-il inclus ?",
@@ -385,7 +385,7 @@
       },
       {
         "q": "Expédiez-vous des paniers-cadeaux partout au Canada ?",
-        "a": "Oui. Les paniers expédiables voyagent par transporteur avec suivi dans le reste de l'Ontario, les provinces de l'Atlantique, le Manitoba, la Saskatchewan, l'Alberta et la Colombie-Britannique, habituellement en deux à six jours ouvrables. Le Québec arrive bientôt. Les paniers frais, réfrigérés et fleuris sont réservés à la livraison locale."
+        "a": "Oui. Les paniers expédiables voyagent par transporteur avec suivi dans le reste de l'Ontario, au Québec, dans les provinces de l'Atlantique, au Manitoba, en Saskatchewan, en Alberta et en Colombie-Britannique, habituellement en deux à sept jours ouvrables. Pour les États-Unis, écrivez-nous et nous établirons un prix à la main. Les paniers frais, réfrigérés et fleuris sont réservés à la livraison locale."
       },
       {
         "q": "Puis-je faire livrer un panier de Noël le jour même ?",
@@ -676,7 +676,7 @@
     "nextDayH": "Livraison locale le lendemain",
     "nextDayLede": "Un peu plus loin, livré par notre équipe le prochain jour disponible.",
     "shippingH": "Expédié par transporteur",
-    "shippingLede": "Livraison par transporteur avec suivi dans le reste de l’Ontario, les provinces de l’Atlantique, les Prairies et la Colombie-Britannique. Le Québec arrive bientôt. Les paniers frais et réfrigérés sont réservés à la livraison locale.",
+    "shippingLede": "Livraison par transporteur avec suivi dans le reste de l’Ontario, au Québec, dans les provinces de l’Atlantique, les Prairies et en Colombie-Britannique. Les paniers frais et réfrigérés sont réservés à la livraison locale.",
     "pickupNote": "Vous préférez venir chercher ? Le ramassage à notre atelier de Mississauga est toujours gratuit et sur rendez-vous ; nous vous écrivons pour convenir d'une heure dès que votre panier est prêt.",
     "seePolicy": "Coûts et politique de livraison en détail",
     "cardSameDay": "Le jour même avant {time}",

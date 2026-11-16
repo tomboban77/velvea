@@ -135,16 +135,16 @@ export async function quoteDelivery(
   if (!match.ok) {
     const message =
       match.reason === "invalid-postal"
-        ? say("Enter a Canadian postal code.", "Entrez un code postal canadien.")
+        ? // US gifts are arranged by hand (owner decision, 15 Nov 2026): a ZIP
+          // can never be priced here, so the message says where to go instead.
+          say(
+            "Enter a Canadian postal code. Sending to the United States? Contact us for a quote.",
+            "Entrez un code postal canadien. Un envoi aux États-Unis? Écrivez-nous pour obtenir un prix."
+          )
         : match.reason === "quote"
         ? say(
             "We can reach this address, but it has to be quoted by hand. Please contact us.",
             "Nous pouvons livrer à cette adresse, mais le tarif doit être établi manuellement. Veuillez nous contacter."
-          )
-        : match.province === "QC"
-        ? say(
-            "We don't ship to Quebec yet. Pickup is available for any address.",
-            "Nous n'expédions pas encore au Québec. Le ramassage demeure possible."
           )
         : say(
             "We don't deliver to this area yet. Pickup is available for any address.",

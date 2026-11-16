@@ -1,7 +1,7 @@
 /**
  * GA4 ecommerce events. Client-side only; every call is a no-op when GA isn't
- * configured. Consent is handled by Consent Mode in <GoogleAnalytics>: before
- * the visitor accepts, these go out as cookieless pings, never with a cookie.
+ * configured. <GoogleAnalytics> loads the tag only after the visitor accepts
+ * the banner (Law 25), so before that there is no gtag and these are dropped.
  *
  * Revenue reported here will always sit below Stripe's (declined consent, ad
  * blockers). Stripe is the source of truth; GA is for funnels and sources.
@@ -33,8 +33,9 @@ function toGaItems(items: AnalyticsItem[]) {
 /**
  * The GA tag is injected after hydration and after the page's own effects, so
  * an event fired on first load (view_item, purchase) would find no gtag yet and
- * be lost. Wait briefly for it; the inline stub isn't blocked by ad blockers,
- * so it turns up within a frame or two whenever GA is configured.
+ * be lost. Wait briefly for it: for a visitor who has accepted, the inline
+ * stub turns up within a frame or two. For one who has not, the retries run
+ * out after five seconds and the event is dropped, which is the intent.
  */
 function gtag(...args: unknown[]) {
   if (!ENABLED || typeof window === "undefined") return;

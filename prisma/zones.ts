@@ -177,10 +177,11 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // several hundred smaller places nobody would have remembered to list.
     fsaLetters: ["K", "L", "N"],
     provinces: ["ON"],
-    // From the ShipTime survey (npm run survey:shipping, Oct 2026): the
-    // dearest town, Kingston/Ottawa, is $25.80 tax-included by Canada Post
-    // Regular, plus ~$3 packing. The old $19.99 lost ~$9 on every parcel.
-    baseFeeCents: 2899,
+    // From the ShipTime survey (npm run survey:shipping, 15 Nov 2026): the
+    // dearest town, Kingston/Ottawa, is $25.49 tax-included by Canada Post
+    // Regular, plus ~$3 packing and the $3 buffer. The old $19.99 lost ~$9
+    // on every parcel; $28.99 broke even with nothing to spare.
+    baseFeeCents: 3199,
     extraItemCents: 1599, // a second basket is a second parcel
     minLeadDays: 2,
     maxLeadDays: 4,
@@ -192,20 +193,39 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     name: L("Northern Ontario", "Nord de l'Ontario"),
     kind: "SHIPPING",
     // P is Northern Ontario in its entirety: Sudbury, North Bay, Sault Ste.
-    // Marie, Timmins, Thunder Bay, Kenora. Sudbury is four hours away and
-    // Kenora is twenty, so this over-charges the near north on purpose until
-    // volume justifies splitting it.
+    // Marie, Timmins, Thunder Bay. The Kenora corner has its own zone below
+    // (on-northwest), matched by exact FSA ahead of this letter rule.
     fsaLetters: ["P"],
     provinces: ["ON"],
-    //
-    // Priced to Thunder Bay ($33.96 + packing), not Kenora ($40.56): pricing
-    // the whole zone to its far corner would overcharge Sudbury and North Bay
-    // ($28) by $13 to cover a handful of Kenora orders that lose ~$7 each.
-    baseFeeCents: 3699,
+    // Priced to Thunder Bay: $33.55 + $3 packing + $3 buffer.
+    baseFeeCents: 3999,
     extraItemCents: 1699,
     minLeadDays: 2,
     maxLeadDays: 5,
     position: 110,
+    active: true,
+  },
+  {
+    key: "on-northwest",
+    name: L("Northwestern Ontario", "Nord-ouest de l'Ontario"),
+    kind: "SHIPPING",
+    // Split out of on-north on 15 Nov 2026 (owner: no zone may sell at a
+    // loss). Kenora was $40.08 against a $36.99 fee, and Sioux Lookout is
+    // dearer still at $46.06; pricing all of the north to this corner would
+    // have charged Sudbury $14 too much.
+    //   P9N Kenora · P8N Dryden · P8T Sioux Lookout · P9A Fort Frances
+    //   P0X Kenora region · P0Y Whiteshell · P0W Rainy River
+    // P0T (Atikokan, Ignace, the north shore) stays on on-north: it is
+    // Thunder Bay's hinterland and no quote there has been checked.
+    fsaPrefixes: ["P9N", "P8N", "P8T", "P9A", "P0X", "P0Y", "P0W"],
+    provinces: ["ON"],
+    // Sioux Lookout $46.06 + $3 packing + $4 buffer. A second parcel here
+    // nearly doubles the label (Dryden $35.17 -> $66.69), hence the extra fee.
+    baseFeeCents: 5399,
+    extraItemCents: 3499,
+    minLeadDays: 4,
+    maxLeadDays: 6,
+    position: 105,
     active: true,
   },
   {
@@ -242,15 +262,19 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
 
   // --- Shipped: beyond Ontario ------------------------------------------------
   //
-  // Live since the national launch, except Quebec, which the site still lists
-  // as coming soon. They went on together, the remote carve-out included,
-  // so fly-in addresses are never sold a road rate. Kept in step with the live
-  // rows so a reseed of an empty database comes back the same.
+  // Live since the national launch; Quebec joined on 15 Nov 2026. They went
+  // on with the remote carve-out, so fly-in addresses are never sold a road
+  // rate. Kept in step with the live rows so a reseed of an empty database
+  // comes back the same.
   //
-  // Fees come from the ShipTime survey (npm run survey:shipping, Oct 2026,
+  // Fees come from the ShipTime survey (npm run survey:shipping, 15 Nov 2026,
   // 40x30x30 cm / 4 kg box): the dearest sampled town in each zone, tax
   // included — we are not HST-registered, so label tax is a real cost — plus
-  // ~$3 packing, rounded up to .99. Lead days add one for packing/handover.
+  // ~$3 packing and a buffer ($3, or $4 for Atlantic, Newfoundland and BC),
+  // rounded up to .99. The buffer exists because bare-cost fees turned into
+  // losses within a month: St. John's went from $39 to $46. Two runs minutes
+  // apart also disagreed (a carrier that answers late is simply missing), so
+  // each fee uses the dearer of the two. Lead days add one for packing.
   {
     key: "ca-remote",
     name: L("Remote communities", "Communautés éloignées"),
@@ -273,23 +297,27 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "qc-ground",
     name: L("Quebec", "Québec"),
     kind: "SHIPPING",
-    // Montréal/Québec/Sherbrooke $25.46 by Canada Post Regular, 3-4 days.
+    // Québec City $28.47 by Canpar when Canada Post Regular ($25.16) does not
+    // answer; priced to the dearer one, + $3 packing + $3 buffer.
     fsaLetters: ["G", "H", "J"],
     provinces: ["QC"],
-    baseFeeCents: 2899,
+    baseFeeCents: 3499,
     extraItemCents: 1499,
     minLeadDays: 3,
     maxLeadDays: 5,
     position: 120,
-    active: false,
+    active: true, // opened 15 Nov 2026 (owner decision)
   },
   {
     key: "atlantic",
-    name: L("Atlantic Canada", "Provinces de l'Atlantique"),
+    // The key predates the split and is recorded on past orders, so it stays
+    // "atlantic" though Newfoundland now has its own zone below.
+    name: L("Nova Scotia, New Brunswick and PEI", "Nouvelle-Écosse, Nouveau-Brunswick et Î.-P.-É."),
     kind: "SHIPPING",
-    // St. John's sets it: $39.43 by GLS, 5 days. Halifax is $33.31.
-    fsaLetters: ["A", "B", "C", "E"],
-    provinces: ["NL", "NS", "PE", "NB"],
+    // Moncton/Fredericton/Charlottetown $35.70 by Canpar + $3 packing + $4
+    // buffer: the fee did not move when Newfoundland left.
+    fsaLetters: ["B", "C", "E"],
+    provinces: ["NS", "PE", "NB"],
     baseFeeCents: 4299,
     extraItemCents: 2499,
     minLeadDays: 3,
@@ -298,13 +326,32 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     active: true, // live since the national launch
   },
   {
+    key: "nl",
+    name: L("Newfoundland and Labrador", "Terre-Neuve-et-Labrador"),
+    kind: "SHIPPING",
+    // Split out of atlantic on 15 Nov 2026: St. John's rose to $46.41 (Canpar)
+    // against a $42.99 fee, and Corner Brook is $45.34. + $3 packing + $4
+    // buffer. Coastal Labrador (A0P) is still quoted by hand via ca-remote.
+    // Residual risk: Labrador City and Happy Valley-Goose Bay (A2V, A0P/A0R)
+    // have not been quoted and ride on this rate.
+    fsaLetters: ["A"],
+    provinces: ["NL"],
+    baseFeeCents: 5399,
+    extraItemCents: 3299, // Corner Brook: a second parcel adds $29.90
+    minLeadDays: 5,
+    maxLeadDays: 7,
+    position: 135,
+    active: true,
+  },
+  {
     key: "prairies",
     name: L("Prairies", "Prairies"),
     kind: "SHIPPING",
-    // Calgary/Edmonton $34.42 by Canpar, 3 days. Winnipeg is $31.54.
+    // Calgary $38.77 by Canpar on the dearer run ($34.02 on the other),
+    // + $3 packing + $3 buffer. Winnipeg is $31.17.
     fsaLetters: ["R", "S", "T"],
     provinces: ["MB", "SK", "AB"],
-    baseFeeCents: 3799,
+    baseFeeCents: 4499,
     extraItemCents: 2199,
     minLeadDays: 3,
     maxLeadDays: 5,
@@ -315,11 +362,12 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "bc",
     name: L("British Columbia", "Colombie-Britannique"),
     kind: "SHIPPING",
-    // Prince George $38.70 by Canpar, 5 days. Vancouver is $35.14 in 4.
+    // Prince George $38.24 by Canpar, 5 days, + $3 packing + $4 buffer.
+    // Vancouver is $34.72 in 4.
     // Five days in a truck: only baskets marked shippable should reach here.
     fsaLetters: ["V"],
     provinces: ["BC"],
-    baseFeeCents: 4199,
+    baseFeeCents: 4599,
     extraItemCents: 2299,
     minLeadDays: 4,
     maxLeadDays: 6,

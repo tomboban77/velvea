@@ -14,7 +14,7 @@ const EN = {
 
   whereH: "Where we deliver",
   whereP1:
-    "We deliver across Canada. Orders in Mississauga and the Greater Toronto Area are delivered by us directly, with same-day delivery on eligible orders. Everywhere else in Ontario, and the Atlantic provinces, the Prairies and British Columbia, travels with a tracked courier. Shipping to Quebec is coming soon. Yukon and a few remote fly-in communities are priced by hand: checkout will ask you to contact us. We do not deliver to the Northwest Territories or Nunavut.",
+    "We deliver across Canada. Orders in Mississauga and the Greater Toronto Area are delivered by us directly, with same-day delivery on eligible orders. Everywhere else in Ontario, and Quebec, the Atlantic provinces, the Prairies and British Columbia, travels with a tracked courier. Yukon and a few remote fly-in communities are priced by hand: checkout will ask you to contact us. We do not deliver to the Northwest Territories or Nunavut. For a gift going to the United States, contact us before ordering and we will tell you what we can send and what it costs.",
   whereP2:
     "Your delivery options and their exact cost appear at checkout as soon as you enter the recipient's postal code. It is the postal code, not the city name, that determines the area, so there is no guesswork about whether an address qualifies.",
 
@@ -57,7 +57,7 @@ const FR: typeof EN = {
 
   whereH: "Où nous livrons",
   whereP1:
-    "Nous livrons partout au Canada. Les commandes à Mississauga et dans la région du Grand Toronto sont livrées directement par nous, le jour même pour les commandes admissibles. Partout ailleurs en Ontario, ainsi que dans les provinces de l’Atlantique, les Prairies et la Colombie-Britannique, elles voyagent avec un messager offrant le suivi. L’expédition vers le Québec arrive bientôt. Le Yukon et quelques communautés éloignées accessibles par avion font l’objet d’un tarif établi à la main : la caisse vous invitera à nous contacter. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut.",
+    "Nous livrons partout au Canada. Les commandes à Mississauga et dans la région du Grand Toronto sont livrées directement par nous, le jour même pour les commandes admissibles. Partout ailleurs en Ontario, ainsi qu’au Québec, dans les provinces de l’Atlantique, les Prairies et en Colombie-Britannique, elles voyagent avec un messager offrant le suivi. Le Yukon et quelques communautés éloignées accessibles par avion font l’objet d’un tarif établi à la main : la caisse vous invitera à nous contacter. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut. Pour un cadeau destiné aux États-Unis, écrivez-nous avant de commander : nous vous dirons ce que nous pouvons envoyer et à quel prix.",
   whereP2:
     "Vos options de livraison et leur coût exact s'affichent à la caisse dès que vous saisissez le code postal du destinataire. C'est le code postal, et non le nom de la ville, qui détermine le secteur, de sorte qu'il n'y a aucune incertitude quant à l'admissibilité d'une adresse.",
 

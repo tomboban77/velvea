@@ -10,7 +10,8 @@ rating from the Google Business Profile (7 reviews); the quoted review is the Bi
 Bloom Box review, copied verbatim. No order counts, customer numbers or competitor names.
 
 Owner to check: if the fees, cutoffs or shipping provinces change, this article quotes them and
-needs the same edit. Quebec is described as "coming soon".
+needs the same edit. Updated 15 Nov 2026 (`scripts/article-shipping-copy.ts`): Quebec is open and
+Ontario shipping starts at $31.99.
 
 | Field | Value |
 |---|---|
@@ -79,7 +80,7 @@ Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans l
 <p>We also cap how many local deliveries we take each day. Once a day is full, checkout offers the next open one instead of promising something we can't keep. You can check your own area on our <a href="/delivery">delivery page</a>, city by city.</p>
 
 <h2>Beyond the GTA: shipping across Canada</h2>
-<p>A lot of people in the GTA have family in other provinces, and a gift for them should not need a second shop. So baskets that travel well now ship by tracked courier across the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia, with Quebec coming soon. Shipping starts at $28.99 within Ontario, and the exact price for any address appears at checkout as soon as you enter the postal code. Anything fresh, chilled or likely to melt stays local, and checkout tells you before you pay rather than after. The details are on our <a href="/shipping">shipping page</a>.</p>
+<p>A lot of people in the GTA have family in other provinces, and a gift for them should not need a second shop. So baskets that travel well now ship by tracked courier across the rest of Ontario, Quebec, the Atlantic provinces, the Prairies and British Columbia. Shipping starts at $31.99 within Ontario, and the exact price for any address appears at checkout as soon as you enter the postal code. Anything fresh, chilled or likely to melt stays local, and checkout tells you before you pay rather than after. The details are on our <a href="/shipping">shipping page</a>.</p>
 
 <h2>Working with local makers</h2>
 <p>Part of growing here is working with other small businesses that are doing the same. This autumn we started adding hand-poured candles from <a href="/guides/inara-candles-corporate-gifts">INARA in Milton</a> to our corporate gifts, and we are talking to more Ontario makers about chocolate, tea and skincare. If you make something that belongs in a gift basket, our <a href="/partners">partners page</a> explains what we look for.</p>
@@ -93,7 +94,7 @@ Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans l
 <p>Reviews like that matter more to a small business than any advert. If we have delivered a gift for you, we would be grateful if you left one on Google too.</p>
 
 <h2>What comes next</h2>
-<p>Over the coming months we will open shipping to Quebec, add more local makers, and keep refining the baskets people order most. The plan hasn't changed: a gift that looks as good on the doorstep as it did on the screen, delivered when it was promised. If you have someone to surprise this season, <a href="/baskets">browse the full collection</a>, or read our guide to <a href="/guides/christmas-gift-baskets-gta">Christmas gift baskets</a> to plan ahead.</p>
+<p>Over the coming months we will add more local makers, and keep refining the baskets people order most. The plan hasn't changed: a gift that looks as good on the doorstep as it did on the screen, delivered when it was promised. If you have someone to surprise this season, <a href="/baskets">browse the full collection</a>, or read our guide to <a href="/guides/christmas-gift-baskets-gta">Christmas gift baskets</a> to plan ahead.</p>
 ```
 
 ## Body (FR)
@@ -112,7 +113,7 @@ Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans l
 <p>Nous limitons aussi le nombre de livraisons locales par jour. Lorsqu'une journée est complète, la caisse propose la suivante au lieu de promettre ce que nous ne pourrions pas tenir. Vous pouvez vérifier votre secteur, ville par ville, sur notre <a href="/fr/delivery">page de livraison</a>.</p>
 
 <h2>Au-delà du Grand Toronto : l'expédition partout au Canada</h2>
-<p>Beaucoup de gens dans le Grand Toronto ont de la famille dans d’autres provinces, et un cadeau pour eux ne devrait pas exiger une autre boutique. Les paniers qui voyagent bien sont donc maintenant expédiés par transporteur avec suivi dans le reste de l'Ontario, les provinces de l'Atlantique, les Prairies et la Colombie-Britannique, et le Québec arrive bientôt. L'expédition commence à 28,99 $ en Ontario, et le prix exact pour une adresse s'affiche à la caisse dès que vous entrez le code postal. Tout ce qui est frais, réfrigéré ou susceptible de fondre reste local, et la caisse vous en avise avant le paiement plutôt qu'après. Les détails sont sur notre <a href="/fr/shipping">page d'expédition</a>.</p>
+<p>Beaucoup de gens dans le Grand Toronto ont de la famille dans d’autres provinces, et un cadeau pour eux ne devrait pas exiger une autre boutique. Les paniers qui voyagent bien sont donc maintenant expédiés par transporteur avec suivi dans le reste de l'Ontario, le Québec, les provinces de l'Atlantique, les Prairies et la Colombie-Britannique. L'expédition commence à 31,99 $ en Ontario, et le prix exact pour une adresse s'affiche à la caisse dès que vous entrez le code postal. Tout ce qui est frais, réfrigéré ou susceptible de fondre reste local, et la caisse vous en avise avant le paiement plutôt qu'après. Les détails sont sur notre <a href="/fr/shipping">page d'expédition</a>.</p>
 
 <h2>Travailler avec des artisans d'ici</h2>
 <p>Grandir ici, c'est aussi travailler avec d'autres petites entreprises qui font le même chemin. Cet automne, nous avons commencé à ajouter à nos cadeaux d'entreprise des bougies coulées à la main par <a href="/fr/guides/inara-candles-corporate-gifts">INARA, à Milton</a>, et nous discutons avec d'autres artisans ontariens de chocolat, de thé et de soins. Si vous fabriquez quelque chose qui a sa place dans un panier-cadeau, notre <a href="/fr/partners">page partenaires</a> explique ce que nous recherchons.</p>
@@ -126,5 +127,5 @@ Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans l
 <p>(L'emballage était magnifique, tout était joliment disposé et le cadeau en paraissait encore plus spécial.) Pour une petite entreprise, un avis comme celui-là compte plus que n'importe quelle publicité. Si nous avons livré un cadeau pour vous, nous vous serions reconnaissants d'en laisser un sur Google, vous aussi.</p>
 
 <h2>La suite</h2>
-<p>Dans les prochains mois, nous ouvrirons l'expédition vers le Québec, ajouterons d'autres artisans d'ici et continuerons d'améliorer les paniers les plus commandés. Le plan n'a pas changé : un cadeau aussi beau sur le pas de la porte qu'à l'écran, livré au moment promis. Si vous avez quelqu'un à surprendre cette saison, <a href="/fr/baskets">parcourez toute la collection</a>, ou lisez notre guide des <a href="/fr/guides/christmas-gift-baskets-gta">paniers-cadeaux de Noël</a> pour planifier d'avance.</p>
+<p>Dans les prochains mois, nous ajouterons d'autres artisans d'ici et continuerons d'améliorer les paniers les plus commandés. Le plan n'a pas changé : un cadeau aussi beau sur le pas de la porte qu'à l'écran, livré au moment promis. Si vous avez quelqu'un à surprendre cette saison, <a href="/fr/baskets">parcourez toute la collection</a>, ou lisez notre guide des <a href="/fr/guides/christmas-gift-baskets-gta">paniers-cadeaux de Noël</a> pour planifier d'avance.</p>
 ```
