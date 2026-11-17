@@ -8,6 +8,7 @@ import {
   OrderNotes,
   OrderRefundControl,
 } from "@/components/admin/OrderStatusControl";
+import { ProfitControl } from "@/components/admin/ProfitControl";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
 import { ArrowLeft, Printer } from "lucide-react";
@@ -189,6 +190,15 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           <Card>
             <h2 className="mb-3 font-display text-lg">Status</h2>
             <OrderStatusControl id={order.id} current={order.status} />
+          </Card>
+
+          <Card>
+            <h2 className="mb-1 font-display text-lg">Profit</h2>
+            <p className="mb-3 text-xs text-muted">
+              What you kept on this order after costs. Internal only; counts toward the dashboard
+              total once the order is paid.
+            </p>
+            <ProfitControl id={order.id} initialCents={order.profitCents} kind="order" />
           </Card>
 
           <Card>

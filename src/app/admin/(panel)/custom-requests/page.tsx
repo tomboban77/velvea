@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader, Card, Badge, EmptyState } from "@/components/admin/ui";
 import { InquiryStatusControl } from "@/components/admin/InquiryStatusControl";
+import { ProfitControl } from "@/components/admin/ProfitControl";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { formatStoreDate } from "@/lib/dates";
 import { Mail, Phone, MessageSquareText, ShoppingBag, Sparkles } from "lucide-react";
@@ -134,7 +135,13 @@ export default async function CustomRequestsPage() {
                   {r.products}
                 </p>
               </div>
-              <InquiryStatusControl id={r.id} current={r.status} kind="custom" />
+              <div className="w-full shrink-0 space-y-3 lg:w-52">
+                <InquiryStatusControl id={r.id} current={r.status} kind="custom" />
+                <div>
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">Profit</p>
+                  <ProfitControl id={r.id} initialCents={r.profitCents} kind="custom" />
+                </div>
+              </div>
             </Card>
             );
           })}

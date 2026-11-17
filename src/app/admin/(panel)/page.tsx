@@ -4,6 +4,14 @@ import { PageHeader, StatCard, Card, Badge, EmptyState } from "@/components/admi
 import { formatMoney, formatDate } from "@/lib/utils";
 import { Package, ShoppingCart, Star, Building2, MessageSquareText, ArrowRight } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth";
+import type { OrderStatus } from "@prisma/client";
+
+/**
+ * Orders that hold money. Revenue and profit both count only these, so a
+ * cancelled or refunded order drops out of the profit total even if a figure
+ * was entered on it.
+ */
+const PAID: OrderStatus[] = ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"];
 
 async function getDashboard() {
   try {
@@ -15,6 +23,8 @@ async function getDashboard() {
       newInquiries,
       newCustomRequests,
       paidAgg,
+      profitMissing,
+      customProfitAgg,
       recentOrders,
     ] = await Promise.all([
       prisma.product.count(),
@@ -24,8 +34,14 @@ async function getDashboard() {
       prisma.corporateInquiry.count({ where: { status: "NEW" } }),
       prisma.customBasketRequest.count({ where: { status: "NEW" } }),
       prisma.order.aggregate({
-        where: { status: { in: ["PAID", "PROCESSING", "FULFILLED", "SHIPPED", "DELIVERED"] } },
-        _sum: { totalCents: true },
+        where: { status: { in: PAID } },
+        _sum: { totalCents: true, profitCents: true },
+      }),
+      prisma.order.count({ where: { status: { in: PAID }, profitCents: null } }),
+      // A lost request made nothing, whatever was typed before it fell through.
+      prisma.customBasketRequest.aggregate({
+        where: { status: { not: "LOST" } },
+        _sum: { profitCents: true },
       }),
       prisma.order.findMany({
         orderBy: { createdAt: "desc" },
@@ -49,6 +65,9 @@ async function getDashboard() {
       newInquiries,
       newCustomRequests,
       revenue: paidAgg._sum.totalCents ?? 0,
+      // Entered by hand on each order and custom request; unfilled ones add nothing.
+      profit: (paidAgg._sum.profitCents ?? 0) + (customProfitAgg._sum.profitCents ?? 0),
+      profitMissing,
       recentOrders,
     };
   } catch {
@@ -90,8 +109,17 @@ export default async function AdminDashboard() {
         subtitle="A snapshot of your store today."
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard label="Revenue" value={formatMoney(data.revenue)} hint="Paid orders" />
+        <StatCard
+          label="Total profit"
+          value={formatMoney(data.profit)}
+          hint={
+            data.profitMissing
+              ? `Orders + custom requests · ${data.profitMissing} paid order${data.profitMissing === 1 ? "" : "s"} not filled in`
+              : "Orders + custom requests"
+          }
+        />
         <StatCard label="Orders" value={data.orderCount} />
         <StatCard
           label="Products"

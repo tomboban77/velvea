@@ -34,6 +34,7 @@ const HEADERS = [
   "Tax",
   "Total",
   "Refunded",
+  "Profit",
   "Carrier",
   "Tracking",
   "Gift message",
@@ -103,6 +104,8 @@ export async function GET(req: NextRequest) {
         money(o.taxCents),
         money(o.totalCents),
         money(o.refundedCents),
+        // Blank, not 0.00, while nobody has entered it.
+        o.profitCents === null ? "" : money(o.profitCents),
         o.carrier ?? "",
         o.trackingNumber ?? "",
         o.giftMessage ?? "",

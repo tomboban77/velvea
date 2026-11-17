@@ -324,6 +324,10 @@ model Order {
 
   timeline   OrderEvent[]
   adminNotes String?
+  /// What the business kept on this order, typed in by an admin once the costs
+  /// are known. Null means not entered yet (different from a real 0); negative
+  /// is a loss. Never computed: there is no cost price anywhere in the catalogue.
+  profitCents Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -481,6 +485,9 @@ model CustomBasketRequest {
   productPriceCents Int?
   locale            String        @default("en")
   status            InquiryStatus @default(NEW)
+  /// Profit on the job this request turned into, typed in by an admin. These
+  /// are quoted and paid outside checkout, so no Order row carries the number.
+  profitCents       Int?
   createdAt         DateTime      @default(now())
 
   @@index([status, createdAt])

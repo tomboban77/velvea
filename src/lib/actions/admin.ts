@@ -193,6 +193,39 @@ export async function addOrderNote(input: z.input<typeof noteSchema>) {
   revalidatePath(`/admin/orders/${data.id}`);
 }
 
+/**
+ * Profit is typed in by hand (there is no cost price in the catalogue to derive
+ * it from). Null clears it back to "not entered"; negative records a loss.
+ */
+const profitSchema = z.object({
+  id,
+  profitCents: z.number().int().min(-100_000_000).max(100_000_000).nullable(),
+});
+
+export async function setOrderProfit(input: z.input<typeof profitSchema>) {
+  await guard("orders:write");
+  const data = parse(profitSchema, input);
+  await prisma.order.update({
+    where: { id: data.id },
+    data: { profitCents: data.profitCents },
+  });
+  revalidatePath(`/admin/orders/${data.id}`);
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+}
+
+/** Custom requests are quoted and paid outside checkout, so they carry their own profit. */
+export async function setCustomRequestProfit(input: z.input<typeof profitSchema>) {
+  await guard("inquiries:write");
+  const data = parse(profitSchema, input);
+  await prisma.customBasketRequest.update({
+    where: { id: data.id },
+    data: { profitCents: data.profitCents },
+  });
+  revalidatePath("/admin/custom-requests");
+  revalidatePath("/admin");
+}
+
 const refundSchema = z.object({
   id,
   amountCents: z.number().int().positive(),

@@ -116,6 +116,7 @@ export default async function OrdersPage({
                   <th className="px-3 py-3 font-medium">Items</th>
                   <th className="px-3 py-3 font-medium">Status</th>
                   <th className="px-3 py-3 text-right font-medium">Total</th>
+                  <th className="px-5 py-3 text-right font-medium">Profit</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -137,6 +138,18 @@ export default async function OrdersPage({
                     </td>
                     <td className="px-3 py-3 text-right font-semibold text-ink">
                       {formatMoney(o.totalCents)}
+                    </td>
+                    {/* A dash is "not entered yet", which is not the same as $0. */}
+                    <td
+                      className={`px-5 py-3 text-right ${
+                        o.profitCents === null
+                          ? "text-muted"
+                          : o.profitCents < 0
+                            ? "font-semibold text-danger"
+                            : "font-semibold text-success"
+                      }`}
+                    >
+                      {o.profitCents === null ? "–" : formatMoney(o.profitCents)}
                     </td>
                   </tr>
                 ))}
