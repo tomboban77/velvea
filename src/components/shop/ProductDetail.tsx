@@ -631,7 +631,26 @@ export function ProductDetail({
             </>
           )}
 
-          <figure className="relative h-full max-h-[86vh] w-full max-w-[86vw]" onClick={(e) => e.stopPropagation()}>
+          {/* The figure fills 86% of the screen but the photo is letterboxed
+              inside it (object-contain), so "outside the image" has to be
+              measured against the drawn picture, not this box. Stopping every
+              click here left only the thin outer margin able to close. */}
+          <figure
+            className="relative h-full max-h-[86vh] w-full max-w-[86vw]"
+            onClick={(e) => {
+              const img = e.currentTarget.querySelector("img");
+              if (!img || !img.naturalWidth || !img.naturalHeight) return;
+              const box = e.currentTarget.getBoundingClientRect();
+              const scale = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
+              const w = img.naturalWidth * scale;
+              const h = img.naturalHeight * scale;
+              const left = box.left + (box.width - w) / 2;
+              const top = box.top + (box.height - h) / 2;
+              const onPhoto =
+                e.clientX >= left && e.clientX <= left + w && e.clientY >= top && e.clientY <= top + h;
+              if (onPhoto) e.stopPropagation();
+            }}
+          >
             <Image
               src={product.images[activeImg].url}
               alt={product.images[activeImg].alt || product.name}

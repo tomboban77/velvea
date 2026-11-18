@@ -396,6 +396,29 @@ export function ProductForm({
             <Field label="Price">
               <MoneyInput cents={d.priceCents} onChange={(c) => set("priceCents", c ?? 0)} />
             </Field>
+            {/* With sizes, this price only feeds the listing cards; the product
+                page and checkout charge the chosen size's own price. Changing
+                one without the other left a box listed at $129 and sold at $109. */}
+            {d.variants.some((v) => v.priceCents !== d.priceCents) && (
+              <div className="rounded-lg border border-gold/40 bg-gold/10 px-3 py-2.5 text-xs text-ink-soft">
+                <p>
+                  This product has sizes with their own prices. Customers pay the size price on the
+                  product page and at checkout; the price above only shows on listing cards.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    set(
+                      "variants",
+                      d.variants.map((v) => ({ ...v, priceCents: d.priceCents }))
+                    )
+                  }
+                  className="mt-2 font-semibold text-violet hover:underline"
+                >
+                  Set every size to ${(d.priceCents / 100).toFixed(2)}
+                </button>
+              </div>
+            )}
             <Field label="Compare-at price" hint="Optional. Shows a strikethrough sale price.">
               <MoneyInput
                 cents={d.compareAtCents}
