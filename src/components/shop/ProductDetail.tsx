@@ -250,25 +250,28 @@ export function ProductDetail({
 
           {/* ---------- buy box ---------- */}
           <div>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
-              {badgeLabel && <span className={cn("badge", badge === "bestseller" ? "badge-plum" : "badge-gold")}>{badgeLabel}</span>}
-              {product.reviewCount > 0 ? (
-                <>
-                  <span className="stars" aria-hidden>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn(i < Math.round(product.rating) ? "fill-current" : "opacity-25")} />
-                    ))}
-                  </span>
-                  <a href="#reviews" className="underline underline-offset-4 hover:text-ink">
-                    {product.rating.toFixed(1)} · {t(product.reviewCount === 1 ? "review" : "reviews", { count: product.reviewCount })}
-                  </a>
-                </>
-              ) : (
-                <span>{tc("noReviewsYet")}</span>
-              )}
-            </div>
+            {/* A product with no reviews says nothing about them here: the row
+                is dropped entirely when there is no badge either, so the title
+                does not sit under an empty gap. */}
+            {(badgeLabel || product.reviewCount > 0) && (
+              <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+                {badgeLabel && <span className={cn("badge", badge === "bestseller" ? "badge-plum" : "badge-gold")}>{badgeLabel}</span>}
+                {product.reviewCount > 0 && (
+                  <>
+                    <span className="stars" aria-hidden>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={cn(i < Math.round(product.rating) ? "fill-current" : "opacity-25")} />
+                      ))}
+                    </span>
+                    <a href="#reviews" className="underline underline-offset-4 hover:text-ink">
+                      {product.rating.toFixed(1)} · {t(product.reviewCount === 1 ? "review" : "reviews", { count: product.reviewCount })}
+                    </a>
+                  </>
+                )}
+              </div>
+            )}
 
-            <h1 className="mt-3 font-display text-[2rem] font-medium leading-[1.08] text-ink balance sm:text-[2.5rem] xl:text-[2.75rem]">{product.name}</h1>
+            <h1 className="font-display text-[2rem] font-medium leading-[1.08] text-ink balance sm:text-[2.5rem] xl:text-[2.75rem]">{product.name}</h1>
             {product.tagline && <p className="mt-3 text-[1.05rem] leading-relaxed text-ink-soft pretty">{product.tagline}</p>}
 
             <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2">
