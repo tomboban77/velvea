@@ -47,14 +47,29 @@ export async function OccasionsRail() {
             const label = row ? tc(row.name, locale) : labelFor(o, locale);
             const Icon = ICONS[o.slug] ?? Gift;
             return (
-              <Link key={o.slug} href={`/occasions/${o.slug}`} className="occasion-tile">
-                <span className="occasion-icon">
-                  {row?.imageUrl ? (
-                    <Image src={row.imageUrl} alt="" fill sizes="72px" className="object-cover" />
-                  ) : (
+              <Link
+                key={o.slug}
+                href={`/occasions/${o.slug}`}
+                className={row?.imageUrl ? "occasion-tile occasion-tile-photo" : "occasion-tile"}
+              >
+                {row?.imageUrl ? (
+                  // A collection with a photograph shows it as a full-width
+                  // square across the top of the card (owner request: the
+                  // 72px disc cropped the photos down to a thumbnail).
+                  <span className="occasion-photo">
+                    <Image
+                      src={row.imageUrl}
+                      alt=""
+                      fill
+                      sizes="(max-width:1023px) 40vw, (max-width:1279px) 20vw, 13vw"
+                      className="object-cover"
+                    />
+                  </span>
+                ) : (
+                  <span className="occasion-icon">
                     <Icon size={28} strokeWidth={1.25} />
-                  )}
-                </span>
+                  </span>
+                )}
                 <p>{label}</p>
               </Link>
             );

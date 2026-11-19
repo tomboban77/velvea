@@ -996,6 +996,21 @@ select.field {
   transform: translateY(-1px);
 }
 .occasion-tile p { font-size: 0.9rem; font-weight: 600; line-height: 1.25; }
+/* Photo tiles: the picture runs edge to edge as a square and the label sits
+   under it, so the card's own border and radius frame the photo. Tiles without
+   a photo keep the medallion above. */
+.occasion-tile-photo { gap: 0; padding: 0; overflow: hidden; }
+.occasion-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--color-lilac);
+}
+.occasion-photo img { transition: transform 0.5s var(--ease-out-soft); }
+.occasion-tile-photo:hover .occasion-photo img { transform: scale(1.04); }
+.occasion-tile-photo p { padding: 0.8rem 0.6rem 0.9rem; }
 
 /* Full-bleed feature bands. A deep aubergine-violet: the logo hue held at a
    low lightness and eased off full saturation, which reads as considered
