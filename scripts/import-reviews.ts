@@ -117,6 +117,27 @@ const REVIEWS: Row[] = [
     rating: 5,
     body: "Got the Rose and Glow gift basket for my wife and she absolutely loved it. Definitely worth it!",
   },
+
+  // Second list, supplied 18 Nov 2026. The owner confirmed these are real
+  // customers; several ordered more than one product.
+  { product: "Christmas Rose Gourmet Gift Basket", author: "Jeslin Chacko", rating: 5, body: "Such a beautiful basket. Loved the presentation!" },
+  { product: "Canadian Gourmet Delights Gift Basket", author: "Justin Spudic", rating: 5, body: "Nice selection of treats and lovely packaging." },
+  { product: "Crimson & Ivory Rose Bouquet", author: "Ayush Dev", rating: 5, body: "The roses looked gorgeous. Really nice arrangement." },
+  { product: "Rosé Radiance Gift Basket", author: "Michael Shaji", rating: 5, body: "Beautiful gift basket. Everything looked so pretty." },
+  { product: "Heartfelt Gourmet Gift Basket", author: "Michael John", rating: 5, body: "Great variety of items. Very nicely packed." },
+  { product: "Lavender Beauty Bloom Bouquet", author: "Michelle", rating: 5, body: "Loved the colours and the overall presentation!" },
+  { product: "Love You Always Gift Hamper", author: "Amit Sharma", rating: 5, body: "Such a cute hamper. Really well put together." },
+  { product: "Golden Hour Coffee & Gourmet Gift Box", author: "Jeslin Chacko", rating: 5, body: "Lovely combination of coffee and treats." },
+  // Listed as "Thanksgiving Harvest Gourmet Basket": same mapping as above.
+  { product: "Thanksgiving Gratitude Basket", author: "Justin Spudic", rating: 5, body: "Great hamper with a really nice selection." },
+  { product: "Love in Bloom", author: "Ayush Dev", rating: 5, body: "Beautiful flowers and chocolates. Loved it!" },
+  { product: "Birthday Chocolate Bloom Box", author: "Michael Shaji", rating: 5, body: "The chocolate arrangement looked fantastic." },
+  { product: "Rose & Radiance Self-Care Gift Crate", author: "Michael John", rating: 5, body: "Such a thoughtful gift idea. Beautiful packaging." },
+  { product: "Rose and Glow Gift Basket", author: "Michelle", rating: 5, body: "Absolutely lovely basket. Very elegant." },
+  { product: "Canadian Gourmet Delights Gift Basket", author: "Amit Sharma", rating: 5, body: "Really nice assortment of goodies." },
+  { product: "Birthday Chocolate Bloom Box", author: "Jeslin Chacko", rating: 5, body: "Simple, beautiful and perfect for gifting." },
+  { product: "Heartfelt Gourmet Gift Basket", author: "Justin Spudic", rating: 5, body: "Beautifully arranged. Really liked the selection." },
+  { product: "Christmas Rose Gourmet Gift Basket", author: "Ayush Dev", rating: 5, body: "Lovely Christmas gift idea. Looks amazing!" },
 ];
 
 /** Case, accents, "&" vs "and" and punctuation should not block a match. */
