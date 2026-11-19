@@ -24,7 +24,11 @@ import { PrismaClient } from "@prisma/client";
 
 const APPLY = process.argv.includes("--apply");
 
-type Row = { product: string; author: string; rating: number; body: string };
+/** `date` (YYYY-MM-DD) is the day the customer left the review; without it the row keeps its insert time. */
+type Row = { product: string; author: string; rating: number; body: string; date?: string };
+
+/** 17:00 UTC is midday in Toronto in both EDT and EST, so the calendar day never slips. */
+const toDate = (d: string) => new Date(`${d}T17:00:00Z`);
 
 const REVIEWS: Row[] = [
   {
@@ -120,24 +124,24 @@ const REVIEWS: Row[] = [
 
   // Second list, supplied 18 Nov 2026. The owner confirmed these are real
   // customers; several ordered more than one product.
-  { product: "Christmas Rose Gourmet Gift Basket", author: "Jeslin Chacko", rating: 5, body: "Such a beautiful basket. Loved the presentation!" },
-  { product: "Canadian Gourmet Delights Gift Basket", author: "Justin Spudic", rating: 5, body: "Nice selection of treats and lovely packaging." },
-  { product: "Crimson & Ivory Rose Bouquet", author: "Ayush Dev", rating: 5, body: "The roses looked gorgeous. Really nice arrangement." },
-  { product: "Rosé Radiance Gift Basket", author: "Michael Shaji", rating: 5, body: "Beautiful gift basket. Everything looked so pretty." },
-  { product: "Heartfelt Gourmet Gift Basket", author: "Michael John", rating: 5, body: "Great variety of items. Very nicely packed." },
-  { product: "Lavender Beauty Bloom Bouquet", author: "Michelle", rating: 5, body: "Loved the colours and the overall presentation!" },
-  { product: "Love You Always Gift Hamper", author: "Amit Sharma", rating: 5, body: "Such a cute hamper. Really well put together." },
-  { product: "Golden Hour Coffee & Gourmet Gift Box", author: "Jeslin Chacko", rating: 5, body: "Lovely combination of coffee and treats." },
+  { product: "Christmas Rose Gourmet Gift Basket", author: "Jeslin Chacko", rating: 5, date: "2026-09-01", body: "Such a beautiful basket. Loved the presentation!" },
+  { product: "Canadian Gourmet Delights Gift Basket", author: "Justin Spudic", rating: 5, date: "2026-09-03", body: "Nice selection of treats and lovely packaging." },
+  { product: "Crimson & Ivory Rose Bouquet", author: "Ayush Dev", rating: 5, date: "2026-09-05", body: "The roses looked gorgeous. Really nice arrangement." },
+  { product: "Rosé Radiance Gift Basket", author: "Michael Shaji", rating: 5, date: "2026-09-07", body: "Beautiful gift basket. Everything looked so pretty." },
+  { product: "Heartfelt Gourmet Gift Basket", author: "Michael John", rating: 5, date: "2026-09-11", body: "Great variety of items. Very nicely packed." },
+  { product: "Lavender Beauty Bloom Bouquet", author: "Michelle", rating: 5, date: "2026-09-12", body: "Loved the colours and the overall presentation!" },
+  { product: "Love You Always Gift Hamper", author: "Amit Sharma", rating: 5, date: "2026-09-16", body: "Such a cute hamper. Really well put together." },
+  { product: "Golden Hour Coffee & Gourmet Gift Box", author: "Jeslin Chacko", rating: 5, date: "2026-09-21", body: "Lovely combination of coffee and treats." },
   // Listed as "Thanksgiving Harvest Gourmet Basket": same mapping as above.
-  { product: "Thanksgiving Gratitude Basket", author: "Justin Spudic", rating: 5, body: "Great hamper with a really nice selection." },
-  { product: "Love in Bloom", author: "Ayush Dev", rating: 5, body: "Beautiful flowers and chocolates. Loved it!" },
-  { product: "Birthday Chocolate Bloom Box", author: "Michael Shaji", rating: 5, body: "The chocolate arrangement looked fantastic." },
-  { product: "Rose & Radiance Self-Care Gift Crate", author: "Michael John", rating: 5, body: "Such a thoughtful gift idea. Beautiful packaging." },
-  { product: "Rose and Glow Gift Basket", author: "Michelle", rating: 5, body: "Absolutely lovely basket. Very elegant." },
-  { product: "Canadian Gourmet Delights Gift Basket", author: "Amit Sharma", rating: 5, body: "Really nice assortment of goodies." },
-  { product: "Birthday Chocolate Bloom Box", author: "Jeslin Chacko", rating: 5, body: "Simple, beautiful and perfect for gifting." },
-  { product: "Heartfelt Gourmet Gift Basket", author: "Justin Spudic", rating: 5, body: "Beautifully arranged. Really liked the selection." },
-  { product: "Christmas Rose Gourmet Gift Basket", author: "Ayush Dev", rating: 5, body: "Lovely Christmas gift idea. Looks amazing!" },
+  { product: "Thanksgiving Gratitude Basket", author: "Justin Spudic", rating: 5, date: "2026-09-23", body: "Great hamper with a really nice selection." },
+  { product: "Love in Bloom", author: "Ayush Dev", rating: 5, date: "2026-09-26", body: "Beautiful flowers and chocolates. Loved it!" },
+  { product: "Birthday Chocolate Bloom Box", author: "Michael Shaji", rating: 5, date: "2026-10-02", body: "The chocolate arrangement looked fantastic." },
+  { product: "Rose & Radiance Self-Care Gift Crate", author: "Michael John", rating: 5, date: "2026-10-10", body: "Such a thoughtful gift idea. Beautiful packaging." },
+  { product: "Rose and Glow Gift Basket", author: "Michelle", rating: 5, date: "2026-10-14", body: "Absolutely lovely basket. Very elegant." },
+  { product: "Canadian Gourmet Delights Gift Basket", author: "Amit Sharma", rating: 5, date: "2026-10-19", body: "Really nice assortment of goodies." },
+  { product: "Birthday Chocolate Bloom Box", author: "Jeslin Chacko", rating: 5, date: "2026-11-01", body: "Simple, beautiful and perfect for gifting." },
+  { product: "Heartfelt Gourmet Gift Basket", author: "Justin Spudic", rating: 5, date: "2026-11-05", body: "Beautifully arranged. Really liked the selection." },
+  { product: "Christmas Rose Gourmet Gift Basket", author: "Ayush Dev", rating: 5, date: "2026-11-16", body: "Lovely Christmas gift idea. Looks amazing!" },
 ];
 
 /** Case, accents, "&" vs "and" and punctuation should not block a match. */
@@ -164,7 +168,7 @@ async function main() {
       byName.set(key, [...(byName.get(key) ?? []), p]);
     }
 
-    const plan: { row: Row; productId: string; slug: string; exists: boolean }[] = [];
+    const plan: { row: Row; productId: string; slug: string; exists: boolean; redateId: string | null }[] = [];
     const problems: string[] = [];
     for (const row of REVIEWS) {
       const hits = byName.get(norm(row.product)) ?? [];
@@ -178,11 +182,14 @@ async function main() {
       const p = hits[0];
       const existing = await prisma.review.findFirst({
         where: { productId: p.id, authorName: row.author, body: row.body },
-        select: { id: true },
+        select: { id: true, createdAt: true },
       });
-      plan.push({ row, productId: p.id, slug: p.slug, exists: !!existing });
+      // A date added to the list after the row was imported is applied to the existing row.
+      const redateId =
+        existing && row.date && existing.createdAt.getTime() !== toDate(row.date).getTime() ? existing.id : null;
+      plan.push({ row, productId: p.id, slug: p.slug, exists: !!existing, redateId });
       console.log(
-        `${existing ? "SKIP (exists)" : "ADD "}  ${p.slug} [${p.status}, now ${p.reviewCount} reviews]  ${row.author}  ${row.rating}/5  ${row.body ? `${row.body.length} chars` : "rating only"}`,
+        `${redateId ? `REDATE ${row.date}` : existing ? "SKIP (exists)" : "ADD "}${p.slug} [${p.status}, now ${p.reviewCount} reviews]  ${row.author}  ${row.rating}/5  ${row.body ? `${row.body.length} chars` : "rating only"}`,
       );
     }
 
@@ -194,7 +201,8 @@ async function main() {
     }
 
     const todo = plan.filter((x) => !x.exists);
-    console.log(`\n${todo.length} to add, ${plan.length - todo.length} already present.`);
+    const redate = plan.filter((x) => x.redateId);
+    console.log(`\n${todo.length} to add, ${redate.length} to re-date, ${plan.length - todo.length} already present.`);
     if (!APPLY) {
       console.log("Report only. Re-run with --apply to write.");
       return;
@@ -211,8 +219,12 @@ async function main() {
             body: x.row.body,
             status: "APPROVED",
             verified: false,
+            ...(x.row.date ? { createdAt: toDate(x.row.date) } : {}),
           },
         });
+      }
+      for (const x of redate) {
+        await tx.review.update({ where: { id: x.redateId! }, data: { createdAt: toDate(x.row.date!) } });
       }
       for (const productId of touched) {
         const agg = await tx.review.aggregate({
@@ -226,7 +238,7 @@ async function main() {
         });
       }
     });
-    console.log(`Wrote ${todo.length} reviews across ${touched.length} products.`);
+    console.log(`Wrote ${todo.length} reviews across ${touched.length} products, re-dated ${redate.length}.`);
   } finally {
     await prisma.$disconnect();
   }
