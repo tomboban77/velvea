@@ -49,6 +49,7 @@ export const CATEGORIES: NavLink[] = [
   { slug: "fresh-fruit", en: "Fresh Fruit", fr: "Fruits frais" },
   { slug: "vegan", en: "Vegan", fr: "Végane" },
   { slug: "baby", en: "Baby", fr: "Bébé" },
+  { slug: "luxury", en: "Luxury", fr: "Luxe" },
 ];
 
 // Diwali is listed by its own name in French too: "fête des lumières" is used
