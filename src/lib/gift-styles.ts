@@ -120,6 +120,9 @@ export const GIFT_STYLES: GiftStyle[] = [
 /** Id of the gallery section; the header links to it on the home page. */
 export const GIFT_STYLES_ANCHOR = "gift-styles";
 
+/** The published guide the gallery links to (scripts/guides/custom-gift-hamper.ts). */
+export const GIFT_STYLES_GUIDE_SLUG = "custom-gift-hamper-how-to-order";
+
 export function getGiftStyle(slug: string | null | undefined): GiftStyle | null {
   if (!slug) return null;
   return GIFT_STYLES.find((s) => s.slug === slug) ?? null;

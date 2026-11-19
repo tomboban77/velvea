@@ -2,7 +2,7 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { GIFT_STYLES, GIFT_STYLES_ANCHOR } from "@/lib/gift-styles";
+import { GIFT_STYLES, GIFT_STYLES_ANCHOR, GIFT_STYLES_GUIDE_SLUG } from "@/lib/gift-styles";
 import { cn } from "@/lib/utils";
 
 /**
@@ -44,6 +44,15 @@ export async function StyleGallery({
           <p className="font-semibold text-ink">{t("conceptTitle")}</p>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-soft pretty">{t("note")}</p>
         </div>
+        {/* The guide is the long answer to "tell you what, exactly?". Its slug
+            is a published article (scripts/guides/custom-gift-hamper.ts); if
+            that guide is ever unpublished, remove this link with it. */}
+        <Link
+          href={`/guides/${GIFT_STYLES_GUIDE_SLUG}`}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-deep underline-offset-4 hover:underline"
+        >
+          {t("guideLink")} <ArrowRight className="h-4 w-4" />
+        </Link>
         <ul
           className={cn(
             "mt-9 items-start gap-x-6 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3",

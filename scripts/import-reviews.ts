@@ -150,6 +150,10 @@ const REVIEWS: Row[] = [
   { product: "The Gourmet Signature Gift Tray", author: "Karthika KG", rating: 4, date: "2026-09-17", body: "Loved how nicely everything was arranged. The tray looked elegant and made a lovely gift." },
   { product: "Christmas Gourmet Treasures Gift Box", author: "Subin Panicker", rating: 4, date: "2026-09-04", body: "A nice Christmas gift with a good mix of treats. Packaging was lovely too." },
   { product: "Love You Always Gift Hamper", author: "Tojo Zacharia", rating: 4, date: "2026-09-29", body: "Beautiful little hamper with a thoughtful selection of items. Really liked the overall presentation." },
+
+  // Fourth list, supplied 18 Nov 2026 without product names; the owner picked the products.
+  { product: "Love You Always Gift Hamper", author: "Jimiya", rating: 5, date: "2026-11-17", body: "Such a beautiful gift hamper! Loved the teddy bear, chocolates, and the little details that made it special. Everything was arranged so nicely, and the packaging looked lovely. A really sweet gift, and I'm very happy with it!" },
+  { product: "Welcome Little Princess Baby Gift Box", author: "Chikku", rating: 5, date: "2026-11-01", body: "A lovely baby gift box. The little outfits are adorable, and I really liked the selection of baby essentials. Everything was arranged beautifully with such pretty packaging." },
 ];
 
 /** Case, accents, "&" vs "and" and punctuation should not block a match. */
