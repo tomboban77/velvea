@@ -7,15 +7,26 @@ import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z.object({
   productId: z.string().min(1).max(64),
-  name: z.string().min(1).max(80),
+  name: z.string().trim().min(1).max(80),
   location: z.string().max(80).optional(),
   rating: z.number().int().min(1).max(5),
   title: z.string().max(120).optional(),
   body: z.string().min(4).max(2000),
-  email: z.string().email().max(200).optional(),
+  // The form has no email input and posts its initial "" for it, and posts
+  // turnstileToken as null until the widget answers (always, when Turnstile is
+  // not configured). Both used to fail validation, so every review was
+  // rejected with the "needs a name, a rating and a few words" message.
+  email: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().email().max(200).optional()
+  ),
   /** Honeypot — must stay empty. */
   company: z.string().max(200).optional().default(""),
-  turnstileToken: z.string().max(2048).optional(),
+  turnstileToken: z
+    .string()
+    .max(2048)
+    .nullish()
+    .transform((v) => v ?? undefined),
   locale: z.enum(["en", "fr"]).optional().default("en"),
 });
 
