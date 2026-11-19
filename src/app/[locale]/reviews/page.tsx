@@ -27,7 +27,9 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   const [reviews, stats] = await Promise.all([
     prisma.review
       .findMany({
-        where: { status: "APPROVED" },
+        // Rating-only rows (empty body) count in the aggregate below but are
+        // not listed: there is nothing to quote.
+        where: { status: "APPROVED", body: { not: "" } },
         orderBy: { createdAt: "desc" },
         take: 60,
         include: { product: { select: { name: true, slug: true } } },

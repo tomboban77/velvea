@@ -107,7 +107,9 @@ export async function getProductBySlug(slug: string) {
       ...productInclude,
       collections: { include: { collection: true } },
       reviews: {
-        where: { status: "APPROVED" },
+        // A rating left without a comment (empty body) counts toward
+        // avgRating / reviewCount but is not listed as a card.
+        where: { status: "APPROVED", body: { not: "" } },
         orderBy: { createdAt: "desc" },
         take: 12,
       },
@@ -337,7 +339,8 @@ export async function getCollections(
 export async function getApprovedReviews(limit = 6) {
   try {
     return await prisma.review.findMany({
-      where: { status: "APPROVED" },
+      // Rating-only rows (empty body) feed the averages, not the listing.
+      where: { status: "APPROVED", body: { not: "" } },
       orderBy: { createdAt: "desc" },
       take: limit,
       include: { product: { select: { slug: true, name: true } } },

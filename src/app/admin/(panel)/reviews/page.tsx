@@ -51,7 +51,7 @@ export default async function ReviewsPage() {
                   {r.verified && <Badge tone="iris">Verified</Badge>}
                 </div>
                 {r.title && <p className="mt-2 font-display text-lg">{r.title}</p>}
-                <p className="mt-1 text-sm text-ink-soft">&ldquo;{r.body}&rdquo;</p>
+                <p className="mt-1 text-sm text-ink-soft">{r.body ? <>&ldquo;{r.body}&rdquo;</> : "Rating only, no comment"}</p>
                 <p className="mt-2 text-xs text-muted">
                   {r.authorName}{r.authorLocation ? ` · ${r.authorLocation}` : ""} · on{" "}
                   <span className="font-medium">{t(r.product?.name, "en")}</span> · {formatDate(r.createdAt)}
