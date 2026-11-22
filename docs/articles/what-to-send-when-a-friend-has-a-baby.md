@@ -13,7 +13,7 @@ update the "Our two baby boxes" section.
 | Title (FR) | Quoi offrir quand des amis ont un bébé (et à quel moment) |
 | Slug | `what-to-send-when-a-friend-has-a-baby` |
 | Category | OCCASIONS |
-| Author | Velvéa |
+| Author | Velvea |
 | Read minutes | 5 |
 | Featured | Off |
 | Cover image | `import/images/babyhamper.png` |
@@ -34,7 +34,7 @@ La plupart des cadeaux de naissance arrivent la première semaine et sont trop p
 
 ## SEO title and description
 
-The site appends " · Velvéa" to these automatically.
+The site appends " · Velvea" to these automatically.
 
 EN title:
 

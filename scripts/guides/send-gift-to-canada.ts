@@ -66,7 +66,7 @@ export const sendGiftToCanada: GuideSeed = {
 
 <p>A gift bought from a Canadian business and delivered to a Canadian address never crosses a border. There is no declaration to fill in and no duty, and nobody at the other end has to pay anything. It also takes days, not weeks, which matters if it is already December.</p>
 
-<p>This is what we do. Velvéa is a gift studio in Mississauga, Ontario. Our own drivers deliver across Mississauga, Toronto and the Greater Toronto Area, and a tracked courier takes baskets to the rest of Ontario, Quebec, the Atlantic provinces, the Prairies and British Columbia. We do not deliver to the Northwest Territories or Nunavut, and Yukon is quoted individually. The <a href="/shipping">delivery page</a> lists every area, with costs and times.</p>
+<p>This is what we do. Velvea is a gift studio in Mississauga, Ontario. Our own drivers deliver across Mississauga, Toronto and the Greater Toronto Area, and a tracked courier takes baskets to the rest of Ontario, Quebec, the Atlantic provinces, the Prairies and British Columbia. We do not deliver to the Northwest Territories or Nunavut, and Yukon is quoted individually. The <a href="/shipping">delivery page</a> lists every area, with costs and times.</p>
 
 <h2>Paying from another country</h2>
 
@@ -165,7 +165,7 @@ export const sendGiftToCanada: GuideSeed = {
 
 <p>Un cadeau acheté d'une entreprise canadienne et livré à une adresse canadienne ne traverse aucune frontière. Il n'y a ni déclaration à remplir ni droits, et personne n'a rien à payer à l'arrivée. Il faut aussi compter des jours, pas des semaines, ce qui compte si décembre est déjà commencé.</p>
 
-<p>C'est ce que nous faisons. Velvéa est un atelier de cadeaux situé à Mississauga, en Ontario. Nos propres livreurs desservent Mississauga, Toronto et la région du Grand Toronto, et un messager offrant le suivi apporte les paniers dans le reste de l'Ontario, au Québec, dans les provinces de l'Atlantique, dans les Prairies et en Colombie-Britannique. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut, et le Yukon fait l'objet d'un prix sur demande. La <a href="/fr/shipping">page de livraison</a> présente chaque secteur, avec les tarifs et les délais.</p>
+<p>C'est ce que nous faisons. Velvea est un atelier de cadeaux situé à Mississauga, en Ontario. Nos propres livreurs desservent Mississauga, Toronto et la région du Grand Toronto, et un messager offrant le suivi apporte les paniers dans le reste de l'Ontario, au Québec, dans les provinces de l'Atlantique, dans les Prairies et en Colombie-Britannique. Nous ne livrons pas dans les Territoires du Nord-Ouest ni au Nunavut, et le Yukon fait l'objet d'un prix sur demande. La <a href="/fr/shipping">page de livraison</a> présente chaque secteur, avec les tarifs et les délais.</p>
 
 <h2>Payer depuis un autre pays</h2>
 

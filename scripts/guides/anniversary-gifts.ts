@@ -110,7 +110,7 @@ export const anniversaryGifts: GuideSeed = {
 
 <h2>What to write on an anniversary card</h2>
 
-<p>Every Velvéa gift includes a printed message card.</p>
+<p>Every Velvea gift includes a printed message card.</p>
 
 <ul>
 <li>"Happy anniversary to two people who make it look easy."</li>
@@ -197,7 +197,7 @@ export const anniversaryGifts: GuideSeed = {
 
 <h2>Quoi écrire sur une carte d'anniversaire de mariage</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée.</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée.</p>
 
 <ul>
 <li>« Joyeux anniversaire à deux personnes qui font paraître ça facile. »</li>

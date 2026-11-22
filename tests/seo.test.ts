@@ -99,8 +99,8 @@ describe("pageMetadata", () => {
     expect(og.url).toBe(`${ORIGIN}/fr/baskets`);
     expect(og.locale).toBe("fr_CA");
     expect(og.alternateLocale).toEqual(["en_CA"]);
-    expect(og.title).toBe("All gift baskets · Velvéa");
-    expect(og.siteName).toBe("Velvéa");
+    expect(og.title).toBe("All gift baskets · Velvea");
+    expect(og.siteName).toBe("Velvea");
     expect((meta.twitter as Record<string, unknown>).card).toBe("summary_large_image");
     expect(meta.robots).toBeUndefined();
   });
@@ -132,9 +132,9 @@ describe("pageMetadata", () => {
   });
 
   it("uses the brand card when a page has no image, and an absolute title for the homepage", () => {
-    const meta = pageMetadata({ ...base, locale: "en", path: "/", title: "Velvéa — Gift Baskets", absoluteTitle: true });
-    expect(meta.title).toEqual({ absolute: "Velvéa — Gift Baskets" });
-    expect((meta.openGraph as Record<string, unknown>).title).toBe("Velvéa — Gift Baskets");
+    const meta = pageMetadata({ ...base, locale: "en", path: "/", title: "Velvea — Gift Baskets", absoluteTitle: true });
+    expect(meta.title).toEqual({ absolute: "Velvea — Gift Baskets" });
+    expect((meta.openGraph as Record<string, unknown>).title).toBe("Velvea — Gift Baskets");
     expect((meta.openGraph as { images: string[] }).images).toEqual(["/brand/velvea-og.png?v=6"]);
   });
 });

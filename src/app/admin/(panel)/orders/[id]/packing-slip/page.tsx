@@ -44,7 +44,7 @@ export default async function PackingSlip({ params }: { params: Promise<{ id: st
 
       <header className="flex items-start justify-between border-b border-[#e8dfcf] pb-6">
         <div>
-          <p className="text-xl font-bold tracking-[4px] text-[#b0894e]">VELVÉA</p>
+          <p className="text-xl font-bold tracking-[4px] text-[#b0894e]">VELVEA</p>
           <p className="mt-1 text-xs text-[#8a8072]">Mississauga, Ontario · velvea.ca</p>
         </div>
         <div className="text-right">

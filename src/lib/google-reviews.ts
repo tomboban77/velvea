@@ -1,5 +1,5 @@
 /**
- * Reviews left on the Velvéa Google Business Profile, shown on the homepage.
+ * Reviews left on the Velvea Google Business Profile, shown on the homepage.
  *
  * Copied by hand from Google: there is no API key for the Places API, and a
  * hand-kept list means nothing on the homepage depends on a third party at

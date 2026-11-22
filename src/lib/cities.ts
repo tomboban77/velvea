@@ -42,8 +42,8 @@ export const CITIES: City[] = [
       fr: ["Centre-ville / Square One", "Port Credit", "Streetsville", "Erin Mills", "Meadowvale", "Clarkson", "Lakeview", "Cooksville", "Malton", "Churchill Meadows", "Lisgar", "Heartland"],
     },
     intro: {
-      en: "Velvéa is composed in Mississauga, a few minutes from Square One, so this is the city we know street by street. Baskets ordered before the cutoff leave the studio the same afternoon and are handed over in person, whether that is a condo lobby in City Centre, a porch in Streetsville or an office in the Heartland business parks. It is also the only city where you can skip delivery altogether and collect your order from us.",
-      fr: "Velvéa est composée à Mississauga, à quelques minutes de Square One : c'est la ville que nous connaissons rue par rue. Les paniers commandés avant l'heure limite quittent l'atelier l'après-midi même et sont remis en main propre, que ce soit dans le hall d'un condo au centre-ville, sur un perron à Streetsville ou dans un bureau du parc d'affaires Heartland. C'est aussi la seule ville où vous pouvez éviter la livraison et venir récupérer votre commande.",
+      en: "Velvea is composed in Mississauga, a few minutes from Square One, so this is the city we know street by street. Baskets ordered before the cutoff leave the studio the same afternoon and are handed over in person, whether that is a condo lobby in City Centre, a porch in Streetsville or an office in the Heartland business parks. It is also the only city where you can skip delivery altogether and collect your order from us.",
+      fr: "Velvea est composée à Mississauga, à quelques minutes de Square One : c'est la ville que nous connaissons rue par rue. Les paniers commandés avant l'heure limite quittent l'atelier l'après-midi même et sont remis en main propre, que ce soit dans le hall d'un condo au centre-ville, sur un perron à Streetsville ou dans un bureau du parc d'affaires Heartland. C'est aussi la seule ville où vous pouvez éviter la livraison et venir récupérer votre commande.",
     },
     page: true,
   },

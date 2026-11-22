@@ -125,7 +125,7 @@ function shell(title: string, body: string, locale?: string | null, footerExtra 
   return `<!doctype html><html lang="${lang(locale)}"><body style="margin:0;background:#fbf8f2;font-family:Helvetica,Arial,sans-serif;color:#211b15">
   <div style="max-width:560px;margin:0 auto;padding:32px 24px">
     <div style="text-align:center;padding:8px 0 20px">
-      <span style="font-size:22px;letter-spacing:4px;font-weight:700;background:linear-gradient(90deg,#c9a86c,#b0894e);-webkit-background-clip:text;background-clip:text;color:#b0894e">VELVÉA</span>
+      <span style="font-size:22px;letter-spacing:4px;font-weight:700;background:linear-gradient(90deg,#c9a86c,#b0894e);-webkit-background-clip:text;background-clip:text;color:#b0894e">VELVEA</span>
     </div>
     <div style="background:#ffffff;border:1px solid #e8dfcf;border-radius:20px;padding:28px">
       <h1 style="font-size:22px;margin:0 0 12px">${escapeHtml(title)}</h1>

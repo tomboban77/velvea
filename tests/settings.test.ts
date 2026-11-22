@@ -15,7 +15,7 @@ import { organizationJsonLd } from "@/lib/seo";
 /**
  * The social defaults are published twice — as the footer's buttons and as the
  * homepage Organization `sameAs` — so a placeholder handle links customers to an
- * account Velvéa does not own and points Google's entity signal at a profile
+ * account Velvea does not own and points Google's entity signal at a profile
  * that never links back. A guessed URL once reached production this way; these
  * tests are the guard against it happening again.
  */

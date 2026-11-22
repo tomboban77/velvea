@@ -1,6 +1,6 @@
 {
   "brand": {
-    "name": "Velvéa",
+    "name": "Velvea",
     "tagline": "The art of the considered gift."
   },
   "splash": {
@@ -174,7 +174,7 @@
     "startNote": "From {price}"
   },
   "way": {
-    "eyebrow": "The Velvéa way",
+    "eyebrow": "The Velvea way",
     "title": "From our hands to their door",
     "s1": "Choose or compose",
     "s1Sub": "Browse by occasion and recipient, or build a basket from scratch.",
@@ -292,7 +292,7 @@
       },
       {
         "q": "Do your baskets contain alcohol?",
-        "a": "No. Every Velvéa basket is alcohol-free, which makes it an easy choice for mixed teams and for clients whose habits you don't know."
+        "a": "No. Every Velvea basket is alcohol-free, which makes it an easy choice for mixed teams and for clients whose habits you don't know."
       }
     ],
     "ctaTitle": "Rather have us put it together?",
@@ -303,8 +303,8 @@
     "eyebrow": "Our story",
     "title": "A small atelier in Mississauga, founded on one belief",
     "body1": "The right gift never depends on price. It depends on the moment, and on someone taking the time to get the tone right.",
-    "body2": "Velvéa was founded in 2026 to do exactly that: compose baskets by hand, only ever with products we would give ourselves, and deliver them so they arrive exactly as they looked online.",
-    "sign": "Founder, Velvéa",
+    "body2": "Velvea was founded in 2026 to do exactly that: compose baskets by hand, only ever with products we would give ourselves, and deliver them so they arrive exactly as they looked online.",
+    "sign": "Founder, Velvea",
     "cta": "Read our story",
     "badge": "Woman-owned · Mississauga, Ontario"
   },
@@ -360,7 +360,7 @@
       },
       {
         "q": "Is a gift message included?",
-        "a": "Always. Add your message on the product page or at checkout and we print it on a Velvéa card, tucked inside the basket, at no charge. For a small flat fee you can upgrade to a full-size store greeting card for the occasion. Prices are never included with the gift."
+        "a": "Always. Add your message on the product page or at checkout and we print it on a Velvea card, tucked inside the basket, at no charge. For a small flat fee you can upgrade to a full-size store greeting card for the occasion. Prices are never included with the gift."
       },
       {
         "q": "Are baskets pre-made or packed to order?",
@@ -393,7 +393,7 @@
       },
       {
         "q": "Do your gift hampers contain alcohol?",
-        "a": "No. Every Velvéa hamper is alcohol-free, so it can go to any colleague, client, family or household without a second thought. Each basket's page lists exactly what is inside."
+        "a": "No. Every Velvea hamper is alcohol-free, so it can go to any colleague, client, family or household without a second thought. Each basket's page lists exactly what is inside."
       }
     ]
   },
@@ -468,10 +468,10 @@
     "cta": "Subscribe",
     "success": "Almost there. Check your inbox and confirm your subscription.",
     "error": "Something went wrong. Please try again.",
-    "consent": "By subscribing you agree to receive occasional emails from Velvéa. You can unsubscribe at any time.",
+    "consent": "By subscribing you agree to receive occasional emails from Velvea. You can unsubscribe at any time.",
     "privacyLink": "Privacy Policy",
     "alreadySubscribed": "You're already on the list.",
-    "confirmed": "You're on the list. Welcome to Velvéa.",
+    "confirmed": "You're on the list. Welcome to Velvea.",
     "unsubscribed": "You've been unsubscribed. Sorry to see you go.",
     "invalidLink": "That link is no longer valid."
   },
@@ -481,11 +481,11 @@
     "conciergeSub": "Questions about an order, an occasion or a corporate programme? We reply within one business day.",
     "shop": "Shop",
     "occasions": "Occasions",
-    "company": "Velvéa",
+    "company": "Velvea",
     "support": "Help",
     "about": "Our story",
     "corporate": "Corporate gifting",
-    "partners": "Sell with Velvéa",
+    "partners": "Sell with Velvea",
     "guidesLink": "Gift guides",
     "contact": "Contact",
     "faq": "FAQ",
@@ -559,9 +559,9 @@
     "giftCardTitle": "Add a card",
     "giftCardHint": "Optional. Printed on a card and tucked inside",
     "giftCardPlaceholder": "Happy birthday, Dad. Enjoy every bite. Love, Tom",
-    "giftCardNote": "Printed on a Velvéa card. Prices are never included.",
+    "giftCardNote": "Printed on a Velvea card. Prices are never included.",
     "giftCardTypeLegend": "Card type",
-    "giftCardFree": "Velvéa card",
+    "giftCardFree": "Velvea card",
     "giftCardFreeSub": "Our signature card, printed and tucked inside.",
     "giftCardPremium": "Premium greeting card",
     "giftCardPremiumSub": "A full-size store greeting card for the occasion, with your message inside.",
@@ -617,10 +617,10 @@
     "emptyLede": "In the meantime, explore our ready-made baskets."
   },
   "meta": {
-    "homeTitle": "Gift Baskets & Hampers in Mississauga | Same-Day GTA Delivery | Velvéa",
+    "homeTitle": "Gift Baskets & Hampers in Mississauga | Same-Day GTA Delivery | Velvea",
     "homeDescription": "Online gift shop for premium gift baskets, hampers and gift boxes, hand-packed in Mississauga. Same-day delivery in the GTA on eligible orders, tracked shipping across Canada.",
     "basketsTitle": "All gift baskets and hampers",
-    "basketsDescription": "Browse every Velvéa gift basket, hamper and gift box: gourmet, chocolate, spa, coffee and tea, hand-composed in Mississauga and shipped across Canada.",
+    "basketsDescription": "Browse every Velvea gift basket, hamper and gift box: gourmet, chocolate, spa, coffee and tea, hand-composed in Mississauga and shipped across Canada.",
     "pageSuffix": "{title}, page {page}",
     "collectionTitle": "{name} gift baskets and hampers",
     "recipientTitle": "Gift baskets and hampers for {name}",
@@ -640,21 +640,21 @@
     "corporateQuoteTitle": "Request a corporate quote",
     "corporateQuoteDescription": "Tell us about your corporate gifting project and receive a tailored proposal within one business day.",
     "partnersTitle": "Brand partners: sell your products in our gift baskets",
-    "partnersDescription": "Canadian makers and brands: get your chocolate, tea, coffee, skincare or candles into hand-packed Velvéa gift baskets delivered across Mississauga, Toronto and Canada.",
+    "partnersDescription": "Canadian makers and brands: get your chocolate, tea, coffee, skincare or candles into hand-packed Velvea gift baskets delivered across Mississauga, Toronto and Canada.",
     "aboutTitle": "Our story",
-    "aboutDescription": "Velvéa is a small online gift shop and atelier in Mississauga, Ontario, composing every gift basket and hamper by hand with products we would give ourselves.",
+    "aboutDescription": "Velvea is a small online gift shop and atelier in Mississauga, Ontario, composing every gift basket and hamper by hand with products we would give ourselves.",
     "guidesTitle": "Gift guides and gifting advice",
     "guidesDescription": "Advice on corporate gifting, sympathy baskets, seasonal ideas and finding the right tone for every recipient.",
     "guideFallbackTitle": "Gift guide",
     "reviewsTitle": "Customer reviews",
-    "reviewsDescription": "What customers say about their Velvéa gift baskets.",
+    "reviewsDescription": "What customers say about their Velvea gift baskets.",
     "faqTitle": "Frequently asked questions",
     "faqDescription": "Delivery areas, same-day cutoffs, gift messages, allergens and everything else you might want to know before ordering.",
-    "contactTitle": "Contact Velvéa",
-    "contactDescription": "Questions about an order, an occasion or a corporate project? Reach the Velvéa studio in Mississauga. We reply within one business day.",
+    "contactTitle": "Contact Velvea",
+    "contactDescription": "Questions about an order, an occasion or a corporate project? Reach the Velvea studio in Mississauga. We reply within one business day.",
     "searchTitle": "Search",
     "giftCardsTitle": "Gift cards",
-    "giftCardsDescription": "Give the gift of choice with a Velvéa gift card, redeemable on any basket.",
+    "giftCardsDescription": "Give the gift of choice with a Velvea gift card, redeemable on any basket.",
     "productFallbackTitle": "Gift basket",
     "deliveryTitle": "Gift basket delivery in Mississauga, Toronto and the GTA, shipped across Canada",
     "deliveryDescription": "Same-day gift basket and hamper delivery in Mississauga, Malton, Brampton, Toronto, Etobicoke, Oakville, Milton, Vaughan and Markham. Tracked shipping across Canada. Free pickup in Mississauga, by appointment.",
@@ -665,7 +665,7 @@
     "cityDescriptionNextDay": "Hand-composed gift baskets and hampers delivered in {city}, Ontario by our own team, next-day from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "cityDescriptionShipping": "Hand-composed gift baskets and hampers shipped to {city}, Ontario by tracked courier from {fee}. Birthday, thank-you, sympathy, corporate and more.",
     "customRequestTitle": "Custom gift hampers, made to order in Mississauga",
-    "customRequestDescription": "Custom gift hampers and baskets for any occasion: tell Velvéa what you want in it and we price it by hand, with nothing charged until you approve. Made in Mississauga, delivered across the GTA and shipped across Canada."
+    "customRequestDescription": "Custom gift hampers and baskets for any occasion: tell Velvea what you want in it and we price it by hand, with nothing charged until you approve. Made in Mississauga, delivered across the GTA and shipped across Canada."
   },
   "delivery": {
     "eyebrow": "Delivery areas",
@@ -715,9 +715,9 @@
     "faqA3Local": "Our own team, by hand. Baskets in our local zones never go through a courier, and you receive an email when the basket is delivered.",
     "faqA3Shipping": "A tracked courier. You receive the tracking number by email when it ships and a confirmation when it is delivered.",
     "otherCities": "Other delivery areas",
-    "glanceSameDay": "Velvéa delivers gift baskets and hampers to any {city} address for {fee}, same day on orders placed before {time} Eastern, by our own team.",
-    "glanceNextDay": "Velvéa delivers gift baskets and hampers to any {city} address for {fee}, by our own team, on the next available day.",
-    "glanceShipping": "Velvéa ships gift baskets and hampers to {city} by tracked courier for {fee}, arriving in {min} to {max} business days.",
+    "glanceSameDay": "Velvea delivers gift baskets and hampers to any {city} address for {fee}, same day on orders placed before {time} Eastern, by our own team.",
+    "glanceNextDay": "Velvea delivers gift baskets and hampers to any {city} address for {fee}, by our own team, on the next available day.",
+    "glanceShipping": "Velvea ships gift baskets and hampers to {city} by tracked courier for {fee}, arriving in {min} to {max} business days.",
     "occasionHampersH": "Hampers for every occasion in {city}",
     "occasionHampersLede": "The same baskets, chosen for the moment. Every one is packed by hand in Mississauga after you order, and none contain alcohol.",
     "occChristmas": "Christmas hampers",
@@ -750,7 +750,7 @@
   "customRequest": {
     "eyebrow": "Custom basket",
     "title": "Tell us what you'd like in your basket",
-    "lede": "Send us a list of the products, brands or treats you'd like. We'll find them, arrange them by hand the way we finish every Velvéa basket, and send you a final price.",
+    "lede": "Send us a list of the products, brands or treats you'd like. We'll find them, arrange them by hand the way we finish every Velvea basket, and send you a final price.",
     "howTitle": "How it works",
     "s1": "Tell us what to include",
     "s1Sub": "Products, brands, flavours or sizes. As much or as little detail as you have.",

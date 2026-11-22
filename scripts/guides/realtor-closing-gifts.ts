@@ -98,7 +98,7 @@ export const realtorClosingGifts: GuideSeed = {
 
 <h2>Keep the marketing out of it</h2>
 
-<p>The closing gift that brings in referrals is the one that feels personal, and most of that comes down to the card. Sign it yourself and use their names. "Congratulations on the new home, Priya and Dev. I hope the first night is a good one." does more than any logo. Every Velvéa gift includes a printed message card, and prices are never included.</p>
+<p>The closing gift that brings in referrals is the one that feels personal, and most of that comes down to the card. Sign it yourself and use their names. "Congratulations on the new home, Priya and Dev. I hope the first night is a good one." does more than any logo. Every Velvea gift includes a printed message card, and prices are never included.</p>
 
 <p>Leave branded merchandise out of the basket. If you want them to remember your name, it is on the card. A business card is fine; a fridge magnet with your face on it sends a different message.</p>
 
@@ -178,7 +178,7 @@ export const realtorClosingGifts: GuideSeed = {
 
 <h2>Laissez la publicité de côté</h2>
 
-<p>Le cadeau de clôture qui attire des recommandations est celui qui paraît personnel, et l'essentiel se joue sur la carte. Signez-la vous-même et utilisez leurs noms. « Félicitations pour la nouvelle maison, Priya et Dev. J'espère que la première nuit sera douce. » fait plus que n'importe quel logo. Chaque cadeau Velvéa comprend une carte-message imprimée, et les prix n'y figurent jamais.</p>
+<p>Le cadeau de clôture qui attire des recommandations est celui qui paraît personnel, et l'essentiel se joue sur la carte. Signez-la vous-même et utilisez leurs noms. « Félicitations pour la nouvelle maison, Priya et Dev. J'espère que la première nuit sera douce. » fait plus que n'importe quel logo. Chaque cadeau Velvea comprend une carte-message imprimée, et les prix n'y figurent jamais.</p>
 
 <p>Laissez les articles promotionnels hors du panier. Si vous voulez qu'on se souvienne de votre nom, il est sur la carte. Une carte professionnelle, ça va ; un aimant de réfrigérateur avec votre photo, c'est un autre message.</p>
 

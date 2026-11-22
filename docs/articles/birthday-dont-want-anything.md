@@ -21,7 +21,7 @@ Checked on 26 Oct 2026:
 | Title (FR) | Cadeaux d'anniversaire pour quelqu'un qui dit ne rien vouloir |
 | Slug | `birthday-gifts-for-someone-who-doesnt-want-anything` |
 | Category | OCCASIONS (shows as "occasions", which reads correctly in both languages) |
-| Author | Velvéa |
+| Author | Velvea |
 | Read minutes | 5 |
 | Status | Published, once you're happy with it |
 | Featured | Off (the storefront doesn't use the flag; guides sort newest first) |
@@ -43,7 +43,7 @@ FR:
 
 ## SEO title and description
 
-The site appends " · Velvéa" to these automatically.
+The site appends " · Velvea" to these automatically.
 
 EN title:
 
@@ -112,7 +112,7 @@ Des idées pour la personne qui refuse les cadeaux : paniers d'anniversaire à s
   <li>"For the one who always brings the snacks. Your turn."</li>
   <li>"I listened when you said no fuss. This is the quiet version."</li>
 </ul>
-<p>Every Velvéa basket comes with your message printed on a card at no extra cost. Prices are never included with the gift, which helps with the person who would otherwise go looking to see what you spent. For more on getting the wording right, see our guide to <a href="/guides/what-to-write-in-a-gift-message">what to write in a gift message</a>.</p>
+<p>Every Velvea basket comes with your message printed on a card at no extra cost. Prices are never included with the gift, which helps with the person who would otherwise go looking to see what you spent. For more on getting the wording right, see our guide to <a href="/guides/what-to-write-in-a-gift-message">what to write in a gift message</a>.</p>
 
 <h2>Let it turn up on its own</h2>
 <p>For this kind of person, a basket that simply arrives at the door often goes down better than one handed over at the party with everyone watching. We deliver across Mississauga and the GTA ourselves, including same-day on eligible orders, and ship with tracking to the rest of Ontario. Your delivery options show at checkout once you enter the postal code.</p>
@@ -162,7 +162,7 @@ Des idées pour la personne qui refuse les cadeaux : paniers d'anniversaire à s
   <li>« Pour toi qui apportes toujours les grignotines. Cette fois, c'est ton tour. »</li>
   <li>« J'ai bien entendu : pas de chichi. Voici la version discrète. »</li>
 </ul>
-<p>Chaque panier Velvéa est accompagné de votre message imprimé sur une carte, sans frais supplémentaires. Les prix ne sont jamais inclus avec le cadeau, ce qui évite les questions de la personne qui voudrait savoir combien vous avez dépensé. Pour trouver les bons mots, consultez notre guide <a href="/fr/guides/what-to-write-in-a-gift-message">Quoi écrire sur une carte-cadeau</a>.</p>
+<p>Chaque panier Velvea est accompagné de votre message imprimé sur une carte, sans frais supplémentaires. Les prix ne sont jamais inclus avec le cadeau, ce qui évite les questions de la personne qui voudrait savoir combien vous avez dépensé. Pour trouver les bons mots, consultez notre guide <a href="/fr/guides/what-to-write-in-a-gift-message">Quoi écrire sur une carte-cadeau</a>.</p>
 
 <h2>Laissez-le arriver tout seul</h2>
 <p>Pour ce genre de personne, un panier qui arrive simplement à la porte passe souvent mieux qu'un cadeau remis pendant la fête, devant tout le monde. Nous livrons nous-mêmes à Mississauga et dans la RGT, y compris le jour même pour les commandes admissibles, et expédions avec suivi partout ailleurs en Ontario. Les options de livraison s'affichent au paiement dès que vous entrez le code postal.</p>

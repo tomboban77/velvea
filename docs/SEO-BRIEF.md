@@ -1,4 +1,4 @@
-# Velvéa — SEO audit and launch brief
+# Velvea — SEO audit and launch brief
 
 **Reviewed:** 2026-09-18. Replaces the 2026-09-12 brief.
 **Production:** https://www.velvea.ca/ — owner confirmed.

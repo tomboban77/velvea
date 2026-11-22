@@ -117,7 +117,7 @@ export const corporateGifting: GuideSeed = {
 
 <h2>Why we do not send alcohol, and why that helps you</h2>
 
-<p>Velvéa holds no AGCO licence, so we sell no alcohol at all. For corporate buyers this turns out to be an advantage rather than a limitation.</p>
+<p>Velvea holds no AGCO licence, so we sell no alcohol at all. For corporate buyers this turns out to be an advantage rather than a limitation.</p>
 
 <p>Nothing needs to be signed for by an adult, so a gift can be left at a reception desk or a door without a failed delivery. Nobody is put in an awkward position either. For reasons of religion, health, recovery or simple preference, a bottle of wine is the one common corporate gift with a real chance of landing badly. And a growing number of organisations will not accept alcohol as a gift at all, which you rarely find out until after you have sent it.</p>
 
@@ -155,7 +155,7 @@ export const corporateGifting: GuideSeed = {
 
 <h3>Cards</h3>
 
-<p>Every Velvéa gift includes a printed message card at no charge, and prices are never included with a gift. For corporate orders we can print the same message across an entire run, or a different one for each recipient. A message signed by a person beats one signed by a company; "From everyone at Northfield" is warmer than "Northfield Inc."</p>
+<p>Every Velvea gift includes a printed message card at no charge, and prices are never included with a gift. For corporate orders we can print the same message across an entire run, or a different one for each recipient. A message signed by a person beats one signed by a company; "From everyone at Northfield" is warmer than "Northfield Inc."</p>
 
 <h3>One invoice</h3>
 
@@ -252,7 +252,7 @@ export const corporateGifting: GuideSeed = {
 
 <h2>Pourquoi nous n'envoyons pas d'alcool, et en quoi cela vous sert</h2>
 
-<p>Velvéa ne détient aucun permis de l'AGCO et ne vend donc aucun alcool. Pour les acheteurs d'entreprise, cela s'avère un avantage plutôt qu'une limite.</p>
+<p>Velvea ne détient aucun permis de l'AGCO et ne vend donc aucun alcool. Pour les acheteurs d'entreprise, cela s'avère un avantage plutôt qu'une limite.</p>
 
 <p>Aucune signature d'adulte n'est requise : un cadeau peut être laissé à une réception ou à une porte sans échec de livraison. Personne n'est mis dans une position délicate non plus. Pour des raisons de religion, de santé, de rétablissement ou de simple préférence, la bouteille de vin est le cadeau d'affaires courant le plus susceptible de mal tomber. Enfin, de plus en plus d'organisations refusent l'alcool en cadeau, et on découvre rarement lesquelles avant de l'avoir envoyé.</p>
 
@@ -290,7 +290,7 @@ export const corporateGifting: GuideSeed = {
 
 <h3>Les cartes</h3>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée sans frais, et les prix ne sont jamais joints au cadeau. Pour les commandes d'entreprise, nous pouvons imprimer le même message sur toute une série, ou un message différent pour chaque bénéficiaire. Un message signé par une personne vaut mieux qu'un message signé par une société : « De toute l'équipe de Northfield » est plus chaleureux que « Northfield inc. ».</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée sans frais, et les prix ne sont jamais joints au cadeau. Pour les commandes d'entreprise, nous pouvons imprimer le même message sur toute une série, ou un message différent pour chaque bénéficiaire. Un message signé par une personne vaut mieux qu'un message signé par une société : « De toute l'équipe de Northfield » est plus chaleureux que « Northfield inc. ».</p>
 
 <h3>Une seule facture</h3>
 

@@ -28,7 +28,7 @@ export type SiteSettings = {
      * network and it gets no footer button — it lives here because everything
      * in this object feeds the Organization `sameAs`, and a link to the
      * verified profile is the strongest "this website is that business" signal
-     * available for telling this Velvéa apart from the unrelated brands sharing
+     * available for telling this Velvea apart from the unrelated brands sharing
      * the name.
      */
     googleBusiness: string;
@@ -75,7 +75,7 @@ export type SiteSettings = {
   };
   gifting: {
     /**
-     * Flat fee, in cents, for upgrading the free Velvéa card to a full-size
+     * Flat fee, in cents, for upgrading the free Velvea card to a full-size
      * store-bought greeting card with the message inside. Charged
      * per basket. The free card stays free.
      */
@@ -98,7 +98,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   // Empty, not placeholder handles. These defaults publish twice: as the
   // footer's social buttons and as the homepage Organization `sameAs`, which is
-  // the signal Google uses to tell this Velvéa apart from the unrelated brands
+  // the signal Google uses to tell this Velvea apart from the unrelated brands
   // sharing the name. A guessed URL sends customers to an account we do not own
   // and points that signal at a profile that never links back, which is worse
   // than saying nothing. An account only appears once its real URL is entered

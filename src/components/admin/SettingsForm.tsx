@@ -168,7 +168,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
             label="Premium greeting card fee ($)"
-            hint="Charged per basket when a customer upgrades from the free Velvéa card to a full-size store card. Set 0 to make it free."
+            hint="Charged per basket when a customer upgrades from the free Velvea card to a full-size store card. Set 0 to make it free."
           >
             <TextInput
               type="number"
@@ -186,7 +186,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           </Field>
         </div>
         <p className="text-xs text-muted">
-          The Velvéa message card is always free. This fee only applies to the optional
+          The Velvea message card is always free. This fee only applies to the optional
           upgrade offered on each product page, and it shows on the packing slip so the packer
           knows to use a store card.
         </p>

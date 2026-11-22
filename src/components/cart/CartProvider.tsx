@@ -29,7 +29,7 @@ export type CartItem = {
    * with different messages are two lines, not one — see `giftLineId`.
    */
   giftMessage?: string;
-  /** Upgrade from the free Velvéa card to a full-size store greeting card. */
+  /** Upgrade from the free Velvea card to a full-size store greeting card. */
   premiumCard?: boolean;
   /** Fee for that upgrade at the time it was added, per unit. Re-checked at checkout. */
   cardFeeCents?: number;

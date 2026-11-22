@@ -163,7 +163,7 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
 "réellement" 7x and others) varied down. Re-run that audit on any new guide.
 
 - [ ] **Read the corporate guide.** It states CRA rules (the $500 non-cash employee limit, the
-      near-cash gift-card trap, and food gifts being 50% deductible under s. 67.1) under the Velvéa
+      near-cash gift-card trap, and food gifts being 50% deductible under s. 67.1) under the Velvea
       name. It carries a "not tax advice, confirm with your accountant" footer, and it is live —
       if any claim does not sit right, unpublish it in Admin -> Articles.
 - [ ] Guides link only to collections that hold products. Before publishing, re-check the sitemap —
@@ -254,7 +254,7 @@ verification in Google's hands (up to 5 days, no promised date).
 - [x] **Placeholder social URLs removed (26 Sept 2026).** Instagram (`velvea_gifts`) is the
       only account that exists. `DEFAULT_SETTINGS.social` used to ship guessed handles
       (`facebook.com/velvea`, `pinterest.com/velvea`, `tiktok.com/@velvea`), which the footer
-      linked and the Organization `sameAs` published — sending customers to accounts Velvéa does
+      linked and the Organization `sameAs` published — sending customers to accounts Velvea does
       not own and pointing Google's entity signal at profiles that never link back. The defaults
       are now empty strings, the footer renders only configured networks, and
       `tests/settings.test.ts` guards against reintroducing a guess. Admin -> Settings confirmed
@@ -342,7 +342,7 @@ Consent Mode v2 and URL-param redaction.
       a product slug from now on produces a hard 404 on a URL search engines know about. The cost of
       waiting is no longer zero. Either build it, or treat product slugs as frozen.
 - [ ] **"Brands we carry" on `/partners` — owner content (added 7 Oct 2026).** The page (EN/FR,
-      footer "Sell with Velvéa") and its `/admin/partners` inbox are live; showing a few real
+      footer "Sell with Velvea") and its `/admin/partners` inbox are live; showing a few real
       signed brands would make it far more persuasive to the next one. Build once brands exist.
 
 ## 8. Migrations — all applied

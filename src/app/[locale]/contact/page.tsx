@@ -91,7 +91,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <Link href="/faq" className="underline hover:text-violet-deep">{fr ? "Questions fréquentes" : "Frequently asked questions"}</Link>
               {s.social.googleBusiness && (
                 <a href={s.social.googleBusiness} className="underline hover:text-violet-deep" target="_blank" rel="noopener noreferrer">
-                  {fr ? "Velvéa sur Google" : "Velvéa on Google"}
+                  {fr ? "Velvea sur Google" : "Velvea on Google"}
                 </a>
               )}
             </div>

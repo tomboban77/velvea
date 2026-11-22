@@ -77,7 +77,7 @@ export const corporateGiftHampers: GuideSeed = {
 
 <p>Send to fifty people and you are sending to people with allergies, dietary rules, religious practices and preferences you know nothing about. A hamper that works for all of them is a better hamper, not a compromise.</p>
 
-<p>Alcohol is the easy part. Velvéa sells none, so you never have to work out who does not drink. Nothing needs to be signed for by an adult, and nothing can land badly with someone in recovery, someone who abstains for religious reasons, or an organisation that does not accept alcohol as a gift.</p>
+<p>Alcohol is the easy part. Velvea sells none, so you never have to work out who does not drink. Nothing needs to be signed for by an adult, and nothing can land badly with someone in recovery, someone who abstains for religious reasons, or an organisation that does not accept alcohol as a gift.</p>
 
 <p>Food takes more care. Gelatine, nuts and eggs are the usual surprises, and since every basket is packed by hand after the order, the simplest way to know is to <a href="/contact">ask us</a> what a basket contains. We will tell you exactly. For anyone with a serious allergy, a <a href="/category/spa-wellness">spa and wellness</a> hamper sidesteps the question entirely, and on a large list it is worth keeping one or two in reserve.</p>
 
@@ -97,7 +97,7 @@ export const corporateGiftHampers: GuideSeed = {
 <li>Fresh flowers and chocolate-heavy hampers are local delivery only. If your list goes beyond the GTA, choose shelf-stable hampers that ship across Ontario; every product page says which is which.</li>
 <li>Collect addresses early. On a multi-address order, the last few addresses are what holds everything up, so gather them before you finalise the selection.</li>
 <li>People compare. Choose one hamper for each group (all clients, all of one team) and keep it the same within the group.</li>
-<li>Prices are never included with a Velvéa gift.</li>
+<li>Prices are never included with a Velvea gift.</li>
 </ul>
 
 <h2>The brief that gets you a good proposal</h2>
@@ -155,7 +155,7 @@ export const corporateGiftHampers: GuideSeed = {
 
 <p>Envoyez à cinquante personnes et vous envoyez à des gens qui ont des allergies, des règles alimentaires, des pratiques religieuses et des préférences dont vous ne savez rien. Un panier qui leur convient à tous est un meilleur panier, pas un compromis.</p>
 
-<p>L'alcool, c'est la partie facile. Velvéa n'en vend pas : vous n'avez jamais à deviner qui ne boit pas. Aucune signature d'adulte n'est requise, et rien ne peut mal tomber chez une personne en rétablissement, une personne qui s'abstient pour des raisons religieuses ou une organisation qui refuse l'alcool en cadeau.</p>
+<p>L'alcool, c'est la partie facile. Velvea n'en vend pas : vous n'avez jamais à deviner qui ne boit pas. Aucune signature d'adulte n'est requise, et rien ne peut mal tomber chez une personne en rétablissement, une personne qui s'abstient pour des raisons religieuses ou une organisation qui refuse l'alcool en cadeau.</p>
 
 <p>Les aliments demandent plus d'attention. La gélatine, les noix et les œufs sont les surprises habituelles, et comme chaque panier est assemblé à la main après la commande, le plus simple est de <a href="/fr/contact">nous demander</a> ce que contient un panier. Nous vous le dirons exactement. Pour toute personne ayant une allergie grave, un panier <a href="/fr/category/spa-wellness">spa et bien-être</a> évite entièrement la question, et sur une longue liste, il vaut la peine d'en garder un ou deux en réserve.</p>
 
@@ -175,7 +175,7 @@ export const corporateGiftHampers: GuideSeed = {
 <li>Les fleurs fraîches et les paniers riches en chocolat sont livrés localement seulement. Si votre liste dépasse le Grand Toronto, choisissez des paniers de longue conservation expédiables partout en Ontario ; chaque fiche produit indique lesquels.</li>
 <li>Recueillez les adresses tôt. Dans une commande multi-adresses, ce sont les dernières adresses qui retardent tout : réunissez-les avant d'arrêter la sélection.</li>
 <li>Les gens comparent. Choisissez un panier par groupe (tous les clients, toute une équipe) et gardez-le identique à l'intérieur du groupe.</li>
-<li>Les prix ne sont jamais joints à un cadeau Velvéa.</li>
+<li>Les prix ne sont jamais joints à un cadeau Velvea.</li>
 </ul>
 
 <h2>Ce qu'il faut nous dire pour obtenir une bonne proposition</h2>

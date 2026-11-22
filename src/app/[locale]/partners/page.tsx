@@ -83,8 +83,8 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             </h1>
             <p className="mt-6 max-w-xl text-[1.08rem] leading-relaxed text-white/72 pretty">
               {fr
-                ? "Velvéa compose des paniers-cadeaux à la main à Mississauga, en Ontario. Nous cherchons des marques canadiennes dont les produits méritent d'être offerts."
-                : "Velvéa composes gift baskets by hand in Mississauga, Ontario. We're looking for Canadian brands whose products deserve to be given."}
+                ? "Velvea compose des paniers-cadeaux à la main à Mississauga, en Ontario. Nous cherchons des marques canadiennes dont les produits méritent d'être offerts."
+                : "Velvea composes gift baskets by hand in Mississauga, Ontario. We're looking for Canadian brands whose products deserve to be given."}
             </p>
             <div className="mt-9">
               <a href="#partner-form" className="btn btn-light btn-lg">

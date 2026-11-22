@@ -67,7 +67,7 @@ export const diwaliGiftHampers: GuideSeed = {
 <ul>
 <li>Gelatine, the most common catch. It is an animal product, and gummies, marshmallows and some chewy sweets are made with it.</li>
 <li>Eggs, which turn up in some biscuits and baked treats. Plenty of vegetarian families eat them and plenty do not. Jain households generally avoid them, along with a longer list of ingredients.</li>
-<li>Alcohol, which is never in our baskets. Velvéa sells none, so nothing in a basket will put a host in an awkward position.</li>
+<li>Alcohol, which is never in our baskets. Velvea sells none, so nothing in a basket will put a host in an awkward position.</li>
 </ul>
 
 <p>If you are not sure, <a href="/contact">ask us what a basket contains</a> before you order. Every basket is packed by hand after the order is placed, so we can tell you exactly what is inside. For a strictly vegetarian or Jain household, a spa or tea-focused basket is often the simplest choice.</p>
@@ -105,7 +105,7 @@ export const diwaliGiftHampers: GuideSeed = {
 
 <h2>What to write on the card</h2>
 
-<p>Every Velvéa gift includes a printed message card. "Happy Diwali" is always right, and one more line of warmth is what people notice.</p>
+<p>Every Velvea gift includes a printed message card. "Happy Diwali" is always right, and one more line of warmth is what people notice.</p>
 
 <ul>
 <li>"Wishing you and your family a bright and joyful Diwali."</li>
@@ -141,7 +141,7 @@ export const diwaliGiftHampers: GuideSeed = {
 <ul>
 <li>La gélatine, le piège le plus courant. Elle est d'origine animale, et les jujubes, les guimauves et certaines friandises moelleuses en contiennent.</li>
 <li>Les œufs, qu'on retrouve dans certains biscuits et pâtisseries. Bien des familles végétariennes en mangent, bien d'autres non. Les foyers jaïns les évitent généralement, avec une liste d'ingrédients plus longue.</li>
-<li>L'alcool, qui n'entre jamais dans nos paniers. Velvéa n'en vend pas du tout, donc rien dans un panier ne mettra un hôte dans l'embarras.</li>
+<li>L'alcool, qui n'entre jamais dans nos paniers. Velvea n'en vend pas du tout, donc rien dans un panier ne mettra un hôte dans l'embarras.</li>
 </ul>
 
 <p>En cas de doute, <a href="/fr/contact">demandez-nous ce que contient un panier</a> avant de commander. Chaque panier est assemblé à la main après la commande, nous pouvons donc vous dire exactement ce qu'il contient. Pour un foyer strictement végétarien ou jaïn, un panier spa ou axé sur le thé est souvent le choix le plus simple.</p>
@@ -179,7 +179,7 @@ export const diwaliGiftHampers: GuideSeed = {
 
 <h2>Quoi écrire sur la carte</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée. « Joyeux Diwali » convient toujours, et c'est la ligne chaleureuse qui suit qu'on remarque.</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée. « Joyeux Diwali » convient toujours, et c'est la ligne chaleureuse qui suit qu'on remarque.</p>
 
 <ul>
 <li>« Nous vous souhaitons, à vous et à votre famille, un Diwali lumineux et joyeux. »</li>

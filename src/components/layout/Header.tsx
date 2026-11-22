@@ -208,7 +208,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
             )}
           >
             <Link href="/" className="font-display text-[1.35rem] tracking-[0.12em] text-white" aria-label={fr ? "Accueil Velvea" : "Velvea home"}>
-              VELVÉA
+              VELVEA
             </Link>
           </div>
 
@@ -291,7 +291,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
                         <Image src={featured.image} alt={featured.name} fill sizes="280px" className="zoom-img object-contain" />
                       ) : (
                         <div className="flex h-full items-center justify-center">
-                          <span className="font-display text-2xl text-line-strong">Velvéa</span>
+                          <span className="font-display text-2xl text-line-strong">Velvea</span>
                         </div>
                       )}
                     </div>
@@ -301,7 +301,7 @@ export function Header({ featured }: { featured?: HeaderFeatured }) {
                 ) : (
                   <Link href="/baskets" className="group block">
                     <div className="flex aspect-square items-center justify-center rounded-lg bg-cream">
-                      <span className="font-display text-2xl text-line-strong">Velvéa</span>
+                      <span className="font-display text-2xl text-line-strong">Velvea</span>
                     </div>
                     <p className="product-name mt-3">{t("nav.allBaskets")}</p>
                   </Link>

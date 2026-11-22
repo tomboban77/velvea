@@ -1,4 +1,4 @@
-# Guide: How Velvéa is making inroads in GTA gift hampers
+# Guide: How Velvea is making inroads in GTA gift hampers
 
 Status: **published 29 Oct 2026** (written to the database by script; edit it in Admin -> Articles from now on).
 
@@ -19,7 +19,7 @@ Ontario shipping starts at $31.99.
 | Title (FR) | Comment un atelier de Mississauga fait sa place dans les paniers-cadeaux du Grand Toronto |
 | Slug | `velvea-gift-hampers-gta` |
 | Category | OCCASIONS |
-| Author | Velvéa |
+| Author | Velvea |
 | Read minutes | 5 |
 | Featured | Off |
 | Cover image | none |
@@ -29,13 +29,13 @@ Ontario shipping starts at $31.99.
 EN:
 
 ```
-Velvéa opened in Mississauga in 2026 into a crowded market. What we do differently with gift hampers in the GTA: baskets packed by hand after you order, our own drivers, same-day delivery, and tracked shipping across Canada.
+Velvea opened in Mississauga in 2026 into a crowded market. What we do differently with gift hampers in the GTA: baskets packed by hand after you order, our own drivers, same-day delivery, and tracked shipping across Canada.
 ```
 
 FR:
 
 ```
-Velvéa a ouvert ses portes à Mississauga en 2026, dans un marché déjà bien occupé. Ce que nous faisons autrement avec les paniers-cadeaux dans le Grand Toronto : des paniers emballés à la main après la commande, nos propres livreurs, la livraison le jour même et l'expédition suivie partout au Canada.
+Velvea a ouvert ses portes à Mississauga en 2026, dans un marché déjà bien occupé. Ce que nous faisons autrement avec les paniers-cadeaux dans le Grand Toronto : des paniers emballés à la main après la commande, nos propres livreurs, la livraison le jour même et l'expédition suivie partout au Canada.
 ```
 
 ## SEO title and description
@@ -43,13 +43,13 @@ Velvéa a ouvert ses portes à Mississauga en 2026, dans un marché déjà bien 
 EN title:
 
 ```
-Gift Hampers in the GTA: How Velvéa Delivers Same-Day
+Gift Hampers in the GTA: How Velvea Delivers Same-Day
 ```
 
 EN description:
 
 ```
-How Velvéa, a Mississauga gift basket studio, is growing in GTA gift hampers: packed by hand, same-day delivery by our own team, shipped across Canada.
+How Velvea, a Mississauga gift basket studio, is growing in GTA gift hampers: packed by hand, same-day delivery by our own team, shipped across Canada.
 ```
 
 FR title:
@@ -61,13 +61,13 @@ Paniers-cadeaux livrés le jour même dans le Grand Toronto
 FR description:
 
 ```
-Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans le Grand Toronto : emballage à la main, livraison le jour même, expédition au Canada.
+Comment Velvea, atelier de paniers-cadeaux de Mississauga, fait sa place dans le Grand Toronto : emballage à la main, livraison le jour même, expédition au Canada.
 ```
 
 ## Body (EN)
 
 ```html
-<p>There is no shortage of places to buy a gift hamper in the GTA. National websites ship them from warehouses, florists add a box of chocolates to a bouquet, and every December the grocery stores stack pre-wrapped baskets by the door. When Velvéa opened its studio on Hurontario Street in Mississauga in 2026, we knew we weren't going to out-shout any of them. So we set out to do a few things properly and let the baskets speak for themselves.</p>
+<p>There is no shortage of places to buy a gift hamper in the GTA. National websites ship them from warehouses, florists add a box of chocolates to a bouquet, and every December the grocery stores stack pre-wrapped baskets by the door. When Velvea opened its studio on Hurontario Street in Mississauga in 2026, we knew we weren't going to out-shout any of them. So we set out to do a few things properly and let the baskets speak for themselves.</p>
 <p>A few months in, here is what that looks like, and what people have told us so far.</p>
 
 <h2>Packed by hand, after you order</h2>
@@ -100,7 +100,7 @@ Comment Velvéa, atelier de paniers-cadeaux de Mississauga, fait sa place dans l
 ## Body (FR)
 
 ```html
-<p>Les endroits où acheter un panier-cadeau ne manquent pas dans le Grand Toronto. Des sites nationaux les expédient depuis des entrepôts, les fleuristes ajoutent une boîte de chocolats à un bouquet, et chaque mois de décembre, les épiceries empilent des paniers déjà emballés près de l'entrée. Quand Velvéa a ouvert son atelier sur la rue Hurontario, à Mississauga, en 2026, nous savions que nous ne parlerions pas plus fort que tout ce monde. Nous avons donc choisi de bien faire quelques choses et de laisser les paniers parler d'eux-mêmes.</p>
+<p>Les endroits où acheter un panier-cadeau ne manquent pas dans le Grand Toronto. Des sites nationaux les expédient depuis des entrepôts, les fleuristes ajoutent une boîte de chocolats à un bouquet, et chaque mois de décembre, les épiceries empilent des paniers déjà emballés près de l'entrée. Quand Velvea a ouvert son atelier sur la rue Hurontario, à Mississauga, en 2026, nous savions que nous ne parlerions pas plus fort que tout ce monde. Nous avons donc choisi de bien faire quelques choses et de laisser les paniers parler d'eux-mêmes.</p>
 <p>Quelques mois plus tard, voici à quoi cela ressemble, et ce qu'on nous en dit jusqu'ici.</p>
 
 <h2>Emballés à la main, après votre commande</h2>

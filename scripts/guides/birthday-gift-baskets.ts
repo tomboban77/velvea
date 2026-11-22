@@ -100,7 +100,7 @@ export const birthdayGiftBaskets: GuideSeed = {
 
 <h2>What to write on a birthday card</h2>
 
-<p>Every Velvéa gift includes a printed message card. A line or two is plenty.</p>
+<p>Every Velvea gift includes a printed message card. A line or two is plenty.</p>
 
 <ul>
 <li>"Happy birthday! I hope this year is your best one yet."</li>
@@ -176,7 +176,7 @@ export const birthdayGiftBaskets: GuideSeed = {
 
 <h2>Quoi écrire sur une carte d'anniversaire</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée. Une ligne ou deux suffisent.</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée. Une ligne ou deux suffisent.</p>
 
 <ul>
 <li>« Bonne fête! J'espère que cette année sera la plus belle de toutes. »</li>

@@ -32,7 +32,7 @@ export type OccasionFaq = {
 export type OccasionSeo = {
   /** OCCASION collection slug (`OCCASIONS` / `HOLIDAYS` in nav.ts). */
   slug: string;
-  /** Meta title fallback (unbranded; the layout appends " · Velvéa"). */
+  /** Meta title fallback (unbranded; the layout appends " · Velvea"). */
   title: Lang;
   /** Meta description fallback. */
   description: Lang;
@@ -129,8 +129,8 @@ export const OCCASION_SEO: OccasionSeo[] = [
       {
         q: { en: "Do your Christmas hampers contain alcohol?", fr: "Vos paniers de Noël contiennent-ils de l'alcool ?" },
         a: {
-          en: "No. Every Velvéa hamper is alcohol-free, and each basket's page lists exactly what is inside, so you can check for nuts, dairy or gelatine before you send it.",
-          fr: "Non. Chaque panier Velvéa est sans alcool, et la page de chaque panier indique exactement ce qu'il contient, pour vérifier la présence de noix, de produits laitiers ou de gélatine avant de l'envoyer.",
+          en: "No. Every Velvea hamper is alcohol-free, and each basket's page lists exactly what is inside, so you can check for nuts, dairy or gelatine before you send it.",
+          fr: "Non. Chaque panier Velvea est sans alcool, et la page de chaque panier indique exactement ce qu'il contient, pour vérifier la présence de noix, de produits laitiers ou de gélatine avant de l'envoyer.",
         },
       },
       {
@@ -412,8 +412,8 @@ export const OCCASION_SEO: OccasionSeo[] = [
       {
         q: { en: "Do your housewarming hampers include alcohol?", fr: "Vos paniers de crémaillère contiennent-ils de l'alcool ?" },
         a: {
-          en: "No. Every Velvéa basket is alcohol-free, and the contents are listed on each basket's page.",
-          fr: "Non. Chaque panier Velvéa est sans alcool, et le contenu est indiqué sur la page de chaque panier.",
+          en: "No. Every Velvea basket is alcohol-free, and the contents are listed on each basket's page.",
+          fr: "Non. Chaque panier Velvea est sans alcool, et le contenu est indiqué sur la page de chaque panier.",
         },
       },
     ],

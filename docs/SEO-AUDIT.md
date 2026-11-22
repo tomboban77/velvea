@@ -1,6 +1,6 @@
-# Velvéa: SEO, AEO and GEO audit, 29 Oct 2026
+# Velvea: SEO, AEO and GEO audit, 29 Oct 2026
 
-**Goal:** Velvéa shows up when someone in Mississauga or the GTA searches "gift hampers near me",
+**Goal:** Velvea shows up when someone in Mississauga or the GTA searches "gift hampers near me",
 "gift baskets Mississauga", "same-day gift delivery Toronto" and similar, on Google (map pack and
 organic) and when they ask ChatGPT, Gemini, Perplexity or Google's AI Overviews.
 
@@ -25,7 +25,7 @@ recipient title grammar (§3.4), `LocalBusiness` node on `/` and `/contact` (§3
 email (§2.3), `llms.txt` lists only stocked collections and adds the guides (§3.9), IndexNow on
 product and guide saves (§5.3), splash lockup as WebP (§3.2). `tsc`, lint and 217 tests pass.
 
-**Done in the database (live now):** product SEO titles end in " | Velvéa" on all 38 that had
+**Done in the database (live now):** product SEO titles end in " | Velvea" on all 38 that had
 a suffix (§3.5); "across Ontario" shipping lines changed to "across Canada" on 8 products, all
 shippable (§3.8).
 
@@ -63,7 +63,7 @@ nearby, plus Canada-wide for shipped baskets. On Google, and in ChatGPT and the 
   loses its cutoff. A stored SEO title/description on the collection in admin still overrides
   the code copy (Christmas has one today: "Christmas Gift Baskets & Hampers | Mississauga, GTA,
   Canada"; clear it in Admin → Collections to use the longer code title).
-- **City pages** gained a quotable one-line fact under the intro ("Velvéa delivers gift baskets
+- **City pages** gained a quotable one-line fact under the intro ("Velvea delivers gift baskets
   and hampers to any Brampton address for $14.99, same day on orders placed before 12:00 p.m.
   Eastern, by our own team"), an "Hampers for every occasion in {city}" card grid (Christmas,
   birthday, anniversary, wedding, corporate, custom) and two more FAQs: Christmas/holiday
@@ -129,17 +129,17 @@ hreflang are correct in both languages, there are no duplicate titles or descrip
 data is valid on every page, and all search and AI crawlers are allowed in. Lighthouse SEO is
 100/100 on every page tested. Not much more ranking will come from technical work.
 
-**Velvéa doesn't rank yet because almost nothing outside velvea.ca mentions it.**
+**Velvea doesn't rank yet because almost nothing outside velvea.ca mentions it.**
 
 - A web search for "Velvea gift baskets Mississauga" returns competitors (Gifts For Every Reason,
-  Occasionally Gifted, Angie's Baskets) and nothing from Velvéa. A search for "velvea.ca" returns
+  Occasionally Gifted, Angie's Baskets) and nothing from Velvea. A search for "velvea.ca" returns
   only truck parts (Velvac). In that index the brand doesn't exist yet.
 - "Near me" searches are answered from the **map pack**, and the map pack ranks **Google Business
   Profiles**, not websites. Google's three factors are relevance, distance and prominence. The
   profile is about five weeks old, has 7 reviews and is missing its description, products, photos
   and the best category.
 - AI assistants describe a local business from what *other* sites say about it: directories,
-  "best gift baskets in Mississauga" round-ups, review sites, Reddit. Velvéa appears in none of
+  "best gift baskets in Mississauga" round-ups, review sites, Reddit. Velvea appears in none of
   these, so the assistants have nothing to repeat.
 
 Most of the work is off-site: the Business Profile, reviews, citations and mentions. The on-site
@@ -183,7 +183,7 @@ store**, and the primary category weighs more in local ranking than anything els
 
 - Primary: **Gift basket store**
 - Secondary: **Gift shop**, **Corporate gift supplier**. Add **Florist** only if bouquets become a
-  real line; today it's two products, and a florist category would pull Velvéa into searches it
+  real line; today it's two products, and a florist category would pull Velvea into searches it
   can't serve.
 
 ### 2.2 Fields still empty (checklist §4)
@@ -283,17 +283,17 @@ Smaller items from the same runs:
 
 ### 3.3 Titles that miss the main search terms (P1)
 
-The homepage title is "Velvéa — Gift Baskets, Same-Day in the GTA & Shipped Across Canada".
+The homepage title is "Velvea — Gift Baskets, Same-Day in the GTA & Shipped Across Canada".
 It doesn't contain **Mississauga** or **hampers**, the two words in the target queries. The H1
 ("Gift baskets & hampers, hand-packed in Mississauga") does, so the fix is only in
 `messages/*.json` → `meta`:
 
-- EN: `Gift Baskets & Hampers in Mississauga | Same-Day GTA Delivery | Velvéa`
-- FR: `Paniers-cadeaux et coffrets à Mississauga | Livraison le jour même | Velvéa`
+- EN: `Gift Baskets & Hampers in Mississauga | Same-Day GTA Delivery | Velvea`
+- FR: `Paniers-cadeaux et coffrets à Mississauga | Livraison le jour même | Velvea`
 
 `/delivery/mississauga` is the page that should rank for "gift basket delivery Mississauga".
-Current title: "Gift baskets and hampers delivered in Mississauga — Velvéa". Lead with the search
-phrase instead: `Gift Basket & Hamper Delivery in Mississauga, Same Day | Velvéa`. The same pattern
+Current title: "Gift baskets and hampers delivered in Mississauga — Velvea". Lead with the search
+phrase instead: `Gift Basket & Hamper Delivery in Mississauga, Same Day | Velvea`. The same pattern
 applies to the other 10 city pages through the shared template in `src/lib/cities.ts`/messages.
 
 ### 3.4 Recipient page titles are ungrammatical (P1, bug)
@@ -313,9 +313,9 @@ or set a stored SEO title on each of the 8 recipient collections in admin.
 ### 3.5 Inconsistent brand in product titles (P2)
 
 Product SEO titles are stored per product and use six different suffixes:
-"| Velvea", "| Velvéa", "| Velvea Canada", "| Velvea Gift Baskets", "| Velvea Mississauga",
+"| Velvea", "| Velvea", "| Velvea Canada", "| Velvea Gift Baskets", "| Velvea Mississauga",
 "| Velvea GTA", "| Velvea Gifts". Google treats the brand name as an entity, and mixed forms dilute
-it. Pick one (`| Velvéa`, matching every non-product page) and edit the 38 product SEO titles in
+it. Pick one (`| Velvea`, matching every non-product page) and edit the 38 product SEO titles in
 Admin → Products. A one-off script could do this with your go-ahead (prod DB write).
 
 ### 3.6 No LocalBusiness markup (P1)
@@ -333,7 +333,7 @@ the website to the map listing. Recommended: keep the Organization node and add 
   "@type": "LocalBusiness",
   "@id": "https://www.velvea.ca/#localbusiness",
   "name": "Velvea",
-  "alternateName": "Velvéa",
+  "alternateName": "Velvea",
   "url": "https://www.velvea.ca/",
   "image": "https://www.velvea.ca/brand/velvea-og.png",
   "telephone": "+1-431-726-1706",
@@ -455,9 +455,9 @@ BlogTO, Post City, Streets of Toronto, Groupon local, Trustpilot, Yelp "Top 10" 
 The site is in better shape here than most local shops: 15 guides, FAQ and 11 city pages with
 direct question-and-answer blocks. To make it easier to quote:
 
-- Start each city page with one plain sentence an assistant can lift as-is: "Velvéa delivers gift
+- Start each city page with one plain sentence an assistant can lift as-is: "Velvea delivers gift
   baskets and hampers anywhere in Mississauga for $9.99, same day on orders before 4 pm."
-- Add a short "Velvéa at a glance" block to `/about`: founded 2026, Mississauga studio, owner's
+- Add a short "Velvea at a glance" block to `/about`: founded 2026, Mississauga studio, owner's
   name, delivery areas, price range $59–$499, no alcohol, bilingual. Facts, no adjectives.
 - Keep every fact identical across the site, the profile, `llms.txt` and directories (cutoff
   times, fees, areas). Assistants drop businesses whose details conflict.
@@ -504,7 +504,7 @@ Nothing here can promise a ranking or a date. Track these and judge the work by 
 - **AI answers**: once a month, ask ChatGPT, Gemini, Perplexity and Copilot the same five
   questions ("best gift basket delivery Mississauga", "same-day gift hamper GTA", "corporate gift
   baskets Mississauga", "Diwali hampers Brampton", "gift baskets near Square One"). Note whether
-  Velvéa is named and what it cites. These answers vary run to run; look for the trend.
+  Velvea is named and what it cites. These answers vary run to run; look for the trend.
 - **Core Web Vitals** in Search Console after the splash change.
 
 ### Realistic timeline

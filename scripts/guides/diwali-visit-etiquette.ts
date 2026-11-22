@@ -54,7 +54,7 @@ export const diwaliVisitEtiquette: GuideSeed = {
 <h2>What to skip</h2>
 
 <ul>
-<li>Alcohol, unless you know for certain. Plenty of households that celebrate Diwali do not drink, and in many it would be out of place at a religious festival. If you are not sure, leave it out. Velvéa sells no alcohol, so nothing in our baskets raises the question.</li>
+<li>Alcohol, unless you know for certain. Plenty of households that celebrate Diwali do not drink, and in many it would be out of place at a religious festival. If you are not sure, leave it out. Velvea sells no alcohol, so nothing in our baskets raises the question.</li>
 <li>Anything with meat, gelatine or egg for a vegetarian home. Many Diwali households are vegetarian, and some are strict about it. Gummies and marshmallows usually contain gelatine, and Jain families avoid a longer list of ingredients. When in doubt, ask your host or choose something clearly vegetarian, and <a href="/contact">ask us what a basket contains</a> before you order.</li>
 <li>A dish to serve that evening. A host feeding a full house does not need another plate to manage. Bring something that can be put aside and enjoyed later.</li>
 </ul>
@@ -93,7 +93,7 @@ export const diwaliVisitEtiquette: GuideSeed = {
 <h2>Ce qu'il vaut mieux éviter</h2>
 
 <ul>
-<li>L'alcool, sauf si vous en êtes certain. Bien des foyers qui célèbrent Diwali ne boivent pas, et dans beaucoup d'entre eux l'alcool serait déplacé lors d'une fête religieuse. Dans le doute, abstenez-vous. Velvéa ne vend pas d'alcool, donc rien dans nos paniers ne pose la question.</li>
+<li>L'alcool, sauf si vous en êtes certain. Bien des foyers qui célèbrent Diwali ne boivent pas, et dans beaucoup d'entre eux l'alcool serait déplacé lors d'une fête religieuse. Dans le doute, abstenez-vous. Velvea ne vend pas d'alcool, donc rien dans nos paniers ne pose la question.</li>
 <li>Tout ce qui contient viande, gélatine ou œuf pour un foyer végétarien. Beaucoup de foyers qui célèbrent Diwali sont végétariens, certains strictement. Les jujubes et les guimauves contiennent généralement de la gélatine, et les familles jaïnes évitent une liste d'ingrédients plus longue. Dans le doute, demandez à votre hôte ou choisissez quelque chose de clairement végétarien, et <a href="/fr/contact">demandez-nous ce que contient un panier</a> avant de commander.</li>
 <li>Un plat à servir le soir même. Un hôte qui nourrit une maison pleine n'a pas besoin d'un plat de plus à gérer. Apportez quelque chose qui peut être mis de côté et savouré plus tard.</li>
 </ul>

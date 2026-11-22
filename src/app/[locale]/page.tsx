@@ -34,7 +34,7 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
-  // The homepage title carries the brand itself, so the " · Velvéa" template is skipped.
+  // The homepage title carries the brand itself, so the " · Velvea" template is skipped.
   return pageMetadata({ locale, path: "/", title: t("homeTitle"), description: t("homeDescription"), absoluteTitle: true });
 }
 

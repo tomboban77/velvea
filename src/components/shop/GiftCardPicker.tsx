@@ -35,7 +35,7 @@ export function GiftCardPicker({ productId, variants }: { productId: string; var
       {/* preview */}
       <div className="relative mb-6 overflow-hidden rounded-lg p-8 text-white shadow-lg" style={{ background: "var(--grad-iris)" }}>
         <div className="flex items-start justify-between">
-          <span className="font-display text-2xl tracking-wide">VELVÉA</span>
+          <span className="font-display text-2xl tracking-wide">VELVEA</span>
           <Gift className="h-6 w-6" />
         </div>
         <p className="mt-10 text-sm opacity-80">{fr ? "Carte-cadeau" : "Gift Card"}</p>

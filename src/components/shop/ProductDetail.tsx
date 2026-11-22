@@ -212,7 +212,7 @@ export function ProductDetail({
                 </button>
               ) : (
                 <div className="flex h-full items-center justify-center">
-                  <span className="font-display text-5xl text-line-strong">Velvéa</span>
+                  <span className="font-display text-5xl text-line-strong">Velvea</span>
                 </div>
               )}
               {(onSale || badgeLabel) && (
@@ -345,7 +345,7 @@ export function ProductDetail({
                       <span>{giftMessage.length}/{GIFT_MAX}</span>
                     </div>
 
-                    {/* Card type: the Velvéa card is always free; the store card is a
+                    {/* Card type: the Velvea card is always free; the store card is a
                         flat per-basket fee that rides on the line and is re-priced at
                         checkout from settings. */}
                     <fieldset className="mt-3 grid gap-2 sm:grid-cols-2">

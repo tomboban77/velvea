@@ -28,7 +28,7 @@ const WRITE = process.argv.includes("--write");
 const FORCE = process.argv.includes("--force");
 const PUBLISH = process.argv.includes("--publish");
 
-const AUTHOR = "Velvéa";
+const AUTHOR = "Velvea";
 
 /** Internal /guides/... links must resolve, or a published guide ships a 404. */
 function checkCrossLinks(): string[] {

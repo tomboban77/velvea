@@ -67,7 +67,7 @@ export function ProductCard({ product, priority = false }: { product: ProductVie
             </>
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="font-display text-2xl tracking-[0.1em] text-line-strong">Velvéa</span>
+              <span className="font-display text-2xl tracking-[0.1em] text-line-strong">Velvea</span>
             </div>
           )}
         </Link>

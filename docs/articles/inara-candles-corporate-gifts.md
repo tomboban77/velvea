@@ -23,7 +23,7 @@ they're happy for us to use it.
 | Title (FR) | Voici INARA : des bougies coulées à la main à Milton, maintenant dans nos cadeaux d'entreprise |
 | Slug | `inara-candles-corporate-gifts` |
 | Category | CORPORATE |
-| Author | Velvéa |
+| Author | Velvea |
 | Read minutes | 5 |
 | Featured | Off |
 | Cover image | `import/images/inara-cozy-collection.png` (INARA's Cozy Collection photo) |
@@ -44,7 +44,7 @@ Nous nous sommes associés à INARA, une petite entreprise de bougies de Milton,
 
 ## SEO title and description
 
-The site appends " · Velvéa" to these automatically.
+The site appends " · Velvea" to these automatically.
 
 EN title:
 

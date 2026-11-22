@@ -1,10 +1,10 @@
 {
   "brand": {
-    "name": "Velvéa",
+    "name": "Velvea",
     "tagline": "L'art du cadeau réfléchi."
   },
   "splash": {
-    "greeting": "Bienvenue chez Velvéa",
+    "greeting": "Bienvenue chez Velvea",
     "line": "Des paniers-cadeaux composés à la main dans notre atelier de Mississauga."
   },
   "announcement": {
@@ -174,7 +174,7 @@
     "startNote": "À partir de {price}"
   },
   "way": {
-    "eyebrow": "La façon Velvéa",
+    "eyebrow": "La façon Velvea",
     "title": "De nos mains à leur porte",
     "s1": "Choisissez ou composez",
     "s1Sub": "Parcourez par occasion et destinataire, ou créez un panier de A à Z.",
@@ -292,7 +292,7 @@
       },
       {
         "q": "Vos paniers contiennent-ils de l'alcool ?",
-        "a": "Non. Tous les paniers Velvéa sont sans alcool, un choix simple pour des équipes variées et pour des clients dont vous ne connaissez pas les habitudes."
+        "a": "Non. Tous les paniers Velvea sont sans alcool, un choix simple pour des équipes variées et pour des clients dont vous ne connaissez pas les habitudes."
       }
     ],
     "ctaTitle": "Vous préférez qu'on s'en occupe ?",
@@ -303,8 +303,8 @@
     "eyebrow": "Notre histoire",
     "title": "Un petit atelier à Mississauga, fondé sur une conviction",
     "body1": "Le bon cadeau ne dépend jamais du prix. Il dépend du moment, et de quelqu'un qui prend le temps de trouver le ton juste.",
-    "body2": "Velvéa a été fondée en 2026 pour faire exactement cela : composer des paniers à la main, uniquement avec des produits que nous offririons nous-mêmes, et les livrer pour qu'ils arrivent exactement comme en ligne.",
-    "sign": "Fondatrice, Velvéa",
+    "body2": "Velvea a été fondée en 2026 pour faire exactement cela : composer des paniers à la main, uniquement avec des produits que nous offririons nous-mêmes, et les livrer pour qu'ils arrivent exactement comme en ligne.",
+    "sign": "Fondatrice, Velvea",
     "cta": "Lire notre histoire",
     "badge": "Entreprise détenue par une femme · Mississauga, Ontario"
   },
@@ -360,7 +360,7 @@
       },
       {
         "q": "Un message cadeau est-il inclus ?",
-        "a": "Toujours. Ajoutez votre message sur la page du produit ou à la caisse et nous l'imprimons sur une carte Velvéa, glissée dans le panier, sans frais. Pour de modestes frais fixes, vous pouvez opter pour une carte de vœux grand format adaptée à l'occasion. Les prix ne sont jamais inclus."
+        "a": "Toujours. Ajoutez votre message sur la page du produit ou à la caisse et nous l'imprimons sur une carte Velvea, glissée dans le panier, sans frais. Pour de modestes frais fixes, vous pouvez opter pour une carte de vœux grand format adaptée à l'occasion. Les prix ne sont jamais inclus."
       },
       {
         "q": "Les paniers sont-ils préfabriqués ou préparés à la commande ?",
@@ -393,7 +393,7 @@
       },
       {
         "q": "Vos paniers-cadeaux contiennent-ils de l'alcool ?",
-        "a": "Non. Chaque panier Velvéa est sans alcool : il peut donc aller à n'importe quel collègue, client, famille ou foyer sans hésitation. La page de chaque panier indique exactement ce qu'il contient."
+        "a": "Non. Chaque panier Velvea est sans alcool : il peut donc aller à n'importe quel collègue, client, famille ou foyer sans hésitation. La page de chaque panier indique exactement ce qu'il contient."
       }
     ]
   },
@@ -468,10 +468,10 @@
     "cta": "S'abonner",
     "success": "Presque terminé. Vérifiez votre boîte de réception et confirmez votre abonnement.",
     "error": "Une erreur est survenue. Veuillez réessayer.",
-    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvéa. Vous pouvez vous désabonner à tout moment.",
+    "consent": "En vous abonnant, vous acceptez de recevoir occasionnellement des courriels de Velvea. Vous pouvez vous désabonner à tout moment.",
     "privacyLink": "Politique de confidentialité",
     "alreadySubscribed": "Vous êtes déjà inscrit.",
-    "confirmed": "Vous êtes inscrit. Bienvenue chez Velvéa.",
+    "confirmed": "Vous êtes inscrit. Bienvenue chez Velvea.",
     "unsubscribed": "Vous êtes désabonné. Au plaisir de vous revoir.",
     "invalidLink": "Ce lien n'est plus valide."
   },
@@ -481,11 +481,11 @@
     "conciergeSub": "Une question sur une commande, une occasion ou un programme d'entreprise ? Nous répondons en un jour ouvrable.",
     "shop": "Boutique",
     "occasions": "Occasions",
-    "company": "Velvéa",
+    "company": "Velvea",
     "support": "Aide",
     "about": "Notre histoire",
     "corporate": "Cadeaux d'entreprise",
-    "partners": "Vendre avec Velvéa",
+    "partners": "Vendre avec Velvea",
     "guidesLink": "Guides cadeaux",
     "contact": "Contact",
     "faq": "FAQ",
@@ -559,9 +559,9 @@
     "giftCardTitle": "Ajouter une carte",
     "giftCardHint": "Facultatif. Imprimée sur une carte et glissée à l'intérieur",
     "giftCardPlaceholder": "Joyeux anniversaire, papa. Savoure chaque bouchée. Bisous, Tom",
-    "giftCardNote": "Imprimée sur une carte Velvéa. Les prix ne sont jamais inclus.",
+    "giftCardNote": "Imprimée sur une carte Velvea. Les prix ne sont jamais inclus.",
     "giftCardTypeLegend": "Type de carte",
-    "giftCardFree": "Carte Velvéa",
+    "giftCardFree": "Carte Velvea",
     "giftCardFreeSub": "Notre carte signature, imprimée et glissée à l'intérieur.",
     "giftCardPremium": "Carte de vœux premium",
     "giftCardPremiumSub": "Une carte de vœux grand format adaptée à l'occasion, avec votre message à l'intérieur.",
@@ -617,10 +617,10 @@
     "emptyLede": "En attendant, découvrez nos paniers prêts à offrir."
   },
   "meta": {
-    "homeTitle": "Paniers-cadeaux et coffrets à Mississauga | Livraison le jour même | Velvéa",
+    "homeTitle": "Paniers-cadeaux et coffrets à Mississauga | Livraison le jour même | Velvea",
     "homeDescription": "Boutique de cadeaux en ligne : paniers-cadeaux, paniers garnis et coffrets haut de gamme, composés à la main à Mississauga. Livraison le jour même dans le Grand Toronto sur les commandes admissibles, expédition suivie partout au Canada.",
     "basketsTitle": "Tous les paniers-cadeaux et coffrets",
-    "basketsDescription": "Découvrez tous les paniers-cadeaux, paniers garnis et coffrets Velvéa : gourmet, chocolat, spa, café et thé, composés à la main à Mississauga et expédiés partout au Canada.",
+    "basketsDescription": "Découvrez tous les paniers-cadeaux, paniers garnis et coffrets Velvea : gourmet, chocolat, spa, café et thé, composés à la main à Mississauga et expédiés partout au Canada.",
     "pageSuffix": "{title}, page {page}",
     "collectionTitle": "Paniers-cadeaux et coffrets · {name}",
     "recipientTitle": "Paniers-cadeaux et coffrets pour {name}",
@@ -640,21 +640,21 @@
     "corporateQuoteTitle": "Demander un devis d'entreprise",
     "corporateQuoteDescription": "Parlez-nous de votre projet de cadeaux d'entreprise et recevez une proposition sur mesure sous un jour ouvrable.",
     "partnersTitle": "Marques partenaires : vendez vos produits dans nos paniers-cadeaux",
-    "partnersDescription": "Artisans et marques canadiennes : faites entrer votre chocolat, thé, café, soins ou bougies dans les paniers-cadeaux Velvéa, livrés à Mississauga, à Toronto et partout au Canada.",
+    "partnersDescription": "Artisans et marques canadiennes : faites entrer votre chocolat, thé, café, soins ou bougies dans les paniers-cadeaux Velvea, livrés à Mississauga, à Toronto et partout au Canada.",
     "aboutTitle": "Notre histoire",
-    "aboutDescription": "Velvéa est une petite boutique de cadeaux en ligne et un atelier à Mississauga, en Ontario, qui compose chaque panier-cadeau et coffret à la main avec des produits que nous offririons nous-mêmes.",
+    "aboutDescription": "Velvea est une petite boutique de cadeaux en ligne et un atelier à Mississauga, en Ontario, qui compose chaque panier-cadeau et coffret à la main avec des produits que nous offririons nous-mêmes.",
     "guidesTitle": "Guides cadeaux et conseils",
     "guidesDescription": "Des conseils sur les cadeaux d'entreprise, les paniers de sympathie, les idées saisonnières et le ton juste pour chaque destinataire.",
     "guideFallbackTitle": "Guide cadeau",
     "reviewsTitle": "Avis clients",
-    "reviewsDescription": "Ce que nos clients disent de leurs paniers-cadeaux Velvéa.",
+    "reviewsDescription": "Ce que nos clients disent de leurs paniers-cadeaux Velvea.",
     "faqTitle": "Questions fréquentes",
     "faqDescription": "Zones de livraison, heures limites pour le jour même, messages cadeaux, allergènes et tout ce que vous voulez savoir avant de commander.",
-    "contactTitle": "Joindre Velvéa",
-    "contactDescription": "Une question sur une commande, une occasion ou un projet d'entreprise ? Joignez l'atelier Velvéa à Mississauga. Nous répondons sous un jour ouvrable.",
+    "contactTitle": "Joindre Velvea",
+    "contactDescription": "Une question sur une commande, une occasion ou un projet d'entreprise ? Joignez l'atelier Velvea à Mississauga. Nous répondons sous un jour ouvrable.",
     "searchTitle": "Recherche",
     "giftCardsTitle": "Cartes-cadeaux",
-    "giftCardsDescription": "Offrez le choix avec une carte-cadeau Velvéa, échangeable sur n'importe quel panier.",
+    "giftCardsDescription": "Offrez le choix avec une carte-cadeau Velvea, échangeable sur n'importe quel panier.",
     "productFallbackTitle": "Panier-cadeau",
     "deliveryTitle": "Livraison de paniers-cadeaux à Mississauga, Toronto et dans le Grand Toronto, expédition partout au Canada",
     "deliveryDescription": "Livraison le jour même de paniers-cadeaux à Mississauga, Malton, Brampton, Toronto, Etobicoke, Oakville, Milton, Vaughan et Markham. Expédition avec suivi partout au Canada. Ramassage gratuit à Mississauga, sur rendez-vous.",
@@ -665,7 +665,7 @@
     "cityDescriptionNextDay": "Paniers-cadeaux composés à la main et livrés à {city}, en Ontario, par notre équipe dès le lendemain, à partir de {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "cityDescriptionShipping": "Paniers-cadeaux composés à la main et expédiés à {city}, en Ontario, par transporteur avec suivi dès {fee}. Anniversaire, merci, sympathie, entreprise et plus.",
     "customRequestTitle": "Paniers-cadeaux sur mesure, préparés à Mississauga",
-    "customRequestDescription": "Paniers-cadeaux sur mesure pour toute occasion : dites à Velvéa ce que vous voulez y mettre et nous l'évaluons à la main, sans rien facturer avant votre approbation. Préparés à Mississauga, livrés dans le Grand Toronto et expédiés partout au Canada."
+    "customRequestDescription": "Paniers-cadeaux sur mesure pour toute occasion : dites à Velvea ce que vous voulez y mettre et nous l'évaluons à la main, sans rien facturer avant votre approbation. Préparés à Mississauga, livrés dans le Grand Toronto et expédiés partout au Canada."
   },
   "delivery": {
     "eyebrow": "Zones de livraison",
@@ -715,9 +715,9 @@
     "faqA3Local": "Notre propre équipe, en main propre. Dans nos zones locales, les paniers ne passent jamais par un transporteur, et vous recevez un courriel dès que le panier est livré.",
     "faqA3Shipping": "Un transporteur avec suivi. Vous recevez le numéro de suivi par courriel à l'expédition et une confirmation à la livraison.",
     "otherCities": "Autres zones de livraison",
-    "glanceSameDay": "Velvéa livre des paniers-cadeaux à toute adresse de {city} pour {fee}, le jour même pour les commandes passées avant {time} (heure de l'Est), par notre propre équipe.",
-    "glanceNextDay": "Velvéa livre des paniers-cadeaux à toute adresse de {city} pour {fee}, par notre propre équipe, le prochain jour disponible.",
-    "glanceShipping": "Velvéa expédie des paniers-cadeaux à {city} par transporteur avec suivi pour {fee}, livrés en {min} à {max} jours ouvrables.",
+    "glanceSameDay": "Velvea livre des paniers-cadeaux à toute adresse de {city} pour {fee}, le jour même pour les commandes passées avant {time} (heure de l'Est), par notre propre équipe.",
+    "glanceNextDay": "Velvea livre des paniers-cadeaux à toute adresse de {city} pour {fee}, par notre propre équipe, le prochain jour disponible.",
+    "glanceShipping": "Velvea expédie des paniers-cadeaux à {city} par transporteur avec suivi pour {fee}, livrés en {min} à {max} jours ouvrables.",
     "occasionHampersH": "Des paniers pour chaque occasion à {city}",
     "occasionHampersLede": "Les mêmes paniers, choisis pour le moment. Chacun est emballé à la main à Mississauga après votre commande, et aucun ne contient d'alcool.",
     "occChristmas": "Paniers de Noël",
@@ -750,7 +750,7 @@
   "customRequest": {
     "eyebrow": "Panier sur mesure",
     "title": "Dites-nous ce que vous aimeriez dans votre panier",
-    "lede": "Envoyez-nous la liste des produits, marques ou gourmandises que vous aimeriez. Nous les trouvons, les disposons à la main comme chaque panier Velvéa et vous envoyons un prix final.",
+    "lede": "Envoyez-nous la liste des produits, marques ou gourmandises que vous aimeriez. Nous les trouvons, les disposons à la main comme chaque panier Velvea et vous envoyons un prix final.",
     "howTitle": "Comment ça fonctionne",
     "s1": "Dites-nous quoi inclure",
     "s1Sub": "Produits, marques, saveurs ou formats. Autant ou aussi peu de détails que vous le souhaitez.",

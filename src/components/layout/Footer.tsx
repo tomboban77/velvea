@@ -117,7 +117,7 @@ export async function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-line-strong/60">
         <div className="container-x flex flex-col gap-4 py-5 text-[0.8rem] text-muted md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Velvéa · {t("footer.rights")} · {t("footer.madeIn")}</p>
+          <p>© {new Date().getFullYear()} Velvea · {t("footer.rights")} · {t("footer.madeIn")}</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-violet-deep" strokeWidth={1.7} /> {t("footer.secure")}

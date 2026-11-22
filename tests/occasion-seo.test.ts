@@ -37,7 +37,7 @@ describe("occasion editorial content", () => {
         titles.add(entry.title[lang]);
       }
       // The brand is appended by the layout template; a title that already
-      // names it would render "… Velvéa · Velvéa".
+      // names it would render "… Velvea · Velvea".
       expect(entry.title.en).not.toMatch(/velv[ée]a/i);
       expect(entry.title.fr).not.toMatch(/velv[ée]a/i);
     }

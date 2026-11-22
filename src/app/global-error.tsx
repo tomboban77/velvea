@@ -17,7 +17,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html lang="en">
       <body style={{ margin: 0, background: "#fbf8f2", color: "#211b15", fontFamily: "Georgia, serif" }}>
         <main style={{ maxWidth: 520, margin: "0 auto", padding: "96px 24px", textAlign: "center" }}>
-          <p style={{ letterSpacing: 4, fontSize: 20, fontWeight: 700, color: "#b0894e" }}>VELVÉA</p>
+          <p style={{ letterSpacing: 4, fontSize: 20, fontWeight: 700, color: "#b0894e" }}>VELVEA</p>
           <h1 style={{ fontSize: 28, margin: "24px 0 12px" }}>Something went wrong · Un problème est survenu</h1>
           <p style={{ color: "#514a40", lineHeight: 1.6 }}>
             The page couldn&apos;t load. Please try again in a moment.

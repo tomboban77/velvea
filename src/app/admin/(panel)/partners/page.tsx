@@ -38,7 +38,7 @@ export default async function BrandPartnersPage() {
       {!inquiries ? (
         <EmptyState title="Database not connected" />
       ) : inquiries.length === 0 ? (
-        <EmptyState title="No brand enquiries yet" description="Submissions from the Sell with Velvéa page will appear here." />
+        <EmptyState title="No brand enquiries yet" description="Submissions from the Sell with Velvea page will appear here." />
       ) : (
         <div className="space-y-4">
           {inquiries.map((q) => {

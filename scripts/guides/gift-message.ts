@@ -62,7 +62,7 @@ export const giftMessage: GuideSeed = {
 
 <h3>Mentioning what it cost, or apologising for it</h3>
 
-<p>"Just a little something" and "sorry it's not more" both do the same damage: they tell the recipient to evaluate the gift rather than enjoy it. If you feel the urge, it is usually a sign you should say something warmer instead, not something smaller. (Prices are never included with a Velvéa gift, so the recipient has no way of knowing unless you tell them.)</p>
+<p>"Just a little something" and "sorry it's not more" both do the same damage: they tell the recipient to evaluate the gift rather than enjoy it. If you feel the urge, it is usually a sign you should say something warmer instead, not something smaller. (Prices are never included with a Velvea gift, so the recipient has no way of knowing unless you tell them.)</p>
 
 <h3>Making it about you</h3>
 
@@ -195,7 +195,7 @@ export const giftMessage: GuideSeed = {
 
 <h2>A few practical notes</h2>
 
-<p>Every Velvéa gift includes a printed message card at no charge, and you can add your message on the product page or at checkout. Prices are never included, so the recipient sees the gift, not the invoice. If the occasion calls for more than a tucked-in card, a full-size greeting card is available for a small flat fee.</p>
+<p>Every Velvea gift includes a printed message card at no charge, and you can add your message on the product page or at checkout. Prices are never included, so the recipient sees the gift, not the invoice. If the occasion calls for more than a tucked-in card, a full-size greeting card is available for a small flat fee.</p>
 
 <p>One last thing, obvious and still the most common mistake on bilingual orders: write the message in the language they speak.</p>
 
@@ -229,7 +229,7 @@ export const giftMessage: GuideSeed = {
 
 <h3>Mentionner le prix, ou s'en excuser</h3>
 
-<p>« Un petit quelque chose » et « désolée, ce n'est pas grand-chose » font le même tort : ils invitent le destinataire à évaluer le cadeau plutôt qu'à en profiter. Si l'envie vous prend, c'est généralement le signe qu'il faut dire quelque chose de plus chaleureux, pas de plus modeste. (Les prix ne sont jamais joints à un cadeau Velvéa : le destinataire ne peut pas le savoir, sauf si vous le lui dites.)</p>
+<p>« Un petit quelque chose » et « désolée, ce n'est pas grand-chose » font le même tort : ils invitent le destinataire à évaluer le cadeau plutôt qu'à en profiter. Si l'envie vous prend, c'est généralement le signe qu'il faut dire quelque chose de plus chaleureux, pas de plus modeste. (Les prix ne sont jamais joints à un cadeau Velvea : le destinataire ne peut pas le savoir, sauf si vous le lui dites.)</p>
 
 <h3>Parler de soi</h3>
 
@@ -362,7 +362,7 @@ export const giftMessage: GuideSeed = {
 
 <h2>Quelques notes pratiques</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée sans frais, et vous pouvez ajouter votre message sur la fiche produit ou à la caisse. Les prix ne sont jamais joints : le destinataire voit le cadeau, pas la facture. Si l'occasion appelle plus qu'une carte glissée à l'intérieur, une carte de souhaits pleine grandeur est offerte moyennant un petit montant fixe.</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée sans frais, et vous pouvez ajouter votre message sur la fiche produit ou à la caisse. Les prix ne sont jamais joints : le destinataire voit le cadeau, pas la facture. Si l'occasion appelle plus qu'une carte glissée à l'intérieur, une carte de souhaits pleine grandeur est offerte moyennant un petit montant fixe.</p>
 
 <p>Un dernier point, évident et pourtant l'erreur la plus fréquente sur les commandes bilingues : écrivez le message dans la langue de la personne.</p>
 

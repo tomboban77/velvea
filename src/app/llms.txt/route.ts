@@ -61,8 +61,8 @@ export async function GET() {
   // Delivery facts from the zones.
   const facts = sameDayFacts(zones, "en", money);
   const sameDayLine = facts.cutoff
-    ? `Same-day delivery by Velvéa's own drivers in ${joinNames(facts.cityNames, "en")} on orders placed before ${facts.cutoff} Eastern${facts.fee ? ` (local delivery from ${facts.fee} per order)` : ""}.`
-    : "Local delivery by Velvéa's own drivers across Mississauga and the Greater Toronto Area.";
+    ? `Same-day delivery by Velvea's own drivers in ${joinNames(facts.cityNames, "en")} on orders placed before ${facts.cutoff} Eastern${facts.fee ? ` (local delivery from ${facts.fee} per order)` : ""}.`
+    : "Local delivery by Velvea's own drivers across Mississauga and the Greater Toronto Area.";
   const cityLines = CITY_PAGES.map((c) => {
     const offer = offerFor(c, zones);
     const note =
@@ -81,16 +81,16 @@ export async function GET() {
     .map((z) => `- ${z.provinces.map(provinceName).filter(Boolean).join(", ")}: tracked courier, ${z.minLeadDays} to ${z.maxLeadDays} business days, ${money(z.baseFeeCents)} for the first basket`)
     .join("\n");
 
-  const body = `# Velvéa
+  const body = `# Velvea
 
-> Velvéa is a gift-basket and gift-hamper studio in Mississauga, Ontario, Canada. Every basket is composed by hand after the order is placed. ${sameDayLine} Baskets that travel well are shipped by tracked courier to the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia. The business is online-only (no walk-in shop); free pickup from the Mississauga studio is by appointment. No alcohol is sold: every basket is alcohol-free. The site is bilingual: English at ${origin}/ and French at ${origin}/fr.
+> Velvea is a gift-basket and gift-hamper studio in Mississauga, Ontario, Canada. Every basket is composed by hand after the order is placed. ${sameDayLine} Baskets that travel well are shipped by tracked courier to the rest of Ontario, the Atlantic provinces, the Prairies and British Columbia. The business is online-only (no walk-in shop); free pickup from the Mississauga studio is by appointment. No alcohol is sold: every basket is alcohol-free. The site is bilingual: English at ${origin}/ and French at ${origin}/fr.
 
 ## Key pages
 
 - [All gift baskets and hampers](${url("/baskets")}): the full catalogue with prices in Canadian dollars
 - [Custom gift hampers](${url("/custom-basket")}): describe the products you want in a basket and receive a final price by email or phone; nothing is charged until the quote is approved
 - [Corporate gifting](${url("/corporate")}): volume pricing from 10 baskets, branded cards, multi-address delivery; [request a quote](${url("/corporate/quote")})
-- [Brand partners](${url("/partners")}): Canadian makers and brands can propose products for Velvéa gift baskets (no alcohol)
+- [Brand partners](${url("/partners")}): Canadian makers and brands can propose products for Velvea gift baskets (no alcohol)
 - [Delivery areas](${url("/delivery")}): which cities get same-day, next-day or courier delivery, with fees and cutoffs
 - [Delivery policy](${url("/shipping")}): costs, cutoffs, pickup and what cannot be shipped
 - [FAQ](${url("/faq")}): delivery cities, Canada-wide shipping, gift messages, how baskets are packed, custom and corporate orders, and why all sales are final

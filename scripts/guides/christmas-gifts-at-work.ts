@@ -126,7 +126,7 @@ export const christmasGiftsAtWork: GuideSeed = {
 
 <h2>What to write on a work card</h2>
 
-<p>Every Velvéa gift includes a printed message card, and on corporate orders we can add your branding or write a different message for each recipient. Short is better. A few that work:</p>
+<p>Every Velvea gift includes a printed message card, and on corporate orders we can add your branding or write a different message for each recipient. Short is better. A few that work:</p>
 
 <ul>
 <li>To a client: "Thank you for a great year working together. Wishing you and your team a restful break."</li>
@@ -230,7 +230,7 @@ export const christmasGiftsAtWork: GuideSeed = {
 
 <h2>Quoi écrire sur une carte professionnelle</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée, et pour les commandes d'entreprise, nous pouvons y ajouter votre image de marque ou écrire un message différent pour chaque destinataire. Court, c'est mieux. Quelques exemples :</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée, et pour les commandes d'entreprise, nous pouvons y ajouter votre image de marque ou écrire un message différent pour chaque destinataire. Court, c'est mieux. Quelques exemples :</p>
 
 <ul>
 <li>À un client : « Merci pour cette belle année de collaboration. Nous vous souhaitons, à vous et à votre équipe, un congé reposant. »</li>

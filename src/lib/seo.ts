@@ -11,7 +11,7 @@ import { CUSTOM_BUILDER_ENABLED } from "@/lib/features";
  * behaviour is unit-tested in `tests/seo.test.ts` without a Next runtime.
  */
 
-export const BRAND = "Velvéa";
+export const BRAND = "Velvea";
 export const DEFAULT_OG_IMAGE = "/brand/velvea-og.png?v=6";
 
 /** hreflang codes. Google matches on language, and the region tells it these are Canadian pages. */
@@ -140,7 +140,7 @@ export type PageMeta = {
   locale: string;
   /** Locale-less path, e.g. "/baskets" or "/products/x". */
   path: string;
-  /** Unbranded title; the root layout's template appends " · Velvéa". */
+  /** Unbranded title; the root layout's template appends " · Velvea". */
   title: string;
   description?: string | null;
   /** Absolute or root-relative image; defaults to the brand card. */
@@ -161,7 +161,7 @@ export type PageMeta = {
   /** For articles: ISO dates. */
   publishedTime?: string;
   modifiedTime?: string;
-  /** Skip the root " · Velvéa" template (the homepage title already carries the brand). */
+  /** Skip the root " · Velvea" template (the homepage title already carries the brand). */
   absoluteTitle?: boolean;
   /** Overrides the launch switch — tests only. */
   mode?: IndexingMode;

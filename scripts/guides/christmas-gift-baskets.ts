@@ -100,7 +100,7 @@ export const christmasGiftBaskets: GuideSeed = {
 
 <h2>What to write on the card</h2>
 
-<p>Every Velvéa gift includes a printed message card. At Christmas, warm and simple is enough.</p>
+<p>Every Velvea gift includes a printed message card. At Christmas, warm and simple is enough.</p>
 
 <ul>
 <li>"Merry Christmas! Wishing you a cosy holiday and a wonderful new year."</li>
@@ -178,7 +178,7 @@ export const christmasGiftBaskets: GuideSeed = {
 
 <h2>Quoi écrire sur la carte</h2>
 
-<p>Chaque cadeau Velvéa comprend une carte-message imprimée. À Noël, un mot simple et chaleureux suffit.</p>
+<p>Chaque cadeau Velvea comprend une carte-message imprimée. À Noël, un mot simple et chaleureux suffit.</p>
 
 <ul>
 <li>« Joyeux Noël! Nous vous souhaitons des Fêtes douillettes et une merveilleuse nouvelle année. »</li>
