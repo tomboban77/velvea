@@ -25,13 +25,13 @@ export type GoogleReview = {
 };
 
 /** The figures Google shows at the top of the profile. */
-export const GOOGLE_RATING = { average: 5.0, count: 17 };
+export const GOOGLE_RATING = { average: 5.0, count: 23 };
 
 /**
  * The carousel shows these in this order, so the list is the running order:
  * the owner picks which reviews lead. The first seven are from 29 Oct 2026;
- * the next five were added 8 Nov 2026 and the last five on 14 Nov 2026, each
- * time to the end of the list. Names Google shows in
+ * the next five were added 8 Nov 2026, five more on 14 Nov 2026 and the last
+ * six on 22 Nov 2026, each time to the end of the list. Names Google shows in
  * capitals or lowercase (PRACHI PAL, ADARSH REDDY, angela binny) are written in
  * normal case so the cards match.
  */
@@ -144,5 +144,40 @@ export const GOOGLE_REVIEWS: GoogleReview[] = [
     date: "2026-11-14",
     rating: 5,
     text: "Absolutely beautiful! The basket was thoughtfully put together, with great attention to detail and lovely presentation. Everything was wonderful, and the overall experience exceeded my expectations. You can truly tell how much care goes into every detail. Highly recommend Velvea! 🩷",
+  },
+  {
+    author: "Alex Vincent",
+    date: "2026-11-17",
+    rating: 5,
+    text: "Really happy with the gift hamper from velvea. Everything looked beautiful and the packaging was lovely. Would definitely recommend.",
+  },
+  {
+    author: "Subin Panicker",
+    date: "2026-11-17",
+    rating: 5,
+  },
+  {
+    author: "Bibin Shiji",
+    date: "2026-11-19",
+    rating: 5,
+    text: "Got a custom hamper from Velvea and it turned out really nice. They included everything I asked for and were easy to deal with.",
+  },
+  {
+    author: "Jobin Thomas",
+    date: "2026-11-21",
+    rating: 5,
+    text: "Really liked the hamper. The selection of goodies was great, and everything was packed so nicely. Thanks Team Velvea",
+  },
+  {
+    author: "Nitin Sharma",
+    date: "2026-11-21",
+    rating: 5,
+    text: "Had a custom hamper made by Velvea, and absolutely loved it! Beautifully put together, exactly what I wanted, and amazing stuff!! Highly recommend!",
+  },
+  {
+    author: "Jimiya Jayan",
+    date: "2026-11-19",
+    rating: 5,
+    text: "Absolutely loved the gift hamper! ❤️ Everything was beautifully arranged with so much attention to detail. From the packaging to the presentation, every little element was thoughtfully put together. You can truly see the effort, creativity, and passion behind the work. It made the gift feel even more special. Highly recommend for anyone looking to make their loved ones feel extra special! 💝",
   },
 ];

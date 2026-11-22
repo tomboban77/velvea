@@ -22,6 +22,10 @@ import { lastMinuteChristmasGifts } from "./last-minute-christmas-gifts";
 import { sendGiftToCanada } from "./send-gift-to-canada";
 import { milestoneBirthdayGifts } from "./milestone-birthday-gifts";
 import { customGiftHamper } from "./custom-gift-hamper";
+import { teacherChristmasGifts } from "./teacher-christmas-gifts";
+import { holidayTipping } from "./holiday-tipping";
+import { remoteEmployeeGifts } from "./remote-employee-gifts";
+import { thankYouGiftsHospitalStaff } from "./thank-you-gifts-hospital-staff";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -52,6 +56,10 @@ export const GUIDES: GuideSeed[] = [
   sendGiftToCanada,
   milestoneBirthdayGifts,
   customGiftHamper,
+  teacherChristmasGifts,
+  holidayTipping,
+  remoteEmployeeGifts,
+  thankYouGiftsHospitalStaff,
 ];
 
 /**

@@ -154,6 +154,17 @@ const REVIEWS: Row[] = [
   // Fourth list, supplied 18 Nov 2026 without product names; the owner picked the products.
   { product: "Love You Always Gift Hamper", author: "Jimiya", rating: 5, date: "2026-11-17", body: "Such a beautiful gift hamper! Loved the teddy bear, chocolates, and the little details that made it special. Everything was arranged so nicely, and the packaging looked lovely. A really sweet gift, and I'm very happy with it!" },
   { product: "Welcome Little Princess Baby Gift Box", author: "Chikku", rating: 5, date: "2026-11-01", body: "A lovely baby gift box. The little outfits are adorable, and I really liked the selection of baby essentials. Everything was arranged beautifully with such pretty packaging." },
+
+  // Fifth list, supplied 22 Nov 2026 from the Google profile. Neither review
+  // names a product; the owner said which basket each customer ordered. Dates
+  // are the day the review was posted on Google, not the order date.
+  { product: "Lavender Beauty Bloom Bouquet", author: "Jobin Thomas", rating: 5, date: "2026-11-21", body: "Really liked the hamper. The selection of goodies was great, and everything was packed so nicely. Thanks Team Velvea" },
+  { product: "Little One Welcome Gift Box", author: "Bibin Shiji", rating: 5, date: "2026-11-19", body: "Got a custom hamper from Velvea and it turned out really nice. They included everything I asked for and were easy to deal with." },
+  { product: "Blush & Bloom Luxury Spa Gift Basket", author: "Jimiya Jayan", rating: 5, date: "2026-11-19", body: "Absolutely loved the gift hamper! ❤️ Everything was beautifully arranged with so much attention to detail. From the packaging to the presentation, every little element was thoughtfully put together. You can truly see the effort, creativity, and passion behind the work. It made the gift feel even more special. Highly recommend for anyone looking to make their loved ones feel extra special! 💝" },
+  { product: "Slow Mornings Retirement Gift Basket", author: "Nitin Sharma", rating: 5, date: "2026-11-21", body: "Had a custom hamper made by Velvea, and absolutely loved it! Beautifully put together, exactly what I wanted, and amazing stuff!! Highly recommend!" },
+  // Emma Lecour left stars only on Google (28 Oct 2026). The owner added that
+  // she also bought this hatbox; her earlier rating on the Lavender bouquet stays.
+  { product: "Sweet & Savoury Snack Hatbox", author: "Emma Lecour", rating: 5, date: "2026-10-28", body: "" },
 ];
 
 /** Case, accents, "&" vs "and" and punctuation should not block a match. */

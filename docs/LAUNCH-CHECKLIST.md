@@ -200,6 +200,21 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       script-run audit of all 23 published articles (both locales, title/excerpt/body/SEO fields)
       found no emoji, em dashes, stock AI words, summary headings, marketing clichés or repeated
       bold-lead lists. Re-run the same checks on any future article before publishing.
+- [x] **Four more guides published live 22 Nov 2026** via `npm run seed:guides -- --write --publish`,
+      picked from searches the 27 live guides did not answer:
+      `teacher-christmas-gifts-how-much-to-spend-class-gift` (Christmas; sells the basket only as a
+      pooled class gift), `holiday-tipping-guide-canada-who-to-tip-how-much` (holiday; amounts table),
+      `gifts-for-remote-employees-canada` (corporate; address collection, transit by province) and
+      `thank-you-gifts-for-nurses-doctors-hospital-staff` (evergreen; College of Nurses of Ontario
+      guidance, shared unit gift). Sources and what could not be verified are in each file's header
+      comment. Same editorial audit; sanitiser changed nothing; links resolve; 200 in EN and FR; in
+      the sitemap; shared cover set. The seeder does not ping IndexNow, so request indexing in
+      Search Console. The teacher guide states the last school day (Fri 18 Dec 2026) and joins the
+      yearly date update below.
+- [ ] **Owner to confirm in the new guides:** weekday GTA deliveries described as evening-only (so
+      offices, clinics and schools are told to receive at home or use pickup); the remote-team guide
+      says we plan dispatch around the furthest address and handle routing for a list sent through
+      `/corporate/quote`; the hospital guide says we deliver to hospitals and care homes.
 - [ ] The Christmas guide hard-codes the 2026 calendar (Friday 25 Dec, the 14–18 Dec office week,
       the "order by" table) and the Diwali etiquette guide the 8 Nov date: update every autumn in
       both locales with the Diwali hamper guide, then re-run with `--write --force`.
