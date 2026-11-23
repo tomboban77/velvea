@@ -1282,7 +1282,9 @@ export async function createCheckout(rawInput: CheckoutInput): Promise<CheckoutR
   if (stripeReady) {
     try {
       const stripe = getStripe();
-      const site = siteUrl();
+      // French lives under /fr and locale detection is off, so an unprefixed
+      // return link brought a French customer back to English pages.
+      const site = siteUrl() + (fr(locale) ? "/fr" : "");
 
       const lineItems = lines.map((l) => ({
         quantity: l.quantity,

@@ -10,6 +10,7 @@ import { formatStoreDate, storeYmd } from "@/lib/dates";
 import { LOCAL_METHODS, sameDayWindow } from "@/lib/delivery-schedule";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { RestoreBag, type RestorableLine } from "@/components/checkout/RestoreBag";
+import { ClearBagOnPaid } from "@/components/checkout/ClearBagOnPaid";
 import { TrackPurchase } from "@/components/analytics/TrackPurchase";
 
 export const dynamic = "force-dynamic";
@@ -201,6 +202,7 @@ export default async function OrderPage({
           }))}
         />
       )}
+      {paid && ownsViaSession && <ClearBagOnPaid orderNumber={order!.orderNumber} />}
       <div className="text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lilac">
           {paid ? (

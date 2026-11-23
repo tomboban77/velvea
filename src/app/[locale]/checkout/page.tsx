@@ -11,8 +11,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: locale === "fr" ? "Paiement" : "Checkout", robots: { index: false, follow: false } };
 }
 
-export default async function CheckoutPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function CheckoutPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ canceled?: string }>;
+}) {
   const { locale } = await params;
+  const { canceled } = await searchParams;
   setRequestLocale(locale);
 
   // Rates, eligibility and tax are no longer passed down at all: the form asks
@@ -34,6 +41,8 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
 
   return (
     <CheckoutForm
+      // Set by Stripe's cancel link when the customer backs out of the payment page.
+      canceled={canceled === "1"}
       studio={{
         addressLine: settings.contact.addressLine,
         city: settings.contact.city,

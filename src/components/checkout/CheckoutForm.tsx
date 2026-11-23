@@ -55,7 +55,10 @@ const ICONS: Record<DeliveryMethod, React.ComponentType<{ className?: string }>>
 export function CheckoutForm({
   studio,
   customer = null,
+  canceled = false,
 }: {
+  /** Back from the Stripe payment page without paying. */
+  canceled?: boolean;
   /** Where pickup orders are collected, and the address recorded against them. */
   studio: StudioAddress;
   customer?: CheckoutCustomer | null;
@@ -360,6 +363,15 @@ export function CheckoutForm({
           <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
             <Lock className="h-3.5 w-3.5" /> {tc("secure")}
           </p>
+          {/* Without this the form simply reappeared, leaving the customer
+              unsure whether the card had been charged. */}
+          {canceled && (
+            <p className="mt-4 rounded-lg border border-line bg-cream/50 px-4 py-3 text-sm text-ink-soft">
+              {fr
+                ? "Le paiement n'a pas été complété, donc rien n'a été facturé. Votre sac est intact et vous pouvez réessayer quand vous voulez."
+                : "Payment wasn't completed, so nothing was charged. Your bag is still here and you can try again whenever you're ready."}
+            </p>
+          )}
         </div>
 
         <Section title="Contact">
