@@ -412,7 +412,8 @@ In order:
 1. **Bing Places for Business**: import from Google in one click. Bing's index powers Copilot,
    DuckDuckGo and much of ChatGPT search.
 2. **Apple Business Connect**: Apple Maps and Siri ("gift baskets near me" on an iPhone).
-3. **Facebook page**, then add it to Admin → Settings → social so it joins `sameAs`.
+3. **Facebook page**: done 23 Nov 2026. `facebook.com/people/Velvea-Gifts/61595139845071` is saved
+   in Admin → Settings → social, so it shows in the footer and joins `sameAs`.
 4. **Yelp** (Canada): free listing; Yelp is a frequent AI citation source.
 5. **YellowPages.ca**, **411.ca**, **Canpages**: the main Canadian aggregators.
 6. **Foursquare / Swarm**: feeds a number of apps and AI datasets.
