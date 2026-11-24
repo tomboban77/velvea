@@ -93,7 +93,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     city: "Mississauga",
     province: "ON",
     postalCode: "L4Z 0C9",
-    hours: "Mon–Sun, 8am–6pm ET",
+    hours: "Mon–Sat, 8am–8pm · Sun, 8am–7pm ET",
     googleReviewUrl: "",
   },
   // Empty, not placeholder handles. These defaults publish twice: as the

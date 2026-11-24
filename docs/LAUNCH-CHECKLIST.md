@@ -295,9 +295,10 @@ verification in Google's hands (up to 5 days, no promised date).
       (`20260924100000_abandoned_cart` — adds `Order.abandonedEmailAt` and the `EmailOptOut` table).
 - [ ] **Move DMARC from `p=none` to `p=quarantine`** once a couple of weeks of reports look clean.
       Today you are monitoring spoofing rather than blocking it.
-- [ ] **Opening hours: confirm on the profile.** The live /contact page now says Mon–Sun 8am–6pm ET
-      (checked 29 Oct 2026), which matches what the Business Profile was set to. Tick once the
-      profile is confirmed unchanged.
+- [x] **Opening hours match the profile (23 Nov 2026).** The Business Profile reads Mon–Sat
+      8am–8pm and Sun 8am–7pm, and the site setting was changed to the same
+      (`Mon–Sat, 8am–8pm · Sun, 8am–7pm ET`). `parseOpeningHours` now reads "·"-separated segments
+      so both ranges reach the LocalBusiness markup. Change the two together from now on.
 - [ ] **Work through [SEO-AUDIT.md](./SEO-AUDIT.md)** (29 Oct 2026, updated 8 Nov). Code and
       product-copy fixes are done (see its Status sections). 8 Nov added the occasion content
       (Christmas, birthday, anniversary, wedding, functions, surprise, thank-you), the Etobicoke

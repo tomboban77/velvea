@@ -413,18 +413,36 @@ describe("recipient titles", () => {
 
 describe("LocalBusiness", () => {
   it("parses the hours field the contact page shows", () => {
-    expect(parseOpeningHours("Mon–Sun, 8am–6pm ET")).toEqual({
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      opens: "08:00",
-      closes: "18:00",
-    });
-    expect(parseOpeningHours("Mon-Fri 9:30am - 5pm")).toMatchObject({
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "09:30",
-      closes: "17:00",
-    });
+    expect(parseOpeningHours("Mon–Sun, 8am–6pm ET")).toEqual([
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "08:00",
+        closes: "18:00",
+      },
+    ]);
+    expect(parseOpeningHours("Mon-Fri 9:30am - 5pm")).toMatchObject([
+      {
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:30",
+        closes: "17:00",
+      },
+    ]);
     expect(parseOpeningHours("12pm–12am")).toBeNull();
+  });
+
+  it("parses days that keep different hours, as the Business Profile lists them", () => {
+    expect(parseOpeningHours("Mon–Sat, 8am–8pm · Sun, 8am–7pm ET")).toEqual([
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        opens: "08:00",
+        closes: "20:00",
+      },
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Sunday"], opens: "08:00", closes: "19:00" },
+    ]);
+    // One unreadable segment must not publish the rest as if it were complete.
+    expect(parseOpeningHours("Mon–Sat, 8am–8pm · Sun by appointment")).toBeNull();
   });
 
   it("omits hours it cannot read rather than guessing", () => {
@@ -437,7 +455,7 @@ describe("LocalBusiness", () => {
   it("matches the Business Profile and points at the Organization", () => {
     const ld = localBusinessJsonLd({
       origin: ORIGIN,
-      contact: { phone: "+1 (431) 726-1706", addressLine: "5105 Hurontario Street", city: "Mississauga", province: "ON", postalCode: "L4Z 0C9", hours: "Mon–Sun, 8am–6pm ET" },
+      contact: { phone: "+1 (431) 726-1706", addressLine: "5105 Hurontario Street", city: "Mississauga", province: "ON", postalCode: "L4Z 0C9", hours: "Mon–Sat, 8am–8pm · Sun, 8am–7pm ET" },
       mapUrl: "https://maps.app.goo.gl/abc?g_st=ic",
       areaServed: ["Mississauga", "Toronto"],
     });

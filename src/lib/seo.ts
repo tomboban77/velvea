@@ -342,31 +342,41 @@ export function organizationJsonLd(opts: {
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 /**
- * Hours are one free-text admin field ("Mon–Sun, 8am–6pm ET"), shown as typed
+ * Hours are one free-text admin field ("Mon–Sat, 8am–8pm ET"), shown as typed
  * on /contact. Structured data needs them as a specification, so the common
  * "day–day, time–time" shape is parsed and anything else returns null: no
  * hours in the markup beats hours Google would hold against the Business
  * Profile as a mismatch.
+ *
+ * Days with different hours are written as segments split by "·", ";" or "|"
+ * ("Mon–Sat, 8am–8pm · Sun, 8am–7pm ET"), and a segment may name one day. One
+ * unreadable segment drops the lot: publishing Monday to Saturday alone would
+ * tell Google the studio is closed on Sunday.
  */
-export function parseOpeningHours(hours: string): JsonLdValue | null {
+export function parseOpeningHours(hours: string): JsonLdValue[] | null {
   const day = "(mon|tue|wed|thu|fri|sat|sun)[a-z]*\\.?";
   const time = "(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)";
-  const m = new RegExp(`^\\s*${day}\\s*[–-]\\s*${day}\\s*,?\\s*${time}\\s*[–-]\\s*${time}`, "i").exec(hours);
-  if (!m) return null;
+  const segment = new RegExp(`^\\s*${day}(?:\\s*[–-]\\s*${day})?\\s*,?\\s*${time}\\s*[–-]\\s*${time}`, "i");
   const dayIndex = (s: string) => DAYS.findIndex((d) => d.toLowerCase().startsWith(s.toLowerCase()));
   const clock = (h: string, min: string | undefined, ampm: string) => {
     const hour = (Number(h) % 12) + (ampm.toLowerCase() === "pm" ? 12 : 0);
     return `${String(hour).padStart(2, "0")}:${min ?? "00"}`;
   };
-  const from = dayIndex(m[1]);
-  const to = dayIndex(m[2]);
-  if (from < 0 || to < from || Number(m[3]) > 12 || Number(m[6]) > 12) return null;
-  return {
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: DAYS.slice(from, to + 1),
-    opens: clock(m[3], m[4], m[5]),
-    closes: clock(m[6], m[7], m[8]),
-  };
+  const specs: JsonLdValue[] = [];
+  for (const part of hours.split(/[·;|]/)) {
+    const m = segment.exec(part);
+    if (!m) return null;
+    const from = dayIndex(m[1]);
+    const to = m[2] ? dayIndex(m[2]) : from;
+    if (from < 0 || to < from || Number(m[3]) > 12 || Number(m[6]) > 12) return null;
+    specs.push({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: DAYS.slice(from, to + 1),
+      opens: clock(m[3], m[4], m[5]),
+      closes: clock(m[6], m[7], m[8]),
+    });
+  }
+  return specs;
 }
 
 /**
@@ -413,7 +423,7 @@ export function localBusinessJsonLd(opts: {
           },
         }
       : {}),
-    ...(hours ? { openingHoursSpecification: [hours] } : {}),
+    ...(hours ? { openingHoursSpecification: hours } : {}),
     ...(map ? { hasMap: map } : {}),
     areaServed: opts.areaServed.map((name) => ({ "@type": "City", name })),
     parentOrganization: { "@id": `${origin}/#organization` },
