@@ -26,6 +26,9 @@ import { teacherChristmasGifts } from "./teacher-christmas-gifts";
 import { holidayTipping } from "./holiday-tipping";
 import { remoteEmployeeGifts } from "./remote-employee-gifts";
 import { thankYouGiftsHospitalStaff } from "./thank-you-gifts-hospital-staff";
+import { specialBirthdayGift } from "./special-birthday-gift";
+import { anniversarySurprise } from "./anniversary-surprise";
+import { sameDayDeliveryGta } from "./same-day-delivery-gta";
 
 /**
  * Guides cross-link to each other, so adding one means checking the others
@@ -60,6 +63,9 @@ export const GUIDES: GuideSeed[] = [
   holidayTipping,
   remoteEmployeeGifts,
   thankYouGiftsHospitalStaff,
+  specialBirthdayGift,
+  anniversarySurprise,
+  sameDayDeliveryGta,
 ];
 
 /**

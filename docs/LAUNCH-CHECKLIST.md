@@ -211,6 +211,19 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       the sitemap; shared cover set. The seeder does not ping IndexNow, so request indexing in
       Search Console. The teacher guide states the last school day (Fri 18 Dec 2026) and joins the
       yearly date update below.
+- [x] **Three more guides published live 23 Nov 2026** via `npm run seed:guides -- --write --publish`
+      (34 live): `how-to-make-a-birthday-gift-special` (the "how", not the "what": one detail, one
+      main gift, a photo, wrapping, timing, card; hands off to `/custom-basket`),
+      `anniversary-surprise-ideas-personalised-gift` (partner only; two-week timeline, keeping it
+      secret, long distance; defers to the by-year guide for the table) and
+      `same-day-gift-delivery-mississauga-toronto-gta` (evergreen local-search guide; links every
+      `/delivery/<city>` page). Same editorial audit; sanitiser changed nothing; links resolve; 200
+      in EN and FR; shared cover set. Sitemap picks them up on its hourly revalidate. Request
+      indexing in Search Console.
+- [ ] **The same-day delivery guide quotes fees** read from the zones on 23 Nov 2026 ($9.99 + $5
+      Mississauga, $14.99 + $7 rest of the GTA, $19.99 Durham/north, shipping from $31.99) plus the
+      noon cutoff and the weekday 7–11 pm window. Edit `scripts/guides/same-day-delivery-gta.ts` in
+      both locales and re-run with `--write --force` whenever a zone changes.
 - [ ] **Owner to confirm in the new guides:** weekday GTA deliveries described as evening-only (so
       offices, clinics and schools are told to receive at home or use pickup); the remote-team guide
       says we plan dispatch around the furthest address and handle routing for a list sent through
