@@ -3,10 +3,12 @@
  *
  *   npm run survey:shipping
  *   npm run survey:shipping -- --box 40x30x30:4 --packing 3
+ *   npm run survey:shipping -- --rank 4        # price from the 4th cheapest
  *
  * Asks ShipTime for real quotes from the studio to a spread of postal codes
  * covering every region we ship to (or might), once for one basket and once
- * for two, and prints a suggested fee table for /admin/delivery-zones.
+ * for two, and prints a suggested fee table for /admin/delivery-zones. The
+ * fee follows the 3rd cheapest trusted quote, not the cheapest (see RANK).
  *
  * Carriers price by zone, not by distance — Sudbury can cost more than
  * Montréal — which is why this samples several towns per region and takes the
@@ -60,6 +62,22 @@ const bufferFor = (zone: string) => BUFFER_CENTS[zone] ?? DEFAULT_BUFFER_CENTS;
  */
 const TRUSTED = /purolator|canpar|canada post|ups|fedex|loomis|gls/i;
 
+/**
+ * Which quote sets the fee, counted from the cheapest (owner decision,
+ * 26 Nov 2026). Fees used to follow the cheapest trusted quote, which assumes
+ * that carrier answers on the day, takes the parcel at that price and is the
+ * one we actually book. In practice the cheapest line is often missing from a
+ * run, and a heavy basket gets re-weighed and billed up. The 3rd cheapest is
+ * a price we can still get when the first two fall through; the 4th is
+ * printed beside it for comparison. A town with fewer quotes than this uses
+ * its dearest one.
+ */
+const RANK = Math.floor(Number(arg("rank") ?? "3"));
+if (!Number.isFinite(RANK) || RANK < 1) {
+  console.error(`--rank must be a whole number from 1 up, got "${arg("rank")}"`);
+  process.exit(1);
+}
+
 // --- Destinations ----------------------------------------------------------------
 //
 // Grouped by the zone they'd belong to. `on-ground` and `on-north` exist
@@ -69,7 +87,7 @@ const TRUSTED = /purolator|canpar|canada post|ups|fedex|loomis|gls/i;
 
 type Dest = { zone: string; city: string; prov: string; postal: string; maxDays: number };
 
-const DESTS: Dest[] = [
+const SURVEY: Dest[] = [
   { zone: "on-ground", city: "Hamilton", prov: "ON", postal: "L8P 4Y5", maxDays: 3 },
   { zone: "on-ground", city: "Barrie", prov: "ON", postal: "L4M 3B4", maxDays: 3 },
   { zone: "on-ground", city: "London", prov: "ON", postal: "N6A 4L9", maxDays: 3 },
@@ -115,6 +133,18 @@ const DESTS: Dest[] = [
 
   { zone: "yukon", city: "Whitehorse", prov: "YT", postal: "Y1A 1C2", maxDays: 8 },
 ];
+
+/**
+ * --to "Hearst,ON,P0L 1N0" quotes that one address instead of the survey
+ * list (repeat-free, comma-separated: city, province, postal code). For
+ * checking a real label against what ShipTime would have quoted.
+ */
+const TO = arg("to")?.split(",").map((x) => x.trim());
+if (TO && TO.length !== 3) {
+  console.error(`--to must look like "Hearst,ON,P0L 1N0", got "${arg("to")}"`);
+  process.exit(1);
+}
+const DESTS: Dest[] = TO ? [{ zone: "one-off", city: TO[0], prov: TO[1], postal: TO[2], maxDays: 14 }] : SURVEY;
 
 const FROM = {
   companyName: "Velvea Gifts",
@@ -205,20 +235,25 @@ const $ = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const days = (q: Quote) =>
   q.transitDays == null ? "?" : q.transitDaysMax && q.transitDaysMax !== q.transitDays ? `${q.transitDays}-${q.transitDaysMax}` : `${q.transitDays}`;
 
-/** Cheapest trusted carrier inside the region's delivery window. */
-function pick(quotes: Quote[], maxDays: number): Quote | undefined {
+/** Trusted carriers inside the region's delivery window, cheapest first. */
+function ranked(quotes: Quote[], maxDays: number): Quote[] {
   return quotes
     .filter((q) => TRUSTED.test(q.carrierName) && (q.transitDays ?? 99) <= maxDays)
-    .sort((a, b) => a.totalCharge.amount - b.totalCharge.amount)[0];
+    .sort((a, b) => a.totalCharge.amount - b.totalCharge.amount);
 }
+
+/** The nth cheapest (1-based), or the dearest there is when the list is shorter. */
+const nth = (list: Quote[], n: number): Quote | undefined => list[Math.min(n, list.length) - 1];
+
+const label = (q: Quote) => `${q.carrierName} ${q.serviceName} ${$(q.totalCharge.amount)} ${days(q)}d`;
 
 /** Round up to a .99 price, e.g. 2731 → 2799. */
 const toNinetyNine = (cents: number) => Math.ceil((cents + 1) / 100) * 100 - 1;
 
-type Row = { dest: Dest; one?: Quote; two?: Quote; cheapest?: Quote; error?: string };
+type Row = { dest: Dest; one?: Quote; two?: Quote; list?: Quote[]; cheapest?: Quote; error?: string };
 
 async function main() {
-  console.log(`Box ${BOX.length}x${BOX.width}x${BOX.height} cm, ${BOX.weight} kg · packing ${$(PACKING_CENTS)}/parcel · ${API}\n`);
+  console.log(`Box ${BOX.length}x${BOX.width}x${BOX.height} cm, ${BOX.weight} kg · packing ${$(PACKING_CENTS)}/parcel · priced from quote #${RANK} · ${API}\n`);
   const auth = await authHeader();
 
   const rows: Row[] = [];
@@ -231,12 +266,13 @@ async function main() {
           try {
             const [q1, q2] = await Promise.all([rates(auth, dest, 1), rates(auth, dest, 2)]);
             const cheapest = [...q1].sort((a, b) => a.totalCharge.amount - b.totalCharge.amount)[0];
-            const one = pick(q1, dest.maxDays);
+            const list = ranked(q1, dest.maxDays);
+            const one = nth(list, RANK);
             // Two parcels are booked as their own shipment, so pick them on their
             // own merits: matching the one-parcel carrier left Canada Post blank
             // (no multi-piece quote) and let GLS's $78 to St. John's set the fee.
-            const two = pick(q2, dest.maxDays);
-            return { dest, one, two, cheapest };
+            const two = nth(ranked(q2, dest.maxDays), RANK);
+            return { dest, one, two, list, cheapest };
           } catch (e) {
             return { dest, error: (e as Error).message };
           }
@@ -247,20 +283,25 @@ async function main() {
   }
 
   console.log("\n\nPer destination (tax-inclusive label cost)\n");
-  console.log("| Zone | City | Recommended | Days | 1 basket | 2 baskets | Cheapest any |");
-  console.log("|---|---|---|---|---|---|---|");
+  console.log(`| Zone | City | Priced from (#${RANK}) | Days | 1 basket | 2 baskets | Trusted #1 / #3 / #4 (of n) | Cheapest any |`);
+  console.log("|---|---|---|---|---|---|---|---|");
   for (const r of rows) {
     if (r.error || !r.one) {
-      console.log(`| ${r.dest.zone} | ${r.dest.city} | — | | | | ${r.error ?? (r.cheapest ? `${r.cheapest.carrierName} ${$(r.cheapest.totalCharge.amount)} (none trusted within ${r.dest.maxDays}d)` : "no rates")} |`);
+      console.log(`| ${r.dest.zone} | ${r.dest.city} | — | | | | | ${r.error ?? (r.cheapest ? `${r.cheapest.carrierName} ${$(r.cheapest.totalCharge.amount)} (none trusted within ${r.dest.maxDays}d)` : "no rates")} |`);
       continue;
     }
     console.log(
-      `| ${r.dest.zone} | ${r.dest.city} | ${r.one.carrierName} ${r.one.serviceName} | ${days(r.one)} | ${$(r.one.totalCharge.amount)} | ${r.two ? $(r.two.totalCharge.amount) : "?"} | ${r.cheapest ? `${r.cheapest.carrierName} ${$(r.cheapest.totalCharge.amount)}` : ""} |`,
+      `| ${r.dest.zone} | ${r.dest.city} | ${r.one.carrierName} ${r.one.serviceName} | ${days(r.one)} | ${$(r.one.totalCharge.amount)} | ${r.two ? $(r.two.totalCharge.amount) : "?"} | ${[1, 3, 4].map((n) => (r.list!.length >= n ? $(r.list![n - 1].totalCharge.amount) : "—")).join(" / ")} (${r.list!.length}) | ${r.cheapest ? `${r.cheapest.carrierName} ${$(r.cheapest.totalCharge.amount)}` : ""} |`,
     );
   }
 
   // Worst case per zone: the fee has to cover the dearest town in it.
-  console.log("\nSuggested zone fees (worst town in zone + packing + buffer, rounded up to .99)\n");
+  if (process.argv.includes("--all")) {
+    console.log("\nEvery trusted quote inside the window, cheapest first\n");
+    for (const r of rows) console.log(`${r.dest.city}: ${(r.list ?? []).map(label).join(" | ") || "none"}`);
+  }
+
+  console.log(`\nSuggested zone fees (quote #${RANK} in the worst town + packing + buffer, rounded up to .99)\n`);
   console.log("| Zone | Base fee | Each extra basket | Delivery days | Priced from |");
   console.log("|---|---|---|---|---|");
   for (const zone of [...new Set(DESTS.map((d) => d.zone))]) {

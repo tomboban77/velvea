@@ -177,12 +177,12 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // several hundred smaller places nobody would have remembered to list.
     fsaLetters: ["K", "L", "N"],
     provinces: ["ON"],
-    // From the ShipTime survey (npm run survey:shipping, 15 Nov 2026): the
-    // dearest town, Kingston/Ottawa, is $25.49 tax-included by Canada Post
-    // Regular, plus ~$3 packing and the $3 buffer. The old $19.99 lost ~$9
-    // on every parcel; $28.99 broke even with nothing to spare.
-    baseFeeCents: 3199,
-    extraItemCents: 1599, // a second basket is a second parcel
+    // Kingston/Ottawa $31.85 by Canada Post Expedited (the 3rd cheapest
+    // quote, see the note above the national zones) + $3 packing + $3 buffer.
+    // History: $19.99 lost ~$9 a parcel, $28.99 broke even, $31.99 covered
+    // only the cheapest carrier.
+    baseFeeCents: 3799,
+    extraItemCents: 2199, // a second basket is a second parcel
     minLeadDays: 2,
     maxLeadDays: 4,
     position: 100,
@@ -197,9 +197,10 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // (on-northwest), matched by exact FSA ahead of this letter rule.
     fsaLetters: ["P"],
     provinces: ["ON"],
-    // Priced to Thunder Bay: $33.55 + $3 packing + $3 buffer.
-    baseFeeCents: 3999,
-    extraItemCents: 1699,
+    // Priced to Thunder Bay: $42.38 by Canada Post Expedited + $3 packing
+    // + $3 buffer. Sudbury and North Bay are $30.31.
+    baseFeeCents: 4899,
+    extraItemCents: 2799,
     minLeadDays: 2,
     maxLeadDays: 5,
     position: 110,
@@ -219,10 +220,11 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // Thunder Bay's hinterland and no quote there has been checked.
     fsaPrefixes: ["P9N", "P8N", "P8T", "P9A", "P0X", "P0Y", "P0W"],
     provinces: ["ON"],
-    // Sioux Lookout $46.06 + $3 packing + $4 buffer. A second parcel here
-    // nearly doubles the label (Dryden $35.17 -> $66.69), hence the extra fee.
-    baseFeeCents: 5399,
-    extraItemCents: 3499,
+    // Sioux Lookout $52.85 by Canpar + $3 packing + $4 buffer. A second
+    // parcel here nearly doubles the label ($50.06 -> $93.32 in Dryden),
+    // hence the extra fee.
+    baseFeeCents: 5999,
+    extraItemCents: 4699,
     minLeadDays: 4,
     maxLeadDays: 6,
     position: 105,
@@ -272,9 +274,19 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
   // included — we are not HST-registered, so label tax is a real cost — plus
   // ~$3 packing and a buffer ($3, or $4 for Atlantic, Newfoundland and BC),
   // rounded up to .99. The buffer exists because bare-cost fees turned into
-  // losses within a month: St. John's went from $39 to $46. Two runs minutes
-  // apart also disagreed (a carrier that answers late is simply missing), so
-  // each fee uses the dearer of the two. Lead days add one for packing.
+  // losses within a month: St. John's went from $39 to $46. Lead days add one
+  // for packing.
+  //
+  // Repriced 26 Nov 2026 (owner decision): every courier fee, Ontario's
+  // included, now follows the 3RD cheapest trusted quote, not the cheapest.
+  // The cheapest line (Canada Post Regular or Canpar) is the one that goes
+  // missing between runs and the one a heavy basket gets billed up from; the
+  // 3rd is Canada Post Expedited or Purolator Ground nearly everywhere, a
+  // price we can still book when the first two fall through. It runs $6-15
+  // above the cheapest. The 4th was looked at and rejected as a basis: it
+  // jumps about (Kelowna $52 -> $72) depending on which carriers answer.
+  // Weight is not the lever: a 40x30x30 box bills at ~7 kg by volume, and a
+  // 7 kg run returned the same 3rd-cheapest prices as the 4 kg one.
   {
     key: "ca-remote",
     name: L("Remote communities", "Communautés éloignées"),
@@ -297,12 +309,12 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "qc-ground",
     name: L("Quebec", "Québec"),
     kind: "SHIPPING",
-    // Québec City $28.47 by Canpar when Canada Post Regular ($25.16) does not
-    // answer; priced to the dearer one, + $3 packing + $3 buffer.
+    // Montréal, Québec City and Sherbrooke $32.17 by Canada Post Expedited
+    // + $3 packing + $3 buffer.
     fsaLetters: ["G", "H", "J"],
     provinces: ["QC"],
-    baseFeeCents: 3499,
-    extraItemCents: 1499,
+    baseFeeCents: 3899,
+    extraItemCents: 2499,
     minLeadDays: 3,
     maxLeadDays: 5,
     position: 120,
@@ -314,12 +326,12 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // "atlantic" though Newfoundland now has its own zone below.
     name: L("Nova Scotia, New Brunswick and PEI", "Nouvelle-Écosse, Nouveau-Brunswick et Î.-P.-É."),
     kind: "SHIPPING",
-    // Moncton/Fredericton/Charlottetown $35.70 by Canpar + $3 packing + $4
-    // buffer: the fee did not move when Newfoundland left.
+    // Fredericton $48.42 by Canada Post Expedited + $3 packing + $4 buffer.
+    // Halifax is $40.94.
     fsaLetters: ["B", "C", "E"],
     provinces: ["NS", "PE", "NB"],
-    baseFeeCents: 4299,
-    extraItemCents: 2499,
+    baseFeeCents: 5599,
+    extraItemCents: 3499,
     minLeadDays: 3,
     maxLeadDays: 6,
     position: 130,
@@ -329,15 +341,16 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "nl",
     name: L("Newfoundland and Labrador", "Terre-Neuve-et-Labrador"),
     kind: "SHIPPING",
-    // Split out of atlantic on 15 Nov 2026: St. John's rose to $46.41 (Canpar)
-    // against a $42.99 fee, and Corner Brook is $45.34. + $3 packing + $4
-    // buffer. Coastal Labrador (A0P) is still quoted by hand via ca-remote.
+    // Split out of atlantic on 15 Nov 2026, when St. John's rose past the
+    // Maritime fee. Corner Brook $60.51 by Canada Post Expedited + $3 packing
+    // + $4 buffer; St. John's is $49.46.
+    // Coastal Labrador (A0P) is still quoted by hand via ca-remote.
     // Residual risk: Labrador City and Happy Valley-Goose Bay (A2V, A0P/A0R)
     // have not been quoted and ride on this rate.
     fsaLetters: ["A"],
     provinces: ["NL"],
-    baseFeeCents: 5399,
-    extraItemCents: 3299, // Corner Brook: a second parcel adds $29.90
+    baseFeeCents: 6799,
+    extraItemCents: 3399, // Corner Brook: a second parcel adds $30.29
     minLeadDays: 5,
     maxLeadDays: 7,
     position: 135,
@@ -347,12 +360,12 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "prairies",
     name: L("Prairies", "Prairies"),
     kind: "SHIPPING",
-    // Calgary $38.77 by Canpar on the dearer run ($34.02 on the other),
-    // + $3 packing + $3 buffer. Winnipeg is $31.17.
+    // Saskatoon $43.59 by Canada Post Expedited + $3 packing + $3 buffer.
+    // Calgary and Edmonton are $42.25, Winnipeg $39.12.
     fsaLetters: ["R", "S", "T"],
     provinces: ["MB", "SK", "AB"],
-    baseFeeCents: 4499,
-    extraItemCents: 2199,
+    baseFeeCents: 4999,
+    extraItemCents: 3399,
     minLeadDays: 3,
     maxLeadDays: 5,
     position: 140,
@@ -362,13 +375,14 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "bc",
     name: L("British Columbia", "Colombie-Britannique"),
     kind: "SHIPPING",
-    // Prince George $38.24 by Canpar, 5 days, + $3 packing + $4 buffer.
-    // Vancouver is $34.72 in 4.
+    // Kelowna and Prince George $52.42 by Purolator Ground, 5 days, + $3
+    // packing + $4 buffer. Vancouver is $43.23 in 4. A second parcel adds up
+    // to $45 (Kelowna), hence the extra fee.
     // Five days in a truck: only baskets marked shippable should reach here.
     fsaLetters: ["V"],
     provinces: ["BC"],
-    baseFeeCents: 4599,
-    extraItemCents: 2299,
+    baseFeeCents: 5999,
+    extraItemCents: 4899,
     minLeadDays: 4,
     maxLeadDays: 6,
     position: 150,
@@ -378,8 +392,9 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     key: "yukon",
     name: L("Yukon", "Yukon"),
     kind: "QUOTE",
-    // Only Canada Post Expedited reaches Whitehorse: $56.96 and 7 days, too
-    // slow for food to sell at a fixed rate. NT and NU (X) stay unserved.
+    // Only Canada Post Expedited reaches Whitehorse at a sane price ($55.25,
+    // 7 days; the next options are $95 and $126), too slow for food to sell
+    // at a fixed rate. NT and NU (X) stay unserved.
     fsaLetters: ["Y"],
     provinces: ["YT"],
     baseFeeCents: 0,

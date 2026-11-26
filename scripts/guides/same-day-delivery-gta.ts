@@ -121,7 +121,7 @@ export const sameDayDeliveryGta: GuideSeed = {
 
 <h2>Outside the GTA</h2>
 
-<p>Gifts for Hamilton, Guelph, Ottawa, London and the rest of Ontario travel by tracked courier, usually in two to four business days, from $31.99. We also ship to Quebec, the Prairies, British Columbia and the Atlantic provinces. Baskets with fresh items or a lot of chocolate stay local, and each product page says whether it can be shipped. Details are on the <a href="/shipping">shipping page</a>.</p>
+<p>Gifts for Hamilton, Guelph, Ottawa, London and the rest of Ontario travel by tracked courier, usually in two to four business days, from $37.99. We also ship to Quebec, the Prairies, British Columbia and the Atlantic provinces. Baskets with fresh items or a lot of chocolate stay local, and each product page says whether it can be shipped. Details are on the <a href="/shipping">shipping page</a>.</p>
 
 <h2>What to send at short notice</h2>
 
@@ -197,7 +197,7 @@ export const sameDayDeliveryGta: GuideSeed = {
 
 <h2>À l'extérieur du Grand Toronto</h2>
 
-<p>Les cadeaux pour Hamilton, Guelph, Ottawa, London et le reste de l'Ontario voyagent par transporteur avec suivi, en général en deux à quatre jours ouvrables, à partir de 31,99 $. Nous expédions aussi au Québec, dans les Prairies, en Colombie-Britannique et dans les provinces de l'Atlantique. Les paniers qui contiennent des produits frais ou beaucoup de chocolat restent locaux, et la page de chaque produit indique s'il peut être expédié. Les détails sont sur la <a href="/fr/shipping">page d'expédition</a>.</p>
+<p>Les cadeaux pour Hamilton, Guelph, Ottawa, London et le reste de l'Ontario voyagent par transporteur avec suivi, en général en deux à quatre jours ouvrables, à partir de 37,99 $. Nous expédions aussi au Québec, dans les Prairies, en Colombie-Britannique et dans les provinces de l'Atlantique. Les paniers qui contiennent des produits frais ou beaucoup de chocolat restent locaux, et la page de chaque produit indique s'il peut être expédié. Les détails sont sur la <a href="/fr/shipping">page d'expédition</a>.</p>
 
 <h2>Quoi envoyer à la dernière minute</h2>
 

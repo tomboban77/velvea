@@ -1,7 +1,8 @@
 /**
  * Find (and with --apply, fix) published articles that quote shipping facts
- * which changed on 15 Nov 2026: Quebec opened, and Ontario courier shipping
- * went from $28.99 to $31.99.
+ * which have changed: Quebec opened on 15 Nov 2026, and Ontario courier
+ * shipping went from $28.99 to $31.99 that day, then to $37.99 on 26 Nov 2026
+ * (fees now follow the 3rd cheapest carrier quote, see prisma/zones.ts).
  *
  *   npx tsx --env-file=.env scripts/article-shipping-copy.ts            # report
  *   npx tsx --env-file=.env scripts/article-shipping-copy.ts --apply    # write
@@ -16,6 +17,12 @@ import { PrismaClient, type Prisma } from "@prisma/client";
 const APPLY = process.argv.includes("--apply");
 
 const REPLACEMENTS: [string, string][] = [
+  // 26 Nov 2026 repricing. Short on purpose: the price is the only fact that
+  // moved, so the match should not depend on the sentence around it.
+  ["Shipping starts at $31.99 within Ontario", "Shipping starts at $37.99 within Ontario"],
+  ["L'expédition commence à 31,99 $ en Ontario", "L'expédition commence à 37,99 $ en Ontario"],
+  ["usually in two to four business days, from $31.99.", "usually in two to four business days, from $37.99."],
+  ["en deux à quatre jours ouvrables, à partir de 31,99 $.", "en deux à quatre jours ouvrables, à partir de 37,99 $."],
   [
     "the Atlantic provinces, the Prairies and British Columbia, with Quebec coming soon. Shipping starts at $28.99 within Ontario",
     "Quebec, the Atlantic provinces, the Prairies and British Columbia. Shipping starts at $31.99 within Ontario",
@@ -32,7 +39,7 @@ const REPLACEMENTS: [string, string][] = [
 ];
 
 /** Anything that still smells of the old facts after the replacements. */
-const STALE = /Quebec|Québec|28[.,]99|36[.,]99|37[.,]99|41[.,]99/g;
+const STALE = /coming soon|arrive bientôt|(?:28|31|34|36|39|41|42|44|45|53)[.,]99/g;
 
 function rewrite(value: unknown): { next: unknown; hits: number } {
   let hits = 0;

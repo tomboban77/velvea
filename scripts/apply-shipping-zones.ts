@@ -31,10 +31,15 @@ import { ZONE_SEED } from "../prisma/zones";
 const APPLY = process.argv.includes("--apply");
 
 /** Existing zones whose price follows the seed; nothing else about them is touched. */
-const FEES = ["on-ground", "on-north", "qc-ground", "atlantic", "prairies", "bc"] as const;
+const FEES = ["on-ground", "on-north", "on-northwest", "qc-ground", "atlantic", "nl", "prairies", "bc"] as const;
 /** Zones whose territory and name also follow the seed. */
 const ROUTING = ["atlantic"] as const;
-/** Zones created from the seed if missing. */
+/**
+ * Zones created from the seed if missing. on-northwest and nl are also in
+ * FEES: once they exist their price follows the seed like everyone else's.
+ * They were create-only until the 26 Nov 2026 repricing, which would have
+ * let a seed change skip them without a word.
+ */
 const CREATE = ["on-northwest", "nl", "ca-remote", "yukon"] as const;
 /** Zones switched on if the seed says active and production says not. */
 const OPEN = ["qc-ground"] as const;
@@ -64,7 +69,7 @@ async function main() {
       const z = live.get(key);
       const price = s.kind === "QUOTE" ? "quote" : `${$(s.baseFeeCents)} +${$(s.extraItemCents)}`;
       if (z) {
-        console.log(`  = ${key}: exists (${z.active ? "active" : "inactive"}) — left as is`);
+        console.log(`  = ${key}: exists (${z.active ? "active" : "inactive"}) — not recreated`);
       } else {
         console.log(
           `  + ${key}: create ${s.kind} ${price}, ${s.active ? "ACTIVE" : "inactive"}` +

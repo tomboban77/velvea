@@ -141,6 +141,21 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       so fees use the dearer run. Not covered: boxes larger or heavier than 40x30x30 cm / 4 kg,
       Labrador City and Goose Bay (never quoted, on the `nl` rate), and P0T towns on `on-north`.
       Re-run the survey every couple of months and before the Christmas rush.
+      (Fees superseded on 26 Nov 2026, below.)
+- [x] **Courier fees follow the 3rd cheapest quote, not the cheapest** (owner, 26 Nov 2026: the
+      baskets are heavy and the cheapest carrier is not the one that ends up booked).
+      `npm run survey:shipping` now prices from quote #3 by default (`--rank N` to change, `--all`
+      to list every quote); #3 is Canada Post Expedited or Purolator Ground almost everywhere.
+      Applied to production with `npm run zones:shipping -- --apply`, base (+ each extra basket):
+      ON ground $37.99 (+$21.99), Northern ON $48.99 (+$27.99), Northwestern ON $59.99 (+$46.99),
+      Quebec $38.99 (+$24.99), Maritimes $55.99 (+$34.99), Newfoundland $67.99 (+$33.99),
+      Prairies $49.99 (+$33.99), BC $59.99 (+$48.99). Lead days unchanged; Yukon and the remote
+      zones stay quote-only. The 4th cheapest was rejected as a basis because it swings with
+      whichever carriers answer (Kelowna $52 or $72). A 7 kg box quoted the same as the 4 kg one:
+      40x30x30 cm already bills at about 7 kg by volume, so a bigger box, not a heavier one, is
+      what would move these. `zones:shipping` now also reprices `on-northwest` and `nl`. The two
+      guides quoting "from $31.99" were updated live (`scripts/article-shipping-copy.ts`) and in
+      `scripts/guides/same-day-delivery-gta.ts`.
 - [x] **United States is by request** (owner, 15 Nov 2026). No US zone and no checkout path: a ZIP
       gets "contact us for a quote", and the shipping page, FAQ and `llms.txt` say the same. A real
       US shipment of food needs FDA Prior Notice and duties paperwork; check before quoting one.
@@ -221,7 +236,7 @@ Editorial pass before publishing: zero emoji, em dashes cut to 1 per 649 words (
       in EN and FR; shared cover set. Sitemap picks them up on its hourly revalidate. Request
       indexing in Search Console.
 - [ ] **The same-day delivery guide quotes fees** read from the zones on 23 Nov 2026 ($9.99 + $5
-      Mississauga, $14.99 + $7 rest of the GTA, $19.99 Durham/north, shipping from $31.99) plus the
+      Mississauga, $14.99 + $7 rest of the GTA, $19.99 Durham/north, shipping from $37.99 since 26 Nov) plus the
       noon cutoff and the weekday 7–11 pm window. Edit `scripts/guides/same-day-delivery-gta.ts` in
       both locales and re-run with `--write --force` whenever a zone changes.
 - [ ] **Owner to confirm in the new guides:** weekday GTA deliveries described as evening-only (so
