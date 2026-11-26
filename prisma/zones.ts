@@ -2,6 +2,17 @@ import type { Prisma } from "@prisma/client";
 
 const L = (en: string, fr: string) => ({ en, fr });
 
+/** The 20 letters a postal code can use (never D, F, I, O, Q or U). */
+const FSA_LETTERS = "ABCEGHJKLMNPRSTVWXYZ".split("");
+
+/**
+ * Every rural FSA under the given first letters: a "0" in second place is
+ * Canada Post's mark for rural delivery. `except` drops the ones another
+ * zone (quote-only, usually) has claimed.
+ */
+const rural = (letters: string[], except: string[] = []) =>
+  letters.flatMap((l) => FSA_LETTERS.map((x) => `${l}0${x}`)).filter((fsa) => !except.includes(fsa));
+
 /**
  * Delivery zones for an Ontario-only store run out of Mississauga.
  *
@@ -215,10 +226,9 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     // dearer still at $46.06; pricing all of the north to this corner would
     // have charged Sudbury $14 too much.
     //   P9N Kenora · P8N Dryden · P8T Sioux Lookout · P9A Fort Frances
-    //   P0X Kenora region · P0Y Whiteshell · P0W Rainy River
-    // P0T (Atikokan, Ignace, the north shore) stays on on-north: it is
-    // Thunder Bay's hinterland and no quote there has been checked.
-    fsaPrefixes: ["P9N", "P8N", "P8T", "P9A", "P0X", "P0Y", "P0W"],
+    // The countryside around them (P0X, P0Y, P0W) moved to on-north-rural on
+    // 26 Nov 2026 with every other rural code in the north.
+    fsaPrefixes: ["P9N", "P8N", "P8T", "P9A"],
     provinces: ["ON"],
     // Sioux Lookout $52.85 by Canpar + $3 packing + $4 buffer. A second
     // parcel here nearly doubles the label ($50.06 -> $93.32 in Dryden),
@@ -297,8 +307,15 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     //   A0P — coastal Labrador
     //   R0B — northern Manitoba (Churchill, most fly-in First Nations)
     //   V0T — Haida Gwaii and the central BC coast
+    // Added 26 Nov 2026 from the rural survey, each too dear or too slow for
+    // its province's rural rate:
+    //   G0G — Quebec's far north shore (Havre-Saint-Pierre $63, roadless
+    //         villages beyond it)
+    //   J0Y — James Bay and northern Abitibi (Radisson $89)
+    //   A0K — Newfoundland's Northern Peninsula (St. Anthony $81, 13 days)
+    //   E5G — Grand Manan, by ferry ($74)
     // Confirm against ShipTime's remote-area surcharge list as orders arrive.
-    fsaPrefixes: ["J0M", "A0P", "R0B", "V0T"],
+    fsaPrefixes: ["J0M", "A0P", "R0B", "V0T", "G0G", "J0Y", "A0K", "E5G"],
     baseFeeCents: 0,
     minLeadDays: 5,
     maxLeadDays: 14,
@@ -387,6 +404,136 @@ export const ZONE_SEED: Prisma.DeliveryZoneCreateInput[] = [
     maxLeadDays: 6,
     position: 150,
     active: true, // live since the national launch
+  },
+  // --- Shipped: rural tiers ---------------------------------------------------
+  //
+  // Added 26 Nov 2026 after a parcel to Hearst cost $87 against a fee set
+  // from city quotes. Couriers (Canpar above all) add a beyond-point surcharge
+  // for small towns that never shows in a downtown postal code: the same box
+  // was $43 to Cochrane and $89 to Hearst. Canada Post does not do this, so
+  // BOOK RURAL LABELS WITH CANADA POST where it quotes; these fees assume the
+  // 3rd cheapest quote, which for a rural address is Canada Post Expedited or
+  // Purolator Ground.
+  //
+  // A "0" as the second character of a postal code means rural delivery, so
+  // each tier is its parent zone's letters + "0" + every third letter, minus
+  // the FSAs already quoted by hand. Exact prefixes beat the parent's letter
+  // rule, which is all it takes to carve these out. New Brunswick has no "0"
+  // codes (its rural routes were renumbered), so rural NB stays on the
+  // Maritime rate: not sampled, a known gap.
+  //
+  // Fee = dearest sampled rural town's 3rd cheapest label + $3 packing + $6
+  // buffer (owner: keep delivery a bit high, nothing comes out of our own
+  // pocket), rounded up to .99. The extra-basket fee is a whole second label
+  // + packing: Canada Post gives no multi-piece discount and the couriers'
+  // two-parcel quotes to these towns run past $100.
+  {
+    key: "on-ground-rural",
+    name: L("Rural Ontario", "Ontario rural"),
+    kind: "SHIPPING",
+    // Barry's Bay $40.99; Tobermory, Bancroft and Pelee Island are $28-31.
+    fsaPrefixes: rural(["K", "L", "N"]),
+    provinces: ["ON"],
+    baseFeeCents: 4999,
+    extraItemCents: 4399,
+    minLeadDays: 3,
+    maxLeadDays: 6,
+    position: 98,
+    active: true,
+  },
+  {
+    key: "on-north-rural",
+    name: L("Rural northern Ontario", "Nord de l'Ontario rural"),
+    kind: "SHIPPING",
+    // Marathon $54.68; Chapleau, Wawa and Little Current are $45.13. Takes in
+    // P0X, P0Y and P0W, which sat in on-northwest at a lower fee than this
+    // one until today. P0L and P0V stay quote-only (on-fly-in).
+    fsaPrefixes: rural(["P"], ["P0L", "P0V"]),
+    provinces: ["ON"],
+    baseFeeCents: 6399,
+    extraItemCents: 5799,
+    minLeadDays: 4,
+    maxLeadDays: 6,
+    position: 104,
+    active: true,
+  },
+  {
+    key: "qc-rural",
+    name: L("Rural Quebec", "Québec rural"),
+    kind: "SHIPPING",
+    // Percé $49.09; Chibougamau (G8P, urban-style code, priced like a rural
+    // one) $44.21; Val-David $39.57. The far north shore (G0G) and James Bay /
+    // Abitibi (J0Y) are quoted by hand via ca-remote: Havre-Saint-Pierre is
+    // $63 and Radisson $89.
+    fsaPrefixes: [...rural(["G", "H", "J"], ["J0M", "G0G", "J0Y"]), "G8P"],
+    provinces: ["QC"],
+    baseFeeCents: 5899,
+    extraItemCents: 5299,
+    minLeadDays: 4,
+    maxLeadDays: 7,
+    position: 118,
+    active: true,
+  },
+  {
+    key: "atlantic-rural",
+    name: L("Rural Nova Scotia and PEI", "Nouvelle-Écosse et Î.-P.-É. (régions rurales)"),
+    kind: "SHIPPING",
+    // Inverness (Cape Breton) $57.38; Digby $51.55; Tignish $48.42.
+    fsaPrefixes: rural(["B", "C"]),
+    provinces: ["NS", "PE"],
+    baseFeeCents: 6699,
+    extraItemCents: 6099,
+    minLeadDays: 4,
+    maxLeadDays: 8,
+    position: 128,
+    active: true,
+  },
+  {
+    key: "nl-rural",
+    name: L("Rural Newfoundland and Labrador", "Terre-Neuve-et-Labrador (régions rurales)"),
+    kind: "SHIPPING",
+    // Twillingate $60.51; Labrador City (A2V) $57.41. Thin evidence: Port aux
+    // Basques returned no quote at all, so the fee carries extra room. The
+    // Northern Peninsula (A0K: St. Anthony $80.67 and 13 days) and coastal
+    // Labrador (A0P) are quoted by hand via ca-remote.
+    fsaPrefixes: [...rural(["A"], ["A0P", "A0K"]), "A2V"],
+    provinces: ["NL"],
+    baseFeeCents: 7499,
+    extraItemCents: 6499,
+    minLeadDays: 6,
+    maxLeadDays: 9,
+    position: 133,
+    active: true,
+  },
+  {
+    key: "prairies-rural",
+    name: L("Rural Prairies", "Prairies (régions rurales)"),
+    kind: "SHIPPING",
+    // La Ronge $73.66; Maple Creek $64.51; High Level $59.15; Swan River
+    // $48.17. Maple Creek is ordinary southern farm country, so this is not
+    // only a far-north price.
+    fsaPrefixes: rural(["R", "S", "T"], ["R0B"]),
+    provinces: ["MB", "SK", "AB"],
+    baseFeeCents: 8299,
+    extraItemCents: 7699,
+    minLeadDays: 5,
+    maxLeadDays: 7,
+    position: 138,
+    active: true,
+  },
+  {
+    key: "bc-rural",
+    name: L("Rural British Columbia", "Colombie-Britannique (régions rurales)"),
+    kind: "SHIPPING",
+    // Fort Nelson $61.51; Tofino and Nakusp $59.15; Smithers $57.79.
+    fsaPrefixes: rural(["V"], ["V0T"]),
+    provinces: ["BC"],
+    baseFeeCents: 7099,
+    extraItemCents: 6499,
+    minLeadDays: 6,
+    maxLeadDays: 9,
+    position: 148,
+    active: true,
   },
   {
     key: "yukon",

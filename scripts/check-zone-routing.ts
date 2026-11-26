@@ -28,6 +28,22 @@ const SAMPLES: [string, string][] = [
   ["Vancouver", "V5Y 1V4"],
   ["Whitehorse", "Y1A 1C2"],
   ["Yellowknife", "X1A 2N2"],
+  // Rural tiers and the quote-only carve-outs inside them (26 Nov 2026).
+  ["Barry's Bay (rural)", "K0J 1B0"],
+  ["Marathon (rural)", "P0T 2E0"],
+  ["Kenora region (rural)", "P0X 1C0"],
+  ["Hearst", "P0L 1N0"],
+  ["Val-David (rural)", "J0T 2N0"],
+  ["Chibougamau", "G8P 2K5"],
+  ["Radisson", "J0Y 2X0"],
+  ["Inverness (rural)", "B0E 1N0"],
+  ["Grand Manan", "E5G 1A1"],
+  ["Twillingate (rural)", "A0G 4M0"],
+  ["St. Anthony", "A0K 4S0"],
+  ["Labrador City", "A2V 2K5"],
+  ["La Ronge (rural)", "S0J 1L0"],
+  ["Churchill", "R0B 0E0"],
+  ["Smithers (rural)", "V0J 2N0"],
   ["New York (ZIP)", "10001"],
 ];
 

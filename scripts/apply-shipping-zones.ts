@@ -31,16 +31,23 @@ import { ZONE_SEED } from "../prisma/zones";
 const APPLY = process.argv.includes("--apply");
 
 /** Existing zones whose price follows the seed; nothing else about them is touched. */
-const FEES = ["on-ground", "on-north", "on-northwest", "qc-ground", "atlantic", "nl", "prairies", "bc"] as const;
+const RURAL = ["on-ground-rural", "on-north-rural", "qc-rural", "atlantic-rural", "nl-rural", "prairies-rural", "bc-rural"] as const;
+const FEES = ["on-ground", "on-north", "on-northwest", "qc-ground", "atlantic", "nl", "prairies", "bc", ...RURAL] as const;
 /** Zones whose territory and name also follow the seed. */
-const ROUTING = ["atlantic"] as const;
+const ROUTING = [
+  "atlantic",
+  // 26 Nov 2026: on-northwest handed its rural FSAs to on-north-rural, and
+  // ca-remote took four more quote-only FSAs out of the new rural tiers.
+  "on-northwest",
+  "ca-remote",
+] as const;
 /**
  * Zones created from the seed if missing. on-northwest and nl are also in
  * FEES: once they exist their price follows the seed like everyone else's.
  * They were create-only until the 26 Nov 2026 repricing, which would have
  * let a seed change skip them without a word.
  */
-const CREATE = ["on-northwest", "nl", "ca-remote", "yukon"] as const;
+const CREATE = ["on-northwest", "nl", "ca-remote", "yukon", ...RURAL] as const;
 /** Zones switched on if the seed says active and production says not. */
 const OPEN = ["qc-ground"] as const;
 
@@ -73,7 +80,7 @@ async function main() {
       } else {
         console.log(
           `  + ${key}: create ${s.kind} ${price}, ${s.active ? "ACTIVE" : "inactive"}` +
-            ` [${list(s.fsaPrefixes) || list(s.fsaLetters)}]`,
+            ` (${s.minLeadDays}-${s.maxLeadDays}d) [${list(s.fsaPrefixes) || list(s.fsaLetters)}]`,
         );
         writes.push(prisma.deliveryZone.create({ data: s }));
       }
@@ -83,7 +90,10 @@ async function main() {
       const s = seed(key);
       const z = live.get(key);
       if (!z) {
-        console.log(`  ! ${key}: not in the database — skipped (create it in the admin)`);
+        // A zone this same run is about to create already carries the seed's fees.
+        if (!(CREATE as readonly string[]).includes(key)) {
+          console.log(`  ! ${key}: not in the database — skipped (create it in the admin)`);
+        }
         continue;
       }
       const next = {

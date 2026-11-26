@@ -132,6 +132,52 @@ const SURVEY: Dest[] = [
   { zone: "bc", city: "Prince George", prov: "BC", postal: "V2L 3V9", maxDays: 7 },
 
   { zone: "yukon", city: "Whitehorse", prov: "YT", postal: "Y1A 1C2", maxDays: 8 },
+
+  // --- Rural tiers (added 26 Nov 2026) -------------------------------------------
+  //
+  // Everything above is a city-hall postal code, and that hid a real cost: a
+  // parcel to Hearst was billed $87 by Canpar while the survey said the north
+  // cost $42. Couriers add a beyond-point surcharge for small towns that
+  // Canada Post does not, so rural addresses are sampled and priced apart.
+  // A "0" as the second character of a postal code means rural delivery; a
+  // few remote towns with urban-style codes (Labrador City, Chibougamau,
+  // Grand Manan) are sampled here too because they price like rural ones.
+  { zone: "on-ground-rural", city: "Tobermory", prov: "ON", postal: "N0H 2R0", maxDays: 6 },
+  { zone: "on-ground-rural", city: "Barrys Bay", prov: "ON", postal: "K0J 1B0", maxDays: 6 },
+  { zone: "on-ground-rural", city: "Bancroft", prov: "ON", postal: "K0L 1C0", maxDays: 6 },
+  { zone: "on-ground-rural", city: "Pelee Island", prov: "ON", postal: "N0R 1M0", maxDays: 6 },
+
+  { zone: "on-north-rural", city: "Chapleau", prov: "ON", postal: "P0M 1K0", maxDays: 7 },
+  { zone: "on-north-rural", city: "Marathon", prov: "ON", postal: "P0T 2E0", maxDays: 7 },
+  { zone: "on-north-rural", city: "Wawa", prov: "ON", postal: "P0S 1K0", maxDays: 7 },
+  { zone: "on-north-rural", city: "Little Current", prov: "ON", postal: "P0P 1K0", maxDays: 7 },
+  { zone: "on-north-rural", city: "Hearst", prov: "ON", postal: "P0L 1N0", maxDays: 7 },
+
+  { zone: "qc-rural", city: "Perce", prov: "QC", postal: "G0C 2L0", maxDays: 7 },
+  { zone: "qc-rural", city: "Havre-Saint-Pierre", prov: "QC", postal: "G0G 1P0", maxDays: 7 },
+  { zone: "qc-rural", city: "Radisson", prov: "QC", postal: "J0Y 2X0", maxDays: 7 },
+  { zone: "qc-rural", city: "Val-David", prov: "QC", postal: "J0T 2N0", maxDays: 7 },
+  { zone: "qc-rural", city: "Chibougamau", prov: "QC", postal: "G8P 2K5", maxDays: 7 },
+
+  { zone: "atlantic-rural", city: "Inverness", prov: "NS", postal: "B0E 1N0", maxDays: 8 },
+  { zone: "atlantic-rural", city: "Digby", prov: "NS", postal: "B0V 1A0", maxDays: 8 },
+  { zone: "atlantic-rural", city: "Tignish", prov: "PE", postal: "C0B 2B0", maxDays: 8 },
+  { zone: "atlantic-rural", city: "Grand Manan", prov: "NB", postal: "E5G 1A1", maxDays: 8 },
+
+  { zone: "nl-rural", city: "St. Anthony", prov: "NL", postal: "A0K 4S0", maxDays: 14 },
+  { zone: "nl-rural", city: "Twillingate", prov: "NL", postal: "A0G 4M0", maxDays: 14 },
+  { zone: "nl-rural", city: "Channel-Port aux Basques", prov: "NL", postal: "A0M 1C0", maxDays: 14 },
+  { zone: "nl-rural", city: "Labrador City", prov: "NL", postal: "A2V 2K5", maxDays: 14 },
+
+  { zone: "prairies-rural", city: "Swan River", prov: "MB", postal: "R0L 1Z0", maxDays: 8 },
+  { zone: "prairies-rural", city: "La Ronge", prov: "SK", postal: "S0J 1L0", maxDays: 8 },
+  { zone: "prairies-rural", city: "Maple Creek", prov: "SK", postal: "S0N 1N0", maxDays: 8 },
+  { zone: "prairies-rural", city: "High Level", prov: "AB", postal: "T0H 1Z0", maxDays: 8 },
+
+  { zone: "bc-rural", city: "Smithers", prov: "BC", postal: "V0J 2N0", maxDays: 9 },
+  { zone: "bc-rural", city: "Tofino", prov: "BC", postal: "V0R 2Z0", maxDays: 9 },
+  { zone: "bc-rural", city: "Fort Nelson", prov: "BC", postal: "V0C 1R0", maxDays: 9 },
+  { zone: "bc-rural", city: "Nakusp", prov: "BC", postal: "V0G 1R0", maxDays: 9 },
 ];
 
 /**
@@ -144,7 +190,11 @@ if (TO && TO.length !== 3) {
   console.error(`--to must look like "Hearst,ON,P0L 1N0", got "${arg("to")}"`);
   process.exit(1);
 }
-const DESTS: Dest[] = TO ? [{ zone: "one-off", city: TO[0], prov: TO[1], postal: TO[2], maxDays: 14 }] : SURVEY;
+/** --only rural (or any part of a zone name) limits the run to those zones. */
+const ONLY = arg("only");
+const DESTS: Dest[] = TO
+  ? [{ zone: "one-off", city: TO[0], prov: TO[1], postal: TO[2], maxDays: 14 }]
+  : SURVEY.filter((d) => !ONLY || d.zone.includes(ONLY));
 
 const FROM = {
   companyName: "Velvea Gifts",

@@ -156,6 +156,22 @@ unsubscribe, PIPEDA policy, GA consent, no HST while unregistered) checked out.
       what would move these. `zones:shipping` now also reprices `on-northwest` and `nl`. The two
       guides quoting "from $31.99" were updated live (`scripts/article-shipping-copy.ts`) and in
       `scripts/guides/same-day-delivery-gta.ts`.
+- [x] **Rural tiers on every courier zone** (owner, 26 Nov 2026, after a parcel to Hearst was
+      billed $87 by Canpar against a fee set from city quotes). Couriers add a small-town surcharge
+      that Canada Post does not, and the survey only sampled downtown codes. A "0" as the second
+      character of a postal code is rural, so each zone now has a rural tier matched on those FSAs,
+      priced from rural quotes (3rd cheapest + $3 packing + $6 buffer; the extra basket is a full
+      second label): rural Ontario $49.99, rural northern Ontario $63.99, rural Quebec $58.99,
+      rural NS/PEI $66.99, rural Newfoundland and Labrador $74.99 (includes Labrador City), rural
+      Prairies $82.99, rural BC $70.99. Four more FSAs are quote-only via `ca-remote`: G0G, J0Y,
+      A0K and E5G. `on-northwest` is now its four towns only. The survey has the rural towns
+      (`--only rural`) and a one-address mode (`--to "Hearst,ON,P0L 1N0"`). Routing verified with
+      `scripts/check-zone-routing.ts`.
+- [ ] **Owner: book rural labels with Canada Post** (or whichever carrier is near the 3rd cheapest
+      quote), never the default courier: Hearst was $31-41 by Canada Post and $89 by Canpar on the
+      same day. Open questions: Hearst and Cochrane (P0L) are still quote-only because P0L also
+      holds the James Bay coast; rural New Brunswick has no "0" codes and rides on the Maritime
+      rate unsampled; Port aux Basques returned no quote.
 - [x] **United States is by request** (owner, 15 Nov 2026). No US zone and no checkout path: a ZIP
       gets "contact us for a quote", and the shipping page, FAQ and `llms.txt` say the same. A real
       US shipment of food needs FDA Prior Notice and duties paperwork; check before quoting one.
