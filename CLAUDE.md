@@ -60,7 +60,7 @@ proposing new work; update them when an item is done.
 src/app/[locale]/       storefront; EN at "/", FR at "/fr" (next-intl, localePrefix "as-needed")
 src/app/admin/          login/forgot/reset + (panel)/ route group: orders, products, discounts,
                         delivery-zones, settings, staff, reviews, inquiries, newsletter, articles…
-src/app/api/            stripe/webhook, newsletter(+confirm/unsubscribe), reviews, corporate, custom-basket
+src/app/api/            stripe/webhook, resend/webhook, newsletter(+confirm/unsubscribe), reviews, corporate, custom-basket
                         (free-text basket requests -> /admin/custom-requests; NOT the paused builder), admin/upload
 src/app/globals.css     design system; component classes in @layer components (.btn, .eyebrow…)
 src/components/         brand, layout, home, shop, cart, checkout, custom (basket builder),
@@ -98,6 +98,9 @@ tests/                  Vitest suites + helpers (empty.ts aliases "server-only",
 - **Emails** (`src/lib/email.ts`): one `send()` returns `boolean` (false when Resend rejects or the
   key is missing — it logs instead of sending). Only `sendEmailVerification` propagates the
   boolean today; the others fire-and-forget. All templates escape user text via `src/lib/html.ts`.
+  A refused order confirmation writes a "Confirmation email failed" timeline entry and alerts the
+  owner. What happens after Resend accepts a message (bounce, delay, spam report) comes back through
+  `api/resend/webhook` (Svix-signed, 503 without `RESEND_WEBHOOK_SECRET`), which alerts the owner.
 - **Rate limiting** (`src/lib/rate-limit.ts`): named rules in `RATE_LIMITS`; Upstash REST when
   configured, per-instance memory fallback otherwise; fails open on infra errors, never on a breach.
   `verifyTurnstile` (`src/lib/turnstile.ts`) is a no-op until `TURNSTILE_SECRET_KEY` is set.

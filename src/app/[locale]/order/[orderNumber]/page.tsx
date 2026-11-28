@@ -128,6 +128,8 @@ export default async function OrderPage({
   // "Payment hasn't been taken yet" used to cover all of them, with no way to
   // pay, including for a customer whose payment was taken and held for review.
   const heldForReview = order!.timeline.some((e) => e.label === "Payment amount mismatch");
+  // Written by markOrderPaid when Resend refused the confirmation.
+  const emailFailed = order!.timeline.some((e) => e.label === "Confirmation email failed");
   const expired =
     order!.status === "CANCELLED" &&
     order!.timeline.some((e) => e.label === "Cancelled" && e.note === "Checkout expired");
@@ -236,6 +238,47 @@ export default async function OrderPage({
           {fr ? "Commande" : "Order"}{" "}
           <span className="font-semibold text-ink">{order!.orderNumber}</span>
         </p>
+        {/* Only on the return from Stripe. Customers were not finding the
+            confirmation (Gmail files it under Promotions for some of them) and
+            had no way to notice a mistyped address, so this names the address
+            and says where to look. */}
+        {paid && ownsViaSession && (
+          <p className="mx-auto mt-4 max-w-md text-sm text-ink-soft">
+            {emailFailed ? (
+              fr ? (
+                <>
+                  Votre commande est confirmée, mais nous n&apos;avons pas pu envoyer le courriel de
+                  confirmation à <span className="font-semibold text-ink">{order!.email}</span>.
+                  Conservez cette page et{" "}
+                </>
+              ) : (
+                <>
+                  Your order is confirmed, but we couldn&apos;t send the confirmation email to{" "}
+                  <span className="font-semibold text-ink">{order!.email}</span>. Keep this page
+                  and{" "}
+                </>
+              )
+            ) : fr ? (
+              <>
+                Nous avons envoyé votre confirmation à{" "}
+                <span className="font-semibold text-ink">{order!.email}</span>. Si elle n&apos;est
+                pas dans votre boîte de réception d&apos;ici quelques minutes, vérifiez vos dossiers
+                Promotions et Indésirables. Si l&apos;adresse est erronée ou que rien n&apos;arrive,{" "}
+              </>
+            ) : (
+              <>
+                We&apos;ve sent your confirmation to{" "}
+                <span className="font-semibold text-ink">{order!.email}</span>. If it isn&apos;t in
+                your inbox within a few minutes, check your Promotions and Spam folders. If the
+                address is wrong or nothing arrives,{" "}
+              </>
+            )}
+            <Link href="/contact" className="font-medium text-violet hover:underline">
+              {fr ? "écrivez-nous" : "contact us"}
+            </Link>
+            .
+          </p>
+        )}
       </div>
 
       <div className="mt-10 rounded-lg border border-line bg-white p-6 sm:p-8">

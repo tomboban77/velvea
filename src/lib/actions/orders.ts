@@ -223,6 +223,13 @@ export async function markOrderPaid(
     await prisma.orderEvent
       .create({ data: { orderId, label: "Confirmation email failed", note: `Could not send to ${order.email}` } })
       .catch(() => {});
+    // A timeline entry alone is only seen by somebody who opens the order. The
+    // customer has paid and has no receipt, so the owner hears about it now.
+    await sendOwnerAlert(
+      `Confirmation email not sent for ${order.orderNumber}`,
+      `The order is paid, but the confirmation email to ${order.email} could not be sent. Check the address with the customer and send them their order details yourself.`,
+      `/admin/orders/${order.id}`
+    );
   }
   await sendAdminOrderNotice(data, { paid: true });
   return { settled: true };

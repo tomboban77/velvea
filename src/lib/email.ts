@@ -94,7 +94,8 @@ async function send(
   }
 }
 
-function adminRecipient(): string {
+/** The owner inbox: where order notices and alerts go. Empty when unset. */
+export function adminRecipient(): string {
   const to = process.env.ORDER_NOTIFY_EMAIL || process.env.EMAIL_FROM || "";
   return to ? bareAddress(to) : "";
 }
